@@ -1,0 +1,488 @@
+{
+  "entities": {
+    "PortfolioOwner": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PortfolioOwner",
+      "type": "object",
+      "description": "Represents the individual who owns and manages the portfolio, containing their profile information and summary statistics.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the PortfolioOwner entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The full name of the portfolio owner."
+        },
+        "aboutMeId": {
+          "type": "string",
+          "description": "A brief biography or introductory text about the portfolio owner in Bahasa Indonesia."
+        },
+        "aboutMeEn": {
+          "type": "string",
+          "description": "A brief biography or introductory text about the portfolio owner in English."
+        },
+        "email": {
+          "type": "string",
+          "description": "The primary contact email address for the portfolio owner.",
+          "format": "email"
+        },
+        "whatsAppNumber": {
+          "type": "string",
+          "description": "WhatsApp contact number or a link to initiate a WhatsApp chat."
+        },
+        "linkedInProfileUrl": {
+          "type": "string",
+          "description": "URL to the portfolio owner's LinkedIn profile.",
+          "format": "uri"
+        },
+        "githubProfileUrl": {
+          "type": "string",
+          "description": "URL to the portfolio owner's GitHub profile, showcasing code repositories.",
+          "format": "uri"
+        },
+        "profilePictureUrl": {
+          "type": "string",
+          "description": "URL to the portfolio owner's profile picture or avatar.",
+          "format": "uri"
+        },
+        "totalProjectsCompleted": {
+          "type": "number",
+          "description": "The total number of projects completed by the portfolio owner."
+        },
+        "codingExperienceYears": {
+          "type": "number",
+          "description": "The total duration of coding experience in years."
+        },
+        "totalTechnologiesMastered": {
+          "type": "number",
+          "description": "The count of distinct technologies or skills mastered by the portfolio owner."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "aboutMeId",
+        "aboutMeEn",
+        "email",
+        "linkedInProfileUrl",
+        "totalProjectsCompleted",
+        "codingExperienceYears",
+        "totalTechnologiesMastered"
+      ]
+    },
+    "Project": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Project",
+      "type": "object",
+      "description": "Represents a single project displayed in the portfolio, including details, media, and related skills/certificates.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Project entity."
+        },
+        "titleId": {
+          "type": "string",
+          "description": "The title of the project in Bahasa Indonesia."
+        },
+        "titleEn": {
+          "type": "string",
+          "description": "The title of the project in English."
+        },
+        "shortDescriptionId": {
+          "type": "string",
+          "description": "A brief summary of the project for list views in Bahasa Indonesia."
+        },
+        "shortDescriptionEn": {
+          "type": "string",
+          "description": "A brief summary of the project for list views in English."
+        },
+        "fullDescriptionId": {
+          "type": "string",
+          "description": "Detailed description of the project, covering problem, process, technologies, results, and impact in Bahasa Indonesia."
+        },
+        "fullDescriptionEn": {
+          "type": "string",
+          "description": "Detailed description of the project, covering problem, process, technologies, results, and impact in English."
+        },
+        "demoUrl": {
+          "type": "string",
+          "description": "URL to a live demonstration or deployed version of the project.",
+          "format": "uri"
+        },
+        "repositoryUrl": {
+          "type": "string",
+          "description": "URL to the project's source code repository (e.g., GitHub).",
+          "format": "uri"
+        },
+        "mainImageUrl": {
+          "type": "string",
+          "description": "URL to the primary image or thumbnail representing the project.",
+          "format": "uri"
+        },
+        "additionalImageUrls": {
+          "type": "array",
+          "description": "An array of URLs to additional images, screenshots, wireframes, or flow diagrams for the project.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "category": {
+          "type": "string",
+          "description": "The category of the project (e.g., 'Web Development', 'UI/UX Design', 'Backend Service')."
+        },
+        "isFeatured": {
+          "type": "boolean",
+          "description": "A flag indicating if the project is one of the featured projects, to be displayed prominently."
+        },
+        "skillIds": {
+          "type": "array",
+          "description": "References to Skills used in this project. (Relationship: Skill N:N Project)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "certificateIds": {
+          "type": "array",
+          "description": "References to Certificates relevant to this project. (Relationship: Certificate N:N Project)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the project entry was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the project entry was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "titleId",
+        "titleEn",
+        "shortDescriptionId",
+        "shortDescriptionEn",
+        "fullDescriptionId",
+        "fullDescriptionEn",
+        "mainImageUrl",
+        "category",
+        "isFeatured",
+        "skillIds",
+        "createdAt"
+      ]
+    },
+    "Skill": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Skill",
+      "type": "object",
+      "description": "Represents a technical skill or technology used in projects and mastered by the portfolio owner.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Skill entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the skill (e.g., 'HTML', 'CSS', 'React', 'Node.js')."
+        },
+        "iconUrl": {
+          "type": "string",
+          "description": "URL to an icon image representing the skill, typically for display as a badge.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "iconUrl"
+      ]
+    },
+    "Certificate": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Certificate",
+      "type": "object",
+      "description": "Represents a certification obtained by the portfolio owner, which may be associated with specific projects.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Certificate entity."
+        },
+        "titleId": {
+          "type": "string",
+          "description": "The title or name of the certificate in Bahasa Indonesia."
+        },
+        "titleEn": {
+          "type": "string",
+          "description": "The title or name of the certificate in English."
+        },
+        "issuer": {
+          "type": "string",
+          "description": "The organization or institution that issued the certificate."
+        },
+        "issueDate": {
+          "type": "string",
+          "description": "The date when the certificate was issued.",
+          "format": "date"
+        },
+        "credentialUrl": {
+          "type": "string",
+          "description": "URL where the certificate can be verified or viewed online.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "titleId",
+        "titleEn",
+        "issuer",
+        "issueDate"
+      ]
+    },
+    "Testimonial": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Testimonial",
+      "type": "object",
+      "description": "Represents a feedback or a quote from a client or collaborator, used to build trust.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Testimonial entity."
+        },
+        "quoteId": {
+          "type": "string",
+          "description": "The actual testimonial quote or feedback in Bahasa Indonesia."
+        },
+        "quoteEn": {
+          "type": "string",
+          "description": "The actual testimonial quote or feedback in English."
+        },
+        "authorName": {
+          "type": "string",
+          "description": "The name of the person who provided the testimonial."
+        },
+        "authorTitle": {
+          "type": "string",
+          "description": "The title, role, or company of the testimonial's author (e.g., 'CEO, CompanyX')."
+        },
+        "authorImageUrl": {
+          "type": "string",
+          "description": "URL to the profile picture or avatar of the testimonial's author.",
+          "format": "uri"
+        },
+        "submissionDate": {
+          "type": "string",
+          "description": "The date when the testimonial was received or published.",
+          "format": "date"
+        }
+      },
+      "required": [
+        "id",
+        "quoteId",
+        "quoteEn",
+        "authorName",
+        "authorTitle"
+      ]
+    },
+    "CareerTimelineEntry": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "CareerTimelineEntry",
+      "type": "object",
+      "description": "Represents an event or period in the portfolio owner's learning and career journey.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the CareerTimelineEntry entity."
+        },
+        "titleId": {
+          "type": "string",
+          "description": "The title of the timeline entry (e.g., 'Software Engineer at X Corp', 'Completed Bootcamp') in Bahasa Indonesia."
+        },
+        "titleEn": {
+          "type": "string",
+          "description": "The title of the timeline entry (e.g., 'Software Engineer at X Corp', 'Completed Bootcamp') in English."
+        },
+        "descriptionId": {
+          "type": "string",
+          "description": "A detailed description of the event or role in Bahasa Indonesia."
+        },
+        "descriptionEn": {
+          "type": "string",
+          "description": "A detailed description of the event or role in English."
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The start date of the career event or period.",
+          "format": "date"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The end date of the career event or period. Can be null if ongoing.",
+          "format": "date"
+        },
+        "type": {
+          "type": "string",
+          "description": "The category of the timeline entry (e.g., 'Education', 'Work Experience', 'Personal Project', 'Milestone')."
+        },
+        "location": {
+          "type": "string",
+          "description": "The geographical location associated with the entry (e.g., 'Jakarta, Indonesia')."
+        }
+      },
+      "required": [
+        "id",
+        "titleId",
+        "titleEn",
+        "descriptionId",
+        "descriptionEn",
+        "startDate",
+        "type"
+      ]
+    },
+    "UserPreference": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserPreference",
+      "type": "object",
+      "description": "Stores user-specific preferences such as theme and language, intended for client-side persistence (e.g., localStorage).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserPreference entity. For a single user application, this might be a fixed identifier like 'current_user_preference'."
+        },
+        "themeName": {
+          "type": "string",
+          "description": "The name of the currently selected dynamic theme (e.g., 'light', 'dark', 'blueModern')."
+        },
+        "languageCode": {
+          "type": "string",
+          "description": "The ISO 639-1 code for the selected display language (e.g., 'id' for Bahasa Indonesia, 'en' for English)."
+        }
+      },
+      "required": [
+        "id",
+        "themeName",
+        "languageCode"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/portfolioOwner/profile",
+        "definition": {
+          "entityName": "PortfolioOwner",
+          "schema": {
+            "$ref": "#/backend/entities/PortfolioOwner"
+          },
+          "description": "A singleton document representing the primary profile of the portfolio owner. Publicly readable, admin-only writeable."
+        }
+      },
+      {
+        "path": "/projects/{projectId}",
+        "definition": {
+          "entityName": "Project",
+          "schema": {
+            "$ref": "#/backend/entities/Project"
+          },
+          "description": "A collection of all projects displayed in the portfolio. Includes references to skills and certificates. Publicly readable, admin-only writeable. Document ID is `projectId`.",
+          "params": [
+            {
+              "name": "projectId",
+              "description": "Unique identifier for a Project document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/skills/{skillId}",
+        "definition": {
+          "entityName": "Skill",
+          "schema": {
+            "$ref": "#/backend/entities/Skill"
+          },
+          "description": "A collection of all technical skills and technologies mastered by the portfolio owner. Publicly readable, admin-only writeable. Document ID is `skillId`.",
+          "params": [
+            {
+              "name": "skillId",
+              "description": "Unique identifier for a Skill document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/certificates/{certificateId}",
+        "definition": {
+          "entityName": "Certificate",
+          "schema": {
+            "$ref": "#/backend/entities/Certificate"
+          },
+          "description": "A collection of all certifications obtained by the portfolio owner. Publicly readable, admin-only writeable. Document ID is `certificateId`.",
+          "params": [
+            {
+              "name": "certificateId",
+              "description": "Unique identifier for a Certificate document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/testimonials/{testimonialId}",
+        "definition": {
+          "entityName": "Testimonial",
+          "schema": {
+            "$ref": "#/backend/entities/Testimonial"
+          },
+          "description": "A collection of testimonials or feedback from clients/collaborators. Publicly readable, admin-only writeable. Document ID is `testimonialId`.",
+          "params": [
+            {
+              "name": "testimonialId",
+              "description": "Unique identifier for a Testimonial document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/careerTimelineEntries/{timelineEntryId}",
+        "definition": {
+          "entityName": "CareerTimelineEntry",
+          "schema": {
+            "$ref": "#/backend/entities/CareerTimelineEntry"
+          },
+          "description": "A collection detailing the portfolio owner's career and learning journey. Publicly readable, admin-only writeable. Document ID is `timelineEntryId`.",
+          "params": [
+            {
+              "name": "timelineEntryId",
+              "description": "Unique identifier for a CareerTimelineEntry document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/admins/{adminId}",
+        "definition": {
+          "entityName": "Admin",
+          "schema": {
+            "$ref": "#/backend/entities/PortfolioOwner"
+          },
+          "description": "A collection used for Database Access Control (DBAC) to identify administrator users. Only authenticated users whose `uid` matches an `adminId` document in this collection are authorized for write operations. Documents can be empty; their existence is the authorization signal. Document ID is the Firebase Authentication `uid` of the admin user.",
+          "params": [
+            {
+              "name": "adminId",
+              "description": "The Firebase Authentication User ID (UID) of an authorized administrator."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The recommended Firestore structure for KaryaPro prioritizes public read access with authenticated admin write capabilities, adhering strictly to the core design principles. Since KaryaPro is a single-owner portfolio application, all public-facing content (PortfolioOwner profile, Projects, Skills, Certificates, Testimonials, CareerTimelineEntries) is designed for public readability, while write operations are restricted to a single, authenticated administrator.\n\n**Authorization Independence:** This is achieved by making all public data self-contained and not reliant on hierarchical lookups (`get()`) for read authorization. For write operations, the admin status is checked using a direct lookup on the `/admins/{adminId}` collection, ensuring the decision is atomic and doesn't depend on other document data or complex rule logic. This eliminates brittle dependencies and allows for atomic creation/update operations.\n\n**QAPs (Query/Access Pattern Safety):** All main data collections (`/projects`, `/skills`, `/certificates`, `/testimonials`, `/careerTimelineEntries`) are designed as top-level collections. This structural segregation means that all documents within these collections share the same security posture (publicly readable). This inherently supports safe `list` queries, as no document needs to be filtered out for security reasons during a read operation; if a user can read the collection, they can read all documents in it. For admin write operations, the `/admins/{adminId}` collection ensures that the check for admin privileges is a simple existence check, not a query that could inadvertently reveal unauthorized information.\n\n**Structural Segregation:** Each core entity type (Projects, Skills, etc.) is housed in its own top-level collection. This ensures that documents within a collection have a homogeneous security posture (publicly readable, admin writeable) and a clear, predictable schema. The `PortfolioOwner` entity, being a singular profile, is placed in a well-known singleton document `portfolioOwner/profile` rather than a collection, further enhancing clarity.\n\n**Access Modeling:**\n*   **Public Data:** All primary content collections are globally readable. This is the simplest form of access model, directly supporting the public portfolio requirement.\n*   **Global Roles (DBAC):** Admin access for write operations is managed through a dedicated top-level collection `/admins/{adminId}`. An authenticated user's `uid` must exist as a document ID in this collection to grant administrative privileges. This avoids custom claims and uses database content for role management.\n\n**UserPreference Entity:** The `UserPreference` entity is explicitly excluded from Firestore paths as per the user's instructions that it's intended for client-side persistence (e.g., localStorage) without backend persistence."
+  }
+}

@@ -1,0 +1,155 @@
+/**
+ * KaryaPro Portfolio Security Rules
+ * 
+ * Core Philosophy:
+ * This ruleset implements a "Public Read, Admin Write" security model. It is designed for a single-owner 
+ * portfolio application where the general public can view all content (projects, skills, career history), 
+ * while modification is strictly restricted to authorized administrators.
+ * 
+ * Data Structure:
+ * - Public Content: All primary entities (Projects, Skills, Certificates, Testimonials, Career Timeline) 
+ *   are stored in top-level collections for easy listing and public access.
+ * - Profile: The portfolio owner's profile is stored as a singleton document at `/portfolioOwner/profile`.
+ * - Authorization: Admin status is determined by the presence of a user's UID within the `/admins/` collection.
+ * 
+ * Key Security Decisions:
+ * - Admin Role (DBAC): Instead of complex custom claims, we use a "Database Access Control" pattern. 
+ *   If a document exists at `/admins/{userId}`, that user is granted write access to the entire database.
+ * - Public Visibility: No authentication is required to read any portfolio content, ensuring SEO 
+ *   friendliness and ease of access for potential employers/clients.
+ * - Prototyping Flexibility: While authorization is strictly enforced based on roles, the rules 
+ *   do not enforce strict data schemas, allowing the developer to iterate on the data model quickly.
+ * 
+ * Denormalization for Authorization:
+ * - Admin checks are performed via `exists()` lookups on the `/admins` collection. This provides 
+ *   a centralized and performant way to manage access without nesting all data under a specific user ID.
+ */
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Helper Functions ---
+
+    /**
+     * @description Checks if the request is from an authenticated user.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the authenticated user's UID exists in the 'admins' collection.
+     * Used to authorize all write operations.
+     */
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    /**
+     * @description Combines admin check with a verification that the document exists.
+     * Prevents operations on non-existent documents.
+     */
+    function isExistingAdmin() {
+      return isAdmin() && resource != null;
+    }
+
+    // --- Collection Rules ---
+
+    /**
+     * @description Registry for administrative users.
+     * @path /admins/{adminId}
+     * @allow Authenticated admins to list other admins.
+     * @deny Public users from reading the admin list or writing to it.
+     * @principle Global Roles (DBAC). Admin management is restricted to existing admins.
+     */
+    match /admins/{adminId} {
+      allow get, list: if isAdmin();
+      allow create: if isAdmin();
+      allow update, delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description The primary profile information for the portfolio owner.
+     * @path /portfolioOwner/profile
+     * @allow (get) Publicly readable. (update) Authorized admin updates profile.
+     * @deny (update) Any non-admin user attempting to change profile details.
+     * @principle Public Read with Owner-Only Writes via Admin Registry.
+     */
+    match /portfolioOwner/profile {
+      allow get, list: if true;
+      allow create: if isAdmin();
+      allow update, delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description Collection of projects showcased in the portfolio.
+     * @path /projects/{projectId}
+     * @allow (list) Publicly list all projects. (create) Admin adding a new project.
+     * @deny (delete) Unauthorized user attempting to remove a project.
+     * @principle Structural Segregation; public read access for top-level content.
+     */
+    match /projects/{projectId} {
+      allow get, list: if true;
+      allow create: if isAdmin() && request.resource.data.id == projectId;
+      allow update: if isExistingAdmin() && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description Technical skills and technologies mastered by the owner.
+     * @path /skills/{skillId}
+     * @allow (get) Publicly view skill details. (create) Admin adding a new skill.
+     * @deny (update) Non-admin attempting to modify skill icons or names.
+     * @principle Relational Integrity; ensures document ID matches the internal data ID.
+     */
+    match /skills/{skillId} {
+      allow get, list: if true;
+      allow create: if isAdmin() && request.resource.data.id == skillId;
+      allow update: if isExistingAdmin() && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description Certifications and credentials earned by the owner.
+     * @path /certificates/{certificateId}
+     * @allow (list) Public viewing of certifications. (delete) Admin removal of expired certificates.
+     * @deny (create) Anonymous user attempting to inject fake credentials.
+     * @principle Public Read with Admin-Only Writes.
+     */
+    match /certificates/{certificateId} {
+      allow get, list: if true;
+      allow create: if isAdmin() && request.resource.data.id == certificateId;
+      allow update: if isExistingAdmin() && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description Testimonials and feedback from clients/collaborators.
+     * @path /testimonials/{testimonialId}
+     * @allow (get) Public display of testimonials. (update) Admin editing a typo in a quote.
+     * @deny (create) Unauthorized submission of testimonials to the database.
+     * @principle Admin-mediated content management.
+     */
+    match /testimonials/{testimonialId} {
+      allow get, list: if true;
+      allow create: if isAdmin() && request.resource.data.id == testimonialId;
+      allow update: if isExistingAdmin() && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description Chronological events of the owner's career journey.
+     * @path /careerTimelineEntries/{timelineEntryId}
+     * @allow (list) Public viewing of the career timeline. (create) Admin adding a new job entry.
+     * @deny (update) Non-admin user changing dates or descriptions of work history.
+     * @principle Enforces immutability of relational IDs while allowing flexible content updates.
+     */
+    match /careerTimelineEntries/{timelineEntryId} {
+      allow get, list: if true;
+      allow create: if isAdmin() && request.resource.data.id == timelineEntryId;
+      allow update: if isExistingAdmin() && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingAdmin();
+    }
+  }
+}
