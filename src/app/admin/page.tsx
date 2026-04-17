@@ -490,7 +490,7 @@ function AdminContent() {
                     </div>
                     <Button type="submit" className="w-full h-20 rounded-[2.5rem] text-xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-accent/30 bg-accent hover:scale-[0.98] transition-transform">Issue Certificate</Button>
                   </form>
-                </CardHeader>
+                </CardContent>
               </Card>
              </div>
              <div className="lg:col-span-4 space-y-8">
