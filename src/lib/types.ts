@@ -53,6 +53,7 @@ export interface Certificate {
   issuer: string;
   validUntil: string;
   imageUrl: string;
+  credentialUrl?: string;
 }
 
 export interface PortfolioStats {

@@ -15,7 +15,7 @@ import {
   Briefcase, LayoutDashboard, History, ShieldAlert, ShieldCheck, CheckCircle2, 
   Download, Upload, HelpCircle, Info, Wifi, WifiOff, AlertTriangle, 
   Mail, Instagram, Github, Linkedin, Video, Send, Wand2, Type, FileText,
-  UserPlus, Calendar, Zap, BarChart3, Terminal, Activity
+  UserPlus, Calendar, Zap, BarChart3, Terminal, Activity, Link as LinkIcon, FileUp
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
@@ -108,7 +108,8 @@ function AdminContent() {
 
   const [certForm, setCertForm] = useState({
     titleId: '', titleEn: '', issuer: '', year: '', validUntil: '', imageUrl: '',
-    shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: ''
+    shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '',
+    credentialUrl: ''
   });
 
   const [testForm, setTestForm] = useState({
@@ -203,6 +204,24 @@ function AdminContent() {
     updateProfile(profileFormData);
     updateStats(statsFormData);
     toast({ title: "Global Records Synced", description: "Profile and metrics updated." });
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 1024 * 1024) { // 1MB Limit for Base64 storage
+      toast({ variant: "destructive", title: "File Too Large", description: "Please use a file smaller than 1MB for local storage." });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      setter(base64);
+      toast({ title: "File Ready", description: "Document has been encoded for deployment." });
+    };
+    reader.readAsDataURL(file);
   };
 
   if (isUserLoading || storeLoading || isAdminLoading) {
@@ -486,7 +505,7 @@ function AdminContent() {
                   <form onSubmit={(e) => {
                     e.preventDefault();
                     addCertificate({ ...certForm, id: Date.now().toString() } as any);
-                    setCertForm({ titleId: '', titleEn: '', issuer: '', year: '', validUntil: '', imageUrl: '', shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '' });
+                    setCertForm({ titleId: '', titleEn: '', issuer: '', year: '', validUntil: '', imageUrl: '', shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '', credentialUrl: '' });
                     toast({ title: "Credential Locked", description: "Certificate added to global vault." });
                   }} className="space-y-10">
                     <div className="grid md:grid-cols-2 gap-8">
@@ -508,6 +527,18 @@ function AdminContent() {
                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Media URL</label>
                         <Input value={certForm.imageUrl} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
                       </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-8">
+                       <div className="space-y-3">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><LinkIcon className="h-3 w-3" /> Credential/PDF URL</label>
+                          <Input value={certForm.credentialUrl} onChange={e => setCertForm({...certForm, credentialUrl: e.target.value})} placeholder="https://..." className="h-16 rounded-2xl bg-muted/30 border-none" />
+                       </div>
+                       <div className="space-y-3">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><FileUp className="h-3 w-3" /> "Upload" PDF (Local Sync)</label>
+                          <div className="flex gap-2">
+                            <Input type="file" accept=".pdf" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, credentialUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none cursor-pointer file:hidden pt-5" />
+                          </div>
+                       </div>
                     </div>
                     <Button type="submit" className="w-full h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-xl shadow-primary/20">FINALIZE CREDENTIAL</Button>
                   </form>

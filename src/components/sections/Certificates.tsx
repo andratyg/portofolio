@@ -1,4 +1,3 @@
-
 "use client"
 
 import React from 'react';
@@ -7,10 +6,11 @@ import { useProjectStore } from '../ProjectStore';
 import { Card, CardContent } from '../ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import { Award, Calendar, ShieldCheck, Info } from 'lucide-react';
+import { Award, Calendar, ShieldCheck, Info, ExternalLink, FileText, CheckCircle2 } from 'lucide-react';
 import Image from 'next/image';
 import { Certificate } from '@/lib/types';
 import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 
 export const Certificates = () => {
   const { t, language } = useLanguage();
@@ -86,37 +86,68 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
         </div>
       </DialogTrigger>
       
-      <DialogContent className="sm:max-w-[700px] rounded-[3rem] overflow-hidden border-none p-0 shadow-2xl">
-        <div className="relative aspect-video w-full bg-muted">
+      <DialogContent className="sm:max-w-[800px] h-[90vh] rounded-[3rem] overflow-hidden border-none p-0 shadow-2xl flex flex-col">
+        <div className="relative aspect-video w-full bg-muted shrink-0">
           <Image src={safeImageUrl} alt={title || "Certificate"} fill className="object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div className="absolute bottom-6 left-8 text-white">
-             <Badge className="bg-accent text-white mb-2">{cert.issuer}</Badge>
-             <DialogTitle className="text-3xl font-bold font-headline leading-tight">{title}</DialogTitle>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          <div className="absolute bottom-6 left-8 right-8 text-white flex justify-between items-end">
+             <div className="space-y-1">
+               <Badge className="bg-accent text-white mb-2">{cert.issuer}</Badge>
+               <DialogTitle className="text-3xl font-bold font-headline leading-tight">{title}</DialogTitle>
+             </div>
+             {cert.credentialUrl && (
+               <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer" className="no-print">
+                 <Button className="rounded-2xl h-12 gap-2 bg-white text-black hover:bg-white/90 font-black uppercase text-[10px] tracking-widest shadow-2xl">
+                   <CheckCircle2 className="h-4 w-4" /> Verify Credential
+                 </Button>
+               </a>
+             )}
           </div>
         </div>
-        <div className="p-10">
-          <div className="grid grid-cols-2 gap-8 mb-10">
-            <div className="space-y-1 p-5 bg-muted/40 rounded-3xl">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">{t.certIssuer}</p>
-              <p className="font-bold text-lg">{cert.issuer}</p>
+        
+        <div className="flex-1 overflow-y-auto p-10 space-y-10 no-scrollbar">
+          <div className="grid grid-cols-3 gap-6">
+            <div className="space-y-1 p-5 bg-muted/40 rounded-3xl text-center">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-black mb-1">{t.certIssuer}</p>
+              <p className="font-bold text-base">{cert.issuer}</p>
             </div>
-            <div className="space-y-1 p-5 bg-muted/40 rounded-3xl">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">{t.certYear}</p>
-              <p className="font-bold text-lg">{cert.year}</p>
+            <div className="space-y-1 p-5 bg-muted/40 rounded-3xl text-center">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-black mb-1">{t.certYear}</p>
+              <p className="font-bold text-base">{cert.year}</p>
+            </div>
+            <div className="space-y-1 p-5 bg-muted/40 rounded-3xl text-center">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-black mb-1">VALIDITY</p>
+              <p className="font-bold text-base">{cert.validUntil}</p>
             </div>
           </div>
+
           <div className="space-y-6">
-            <h4 className="text-lg font-bold mb-2">{t.certFullDesc}</h4>
-            <p className="text-muted-foreground leading-relaxed text-base">{fullDesc}</p>
-            <div className="p-6 bg-accent/5 border border-accent/10 rounded-3xl flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-black text-accent uppercase tracking-widest mb-1">{t.certValidity}</p>
-                <p className="font-bold text-lg">{cert.validUntil}</p>
-              </div>
-              <Award className="h-10 w-10 text-accent/20" />
+            <div className="flex items-center gap-3">
+               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-primary" />
+               </div>
+               <h4 className="text-xl font-bold font-headline uppercase tracking-tight">{t.certFullDesc}</h4>
             </div>
+            <p className="text-muted-foreground leading-relaxed text-base bg-muted/20 p-8 rounded-[2rem] border border-border/50">
+              {fullDesc}
+            </p>
           </div>
+
+          {cert.credentialUrl && (
+            <div className="p-8 bg-accent/5 border border-accent/20 rounded-[2.5rem] flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="space-y-1 text-center md:text-left">
+                <p className="text-[10px] font-black text-accent uppercase tracking-widest">OFFICIAL AUTHENTICATION</p>
+                <p className="text-sm font-medium text-muted-foreground">This certificate has been verified by the issuing authority and is permanently logged in the official credential vault.</p>
+              </div>
+              <div className="flex gap-4">
+                <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" className="rounded-xl border-accent/20 hover:bg-accent/10 h-12 px-6 gap-2 text-xs font-bold">
+                    <ExternalLink className="h-4 w-4" /> View Verification Page
+                  </Button>
+                </a>
+              </div>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
