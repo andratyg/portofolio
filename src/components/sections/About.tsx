@@ -1,3 +1,4 @@
+
 "use client"
 
 import React from 'react';
@@ -10,7 +11,7 @@ export const About = () => {
   const { profile } = useProjectStore();
 
   const role = language === 'id' ? profile.roleId : (profile.roleEn || profile.roleId);
-  const aboutText = language === 'id' ? profile.aboutTextId : (profile.aboutTextEn || profile.aboutTextId);
+  const aboutText = language === 'id' ? profile.aboutMeId : (profile.aboutMeEn || profile.aboutMeId);
 
   return (
     <section id="about" className="py-24 bg-card overflow-hidden">
@@ -20,7 +21,7 @@ export const About = () => {
             <div className="absolute -inset-4 bg-gradient-to-tr from-primary to-accent rounded-[3rem] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
             <div className="relative aspect-[3/4] rounded-[3rem] overflow-hidden shadow-2xl border-8 border-background">
               <Image 
-                src={profile.profileImageUrl} 
+                src={profile.profilePictureUrl || "https://picsum.photos/seed/karyapro-profile/600/800"} 
                 alt={profile.name} 
                 fill 
                 className="object-cover group-hover:scale-105 transition-transform duration-1000"

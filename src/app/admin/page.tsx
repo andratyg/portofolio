@@ -15,7 +15,7 @@ import {
   UserCircle, Languages, Loader2, Image as ImageIcon, Quote, 
   Briefcase, LayoutDashboard, History, ShieldAlert, CheckCircle2, 
   Download, Upload, HelpCircle, Info, Wifi, WifiOff, AlertTriangle, 
-  Mail, Instagram, Github, Linkedin, Video, Send, Wand2
+  Mail, Instagram, Github, Linkedin, Video, Send, Wand2, Type
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
@@ -102,22 +102,30 @@ function AdminContent() {
     if (profile) setProfileFormData(profile);
   }, [profile]);
 
-  // AI Helpers
-  const handleAITranslate = async (formType: string, data: any, setter: Function) => {
+  // AI Helpers - Bi-directional translation
+  const handleAITranslate = async (formType: string, data: any, setter: Function, direction: 'id-to-en' | 'en-to-id' = 'id-to-en') => {
     setIsTranslating(formType);
     try {
       const updated = { ...data };
-      const fieldsToTranslate = Object.keys(data).filter(key => key.endsWith('Id'));
+      const sourceSuffix = direction === 'id-to-en' ? 'Id' : 'En';
+      const targetSuffix = direction === 'id-to-en' ? 'En' : 'Id';
+      const targetLang = direction === 'id-to-en' ? 'en' : 'id';
       
-      for (const idField of fieldsToTranslate) {
-        const enField = idField.replace('Id', 'En');
-        if (data[idField] && updated.hasOwnProperty(enField)) {
-          const res = await translateContent({ text: data[idField], targetLang: 'en' });
-          updated[enField] = res.translatedText;
+      const fieldsToTranslate = Object.keys(data).filter(key => key.endsWith(sourceSuffix));
+      
+      for (const sourceField of fieldsToTranslate) {
+        const targetField = sourceField.replace(sourceSuffix, targetSuffix);
+        // Only translate if source has value and target field exists in the data object
+        if (data[sourceField]) {
+          const res = await translateContent({ text: data[sourceField], targetLang });
+          updated[targetField] = res.translatedText;
         }
       }
       setter(updated);
-      toast({ title: "AI Translation Success", description: "English fields updated automatically." });
+      toast({ 
+        title: "AI Translation Success", 
+        description: direction === 'id-to-en' ? "English fields updated." : "Indonesian fields updated." 
+      });
     } catch (e) {
       toast({ variant: "destructive", title: "AI Error", description: "Failed to translate content." });
     } finally {
@@ -231,18 +239,25 @@ function AdminContent() {
           {/* Profile Tab */}
           <TabsContent value="profile" className="animate-in fade-in slide-in-from-bottom-4">
              <Card className="rounded-[2.5rem] shadow-xl border-border overflow-hidden">
-                <CardHeader className="p-8 border-b border-border/50 bg-muted/20 flex flex-row items-center justify-between">
+                <CardHeader className="p-8 border-b border-border/50 bg-muted/20 flex flex-col md:flex-row items-center justify-between gap-4">
                   <div>
                     <CardTitle className="font-black font-headline text-xl uppercase">Identity Management</CardTitle>
                     <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Configure your professional persona</CardDescription>
                   </div>
-                  <Button type="button" variant="outline" onClick={() => handleAITranslate('profile', profileFormData, setProfileFormData)} disabled={isTranslating === 'profile'} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
-                    {isTranslating === 'profile' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />}
-                    AI Translate Profile
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button type="button" variant="outline" onClick={() => handleAITranslate('profile', profileFormData, setProfileFormData, 'id-to-en')} disabled={isTranslating === 'profile'} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
+                      {isTranslating === 'profile' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />}
+                      ID &rarr; EN
+                    </Button>
+                    <Button type="button" variant="outline" onClick={() => handleAITranslate('profile', profileFormData, setProfileFormData, 'en-to-id')} disabled={isTranslating === 'profile'} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
+                      {isTranslating === 'profile' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />}
+                      EN &rarr; ID
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent className="p-8">
                   <form onSubmit={(e) => { e.preventDefault(); updateProfile(profileFormData); toast({ title: "Profile Updated" }); }} className="space-y-8">
+                    {/* Name and Roles */}
                     <div className="grid md:grid-cols-3 gap-6">
                        <div className="space-y-1.5">
                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Full Name</label>
@@ -257,6 +272,30 @@ function AdminContent() {
                           <Input value={profileFormData.roleEn} onChange={e => setProfileFormData({...profileFormData, roleEn: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
                        </div>
                     </div>
+
+                    {/* Hero Title and Subtitle */}
+                    <div className="grid md:grid-cols-2 gap-6">
+                       <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Title (ID)</label>
+                          <Input value={profileFormData.heroTitleId} onChange={e => setProfileFormData({...profileFormData, heroTitleId: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                       </div>
+                       <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Title (EN)</label>
+                          <Input value={profileFormData.heroTitleEn} onChange={e => setProfileFormData({...profileFormData, heroTitleEn: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                       </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-6">
+                       <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Subtitle (ID)</label>
+                          <Textarea value={profileFormData.heroSubtitleId} onChange={e => setProfileFormData({...profileFormData, heroSubtitleId: e.target.value})} className="h-20 rounded-xl bg-muted/30" />
+                       </div>
+                       <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Subtitle (EN)</label>
+                          <Textarea value={profileFormData.heroSubtitleEn} onChange={e => setProfileFormData({...profileFormData, heroSubtitleEn: e.target.value})} className="h-20 rounded-xl bg-muted/30" />
+                       </div>
+                    </div>
+
+                    {/* About Me */}
                     <div className="grid md:grid-cols-2 gap-6">
                        <div className="space-y-1.5">
                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">About Me (ID)</label>
@@ -267,6 +306,35 @@ function AdminContent() {
                           <Textarea value={profileFormData.aboutMeEn} onChange={e => setProfileFormData({...profileFormData, aboutMeEn: e.target.value})} className="h-32 rounded-xl bg-muted/30" />
                        </div>
                     </div>
+
+                    {/* Contact & Socials */}
+                    <div className="grid md:grid-cols-3 gap-6">
+                       <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Email</label>
+                          <Input value={profileFormData.email} onChange={e => setProfileFormData({...profileFormData, email: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                       </div>
+                       <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">WhatsApp</label>
+                          <Input value={profileFormData.whatsapp} onChange={e => setProfileFormData({...profileFormData, whatsapp: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                       </div>
+                       <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Instagram</label>
+                          <Input value={profileFormData.instagram} onChange={e => setProfileFormData({...profileFormData, instagram: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                       </div>
+                       <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">TikTok</label>
+                          <Input value={profileFormData.tiktok} onChange={e => setProfileFormData({...profileFormData, tiktok: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                       </div>
+                       <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">GitHub</label>
+                          <Input value={profileFormData.github} onChange={e => setProfileFormData({...profileFormData, github: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                       </div>
+                       <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">LinkedIn</label>
+                          <Input value={profileFormData.linkedin} onChange={e => setProfileFormData({...profileFormData, linkedin: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                       </div>
+                    </div>
+
                     <Button type="submit" className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-primary shadow-xl shadow-primary/20">Commit Profile Changes</Button>
                   </form>
                 </CardContent>
