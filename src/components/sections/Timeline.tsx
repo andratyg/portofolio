@@ -60,25 +60,6 @@ export const Timeline = () => {
               })}
             </div>
           )}
-
-          {/* Changelog / Versioning Section */}
-          <div className="mt-32 p-8 rounded-[3rem] bg-card border border-border/50 text-center space-y-4 no-print">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent text-[9px] font-black uppercase tracking-widest">
-              <History className="h-3 w-3" />
-              Build v2.4.0 (Professional Edition)
-            </div>
-            <h3 className="text-xl font-bold font-headline">Latest Updates</h3>
-            <div className="grid sm:grid-cols-2 gap-4 text-left max-w-2xl mx-auto">
-              <div className="p-4 rounded-2xl bg-muted/30 border border-border/50">
-                <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">Performance</p>
-                <p className="text-xs text-muted-foreground">Integrated WebP images and lazy loading for faster delivery.</p>
-              </div>
-              <div className="p-4 rounded-2xl bg-muted/30 border border-border/50">
-                <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">SEO & Discoverability</p>
-                <p className="text-xs text-muted-foreground">Added Schema.org Person markup and Meta OG tags.</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
