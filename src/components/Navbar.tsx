@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -59,16 +60,16 @@ export const Navbar = () => {
 
   const getThemeColor = (tName: string) => {
     switch(tName) {
-      case 'emerald': return 'bg-emerald-500';
-      case 'sunset': return 'bg-orange-500';
-      case 'royal': return 'bg-purple-600';
-      case 'cyber': return 'bg-cyan-400';
-      case 'amber': return 'bg-amber-500';
-      case 'ramadan': return 'bg-green-700';
-      case 'imlek': return 'bg-red-600';
-      case 'natal': return 'bg-red-500';
-      case 'dark': return 'bg-slate-900';
-      default: return 'bg-slate-200';
+      case 'dark': return 'bg-[#1a1c23]';
+      case 'emerald': return 'bg-[#10b981]';
+      case 'sunset': return 'bg-[#f97316]';
+      case 'royal': return 'bg-[#8b5cf6]';
+      case 'cyber': return 'bg-[#22d3ee]';
+      case 'amber': return 'bg-[#f59e0b]';
+      case 'ramadan': return 'bg-[#15803d]';
+      case 'imlek': return 'bg-[#dc2626]';
+      case 'natal': return 'bg-[#ef4444]';
+      default: return 'bg-[#f1f5f9]';
     }
   };
 
@@ -109,33 +110,35 @@ export const Navbar = () => {
                   <Globe className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="rounded-2xl border-none shadow-2xl">
-                <DropdownMenuItem onClick={() => setLanguage('en')} className="rounded-xl font-bold">English {language === 'en' && '✓'}</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage('id')} className="rounded-xl font-bold">Indonesia {language === 'id' && '✓'}</DropdownMenuItem>
+              <DropdownMenuContent align="end" className="rounded-2xl border-none shadow-2xl bg-card/95 backdrop-blur-2xl p-2">
+                <DropdownMenuItem onClick={() => setLanguage('en')} className="rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-2.5">English {language === 'en' && '✓'}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage('id')} className="rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-2.5">Indonesia {language === 'id' && '✓'}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
             {/* Theme Switcher - OP GRID EDITION */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest px-4">
+                <Button variant="ghost" className="rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest px-4 hover:bg-primary/10">
                   <Palette className="h-4 w-4" />
                   <span className="hidden lg:inline">{theme}</span>
                   <ChevronDown className="h-3 w-3 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="grid grid-cols-2 gap-2 w-72 p-3 rounded-[2rem] border-none shadow-2xl bg-card/95 backdrop-blur-2xl">
+              <DropdownMenuContent align="end" className="grid grid-cols-2 gap-1 w-80 p-4 rounded-[2.5rem] border-none shadow-2xl bg-[#0a0b0e]/95 backdrop-blur-2xl">
                 {themes.map((tName) => (
                   <DropdownMenuItem 
                     key={tName} 
                     onClick={() => setTheme(tName)}
                     className={cn(
-                      "capitalize rounded-2xl gap-3 p-3 transition-all",
-                      theme === tName ? "bg-primary text-primary-foreground font-black" : "hover:bg-muted"
+                      "capitalize rounded-[1.5rem] gap-4 p-3.5 transition-all cursor-pointer",
+                      theme === tName 
+                        ? "bg-[#3b82f6] text-white font-black shadow-lg shadow-blue-500/20" 
+                        : "hover:bg-white/5 text-muted-foreground hover:text-white"
                     )}
                   >
-                    <div className={cn("w-6 h-6 rounded-full shadow-inner border border-white/20 shrink-0", getThemeColor(tName))} />
-                    <span className="text-[10px] font-black uppercase tracking-widest truncate">{tName}</span>
+                    <div className={cn("w-7 h-7 rounded-full shadow-inner border border-white/10 shrink-0", getThemeColor(tName))} />
+                    <span className="text-[11px] font-black uppercase tracking-[0.15em] truncate">{tName}</span>
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
