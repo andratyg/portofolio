@@ -5,6 +5,7 @@ import { LanguageProvider } from '@/components/LanguageContext';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
 import Script from 'next/script';
+import { SecurityProvider } from '@/components/SecurityProvider';
 
 export const viewport: Viewport = {
   themeColor: '#0ea5e9',
@@ -89,13 +90,15 @@ export default function RootLayout({
         <FirebaseClientProvider>
           <LanguageProvider>
             <ThemeProvider>
-              <div className="print:hidden">
-                {children}
-              </div>
-              <div className="hidden print:block print:p-8">
-                {children}
-              </div>
-              <Toaster />
+              <SecurityProvider>
+                <div className="print:hidden">
+                  {children}
+                </div>
+                <div className="hidden print:block print:p-8">
+                  {children}
+                </div>
+                <Toaster />
+              </SecurityProvider>
             </ThemeProvider>
           </LanguageProvider>
         </FirebaseClientProvider>
