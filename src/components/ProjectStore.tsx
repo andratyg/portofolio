@@ -26,8 +26,10 @@ const defaultStats: PortfolioStats = {
 
 const defaultProfile: ProfileData = {
   name: 'KaryaPro',
-  role: 'Full-Stack Developer',
-  aboutText: 'I am a passionate Full-Stack Developer dedicated to building high-quality web applications. With a strong foundation in modern technologies and a keen eye for design, I strive to create digital solutions that are not only functional but also provide an exceptional user experience.',
+  roleId: 'Full-Stack Developer Profesional',
+  roleEn: 'Professional Full-Stack Developer',
+  aboutTextId: 'Saya adalah Pengembang Full-Stack yang bersemangat dalam membangun aplikasi web berkualitas tinggi. Dengan dasar yang kuat dalam teknologi modern dan perhatian detail pada desain, saya berusaha menciptakan solusi digital yang fungsional dan luar biasa.',
+  aboutTextEn: 'I am a passionate Full-Stack Developer dedicated to building high-quality web applications. With a strong foundation in modern technologies and a keen eye for design, I strive to create digital solutions that are not only functional but also provide an exceptional user experience.',
   profileImageUrl: 'https://picsum.photos/seed/karyapro-profile/600/800'
 };
 
@@ -43,12 +45,12 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     // Load Projects
     const savedProjects = localStorage.getItem('karyapro-projects');
     if (savedProjects) setProjects(JSON.parse(savedProjects));
-    else setProjects(initialProjects);
+    else setProjects(initialProjects as any);
 
     // Load Certificates
     const savedCerts = localStorage.getItem('karyapro-certificates');
     if (savedCerts) setCertificates(JSON.parse(savedCerts));
-    else setCertificates(initialCertificates);
+    else setCertificates(initialCertificates as any);
 
     // Load Stats
     const savedStats = localStorage.getItem('karyapro-stats');

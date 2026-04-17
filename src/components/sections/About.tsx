@@ -6,8 +6,11 @@ import { useProjectStore } from '../ProjectStore';
 import Image from 'next/image';
 
 export const About = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { profile } = useProjectStore();
+
+  const role = language === 'id' ? profile.roleId : (profile.roleEn || profile.roleId);
+  const aboutText = language === 'id' ? profile.aboutTextId : (profile.aboutTextEn || profile.aboutTextId);
 
   return (
     <section id="about" className="py-24 bg-card overflow-hidden">
@@ -30,21 +33,11 @@ export const About = () => {
             </div>
             <h2 className="text-4xl md:text-5xl font-bold font-headline leading-tight">
               {profile.name} <br />
-              <span className="text-primary">{profile.role}</span>
+              <span className="text-primary">{role}</span>
             </h2>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              {profile.aboutText}
+              {aboutText}
             </p>
-            <div className="grid grid-cols-2 gap-8 pt-4 border-t border-primary/10">
-              <div className="space-y-2">
-                <h4 className="text-3xl font-bold font-headline text-primary">High Quality</h4>
-                <p className="text-sm text-muted-foreground">Clean, maintainable, and efficient code is my top priority.</p>
-              </div>
-              <div className="space-y-2">
-                <h4 className="text-3xl font-bold font-headline text-accent">User Centric</h4>
-                <p className="text-sm text-muted-foreground">Always designing with the end-user's experience in mind.</p>
-              </div>
-            </div>
           </div>
         </div>
       </div>

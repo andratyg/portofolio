@@ -1,40 +1,46 @@
 export interface Project {
   id: string;
-  title: string;
-  shortDescription: string;
-  fullDescription: string;
+  titleId: string;
+  titleEn: string;
+  shortDescriptionId: string;
+  shortDescriptionEn: string;
+  fullDescriptionId: string;
+  fullDescriptionEn: string;
   type: 'web' | 'ui' | 'backend';
   technologies: string[];
-  problemSolved: string;
-  process: string;
-  results: string;
   imageUrl: string;
   demoUrl?: string;
-  certificates?: string[];
   featured?: boolean;
 }
 
 export interface Experience {
   id: string;
   year: string;
-  title: string;
+  titleId: string;
+  titleEn: string;
   company: string;
-  description: string;
+  descriptionId: string;
+  descriptionEn: string;
 }
 
 export interface Testimonial {
   id: string;
   name: string;
-  role: string;
-  content: string;
+  roleId: string;
+  roleEn: string;
+  contentId: string;
+  contentEn: string;
   avatarUrl: string;
 }
 
 export interface Certificate {
   id: string;
-  title: string;
-  shortDescription: string;
-  fullDescription: string;
+  titleId: string;
+  titleEn: string;
+  shortDescriptionId: string;
+  shortDescriptionEn: string;
+  fullDescriptionId: string;
+  fullDescriptionEn: string;
   year: string;
   issuer: string;
   validUntil: string;
@@ -50,7 +56,9 @@ export interface PortfolioStats {
 
 export interface ProfileData {
   name: string;
-  role: string;
-  aboutText: string;
+  roleId: string;
+  roleEn: string;
+  aboutTextId: string;
+  aboutTextEn: string;
   profileImageUrl: string;
 }

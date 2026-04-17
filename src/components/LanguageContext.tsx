@@ -12,7 +12,8 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguageState] = useState<Language>('en');
+  // Default language is Indonesian ('id')
+  const [language, setLanguageState] = useState<Language>('id');
 
   useEffect(() => {
     const savedLang = localStorage.getItem('karyapro-lang') as Language;
