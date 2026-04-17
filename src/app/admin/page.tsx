@@ -10,7 +10,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, UserCircle, Languages, Loader2, Image as ImageIcon, Quote, Briefcase, LayoutDashboard, ShieldCheck, Github, Instagram, Linkedin, MessageSquare, Video, History } from 'lucide-react';
+import { 
+  Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, 
+  UserCircle, Languages, Loader2, Image as ImageIcon, Quote, 
+  Briefcase, LayoutDashboard, Github, Instagram, Linkedin, 
+  MessageSquare, Video, History 
+} from 'lucide-react';
 import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-portfolio-description-suggestion';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
 import { translateContent } from '@/ai/flows/translate-content';
@@ -32,6 +37,7 @@ function AdminContent() {
   const [isAIThinking, setIsAIThinking] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   
+  // Forms States
   const [projectForm, setProjectForm] = useState({
     titleId: '', titleEn: '',
     type: 'web' as 'web' | 'ui' | 'backend',
@@ -72,8 +78,8 @@ function AdminContent() {
   }, [router]);
 
   useEffect(() => {
-    setStatsData(stats);
-    setProfileData(profile);
+    if (stats) setStatsData(stats);
+    if (profile) setProfileData(profile);
   }, [stats, profile]);
 
   const handleLogout = () => {
@@ -81,107 +87,103 @@ function AdminContent() {
     router.push('/');
   };
 
-  const translateSingle = async (text: string, targetLang: 'id' | 'en', callback: (val: string) => void) => {
+  // Generic Translation Helper
+  const translateSingleField = async (text: string, callback: (val: string) => void) => {
     if (!text) return;
-    setIsTranslating(true);
     try {
-      const result = await translateContent({ text, targetLang });
+      const result = await translateContent({ text, targetLang: 'en' });
       callback(result.translatedText);
     } catch (e) {
-      toast({ title: "Translation Error", variant: "destructive" });
-    } finally {
-      setIsTranslating(false);
+      console.error(e);
     }
   };
 
+  // Bulk Translation Handlers
   const handleTranslateProject = async () => {
-    const { titleId, shortDescriptionId, fullDescriptionId } = projectForm;
-    if (!titleId && !shortDescriptionId && !fullDescriptionId) {
+    if (!projectForm.titleId && !projectForm.shortDescriptionId && !projectForm.fullDescriptionId) {
       toast({ title: "Isi konten Indonesia terlebih dahulu", variant: "destructive" });
       return;
     }
     setIsTranslating(true);
     try {
-      if (titleId) {
-        const r = await translateContent({ text: titleId, targetLang: 'en' });
-        setProjectForm(prev => ({ ...prev, titleEn: r.translatedText }));
-      }
-      if (shortDescriptionId) {
-        const r = await translateContent({ text: shortDescriptionId, targetLang: 'en' });
-        setProjectForm(prev => ({ ...prev, shortDescriptionEn: r.translatedText }));
-      }
-      if (fullDescriptionId) {
-        const r = await translateContent({ text: fullDescriptionId, targetLang: 'en' });
-        setProjectForm(prev => ({ ...prev, fullDescriptionEn: r.translatedText }));
-      }
-      toast({ title: "Project translated successfully" });
+      if (projectForm.titleId) await translateSingleField(projectForm.titleId, (v) => setProjectForm(p => ({...p, titleEn: v})));
+      if (projectForm.shortDescriptionId) await translateSingleField(projectForm.shortDescriptionId, (v) => setProjectForm(p => ({...p, shortDescriptionEn: v})));
+      if (projectForm.fullDescriptionId) await translateSingleField(projectForm.fullDescriptionId, (v) => setProjectForm(p => ({...p, fullDescriptionEn: v})));
+      toast({ title: "Proyek berhasil diterjemahkan" });
     } catch (e) {
-      toast({ title: "Translation Error", variant: "destructive" });
+      toast({ title: "Gagal menerjemahkan", variant: "destructive" });
     } finally {
       setIsTranslating(false);
     }
   };
 
   const handleTranslateCertificate = async () => {
-    const { titleId, fullDescriptionId } = certForm;
+    if (!certForm.titleId && !certForm.fullDescriptionId) {
+      toast({ title: "Isi konten Indonesia terlebih dahulu", variant: "destructive" });
+      return;
+    }
     setIsTranslating(true);
     try {
-      if (titleId) {
-        const r = await translateContent({ text: titleId, targetLang: 'en' });
-        setCertForm(prev => ({ ...prev, titleEn: r.translatedText }));
-      }
-      if (fullDescriptionId) {
-        const r = await translateContent({ text: fullDescriptionId, targetLang: 'en' });
-        setCertForm(prev => ({ ...prev, fullDescriptionEn: r.translatedText }));
-      }
-      toast({ title: "Certificate translated successfully" });
+      if (certForm.titleId) await translateSingleField(certForm.titleId, (v) => setCertForm(p => ({...p, titleEn: v})));
+      if (certForm.fullDescriptionId) await translateSingleField(certForm.fullDescriptionId, (v) => setCertForm(p => ({...p, fullDescriptionEn: v})));
+      toast({ title: "Sertifikat berhasil diterjemahkan" });
     } catch (e) {
-      toast({ title: "Translation Error", variant: "destructive" });
+      toast({ title: "Gagal menerjemahkan", variant: "destructive" });
     } finally {
       setIsTranslating(false);
     }
   };
 
   const handleTranslateTestimonial = async () => {
-    const { roleId, contentId } = testForm;
+    if (!testForm.roleId && !testForm.contentId) {
+      toast({ title: "Isi konten Indonesia terlebih dahulu", variant: "destructive" });
+      return;
+    }
     setIsTranslating(true);
     try {
-      if (roleId) {
-        const r = await translateContent({ text: roleId, targetLang: 'en' });
-        setTestForm(prev => ({ ...prev, roleEn: r.translatedText }));
-      }
-      if (contentId) {
-        const r = await translateContent({ text: contentId, targetLang: 'en' });
-        setTestForm(prev => ({ ...prev, contentEn: r.translatedText }));
-      }
-      toast({ title: "Feedback translated successfully" });
+      if (testForm.roleId) await translateSingleField(testForm.roleId, (v) => setTestForm(p => ({...p, roleEn: v})));
+      if (testForm.contentId) await translateSingleField(testForm.contentId, (v) => setTestForm(p => ({...p, contentEn: v})));
+      toast({ title: "Testimoni berhasil diterjemahkan" });
     } catch (e) {
-      toast({ title: "Translation Error", variant: "destructive" });
+      toast({ title: "Gagal menerjemahkan", variant: "destructive" });
     } finally {
       setIsTranslating(false);
     }
   };
 
   const handleTranslateJourney = async () => {
-    const { titleId, descriptionId } = expForm;
+    if (!expForm.titleId && !expForm.descriptionId) {
+      toast({ title: "Isi konten Indonesia terlebih dahulu", variant: "destructive" });
+      return;
+    }
     setIsTranslating(true);
     try {
-      if (titleId) {
-        const r = await translateContent({ text: titleId, targetLang: 'en' });
-        setExpForm(prev => ({ ...prev, titleEn: r.translatedText }));
-      }
-      if (descriptionId) {
-        const r = await translateContent({ text: descriptionId, targetLang: 'en' });
-        setExpForm(prev => ({ ...prev, descriptionEn: r.translatedText }));
-      }
-      toast({ title: "Journey translated successfully" });
+      if (expForm.titleId) await translateSingleField(expForm.titleId, (v) => setExpForm(p => ({...p, titleEn: v})));
+      if (expForm.descriptionId) await translateSingleField(expForm.descriptionId, (v) => setExpForm(p => ({...p, descriptionEn: v})));
+      toast({ title: "Perjalanan berhasil diterjemahkan" });
     } catch (e) {
-      toast({ title: "Translation Error", variant: "destructive" });
+      toast({ title: "Gagal menerjemahkan", variant: "destructive" });
     } finally {
       setIsTranslating(false);
     }
   };
 
+  const handleTranslateProfile = async () => {
+    setIsTranslating(true);
+    try {
+      if (profileData.roleId) await translateSingleField(profileData.roleId, (v) => setProfileData(p => ({...p, roleEn: v})));
+      if (profileData.aboutTextId) await translateSingleField(profileData.aboutTextId, (v) => setProfileData(p => ({...p, aboutTextEn: v})));
+      if (profileData.heroTitleId) await translateSingleField(profileData.heroTitleId, (v) => setProfileData(p => ({...p, heroTitleEn: v})));
+      if (profileData.heroSubtitleId) await translateSingleField(profileData.heroSubtitleId, (v) => setProfileData(p => ({...p, heroSubtitleEn: v})));
+      toast({ title: "Profil berhasil diterjemahkan" });
+    } catch (e) {
+      toast({ title: "Gagal menerjemahkan", variant: "destructive" });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  // AI Suggestions
   const handleGenerateAIProject = async () => {
     if (!projectForm.titleId) {
       toast({ title: "Judul (ID) Diperlukan", variant: "destructive" });
@@ -195,8 +197,9 @@ function AdminContent() {
         technologiesUsed: projectForm.technologies.split(',').map(s => s.trim()),
       });
       setProjectForm(prev => ({ ...prev, fullDescriptionId: result.descriptionSuggestion }));
+      toast({ title: "Deskripsi AI berhasil dibuat" });
     } catch (e) {
-      toast({ title: "AI Error", variant: "destructive" });
+      toast({ title: "Gagal membuat saran AI", variant: "destructive" });
     } finally {
       setIsAIThinking(false);
     }
@@ -214,13 +217,15 @@ function AdminContent() {
         issuer: certForm.issuer,
       });
       setCertForm(prev => ({ ...prev, fullDescriptionId: result.descriptionSuggestion }));
+      toast({ title: "Deskripsi AI berhasil dibuat" });
     } catch (e) {
-      toast({ title: "AI Error", variant: "destructive" });
+      toast({ title: "Gagal membuat saran AI", variant: "destructive" });
     } finally {
       setIsAIThinking(false);
     }
   };
 
+  // Submit Handlers
   const submitProject = (e: React.FormEvent) => {
     e.preventDefault();
     addProject({
@@ -228,28 +233,28 @@ function AdminContent() {
       id: Date.now().toString(),
       technologies: projectForm.technologies.split(',').map(s => s.trim()),
     } as any);
-    toast({ title: "Project Added" });
+    toast({ title: "Proyek Ditambahkan" });
     setProjectForm({ titleId: '', titleEn: '', type: 'web', shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '', technologies: '', imageUrl: '', demoUrl: '' });
   };
 
   const submitCertificate = (e: React.FormEvent) => {
     e.preventDefault();
     addCertificate({ ...certForm, id: Date.now().toString() });
-    toast({ title: "Certificate Added" });
+    toast({ title: "Sertifikat Ditambahkan" });
     setCertForm({ titleId: '', titleEn: '', shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '', year: '', issuer: '', validUntil: '', imageUrl: '' });
   };
 
   const submitTestimonial = (e: React.FormEvent) => {
     e.preventDefault();
     addTestimonial({ ...testForm, id: Date.now().toString() });
-    toast({ title: "Testimonial Added" });
+    toast({ title: "Testimoni Ditambahkan" });
     setTestForm({ name: '', roleId: '', roleEn: '', contentId: '', contentEn: '', avatarUrl: '' });
   };
 
   const submitExperience = (e: React.FormEvent) => {
     e.preventDefault();
     addExperience({ ...expForm, id: Date.now().toString() });
-    toast({ title: "Journey Experience Added" });
+    toast({ title: "Riwayat Karir Ditambahkan" });
     setExpForm({ year: '', company: '', titleId: '', titleEn: '', descriptionId: '', descriptionEn: '' });
   };
 
@@ -290,6 +295,7 @@ function AdminContent() {
             </TabsList>
           </div>
 
+          {/* Projects Tab */}
           <TabsContent value="projects" className="grid lg:grid-cols-12 gap-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
             <div className="lg:col-span-8 space-y-10">
               <Card className="rounded-[3rem] shadow-2xl border-none overflow-hidden bg-slate-900/40 backdrop-blur-xl">
@@ -397,38 +403,9 @@ function AdminContent() {
             </div>
           </TabsContent>
 
-          <TabsContent value="stats" className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
-             <Card className="rounded-[4rem] shadow-2xl border-none overflow-hidden bg-slate-900/40 backdrop-blur-xl">
-              <CardHeader className="bg-gradient-to-br from-slate-800/50 to-transparent p-14 border-b border-slate-800">
-                <CardTitle className="flex items-center gap-6 text-4xl font-black font-headline tracking-tighter"><Settings className="text-primary h-12 w-12" /> Metrics Control</CardTitle>
-                <p className="text-slate-500 text-lg font-medium mt-2">Adjust your high-level performance metrics globally</p>
-              </CardHeader>
-              <CardContent className="p-14 space-y-12">
-                <div className="grid md:grid-cols-2 gap-10">
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Projects Completed</label>
-                    <Input value={statsData.completedProjects} onChange={e => setStatsData({...statsData, completedProjects: e.target.value})} className="h-20 rounded-3xl bg-slate-950/50 border-slate-800 text-3xl font-black text-center" />
-                  </div>
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Years of Exp</label>
-                    <Input value={statsData.yearsExperience} onChange={e => setStatsData({...statsData, yearsExperience: e.target.value})} className="h-20 rounded-3xl bg-slate-950/50 border-slate-800 text-3xl font-black text-center" />
-                  </div>
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Tech Stack Count</label>
-                    <Input value={statsData.techMastered} onChange={e => setStatsData({...statsData, techMastered: e.target.value})} className="h-20 rounded-3xl bg-slate-950/50 border-slate-800 text-3xl font-black text-center" />
-                  </div>
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Satisfaction Index</label>
-                    <Input value={statsData.clientSatisfaction} onChange={e => setStatsData({...statsData, clientSatisfaction: e.target.value})} className="h-20 rounded-3xl bg-slate-950/50 border-slate-800 text-3xl font-black text-center" />
-                  </div>
-                </div>
-                <Button onClick={() => {updateStats(statsData); toast({title: "Metrics Synchronized"});}} className="w-full h-24 rounded-[3rem] text-2xl font-black uppercase tracking-[0.3em] bg-slate-100 text-slate-950 hover:bg-white shadow-2xl transition-all">Propagate Changes</Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
+          {/* Certificates Tab */}
           <TabsContent value="certificates" className="grid lg:grid-cols-12 gap-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
-             <div className="lg:col-span-8 space-y-10">
+            <div className="lg:col-span-8 space-y-10">
               <Card className="rounded-[3rem] shadow-2xl border-none overflow-hidden bg-slate-900/40 backdrop-blur-xl">
                 <CardHeader className="bg-gradient-to-r from-accent/10 via-transparent to-transparent p-10 border-b border-slate-800/50">
                   <div className="flex flex-row items-center justify-between gap-6">
@@ -438,7 +415,7 @@ function AdminContent() {
                     </div>
                     <Button type="button" variant="outline" onClick={handleTranslateCertificate} disabled={isTranslating} className="rounded-2xl gap-3 border-accent/20 bg-accent/5 hover:bg-accent/10 h-12 px-6 font-bold">
                       {isTranslating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Languages className="h-5 w-5" />}
-                      AI Translate
+                      AI Translate All
                     </Button>
                   </div>
                 </CardHeader>
@@ -457,7 +434,7 @@ function AdminContent() {
                     <div className="flex justify-end px-1">
                       <Button type="button" variant="ghost" onClick={handleGenerateAICert} disabled={isAIThinking} className="gap-2 text-accent hover:bg-accent/10 rounded-xl h-10 px-4 font-black uppercase text-[10px] tracking-widest">
                          {isAIThinking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                         AI Proofread
+                         AI Assist
                       </Button>
                     </div>
                     <div className="space-y-4">
@@ -515,6 +492,7 @@ function AdminContent() {
              </div>
           </TabsContent>
 
+          {/* Testimonials Tab */}
           <TabsContent value="testimonials" className="grid lg:grid-cols-12 gap-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
             <div className="lg:col-span-8 space-y-10">
               <Card className="rounded-[3rem] shadow-2xl border-none overflow-hidden bg-slate-900/40 backdrop-blur-xl">
@@ -526,7 +504,7 @@ function AdminContent() {
                     </div>
                     <Button type="button" variant="outline" onClick={handleTranslateTestimonial} disabled={isTranslating} className="rounded-2xl gap-3 border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 h-12 px-6 font-bold">
                       {isTranslating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Languages className="h-5 w-5" />}
-                      AI Translate
+                      AI Translate All
                     </Button>
                   </div>
                 </CardHeader>
@@ -589,6 +567,7 @@ function AdminContent() {
             </div>
           </TabsContent>
 
+          {/* Journey Tab */}
           <TabsContent value="journey" className="grid lg:grid-cols-12 gap-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
             <div className="lg:col-span-8 space-y-10">
               <Card className="rounded-[3rem] shadow-2xl border-none overflow-hidden bg-slate-900/40 backdrop-blur-xl">
@@ -600,7 +579,7 @@ function AdminContent() {
                     </div>
                     <Button type="button" variant="outline" onClick={handleTranslateJourney} disabled={isTranslating} className="rounded-2xl gap-3 border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 h-12 px-6 font-bold">
                       {isTranslating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Languages className="h-5 w-5" />}
-                      AI Translate
+                      AI Translate All
                     </Button>
                   </div>
                 </CardHeader>
@@ -664,6 +643,38 @@ function AdminContent() {
             </div>
           </TabsContent>
 
+          {/* Stats Tab */}
+          <TabsContent value="stats" className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
+             <Card className="rounded-[4rem] shadow-2xl border-none overflow-hidden bg-slate-900/40 backdrop-blur-xl">
+              <CardHeader className="bg-gradient-to-br from-slate-800/50 to-transparent p-14 border-b border-slate-800">
+                <CardTitle className="flex items-center gap-6 text-4xl font-black font-headline tracking-tighter"><Settings className="text-primary h-12 w-12" /> Metrics Control</CardTitle>
+                <p className="text-slate-500 text-lg font-medium mt-2">Adjust your high-level performance metrics globally</p>
+              </CardHeader>
+              <CardContent className="p-14 space-y-12">
+                <div className="grid md:grid-cols-2 gap-10">
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Projects Completed</label>
+                    <Input value={statsData.completedProjects} onChange={e => setStatsData({...statsData, completedProjects: e.target.value})} className="h-20 rounded-3xl bg-slate-950/50 border-slate-800 text-3xl font-black text-center" />
+                  </div>
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Years of Exp</label>
+                    <Input value={statsData.yearsExperience} onChange={e => setStatsData({...statsData, yearsExperience: e.target.value})} className="h-20 rounded-3xl bg-slate-950/50 border-slate-800 text-3xl font-black text-center" />
+                  </div>
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Tech Stack Count</label>
+                    <Input value={statsData.techMastered} onChange={e => setStatsData({...statsData, techMastered: e.target.value})} className="h-20 rounded-3xl bg-slate-950/50 border-slate-800 text-3xl font-black text-center" />
+                  </div>
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Satisfaction Index</label>
+                    <Input value={statsData.clientSatisfaction} onChange={e => setStatsData({...statsData, clientSatisfaction: e.target.value})} className="h-20 rounded-3xl bg-slate-950/50 border-slate-800 text-3xl font-black text-center" />
+                  </div>
+                </div>
+                <Button onClick={() => {updateStats(statsData); toast({title: "Metrics Synchronized"});}} className="w-full h-24 rounded-[3rem] text-2xl font-black uppercase tracking-[0.3em] bg-slate-100 text-slate-950 hover:bg-white shadow-2xl transition-all">Propagate Changes</Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Profile Tab */}
           <TabsContent value="profile" className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
              <Card className="rounded-[4rem] shadow-2xl border-none overflow-hidden bg-slate-900/40 backdrop-blur-xl">
               <CardHeader className="bg-gradient-to-br from-indigo-900/30 to-transparent p-14 border-b border-slate-800">
@@ -672,14 +683,9 @@ function AdminContent() {
                     <CardTitle className="flex items-center gap-6 text-4xl font-black font-headline tracking-tighter"><UserCircle className="text-indigo-400 h-12 w-12" /> Profile Intel</CardTitle>
                     <p className="text-slate-500 text-lg font-medium mt-2">Manage your professional identity and hero section content</p>
                   </div>
-                  <Button variant="outline" onClick={() => {
-                       translateSingle(profileData.roleId, 'en', (v) => setProfileData(p => ({...p, roleEn: v})));
-                       translateSingle(profileData.aboutTextId, 'en', (v) => setProfileData(p => ({...p, aboutTextEn: v})));
-                       translateSingle(profileData.heroTitleId, 'en', (v) => setProfileData(p => ({...p, heroTitleEn: v})));
-                       translateSingle(profileData.heroSubtitleId, 'en', (v) => setProfileData(p => ({...p, heroSubtitleEn: v})));
-                    }} disabled={isTranslating} className="rounded-2xl gap-3 border-indigo-400/20 bg-indigo-400/5 hover:bg-indigo-400/10 h-14 px-8 font-bold">
+                  <Button variant="outline" onClick={handleTranslateProfile} disabled={isTranslating} className="rounded-2xl gap-3 border-indigo-400/20 bg-indigo-400/5 hover:bg-indigo-400/10 h-14 px-8 font-bold">
                     {isTranslating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Languages className="h-5 w-5" />}
-                    Sync Identity
+                    AI Translate All
                   </Button>
                 </div>
               </CardHeader>
