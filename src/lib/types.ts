@@ -59,13 +59,14 @@ export interface ProfileData {
   name: string;
   roleId: string;
   roleEn: string;
-  aboutTextId: string;
-  aboutTextEn: string;
-  profileImageUrl: string;
+  aboutMeId: string;
+  aboutMeEn: string;
+  profilePictureUrl: string;
   heroTitleId: string;
   heroTitleEn: string;
   heroSubtitleId: string;
   heroSubtitleEn: string;
+  email?: string;
   whatsapp?: string;
   linkedin?: string;
   instagram?: string;

@@ -13,9 +13,9 @@ import {
   Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, 
   UserCircle, Languages, Loader2, Image as ImageIcon, Quote, 
   Briefcase, LayoutDashboard, History, ShieldAlert, CheckCircle2, 
-  Download, Upload, HelpCircle, Info, Wifi, WifiOff, AlertTriangle
+  Download, Upload, HelpCircle, Info, Wifi, WifiOff, AlertTriangle, 
+  Mail, Instagram, Github, Linkedin, Video
 } from 'lucide-react';
-import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
 import { ProfileData } from '@/lib/types';
@@ -44,12 +44,9 @@ function AdminContent() {
   
   const [isAIThinking, setIsAIThinking] = useState(false);
   const [isTranslating, setIsTranslating] = useState<string | null>(null);
-  const [isTabsVisible, setIsTabsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [isOnline, setIsOnline] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Check Online Status
   useEffect(() => {
     setIsOnline(navigator.onLine);
     const handleOnline = () => setIsOnline(true);
@@ -75,7 +72,6 @@ function AdminContent() {
     }
   }, [user, isUserLoading, router]);
 
-  // Role Checks
   const userRole = adminData?.role || 'editor';
   const isSuper = userRole === 'super';
   
@@ -99,13 +95,11 @@ function AdminContent() {
     year: '', company: '', titleId: '', titleEn: '', descriptionId: '', descriptionEn: ''
   });
 
-  const [statsData, setStatsData] = useState(stats);
-  const [profileData, setProfileData] = useState<ProfileData>(profile);
+  const [profileFormData, setProfileFormData] = useState<ProfileData>(profile);
 
   useEffect(() => {
-    if (stats) setStatsData(stats);
-    if (profile) setProfileData(profile);
-  }, [stats, profile]);
+    if (profile) setProfileFormData(profile);
+  }, [profile]);
 
   if (isUserLoading || storeLoading || isAdminLoading) {
     return (
@@ -139,47 +133,33 @@ function AdminContent() {
     );
   }
 
-  const handleBackup = () => backupData();
-  
-  const handleRestoreClick = () => fileInputRef.current?.click();
-  
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const content = event.target?.result as string;
-      await restoreData(content);
-    };
-    reader.readAsText(file);
-  };
-
-  const handleAutoTranslateForm = async (type: 'project' | 'cert' | 'test' | 'journey') => {
-    setIsTranslating(type);
+  const handleAutoTranslateProfile = async () => {
+    setIsTranslating('profile');
     try {
-      const fields: any = {
-        project: ['title', 'shortDescription', 'fullDescription'],
-        cert: ['title', 'shortDescription', 'fullDescription'],
-        test: ['role', 'content'],
-        journey: ['title', 'description']
-      };
+      const idFields = ['roleId', 'aboutMeId', 'heroTitleId', 'heroSubtitleId'];
+      const enFields = ['roleEn', 'aboutMeEn', 'heroTitleEn', 'heroSubtitleEn'];
       
-      const currentForm: any = type === 'project' ? projectForm : type === 'cert' ? certForm : type === 'test' ? testForm : expForm;
-      const setter: any = type === 'project' ? setProjectForm : type === 'cert' ? setCertForm : type === 'test' ? setTestForm : setExpForm;
-
-      for (const field of fields[type]) {
-        const idVal = currentForm[`${field}Id`];
+      const updatedProfile = { ...profileFormData };
+      for (let i = 0; i < idFields.length; i++) {
+        const idVal = (profileFormData as any)[idFields[i]];
         if (idVal) {
           const res = await translateContent({ text: idVal, targetLang: 'en' });
-          setter((p: any) => ({ ...p, [`${field}En`]: res.translatedText }));
+          (updatedProfile as any)[enFields[i]] = res.translatedText;
         }
       }
-      toast({ title: "Translation Complete", description: "English fields updated." });
+      setProfileFormData(updatedProfile);
+      toast({ title: "Translation Complete", description: "Profile English fields updated." });
     } catch (e) {
       toast({ variant: "destructive", title: "Translation Failed", description: "AI service error." });
     } finally {
       setIsTranslating(null);
     }
+  };
+
+  const handleUpdateProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateProfile(profileFormData);
+    toast({ title: "Profile Deployed", description: "Changes synced with Cloud registry." });
   };
 
   const submitProject = (e: React.FormEvent) => {
@@ -195,7 +175,7 @@ function AdminContent() {
       {!isOnline && (
         <div className="bg-destructive text-destructive-foreground py-2 px-6 flex items-center justify-center gap-2 sticky top-0 z-[60]">
           <WifiOff className="h-4 w-4" />
-          <span className="text-xs font-black uppercase tracking-widest">You are currently offline. Changes will sync once reconnected.</span>
+          <span className="text-xs font-black uppercase tracking-widest">Offline Mode</span>
         </div>
       )}
 
@@ -206,25 +186,22 @@ function AdminContent() {
           </Button>
           <div className="flex items-center gap-3">
              <LayoutDashboard className="h-4 w-4 text-primary" />
-             <h1 className="text-sm font-black font-headline uppercase tracking-tight">Command Center</h1>
+             <h1 className="text-sm font-black font-headline uppercase tracking-tight">KaryaPro Admin</h1>
              <Badge variant="outline" className="h-5 text-[8px] font-black uppercase bg-primary/5 text-primary border-primary/20">{userRole}</Badge>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="hidden sm:flex rounded-lg px-3 py-1 text-[10px] font-bold gap-2">
-            {isOnline ? <Wifi className="h-3 w-3 text-green-500" /> : <WifiOff className="h-3 w-3 text-destructive" />}
-            {user?.email}
-          </Badge>
-          <Button variant="ghost" onClick={() => signOut(auth)} className="text-destructive hover:bg-destructive/10 rounded-xl h-9 px-3 text-xs font-bold gap-2">
-            <LogOut className="h-4 w-4" /> Sign Out
-          </Button>
-        </div>
+        <Button variant="ghost" onClick={() => signOut(auth)} className="text-destructive hover:bg-destructive/10 rounded-xl h-9 px-3 text-xs font-bold gap-2">
+          <LogOut className="h-4 w-4" /> Sign Out
+        </Button>
       </header>
 
       <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <Tabs defaultValue="projects" className="space-y-12">
+        <Tabs defaultValue="profile" className="space-y-12">
           <div className="flex justify-center sticky top-20 z-40">
-            <TabsList className="h-14 bg-card/80 backdrop-blur-xl border border-border shadow-2xl p-1.5 w-full max-w-4xl overflow-x-auto no-scrollbar rounded-2xl">
+            <TabsList className="h-14 bg-card/80 backdrop-blur-xl border border-border shadow-2xl p-1.5 w-full max-w-5xl overflow-x-auto no-scrollbar rounded-2xl">
+              <TabsTrigger value="profile" className="rounded-xl font-black uppercase text-[10px] tracking-widest gap-2">
+                <UserCircle className="h-4 w-4" /> <span className="hidden sm:inline">Profile</span>
+              </TabsTrigger>
               <TabsTrigger value="projects" className="rounded-xl font-black uppercase text-[10px] tracking-widest gap-2">
                 <Laptop className="h-4 w-4" /> <span className="hidden sm:inline">Projects</span>
               </TabsTrigger>
@@ -240,11 +217,105 @@ function AdminContent() {
               <TabsTrigger value="system" className="rounded-xl font-black uppercase text-[10px] tracking-widest gap-2">
                 <Settings className="h-4 w-4" /> <span className="hidden sm:inline">System</span>
               </TabsTrigger>
-              <TabsTrigger value="help" className="rounded-xl font-black uppercase text-[10px] tracking-widest gap-2">
-                <HelpCircle className="h-4 w-4" /> <span className="hidden sm:inline">Guide</span>
-              </TabsTrigger>
             </TabsList>
           </div>
+
+          {/* Profile Tab */}
+          <TabsContent value="profile" className="animate-in fade-in slide-in-from-bottom-4">
+             <Card className="rounded-[2.5rem] shadow-xl border-border overflow-hidden">
+                <CardHeader className="p-8 border-b border-border/50 bg-muted/20 flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="font-black font-headline text-xl">Identity Protocol</CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Manage your professional persona</CardDescription>
+                  </div>
+                  <Button type="button" variant="outline" onClick={handleAutoTranslateProfile} disabled={isTranslating === 'profile'} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
+                    {isTranslating === 'profile' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />}
+                    AI Translate All
+                  </Button>
+                </CardHeader>
+                <CardContent className="p-8">
+                  <form onSubmit={handleUpdateProfile} className="space-y-12">
+                    {/* Basic Info */}
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                       <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Display Name</label>
+                          <Input value={profileFormData.name} onChange={e => setProfileFormData({...profileFormData, name: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                       </div>
+                       <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Role (ID)</label>
+                          <Input value={profileFormData.roleId} onChange={e => setProfileFormData({...profileFormData, roleId: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                       </div>
+                       <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Role (EN)</label>
+                          <Input value={profileFormData.roleEn} onChange={e => setProfileFormData({...profileFormData, roleEn: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                       </div>
+                    </div>
+
+                    {/* Hero Section */}
+                    <div className="space-y-6">
+                       <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
+                          <Sparkles className="h-3 w-3" /> Hero Display
+                       </h3>
+                       <div className="grid md:grid-cols-2 gap-6">
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Title (ID)</label>
+                            <Input value={profileFormData.heroTitleId} onChange={e => setProfileFormData({...profileFormData, heroTitleId: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Title (EN)</label>
+                            <Input value={profileFormData.heroTitleEn} onChange={e => setProfileFormData({...profileFormData, heroTitleEn: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                          </div>
+                       </div>
+                       <div className="grid md:grid-cols-2 gap-6">
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Subtitle (ID)</label>
+                            <Textarea value={profileFormData.heroSubtitleId} onChange={e => setProfileFormData({...profileFormData, heroSubtitleId: e.target.value})} className="rounded-xl bg-muted/30 h-24" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Subtitle (EN)</label>
+                            <Textarea value={profileFormData.heroSubtitleEn} onChange={e => setProfileFormData({...profileFormData, heroSubtitleEn: e.target.value})} className="rounded-xl bg-muted/30 h-24" />
+                          </div>
+                       </div>
+                    </div>
+
+                    {/* Social Media & Contact */}
+                    <div className="space-y-6">
+                       <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
+                          <Settings className="h-3 w-3" /> Connectivity
+                       </h3>
+                       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><Mail className="h-3 w-3" /> Public Email</label>
+                            <Input value={profileFormData.email} onChange={e => setProfileFormData({...profileFormData, email: e.target.value})} className="h-11 rounded-xl bg-muted/30" placeholder="admin@karyapro.app" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><Briefcase className="h-3 w-3" /> WhatsApp</label>
+                            <Input value={profileFormData.whatsapp} onChange={e => setProfileFormData({...profileFormData, whatsapp: e.target.value})} className="h-11 rounded-xl bg-muted/30" placeholder="62812..." />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><Linkedin className="h-3 w-3" /> LinkedIn URL</label>
+                            <Input value={profileFormData.linkedin} onChange={e => setProfileFormData({...profileFormData, linkedin: e.target.value})} className="h-11 rounded-xl bg-muted/30" placeholder="https://linkedin.com/in/..." />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><Instagram className="h-3 w-3" /> Instagram URL</label>
+                            <Input value={profileFormData.instagram} onChange={e => setProfileFormData({...profileFormData, instagram: e.target.value})} className="h-11 rounded-xl bg-muted/30" placeholder="https://instagram.com/..." />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><Video className="h-3 w-3" /> TikTok URL</label>
+                            <Input value={profileFormData.tiktok} onChange={e => setProfileFormData({...profileFormData, tiktok: e.target.value})} className="h-11 rounded-xl bg-muted/30" placeholder="https://tiktok.com/@..." />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><Github className="h-3 w-3" /> GitHub URL</label>
+                            <Input value={profileFormData.github} onChange={e => setProfileFormData({...profileFormData, github: e.target.value})} className="h-11 rounded-xl bg-muted/30" placeholder="https://github.com/..." />
+                          </div>
+                       </div>
+                    </div>
+
+                    <Button type="submit" className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-primary shadow-xl shadow-primary/20">Confirm Profile Update</Button>
+                  </form>
+                </CardContent>
+             </Card>
+          </TabsContent>
 
           {/* Projects Tab */}
           <TabsContent value="projects" className="grid lg:grid-cols-12 gap-8 animate-in fade-in slide-in-from-bottom-4">
@@ -255,10 +326,6 @@ function AdminContent() {
                     <CardTitle className="font-black font-headline text-xl">New Deployment</CardTitle>
                     <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Register new code unit</CardDescription>
                   </div>
-                  <Button type="button" variant="outline" onClick={() => handleAutoTranslateForm('project')} disabled={isTranslating === 'project'} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
-                    {isTranslating === 'project' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />}
-                    AI Translate
-                  </Button>
                 </CardHeader>
                 <CardContent className="p-8">
                   <form onSubmit={submitProject} className="space-y-6">
@@ -285,35 +352,28 @@ function AdminContent() {
                <h3 className="font-black text-[10px] uppercase tracking-[0.2em] px-2 flex items-center gap-2">
                 <Laptop className="h-3 w-3 text-primary" /> Active Units ({projects.length})
               </h3>
-              {projects.length === 0 ? (
-                <div className="h-48 border-2 border-dashed border-border rounded-[2.5rem] flex flex-col items-center justify-center text-center p-8 space-y-2 opacity-60">
-                   <AlertTriangle className="h-8 w-8 text-muted-foreground" />
-                   <p className="text-xs font-bold uppercase tracking-widest">No projects found. Add your first masterpiece!</p>
-                </div>
-              ) : (
-                <div className="grid gap-3">
-                  {projects.map(p => (
-                    <Card key={p.id} className="p-3 flex gap-4 items-center group bg-card border-border hover:border-primary/50 transition-all rounded-2xl shadow-sm">
-                      <div className="w-12 h-12 rounded-xl bg-muted overflow-hidden shrink-0">
-                        <img src={p.imageUrl || "https://placehold.co/100x100"} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold truncate text-sm">{p.titleId}</h4>
-                        <Badge variant="secondary" className="text-[8px] font-black uppercase h-4 px-1">{p.type}</Badge>
-                      </div>
-                      {isSuper && (
-                        <Button variant="ghost" size="icon" onClick={() => deleteProject(p.id)} className="text-destructive hover:bg-destructive/10 h-8 w-8 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </Card>
-                  ))}
-                </div>
-              )}
+              <div className="grid gap-3">
+                {projects.map(p => (
+                  <Card key={p.id} className="p-3 flex gap-4 items-center group bg-card border-border hover:border-primary/50 transition-all rounded-2xl shadow-sm">
+                    <div className="w-12 h-12 rounded-xl bg-muted overflow-hidden shrink-0">
+                      <img src={p.imageUrl || "https://placehold.co/100x100"} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold truncate text-sm">{p.titleId}</h4>
+                      <Badge variant="secondary" className="text-[8px] font-black uppercase h-4 px-1">{p.type}</Badge>
+                    </div>
+                    {isSuper && (
+                      <Button variant="ghost" size="icon" onClick={() => deleteProject(p.id)} className="text-destructive hover:bg-destructive/10 h-8 w-8 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </Card>
+                ))}
+              </div>
             </div>
           </TabsContent>
 
-          {/* System Tab: Backup & Restore */}
+          {/* System Tab */}
           <TabsContent value="system" className="max-w-2xl mx-auto space-y-8 animate-in fade-in">
              <Card className="rounded-[2.5rem] shadow-xl border-border bg-card overflow-hidden">
               <CardHeader className="p-8 border-b border-border/50 bg-muted/20">
@@ -322,14 +382,23 @@ function AdminContent() {
               </CardHeader>
               <CardContent className="p-8 space-y-8">
                 <div className="grid grid-cols-2 gap-4">
-                  <Button variant="outline" onClick={handleBackup} className="h-24 flex-col gap-3 rounded-[2rem] border-primary/20 hover:bg-primary/5 transition-all">
+                  <Button variant="outline" onClick={backupData} className="h-24 flex-col gap-3 rounded-[2rem] border-primary/20 hover:bg-primary/5 transition-all">
                     <Download className="h-6 w-6 text-primary" />
                     <span className="text-[10px] font-black uppercase tracking-widest">Backup Database</span>
                   </Button>
-                  <Button variant="outline" onClick={handleRestoreClick} className="h-24 flex-col gap-3 rounded-[2rem] border-accent/20 hover:bg-accent/5 transition-all">
+                  <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-24 flex-col gap-3 rounded-[2rem] border-accent/20 hover:bg-accent/5 transition-all">
                     <Upload className="h-6 w-6 text-accent" />
                     <span className="text-[10px] font-black uppercase tracking-widest">Restore System</span>
-                    <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={handleFileChange} />
+                    <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = async (event) => {
+                        const content = event.target?.result as string;
+                        await restoreData(content);
+                      };
+                      reader.readAsText(file);
+                    }} />
                   </Button>
                 </div>
 
@@ -342,65 +411,8 @@ function AdminContent() {
                     Only <strong className="text-amber-700">Super Admins</strong> can delete records or perform system restores. Current Role: <span className="underline">{userRole}</span>.
                   </p>
                 </div>
-
-                <div className="space-y-4">
-                   <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Performance Stats</h4>
-                   <div className="grid grid-cols-3 gap-4">
-                      <div className="p-4 bg-muted rounded-2xl text-center">
-                        <p className="text-lg font-black">{projects.length}</p>
-                        <p className="text-[8px] uppercase font-bold text-muted-foreground">Units</p>
-                      </div>
-                      <div className="p-4 bg-muted rounded-2xl text-center">
-                        <p className="text-lg font-black">{certificates.length}</p>
-                        <p className="text-[8px] uppercase font-bold text-muted-foreground">Certs</p>
-                      </div>
-                      <div className="p-4 bg-muted rounded-2xl text-center">
-                        <p className="text-lg font-black">2.4.0</p>
-                        <p className="text-[8px] uppercase font-bold text-muted-foreground">Build</p>
-                      </div>
-                   </div>
-                </div>
               </CardContent>
             </Card>
-          </TabsContent>
-
-          {/* Guide Tab */}
-          <TabsContent value="help" className="max-w-3xl mx-auto animate-in fade-in">
-             <Card className="rounded-[2.5rem] shadow-xl border-border bg-card">
-                <CardHeader className="p-8 border-b border-border/50">
-                  <CardTitle className="flex items-center gap-3 text-xl font-black font-headline"><HelpCircle className="text-primary h-5 w-5" /> Admin Protocol Guide</CardTitle>
-                </CardHeader>
-                <CardContent className="p-8 space-y-8">
-                  <div className="space-y-6">
-                    <div className="flex gap-4">
-                      <div className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-black text-xs">1</div>
-                      <div className="space-y-1">
-                        <p className="font-bold text-sm">Managing Projects</p>
-                        <p className="text-xs text-muted-foreground leading-relaxed">Always fill the ID (Indonesian) fields first. Use the "AI Translate" button to auto-fill English fields to maintain professional bilingual standards.</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-4">
-                      <div className="h-8 w-8 rounded-full bg-accent/10 text-accent flex items-center justify-center shrink-0 font-black text-xs">2</div>
-                      <div className="space-y-1">
-                        <p className="font-bold text-sm">Visual Identity</p>
-                        <p className="text-xs text-muted-foreground leading-relaxed">Use Unsplash or high-quality CDN links for project images. Pro-tip: 800x600px is the optimal aspect ratio for the portfolio cards.</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-4">
-                      <div className="h-8 w-8 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center shrink-0 font-black text-xs">3</div>
-                      <div className="space-y-1">
-                        <p className="font-bold text-sm">Security & Roles</p>
-                        <p className="text-xs text-muted-foreground leading-relaxed">Editors can add and modify content. Only Super Admins can perform deletions or infrastructure backups. If you need Super access, update your record in Firestore admins collection.</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="p-6 bg-muted rounded-3xl flex items-center gap-4">
-                    <Info className="h-5 w-5 text-primary" />
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Need technical support? Contact dev@karyapro.app</p>
-                  </div>
-                </CardContent>
-             </Card>
           </TabsContent>
         </Tabs>
       </div>

@@ -44,13 +44,14 @@ const defaultProfile: ProfileData = {
   name: 'Portfolio Owner',
   roleId: 'Full-Stack Developer',
   roleEn: 'Full-Stack Developer',
-  aboutTextId: '',
-  aboutTextEn: '',
-  profileImageUrl: 'https://picsum.photos/seed/profile/600/800',
+  aboutMeId: '',
+  aboutMeEn: '',
+  profilePictureUrl: 'https://picsum.photos/seed/profile/600/800',
   heroTitleId: 'Transforming Ideas Into Reality',
   heroTitleEn: 'Transforming Ideas Into Reality',
   heroSubtitleId: '',
   heroSubtitleEn: '',
+  email: 'admin@karyapro.app',
   whatsapp: '',
   linkedin: '',
   instagram: '',
@@ -85,13 +86,14 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     name: profileData.name || defaultProfile.name,
     roleId: profileData.roleId || defaultProfile.roleId,
     roleEn: profileData.roleEn || defaultProfile.roleEn,
-    aboutMeId: profileData.aboutMeId || defaultProfile.aboutTextId,
-    aboutMeEn: profileData.aboutMeEn || defaultProfile.aboutTextEn,
-    profilePictureUrl: profileData.profilePictureUrl || defaultProfile.profileImageUrl,
+    aboutMeId: profileData.aboutMeId || defaultProfile.aboutMeId,
+    aboutMeEn: profileData.aboutMeEn || defaultProfile.aboutMeEn,
+    profilePictureUrl: profileData.profilePictureUrl || defaultProfile.profilePictureUrl,
     heroTitleId: profileData.heroTitleId || defaultProfile.heroTitleId,
     heroTitleEn: profileData.heroTitleEn || defaultProfile.heroTitleEn,
     heroSubtitleId: profileData.heroSubtitleId || defaultProfile.heroSubtitleId,
     heroSubtitleEn: profileData.heroSubtitleEn || defaultProfile.heroSubtitleEn,
+    email: profileData.email || defaultProfile.email,
     whatsapp: profileData.whatsAppNumber || defaultProfile.whatsapp,
     linkedin: profileData.linkedInProfileUrl || defaultProfile.linkedin,
     instagram: profileData.instagram || defaultProfile.instagram,
@@ -134,10 +136,8 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const data = JSON.parse(json);
       const batch = writeBatch(firestore);
       
-      // Basic validation
       if (!data.projects || !data.certificates) throw new Error("Invalid backup format");
 
-      // Warning: This is a destructive operation in a real app, but useful for MVP
       data.projects.forEach((p: any) => batch.set(doc(firestore, 'projects', p.id), p));
       data.certificates.forEach((c: any) => batch.set(doc(firestore, 'certificates', c.id), c));
       data.testimonials.forEach((t: any) => batch.set(doc(firestore, 'testimonials', t.id), t));
@@ -197,13 +197,14 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       name: newProfile.name,
       roleId: newProfile.roleId,
       roleEn: newProfile.roleEn,
-      aboutMeId: newProfile.aboutTextId,
-      aboutMeEn: newProfile.aboutTextEn,
-      profilePictureUrl: newProfile.profileImageUrl,
+      aboutMeId: newProfile.aboutMeId,
+      aboutMeEn: newProfile.aboutMeEn,
+      profilePictureUrl: newProfile.profilePictureUrl,
       heroTitleId: newProfile.heroTitleId,
       heroTitleEn: newProfile.heroTitleEn,
       heroSubtitleId: newProfile.heroSubtitleId,
       heroSubtitleEn: newProfile.heroSubtitleEn,
+      email: newProfile.email,
       whatsAppNumber: newProfile.whatsapp,
       linkedInProfileUrl: newProfile.linkedin,
       instagram: newProfile.instagram,

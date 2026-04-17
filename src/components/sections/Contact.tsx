@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState } from 'react';
@@ -21,7 +20,6 @@ export const Contact = () => {
     const form = e.target as HTMLFormElement;
     const email = (form.elements.namedItem('email') as HTMLInputElement).value;
     
-    // Basic Client-Side Validation
     if (!email.includes('@')) {
       toast({
         variant: "destructive",
@@ -64,7 +62,7 @@ export const Contact = () => {
     { 
       id: 'ig', 
       label: 'Instagram', 
-      value: profile.instagram?.split('/').pop(), 
+      value: profile.instagram?.split('/').pop() || 'Instagram', 
       url: profile.instagram, 
       icon: Instagram, 
       color: 'bg-pink-600',
@@ -73,7 +71,7 @@ export const Contact = () => {
     { 
       id: 'gh', 
       label: 'GitHub', 
-      value: profile.github?.split('/').pop(), 
+      value: profile.github?.split('/').pop() || 'GitHub', 
       url: profile.github, 
       icon: Github, 
       color: 'bg-slate-800',
@@ -82,7 +80,7 @@ export const Contact = () => {
     { 
       id: 'tt', 
       label: 'TikTok', 
-      value: profile.tiktok?.split('/').pop(), 
+      value: profile.tiktok?.split('/').pop() || 'TikTok', 
       url: profile.tiktok, 
       icon: Video, 
       color: 'bg-black',
@@ -109,11 +107,10 @@ export const Contact = () => {
                   href={link.url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  aria-label={`Contact me via ${link.label}`}
                   className="flex items-center gap-4 p-4 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors border border-white/10 group no-print"
                 >
                   <div className={`p-3 ${link.color} rounded-xl shadow-lg`}>
-                    <link.icon className="h-6 w-6 text-white" aria-hidden="true" />
+                    <link.icon className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-1">
                     <p className="font-bold text-lg">{link.label}</p>
@@ -129,7 +126,7 @@ export const Contact = () => {
                 </div>
                 <div>
                   <p className="font-bold text-lg">Email</p>
-                  <p className="text-sm text-primary-foreground/70">admin@karyapro.app</p>
+                  <p className="text-sm text-primary-foreground/70">{profile.email || 'admin@karyapro.app'}</p>
                 </div>
               </div>
             </div>
