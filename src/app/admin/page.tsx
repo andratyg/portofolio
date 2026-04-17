@@ -146,7 +146,7 @@ function AdminContent() {
             <p className="text-[10px] font-black uppercase tracking-widest text-primary">Required Steps:</p>
             <ol className="text-xs text-muted-foreground space-y-2 list-decimal list-inside">
               <li>Copy your UID: <code className="bg-background px-2 py-1 rounded text-primary font-bold">{user.uid}</code></li>
-              <li>Go to Firebase Console -> Firestore.</li>
+              <li>Go to Firebase Console &rarr; Firestore.</li>
               <li>Add this UID as a document ID in the <code className="font-bold text-foreground">admins</code> collection.</li>
             </ol>
           </div>
