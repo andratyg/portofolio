@@ -23,11 +23,14 @@ export const Navbar = () => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
+      // Show if scrolling up OR at the very top
       if (currentScrollY < 10) {
         setIsVisible(true);
       } else if (currentScrollY > lastScrollY) {
+        // Scrolling down
         setIsVisible(false);
       } else {
+        // Scrolling up
         setIsVisible(true);
       }
       
