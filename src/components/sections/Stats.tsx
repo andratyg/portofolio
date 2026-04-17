@@ -2,17 +2,19 @@
 
 import React from 'react';
 import { useLanguage } from '../LanguageContext';
+import { useProjectStore } from '../ProjectStore';
 import { Card, CardContent } from '../ui/card';
 import { Briefcase, Code, Terminal, Users } from 'lucide-react';
 
 export const Stats = () => {
   const { t } = useLanguage();
+  const { stats } = useProjectStore();
 
   const statsData = [
-    { label: t.statsCompleted, value: '25+', icon: Briefcase, color: 'text-primary' },
-    { label: t.statsExperience, value: '5+', icon: Users, color: 'text-green-500' },
-    { label: t.statsTechnologies, value: '15+', icon: Terminal, color: 'text-accent' },
-    { label: 'Client Satisfaction', value: '100%', icon: Code, color: 'text-pink-500' },
+    { label: t.statsCompleted, value: stats.completedProjects, icon: Briefcase, color: 'text-primary' },
+    { label: t.statsExperience, value: stats.yearsExperience, icon: Users, color: 'text-green-500' },
+    { label: t.statsTechnologies, value: stats.techMastered, icon: Terminal, color: 'text-accent' },
+    { label: 'Client Satisfaction', value: stats.clientSatisfaction, icon: Code, color: 'text-pink-500' },
   ];
 
   return (

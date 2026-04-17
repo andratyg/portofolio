@@ -1,23 +1,33 @@
 "use client"
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Project, Certificate } from '@/lib/types';
+import { Project, Certificate, PortfolioStats } from '@/lib/types';
 import { initialProjects, initialCertificates } from '@/lib/data';
 
 interface ProjectStoreType {
   projects: Project[];
   certificates: Certificate[];
+  stats: PortfolioStats;
   addProject: (project: Project) => void;
   deleteProject: (id: string) => void;
   addCertificate: (cert: Certificate) => void;
   deleteCertificate: (id: string) => void;
+  updateStats: (newStats: PortfolioStats) => void;
 }
+
+const defaultStats: PortfolioStats = {
+  completedProjects: '25+',
+  yearsExperience: '5+',
+  techMastered: '15+',
+  clientSatisfaction: '100%'
+};
 
 const ProjectStoreContext = createContext<ProjectStoreType | undefined>(undefined);
 
 export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
+  const [stats, setStats] = useState<PortfolioStats>(defaultStats);
 
   useEffect(() => {
     // Load Projects
@@ -34,6 +44,12 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       setCertificates(JSON.parse(savedCerts));
     } else {
       setCertificates(initialCertificates);
+    }
+
+    // Load Stats
+    const savedStats = localStorage.getItem('karyapro-stats');
+    if (savedStats) {
+      setStats(JSON.parse(savedStats));
     }
   }, []);
 
@@ -61,14 +77,21 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     localStorage.setItem('karyapro-certificates', JSON.stringify(updated));
   };
 
+  const updateStats = (newStats: PortfolioStats) => {
+    setStats(newStats);
+    localStorage.setItem('karyapro-stats', JSON.stringify(newStats));
+  };
+
   return (
     <ProjectStoreContext.Provider value={{ 
       projects, 
       certificates, 
+      stats,
       addProject, 
       deleteProject, 
       addCertificate, 
-      deleteCertificate 
+      deleteCertificate,
+      updateStats
     }}>
       {children}
     </ProjectStoreContext.Provider>

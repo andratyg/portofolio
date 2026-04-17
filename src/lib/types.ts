@@ -40,3 +40,10 @@ export interface Certificate {
   validUntil: string;
   imageUrl: string;
 }
+
+export interface PortfolioStats {
+  completedProjects: string;
+  yearsExperience: string;
+  techMastered: string;
+  clientSatisfaction: string;
+}
