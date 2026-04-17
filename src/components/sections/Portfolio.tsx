@@ -16,7 +16,8 @@ import {
   ArrowRight, 
   CheckCircle2,
   Terminal,
-  Activity
+  Activity,
+  Globe
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
 import Image from 'next/image';
@@ -117,7 +118,6 @@ export const Portfolio = () => {
           </div>
         </div>
 
-        {/* Loading / Error States */}
         {isLoading && (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
             {[1, 2, 3].map(i => (
@@ -197,23 +197,27 @@ const ProjectCard = ({ project, index, isVisible, handleShare }: { project: Proj
                 </div>
               </CardContent>
               <CardFooter className="px-8 pb-8 flex justify-between items-center pt-4 border-t border-border/10">
-                <span className="text-[9px] font-black text-primary uppercase tracking-[0.2em] group-hover:gap-3 flex items-center gap-2 transition-all">
-                  Analyze Case Study <ExternalLink className="h-3.5 w-3.5" />
-                </span>
+                <div className="flex items-center gap-4">
+                  <span className="text-[9px] font-black text-primary uppercase tracking-[0.2em] flex items-center gap-2">
+                    Case Study <ExternalLink className="h-3 w-3" />
+                  </span>
+                  {project.demoUrl && (
+                    <div className="flex items-center gap-1.5 text-[9px] font-black text-accent uppercase tracking-[0.2em]">
+                      <Globe className="h-3 w-3" /> Live
+                    </div>
+                  )}
+                </div>
               </CardFooter>
             </Card>
           </div>
         </DialogTrigger>
 
         <DialogContent className="sm:max-w-[1000px] h-[90vh] p-0 rounded-[3rem] overflow-hidden border-none shadow-2xl bg-card flex flex-col">
-          {/* Case Study Shell */}
           <div className="flex-1 flex flex-col h-full bg-background overflow-hidden">
-            {/* Immersive Header */}
             <div className="relative h-[45%] shrink-0">
                <Image src={safeImageUrl} alt={title || "Project"} fill className="object-cover" />
                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
                
-               {/* Browser UI Elements */}
                <div className="absolute top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl h-10 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl flex items-center px-4 gap-4 no-print">
                   <div className="flex gap-1.5">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-500/60"></div>
@@ -250,7 +254,6 @@ const ProjectCard = ({ project, index, isVisible, handleShare }: { project: Proj
                </div>
             </div>
 
-            {/* Case Study Narrative */}
             <div className="flex-1 overflow-y-auto no-scrollbar p-12 bg-background/50">
                <div className="grid lg:grid-cols-12 gap-16">
                   <div className="lg:col-span-8 space-y-16">
