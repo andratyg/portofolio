@@ -1,9 +1,14 @@
 
 "use client"
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext } from 'react';
 import { Project, Certificate, PortfolioStats, ProfileData, Testimonial, Experience } from '@/lib/types';
-import { initialProjects, initialCertificates, initialTestimonials, timeline as initialTimeline } from '@/lib/data';
+import { useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
+import { 
+  setDocumentNonBlocking, 
+  deleteDocumentNonBlocking 
+} from '@/firebase/non-blocking-updates';
 
 interface ProjectStoreType {
   projects: Project[];
@@ -12,6 +17,7 @@ interface ProjectStoreType {
   experiences: Experience[];
   stats: PortfolioStats;
   profile: ProfileData;
+  isLoading: boolean;
   addProject: (project: Project) => void;
   deleteProject: (id: string) => void;
   addCertificate: (cert: Certificate) => void;
@@ -25,23 +31,23 @@ interface ProjectStoreType {
 }
 
 const defaultStats: PortfolioStats = {
-  completedProjects: '25+',
-  yearsExperience: '5+',
-  techMastered: '15+',
-  clientSatisfaction: '100%'
+  completedProjects: '0',
+  yearsExperience: '0',
+  techMastered: '0',
+  clientSatisfaction: '0%'
 };
 
 const defaultProfile: ProfileData = {
-  name: 'KaryaPro',
-  roleId: 'Full-Stack Developer Profesional',
-  roleEn: 'Professional Full-Stack Developer',
-  aboutTextId: 'Saya adalah Pengembang Full-Stack yang bersemangat dalam membangun aplikasi web berkualitas tinggi. Dengan dasar yang kuat dalam teknologi modern dan perhatian detail pada desain, saya berusaha menciptakan solusi digital yang fungsional dan luar biasa.',
-  aboutTextEn: 'I am a passionate Full-Stack Developer dedicated to building high-quality web applications. With a strong foundation in modern technologies and a keen eye for design, I strive to create digital solutions that are not only functional but also provide an exceptional user experience.',
-  profileImageUrl: 'https://picsum.photos/seed/karyapro-profile/600/800',
-  heroTitleId: 'Mengubah Ide Menjadi Realitas',
-  heroTitleEn: 'Transforming Ideas Into Reality',
-  heroSubtitleId: 'Pengembang Full-Stack Profesional menciptakan pengalaman web modern.',
-  heroSubtitleEn: 'Professional Full-Stack Developer creating modern web experiences.',
+  name: 'Portfolio Owner',
+  roleId: 'Full-Stack Developer',
+  roleEn: 'Full-Stack Developer',
+  aboutTextId: '',
+  aboutTextEn: '',
+  profileImageUrl: 'https://picsum.photos/seed/profile/600/800',
+  heroTitleId: 'Transforming Ideas',
+  heroTitleEn: 'Transforming Ideas',
+  heroSubtitleId: '',
+  heroSubtitleEn: '',
   whatsapp: '',
   linkedin: '',
   instagram: '',
@@ -52,102 +58,123 @@ const defaultProfile: ProfileData = {
 const ProjectStoreContext = createContext<ProjectStoreType | undefined>(undefined);
 
 export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [certificates, setCertificates] = useState<Certificate[]>([]);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [experiences, setExperiences] = useState<Experience[]>([]);
-  const [stats, setStats] = useState<PortfolioStats>(defaultStats);
-  const [profile, setProfile] = useState<ProfileData>(defaultProfile);
+  const firestore = useFirestore();
 
-  useEffect(() => {
-    // Load Projects
-    const savedProjects = localStorage.getItem('karyapro-projects');
-    if (savedProjects) setProjects(JSON.parse(savedProjects));
-    else setProjects(initialProjects as any);
+  // Firestore Queries
+  const projectsQuery = useMemoFirebase(() => collection(firestore, 'projects'), [firestore]);
+  const certsQuery = useMemoFirebase(() => collection(firestore, 'certificates'), [firestore]);
+  const testsQuery = useMemoFirebase(() => collection(firestore, 'testimonials'), [firestore]);
+  const journeyQuery = useMemoFirebase(() => collection(firestore, 'careerTimelineEntries'), [firestore]);
+  const profileDocRef = useMemoFirebase(() => doc(firestore, 'portfolioOwner', 'profile'), [firestore]);
 
-    // Load Certificates
-    const savedCerts = localStorage.getItem('karyapro-certificates');
-    if (savedCerts) setCertificates(JSON.parse(savedCerts));
-    else setCertificates(initialCertificates as any);
+  // Real-time Data
+  const { data: projectsData, isLoading: loadingProjects } = useCollection<Project>(projectsQuery);
+  const { data: certsData, isLoading: loadingCerts } = useCollection<Certificate>(certsQuery);
+  const { data: testsData, isLoading: loadingTests } = useCollection<Testimonial>(testsQuery);
+  const { data: journeyData, isLoading: loadingJourney } = useCollection<Experience>(journeyQuery);
+  const { data: profileData, isLoading: loadingProfile } = useDoc<any>(profileDocRef);
 
-    // Load Testimonials
-    const savedTestimonials = localStorage.getItem('karyapro-testimonials');
-    if (savedTestimonials) setTestimonials(JSON.parse(savedTestimonials));
-    else setTestimonials(initialTestimonials as any);
+  const projects = projectsData || [];
+  const certificates = certsData || [];
+  const testimonials = testsData || [];
+  const experiences = journeyData || [];
+  
+  // Stats and Profile are combined in PortfolioOwner in our backend schema
+  const profile: ProfileData = profileData ? {
+    name: profileData.name || defaultProfile.name,
+    roleId: profileData.roleId || defaultProfile.roleId,
+    roleEn: profileData.roleEn || defaultProfile.roleEn,
+    aboutTextId: profileData.aboutMeId || defaultProfile.aboutTextId,
+    aboutTextEn: profileData.aboutMeEn || defaultProfile.aboutTextEn,
+    profileImageUrl: profileData.profilePictureUrl || defaultProfile.profileImageUrl,
+    heroTitleId: profileData.heroTitleId || defaultProfile.heroTitleId,
+    heroTitleEn: profileData.heroTitleEn || defaultProfile.heroTitleEn,
+    heroSubtitleId: profileData.heroSubtitleId || defaultProfile.heroSubtitleId,
+    heroSubtitleEn: profileData.heroSubtitleEn || defaultProfile.heroSubtitleEn,
+    whatsapp: profileData.whatsAppNumber || defaultProfile.whatsapp,
+    linkedin: profileData.linkedInProfileUrl || defaultProfile.linkedin,
+    instagram: profileData.instagram || defaultProfile.instagram,
+    github: profileData.githubProfileUrl || defaultProfile.github,
+    tiktok: profileData.tiktok || defaultProfile.tiktok
+  } : defaultProfile;
 
-    // Load Experiences
-    const savedExperiences = localStorage.getItem('karyapro-experiences');
-    if (savedExperiences) setExperiences(JSON.parse(savedExperiences));
-    else setExperiences(initialTimeline as any);
+  const stats: PortfolioStats = profileData ? {
+    completedProjects: String(profileData.totalProjectsCompleted || '0'),
+    yearsExperience: String(profileData.codingExperienceYears || '0'),
+    techMastered: String(profileData.totalTechnologiesMastered || '0'),
+    clientSatisfaction: profileData.clientSatisfaction || '100%'
+  } : defaultStats;
 
-    // Load Stats
-    const savedStats = localStorage.getItem('karyapro-stats');
-    if (savedStats) setStats(JSON.parse(savedStats));
+  const isLoading = loadingProjects || loadingCerts || loadingTests || loadingJourney || loadingProfile;
 
-    // Load Profile
-    const savedProfile = localStorage.getItem('karyapro-profile');
-    if (savedProfile) {
-      const parsed = JSON.parse(savedProfile);
-      setProfile({ ...defaultProfile, ...parsed });
-    }
-  }, []);
-
+  // Mutations
   const addProject = (project: Project) => {
-    const updated = [project, ...projects];
-    setProjects(updated);
-    localStorage.setItem('karyapro-projects', JSON.stringify(updated));
+    const docRef = doc(firestore, 'projects', project.id);
+    setDocumentNonBlocking(docRef, project, { merge: true });
   };
 
   const deleteProject = (id: string) => {
-    const updated = projects.filter(p => p.id !== id);
-    setProjects(updated);
-    localStorage.setItem('karyapro-projects', JSON.stringify(updated));
+    const docRef = doc(firestore, 'projects', id);
+    deleteDocumentNonBlocking(docRef);
   };
 
   const addCertificate = (cert: Certificate) => {
-    const updated = [cert, ...certificates];
-    setCertificates(updated);
-    localStorage.setItem('karyapro-certificates', JSON.stringify(updated));
+    const docRef = doc(firestore, 'certificates', cert.id);
+    setDocumentNonBlocking(docRef, cert, { merge: true });
   };
 
   const deleteCertificate = (id: string) => {
-    const updated = certificates.filter(c => c.id !== id);
-    setCertificates(updated);
-    localStorage.setItem('karyapro-certificates', JSON.stringify(updated));
+    const docRef = doc(firestore, 'certificates', id);
+    deleteDocumentNonBlocking(docRef);
   };
 
   const addTestimonial = (test: Testimonial) => {
-    const updated = [test, ...testimonials];
-    setTestimonials(updated);
-    localStorage.setItem('karyapro-testimonials', JSON.stringify(updated));
+    const docRef = doc(firestore, 'testimonials', test.id);
+    setDocumentNonBlocking(docRef, test, { merge: true });
   };
 
   const deleteTestimonial = (id: string) => {
-    const updated = testimonials.filter(t => t.id !== id);
-    setTestimonials(updated);
-    localStorage.setItem('karyapro-testimonials', JSON.stringify(updated));
+    const docRef = doc(firestore, 'testimonials', id);
+    deleteDocumentNonBlocking(docRef);
   };
 
   const addExperience = (exp: Experience) => {
-    const updated = [exp, ...experiences];
-    setExperiences(updated);
-    localStorage.setItem('karyapro-experiences', JSON.stringify(updated));
+    const docRef = doc(firestore, 'careerTimelineEntries', exp.id);
+    setDocumentNonBlocking(docRef, exp, { merge: true });
   };
 
   const deleteExperience = (id: string) => {
-    const updated = experiences.filter(e => e.id !== id);
-    setExperiences(updated);
-    localStorage.setItem('karyapro-experiences', JSON.stringify(updated));
+    const docRef = doc(firestore, 'careerTimelineEntries', id);
+    deleteDocumentNonBlocking(docRef);
   };
 
   const updateStats = (newStats: PortfolioStats) => {
-    setStats(newStats);
-    localStorage.setItem('karyapro-stats', JSON.stringify(newStats));
+    setDocumentNonBlocking(profileDocRef, {
+      totalProjectsCompleted: parseInt(newStats.completedProjects) || 0,
+      codingExperienceYears: parseInt(newStats.yearsExperience) || 0,
+      totalTechnologiesMastered: parseInt(newStats.techMastered) || 0,
+      clientSatisfaction: newStats.clientSatisfaction
+    }, { merge: true });
   };
 
   const updateProfile = (newProfile: ProfileData) => {
-    setProfile(newProfile);
-    localStorage.setItem('karyapro-profile', JSON.stringify(newProfile));
+    setDocumentNonBlocking(profileDocRef, {
+      name: newProfile.name,
+      roleId: newProfile.roleId,
+      roleEn: newProfile.roleEn,
+      aboutMeId: newProfile.aboutTextId,
+      aboutMeEn: newProfile.aboutTextEn,
+      profilePictureUrl: newProfile.profileImageUrl,
+      heroTitleId: newProfile.heroTitleId,
+      heroTitleEn: newProfile.heroTitleEn,
+      heroSubtitleId: newProfile.heroSubtitleId,
+      heroSubtitleEn: newProfile.heroSubtitleEn,
+      whatsAppNumber: newProfile.whatsapp,
+      linkedInProfileUrl: newProfile.linkedin,
+      instagram: newProfile.instagram,
+      githubProfileUrl: newProfile.github,
+      tiktok: newProfile.tiktok
+    }, { merge: true });
   };
 
   return (
@@ -158,6 +185,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       experiences,
       stats,
       profile,
+      isLoading,
       addProject, 
       deleteProject, 
       addCertificate, 

@@ -1,37 +1,57 @@
 
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { LogIn, ArrowLeft } from 'lucide-react';
+import { LogIn, ArrowLeft, Loader2 } from 'lucide-react';
+import { useAuth, useUser } from '@/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function AdminLogin() {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const auth = useAuth();
+  const { user, isUserLoading } = useUser();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === '26052010') {
-      sessionStorage.setItem('karyapro-auth', 'true');
+  useEffect(() => {
+    if (!isUserLoading && user) {
       router.push('/admin');
-    } else {
+    }
+  }, [user, isUserLoading, router]);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) return;
+
+    setIsLoggingIn(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast({
+        title: "Welcome Back",
+        description: "Authenticated as administrator.",
+      });
+      router.push('/admin');
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Access Denied",
-        description: "Invalid administrator credentials.",
+        description: error.message || "Invalid credentials.",
       });
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
-      {/* Background patterns matching theme */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px]"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/10 rounded-full blur-[120px]"></div>
 
@@ -48,22 +68,38 @@ export default function AdminLogin() {
           <p className="text-primary-foreground/70 text-xs mt-1">Authenticate to manage infrastructure</p>
         </CardHeader>
         <CardContent className="pt-8 px-8">
-          <form id="login-form" onSubmit={handleLogin} className="space-y-6">
+          <form id="login-form" onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Access Code</label>
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Email</label>
+              <Input 
+                type="email" 
+                placeholder="admin@karyapro.com" 
+                className="h-12 rounded-xl bg-background/50"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Password</label>
               <Input 
                 type="password" 
                 placeholder="••••••••" 
-                className="h-12 rounded-xl text-center text-xl tracking-[0.5em] bg-background/50"
+                className="h-12 rounded-xl bg-background/50"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                autoFocus
               />
             </div>
           </form>
         </CardContent>
         <CardFooter className="px-8 pb-10">
-          <Button form="login-form" className="w-full h-12 rounded-xl text-sm font-black uppercase tracking-widest shadow-xl shadow-primary/20">Authenticate</Button>
+          <Button 
+            form="login-form" 
+            className="w-full h-12 rounded-xl text-sm font-black uppercase tracking-widest shadow-xl shadow-primary/20"
+            disabled={isLoggingIn}
+          >
+            {isLoggingIn ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Authenticate'}
+          </Button>
         </CardFooter>
       </Card>
     </div>
