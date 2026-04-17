@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Project, Certificate } from '@/lib/types';
-import { initialProjects } from '@/lib/data';
+import { initialProjects, initialCertificates } from '@/lib/data';
 
 interface ProjectStoreType {
   projects: Project[];
@@ -20,6 +20,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [certificates, setCertificates] = useState<Certificate[]>([]);
 
   useEffect(() => {
+    // Load Projects
     const savedProjects = localStorage.getItem('karyapro-projects');
     if (savedProjects) {
       setProjects(JSON.parse(savedProjects));
@@ -27,9 +28,12 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       setProjects(initialProjects);
     }
 
+    // Load Certificates
     const savedCerts = localStorage.getItem('karyapro-certificates');
     if (savedCerts) {
       setCertificates(JSON.parse(savedCerts));
+    } else {
+      setCertificates(initialCertificates);
     }
   }, []);
 

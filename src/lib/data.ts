@@ -1,4 +1,4 @@
-import { Project, Experience, Testimonial } from './types';
+import { Project, Experience, Testimonial, Certificate } from './types';
 
 export const initialProjects: Project[] = [
   {
@@ -42,6 +42,29 @@ export const initialProjects: Project[] = [
     results: 'Used by over 10 development teams to standardize their app interfaces.',
     imageUrl: 'https://picsum.photos/seed/ui/800/600',
     featured: false
+  }
+];
+
+export const initialCertificates: Certificate[] = [
+  {
+    id: 'c1',
+    title: 'Google Professional Cloud Architect',
+    shortDescription: 'Certification for designing and managing robust cloud solutions.',
+    fullDescription: 'This certificate validates my ability to design, develop, and manage robust, secure, scalable, highly available, and dynamic solutions to drive business objectives.',
+    year: '2023',
+    issuer: 'Google Cloud',
+    validUntil: '2025',
+    imageUrl: 'https://picsum.photos/seed/cloud-cert/800/600'
+  },
+  {
+    id: 'c2',
+    title: 'Meta Front-End Developer Professional Certificate',
+    shortDescription: 'Comprehensive training in modern front-end technologies.',
+    fullDescription: 'A series of 9 courses covering JavaScript, React, UI/UX design, and professional developer tools through hands-on projects.',
+    year: '2022',
+    issuer: 'Meta / Coursera',
+    validUntil: 'No Expiry',
+    imageUrl: 'https://picsum.photos/seed/meta-cert/800/600'
   }
 ];
 
