@@ -15,7 +15,8 @@ import {
   UserCircle, Loader2, Image as ImageIcon, Quote, 
   Briefcase, History, ShieldAlert, ShieldCheck, 
   Download, Upload, WifiOff, Edit3, Save, X,
-  Activity, Terminal, Link as LinkIcon, FileUp, FileType, Zap, AlertCircle, CheckCircle2
+  Activity, Terminal, Link as LinkIcon, FileUp, FileType, Zap, AlertCircle, 
+  Instagram, Github, Linkedin, MessageSquare, Video, Globe2, Camera
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
@@ -48,6 +49,7 @@ function AdminContent() {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const profileImageInputRef = useRef<HTMLInputElement>(null);
 
   // Edit States
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -110,14 +112,6 @@ function AdminContent() {
     credentialUrl: ''
   });
 
-  const [testForm, setTestForm] = useState({
-    name: '', roleId: '', roleEn: '', contentId: '', contentEn: '', avatarUrl: ''
-  });
-
-  const [expForm, setExpForm] = useState({
-    year: '', company: '', titleId: '', titleEn: '', descriptionId: '', descriptionEn: ''
-  });
-
   const [profileFormData, setProfileFormData] = useState<ProfileData>(profile);
   const [statsFormData, setStatsFormData] = useState<PortfolioStats>(stats);
 
@@ -160,7 +154,7 @@ function AdminContent() {
     e.preventDefault();
     updateProfile(profileFormData);
     updateStats(statsFormData);
-    toast({ title: "Global Records Synced", description: "Profile and metrics updated." });
+    toast({ title: "Global Identity Synced", description: "Profile and metrics updated." });
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
@@ -184,7 +178,7 @@ function AdminContent() {
     setEditingId(p.id);
     setProjectForm({
       ...p,
-      technologies: p.technologies.join(', ')
+      technologies: p.technologies?.join(', ') || ''
     } as any);
     window.scrollTo({ top: 400, behavior: 'smooth' });
   };
@@ -193,8 +187,6 @@ function AdminContent() {
     setEditingId(null);
     setProjectForm(initialProjectState);
     setCertForm({ titleId: '', titleEn: '', issuer: '', year: '', validUntil: '', imageUrl: '', shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '', credentialUrl: '' });
-    setTestForm({ name: '', roleId: '', roleEn: '', contentId: '', contentEn: '', avatarUrl: '' });
-    setExpForm({ year: '', company: '', titleId: '', titleEn: '', descriptionId: '', descriptionEn: '' });
   };
 
   if (isUserLoading || storeLoading || isAdminLoading) {
@@ -260,8 +252,6 @@ function AdminContent() {
               <TabsTrigger value="profile" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-[0.15em] gap-2 px-8 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground transition-all"><UserCircle className="h-4 w-4" /> PROFILE</TabsTrigger>
               <TabsTrigger value="projects" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-[0.15em] gap-2 px-8 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground transition-all"><Laptop className="h-4 w-4" /> PROJECTS</TabsTrigger>
               <TabsTrigger value="certificates" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-[0.15em] gap-2 px-8 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground transition-all"><Award className="h-4 w-4" /> CERTS</TabsTrigger>
-              <TabsTrigger value="feedback" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-[0.15em] gap-2 px-8 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground transition-all"><Quote className="h-4 w-4" /> FEEDBACK</TabsTrigger>
-              <TabsTrigger value="journey" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-[0.15em] gap-2 px-8 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground transition-all"><History className="h-4 w-4" /> JOURNEY</TabsTrigger>
               <TabsTrigger value="system" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-[0.15em] gap-2 px-8 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground transition-all"><Settings className="h-4 w-4" /> SYSTEM</TabsTrigger>
             </TabsList>
           </div>
@@ -270,26 +260,137 @@ function AdminContent() {
              <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
                 <CardContent className="p-0">
                   <form onSubmit={handleProfileSubmit} className="space-y-20">
+                    {/* Visual Identity Section */}
                     <div className="space-y-12">
                       <div className="flex items-center gap-4 border-l-4 border-accent pl-6">
-                        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-accent">Core Identity</h3>
+                        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-accent">Visual Branding</h3>
                       </div>
-                      <div className="grid lg:grid-cols-3 gap-10">
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Full Name</label>
-                            <Input value={profileFormData.name} onChange={e => setProfileFormData({...profileFormData, name: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
+                      <div className="grid lg:grid-cols-12 gap-10 items-start">
+                        <div className="lg:col-span-4 space-y-6">
+                           <div className="relative group w-full aspect-[3/4] rounded-[2.5rem] overflow-hidden bg-muted border-4 border-background shadow-2xl">
+                              <img 
+                                src={profileFormData.profilePictureUrl || "https://picsum.photos/seed/karyapro-profile/600/800"} 
+                                className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700" 
+                              />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                 <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    className="rounded-2xl h-14 bg-white/20 backdrop-blur-xl border-white/30 text-white gap-2"
+                                    onClick={() => profileImageInputRef.current?.click()}
+                                  >
+                                    <Camera className="h-5 w-5" /> CHANGE PHOTO
+                                 </Button>
+                              </div>
+                              <input 
+                                type="file" 
+                                ref={profileImageInputRef} 
+                                className="hidden" 
+                                accept="image/*" 
+                                onChange={(e) => handleFileUpload(e, (url) => setProfileFormData({...profileFormData, profilePictureUrl: url}))} 
+                              />
+                           </div>
+                           <p className="text-center text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Recommended: 3:4 Aspect Ratio</p>
                         </div>
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Role (ID)</label>
-                            <Input value={profileFormData.roleId} onChange={e => setProfileFormData({...profileFormData, roleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
-                        </div>
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Role (EN)</label>
-                            <Input value={profileFormData.roleEn} onChange={e => setProfileFormData({...profileFormData, roleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
+                        <div className="lg:col-span-8 space-y-8">
+                           <div className="grid md:grid-cols-2 gap-6">
+                              <div className="space-y-3">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Full Name</label>
+                                  <Input value={profileFormData.name} onChange={e => setProfileFormData({...profileFormData, name: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
+                              </div>
+                              <div className="space-y-3">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Email Node</label>
+                                  <Input value={profileFormData.email} onChange={e => setProfileFormData({...profileFormData, email: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
+                              </div>
+                           </div>
+                           <div className="grid md:grid-cols-2 gap-6">
+                              <div className="space-y-3">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Role Title (ID)</label>
+                                  <Input value={profileFormData.roleId} onChange={e => setProfileFormData({...profileFormData, roleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
+                              </div>
+                              <div className="space-y-3">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Role Title (EN)</label>
+                                  <Input value={profileFormData.roleEn} onChange={e => setProfileFormData({...profileFormData, roleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
+                              </div>
+                           </div>
+                           <div className="grid md:grid-cols-2 gap-6">
+                              <div className="space-y-3">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Title (ID)</label>
+                                  <Input value={profileFormData.heroTitleId} onChange={e => setProfileFormData({...profileFormData, heroTitleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
+                              </div>
+                              <div className="space-y-3">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Title (EN)</label>
+                                  <Input value={profileFormData.heroTitleEn} onChange={e => setProfileFormData({...profileFormData, heroTitleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
+                              </div>
+                           </div>
                         </div>
                       </div>
                     </div>
 
+                    {/* About & Hero Section */}
+                    <div className="space-y-12">
+                      <div className="flex items-center gap-4 border-l-4 border-primary pl-6">
+                        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-primary">Narrative & Bio</h3>
+                        <Button type="button" size="sm" onClick={() => handleAITranslate('profile', profileFormData, setProfileFormData)} disabled={isTranslating === 'profile'} className="ml-auto rounded-xl bg-primary/10 text-primary hover:bg-primary/20 h-10 px-4 text-[9px] font-black uppercase tracking-widest">
+                           {isTranslating === 'profile' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3 mr-2" />} AI SYNC LOCALES
+                        </Button>
+                      </div>
+                      <div className="grid md:grid-cols-2 gap-10">
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">About Me (ID)</label>
+                            <Textarea value={profileFormData.aboutMeId} onChange={e => setProfileFormData({...profileFormData, aboutMeId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" />
+                        </div>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">About Me (EN)</label>
+                            <Textarea value={profileFormData.aboutMeEn} onChange={e => setProfileFormData({...profileFormData, aboutMeEn: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" />
+                        </div>
+                      </div>
+                      <div className="grid md:grid-cols-2 gap-10">
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Subtitle (ID)</label>
+                            <Textarea value={profileFormData.heroSubtitleId} onChange={e => setProfileFormData({...profileFormData, heroSubtitleId: e.target.value})} className="h-32 rounded-[2rem] bg-muted/30 border-none p-6" />
+                        </div>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Subtitle (EN)</label>
+                            <Textarea value={profileFormData.heroSubtitleEn} onChange={e => setProfileFormData({...profileFormData, heroSubtitleEn: e.target.value})} className="h-32 rounded-[2rem] bg-muted/30 border-none p-6" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Social Links Section */}
+                    <div className="space-y-12">
+                      <div className="flex items-center gap-4 border-l-4 border-accent pl-6">
+                        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-accent">Connectivity & Media</h3>
+                      </div>
+                      <div className="grid lg:grid-cols-3 gap-8">
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><MessageSquare className="h-3.5 w-3.5" /> WhatsApp</label>
+                            <Input value={profileFormData.whatsapp} onChange={e => setProfileFormData({...profileFormData, whatsapp: e.target.value})} placeholder="62812345678" className="h-16 rounded-2xl bg-muted/30 border-none" />
+                        </div>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Linkedin className="h-3.5 w-3.5" /> LinkedIn URL</label>
+                            <Input value={profileFormData.linkedin} onChange={e => setProfileFormData({...profileFormData, linkedin: e.target.value})} placeholder="https://linkedin.com/in/..." className="h-16 rounded-2xl bg-muted/30 border-none" />
+                        </div>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Github className="h-3.5 w-3.5" /> GitHub URL</label>
+                            <Input value={profileFormData.github} onChange={e => setProfileFormData({...profileFormData, github: e.target.value})} placeholder="https://github.com/..." className="h-16 rounded-2xl bg-muted/30 border-none" />
+                        </div>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Instagram className="h-3.5 w-3.5" /> Instagram URL</label>
+                            <Input value={profileFormData.instagram} onChange={e => setProfileFormData({...profileFormData, instagram: e.target.value})} placeholder="https://instagram.com/..." className="h-16 rounded-2xl bg-muted/30 border-none" />
+                        </div>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Video className="h-3.5 w-3.5" /> TikTok URL</label>
+                            <Input value={profileFormData.tiktok} onChange={e => setProfileFormData({...profileFormData, tiktok: e.target.value})} placeholder="https://tiktok.com/@..." className="h-16 rounded-2xl bg-muted/30 border-none" />
+                        </div>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Globe2 className="h-3.5 w-3.5" /> Site URL</label>
+                            <Input placeholder="https://nat.app" className="h-16 rounded-2xl bg-muted/30 border-none opacity-50 cursor-not-allowed" disabled />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Stats Section */}
                     <div className="space-y-12">
                       <div className="flex items-center gap-4 border-l-4 border-primary pl-6">
                         <h3 className="text-xs font-black uppercase tracking-[0.4em] text-primary">Strategic Metrics</h3>
@@ -308,13 +409,13 @@ function AdminContent() {
                             <Input value={statsFormData.techMastered} onChange={e => setStatsFormData({...statsFormData, techMastered: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none font-black text-lg" />
                         </div>
                         <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5" /> Uptime SLA</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5" /> Uptime SLA (%)</label>
                             <Input value={statsFormData.clientSatisfaction} onChange={e => setStatsFormData({...statsFormData, clientSatisfaction: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none font-black text-lg" />
                         </div>
                       </div>
                     </div>
 
-                    <Button type="submit" className="w-full h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-xl">SYNC GLOBAL NODE & METRICS</Button>
+                    <Button type="submit" className="w-full h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all">SYNC GLOBAL NODE & METRICS</Button>
                   </form>
                 </CardContent>
              </Card>
@@ -344,7 +445,7 @@ function AdminContent() {
                     addProject({ 
                       ...projectForm, 
                       id: editingId || Date.now().toString(), 
-                      technologies: projectForm.technologies.split(',').map(s => s.trim()) 
+                      technologies: projectForm.technologies?.split(',').map(s => s.trim()) || []
                     } as any);
                     setProjectForm(initialProjectState);
                     setEditingId(null);
@@ -408,6 +509,10 @@ function AdminContent() {
                           <Input value={projectForm.demoUrl} onChange={e => setProjectForm({...projectForm, demoUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
                        </div>
                     </div>
+                    <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Visual Preview</label>
+                        <Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setProjectForm({...projectForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none cursor-pointer pt-5" />
+                    </div>
 
                     <Button type="submit" className="w-full h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-xl">
                       {editingId ? <Save className="h-4 w-4 mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
@@ -446,7 +551,6 @@ function AdminContent() {
           </TabsContent>
 
           <TabsContent value="certificates" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
-            {/* Logic for Certificates (Simplified Edit for brevity, but implement similarly to projects) */}
             <div className="xl:col-span-8">
               <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
                 <CardHeader className="p-0 pb-10">
@@ -522,15 +626,6 @@ function AdminContent() {
                 ))}
               </div>
             </div>
-          </TabsContent>
-
-          {/* Other tabs remain similar with Edit support added... */}
-          <TabsContent value="feedback" className="animate-in fade-in slide-in-from-bottom-8 duration-500">
-             {/* Testimonials Logic */}
-          </TabsContent>
-          
-          <TabsContent value="journey" className="animate-in fade-in slide-in-from-bottom-8 duration-500">
-             {/* Timeline Logic */}
           </TabsContent>
 
           <TabsContent value="system" className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
