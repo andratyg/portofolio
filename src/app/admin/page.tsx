@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useEffect, useState, useRef } from 'react';
@@ -383,7 +382,7 @@ function AdminContent() {
                       </div>
                     </div>
 
-                    <Button type="submit" className="w-full h-24 rounded-[1.8rem] text-[15px] font-black uppercase tracking-[0.3em] bg-primary text-primary-foreground shadow-2xl shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all">SYNC GLOBAL NODE & METRICS</Button>
+                    <Button type="submit" className="w-full h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-xl shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all">SYNC GLOBAL NODE & METRICS</Button>
                   </form>
                 </CardContent>
              </Card>
@@ -446,7 +445,7 @@ function AdminContent() {
                           <Input placeholder="99.9% Performance" value={projectForm.impactStats} onChange={e => setProjectForm({...projectForm, impactStats: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
                        </div>
                     </div>
-                    <Button type="submit" className="w-full h-20 rounded-[1.8rem] text-[13px] font-black uppercase tracking-[0.3em] bg-primary text-primary-foreground shadow-2xl shadow-primary/20">COMMIT DEPLOYMENT</Button>
+                    <Button type="submit" className="w-full h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-xl shadow-primary/20">COMMIT DEPLOYMENT</Button>
                   </form>
                 </CardContent>
               </Card>
@@ -510,7 +509,7 @@ function AdminContent() {
                         <Input value={certForm.imageUrl} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
                       </div>
                     </div>
-                    <Button type="submit" className="w-full h-20 rounded-[1.8rem] text-[13px] font-black uppercase tracking-[0.3em] bg-primary text-primary-foreground shadow-2xl shadow-primary/20">FINALIZE CREDENTIAL</Button>
+                    <Button type="submit" className="w-full h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-xl shadow-primary/20">FINALIZE CREDENTIAL</Button>
                   </form>
                 </CardContent>
               </Card>
@@ -574,7 +573,7 @@ function AdminContent() {
                              <Textarea value={testForm.contentEn} onChange={e => setTestForm({...testForm, contentEn: e.target.value})} className="h-36 rounded-3xl bg-muted/30 border-none" />
                           </div>
                        </div>
-                       <Button type="submit" className="w-full h-20 rounded-[1.8rem] text-[13px] font-black uppercase tracking-[0.3em] bg-primary text-primary-foreground shadow-2xl shadow-primary/20">COMMIT PROOF</Button>
+                       <Button type="submit" className="w-full h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-xl shadow-primary/20">COMMIT PROOF</Button>
                     </form>
                   </CardContent>
                 </Card>
@@ -648,7 +647,7 @@ function AdminContent() {
                              <Textarea value={expForm.descriptionEn} onChange={e => setExpForm({...expForm, descriptionEn: e.target.value})} className="h-36 rounded-3xl bg-muted/30 border-none" />
                           </div>
                        </div>
-                       <Button type="submit" className="w-full h-20 rounded-[1.8rem] text-[13px] font-black uppercase tracking-[0.3em] bg-primary text-primary-foreground shadow-2xl shadow-primary/20">FINALIZE MILESTONE</Button>
+                       <Button type="submit" className="w-full h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-xl shadow-primary/20">FINALIZE MILESTONE</Button>
                     </form>
                   </CardContent>
                 </Card>
