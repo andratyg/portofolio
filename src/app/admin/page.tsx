@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useEffect, useState, useRef } from 'react';
@@ -15,10 +16,11 @@ import {
   Briefcase, LayoutDashboard, History, ShieldAlert, CheckCircle2, 
   Download, Upload, HelpCircle, Info, Wifi, WifiOff, AlertTriangle, 
   Mail, Instagram, Github, Linkedin, Video, Send, Wand2, Type, FileText,
-  UserPlus, Calendar
+  UserPlus, Calendar, Zap
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
+import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-portfolio-description-suggestion';
 import { useToast } from '@/hooks/use-toast';
 import { ProfileData, Project, Certificate, Testimonial, Experience } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -46,7 +48,26 @@ function AdminContent() {
   const [isTranslating, setIsTranslating] = useState<string | null>(null);
   const [isAIThinking, setIsAIThinking] = useState<string | null>(null);
   const [isOnline, setIsOnline] = useState(true);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Smart Header Visibility Logic
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY < 10) {
+        setIsHeaderVisible(true);
+      } else if (currentScrollY > lastScrollY) {
+        setIsHeaderVisible(false); // Scroll Down
+      } else {
+        setIsHeaderVisible(true); // Scroll Up
+      }
+      setLastScrollY(currentScrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   useEffect(() => {
     setIsOnline(navigator.onLine);
@@ -162,6 +183,28 @@ function AdminContent() {
     }
   };
 
+  const handleGenerateProjectSuggestion = async () => {
+    if (!projectForm.titleId) {
+      toast({ variant: "destructive", title: "Title Required", description: "Project title is needed for AI analysis." });
+      return;
+    }
+    setIsAIThinking('project');
+    try {
+      const res = await generatePortfolioDescriptionSuggestion({
+        title: projectForm.titleId,
+        projectType: projectForm.type,
+        technologiesUsed: projectForm.technologies.split(',').map(s => s.trim()),
+        problemSolved: projectForm.problemId
+      });
+      setProjectForm({ ...projectForm, shortDescriptionId: res.descriptionSuggestion });
+      toast({ title: "AI Innovation Suggestion", description: "Creative description drafted." });
+    } catch (e) {
+      toast({ variant: "destructive", title: "AI Error", description: "Failed to communicate with the idea forge." });
+    } finally {
+      setIsAIThinking(null);
+    }
+  };
+
   if (isUserLoading || storeLoading || isAdminLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -171,8 +214,8 @@ function AdminContent() {
             <div className="absolute inset-0 blur-xl bg-primary/20 rounded-full animate-pulse"></div>
           </div>
           <div className="text-center space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Establishing Cloud Link</p>
-            <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Verifying Admin Credentials</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Synchronizing Cloud State</p>
+            <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Validating Credentials</p>
           </div>
         </div>
       </div>
@@ -182,21 +225,21 @@ function AdminContent() {
   if (user && !adminData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-6">
-        <Card className="w-full max-w-xl rounded-[3rem] p-12 text-center space-y-10 shadow-2xl border-border/50">
+        <Card className="w-full max-w-xl rounded-[3rem] p-12 text-center space-y-10 shadow-2xl border-border/50 bg-card/50 backdrop-blur-xl">
           <div className="mx-auto w-20 h-20 bg-destructive/10 rounded-3xl flex items-center justify-center">
             <ShieldAlert className="h-10 w-10 text-destructive" />
           </div>
           <div className="space-y-4">
-            <h2 className="text-4xl font-black font-headline tracking-tighter">Access Forbidden</h2>
-            <p className="text-muted-foreground text-sm leading-relaxed">Account <span className="text-foreground font-bold">{user.email}</span> is authenticated but lacks administrative authorization tokens.</p>
+            <h2 className="text-4xl font-black font-headline tracking-tighter">Access Denied</h2>
+            <p className="text-muted-foreground text-sm leading-relaxed">Identity <span className="text-foreground font-bold">{user.email}</span> lacks administrative protocols.</p>
           </div>
           <div className="p-8 bg-muted/50 rounded-3xl text-left space-y-6 border border-border/50">
-            <p className="text-xs font-black text-primary uppercase tracking-[0.2em]">Required Protocol:</p>
+            <p className="text-xs font-black text-primary uppercase tracking-[0.2em]">Manual Override Required:</p>
             <ol className="text-xs text-muted-foreground space-y-3 list-decimal list-inside font-medium">
-              <li>Copy User UID: <code className="bg-background px-3 py-1.5 rounded-lg text-primary font-bold border border-primary/20 select-all">{user.uid}</code></li>
-              <li>Navigate to Firebase Console &rarr; Firestore.</li>
-              <li>Register this UID as document ID in <code className="font-bold text-foreground">admins</code> collection.</li>
-              <li>Set field <code className="text-primary font-bold">role: "super"</code>.</li>
+              <li>Copy UID: <code className="bg-background px-3 py-1.5 rounded-lg text-primary font-bold border border-primary/20 select-all">{user.uid}</code></li>
+              <li>Open Firestore Console.</li>
+              <li>Add to <code className="font-bold text-foreground">admins</code> collection.</li>
+              <li>Set <code className="text-primary font-bold">role: "super"</code>.</li>
             </ol>
           </div>
           <Button onClick={() => signOut(auth)} variant="outline" className="w-full h-14 rounded-2xl font-bold uppercase text-[10px] tracking-widest">Terminate Session</Button>
@@ -208,15 +251,19 @@ function AdminContent() {
   return (
     <div className="min-h-screen bg-background text-foreground pb-24 relative selection:bg-primary selection:text-primary-foreground">
       {!isOnline && (
-        <div className="bg-destructive text-destructive-foreground py-2.5 px-6 flex items-center justify-center gap-2 sticky top-0 z-[60] shadow-lg animate-in slide-in-from-top duration-500">
+        <div className="bg-destructive text-destructive-foreground py-2.5 px-6 flex items-center justify-center gap-2 sticky top-0 z-[60] shadow-lg">
           <WifiOff className="h-4 w-4" />
-          <span className="text-[10px] font-black uppercase tracking-[0.2em]">Network Interrupted - Offline Persistence Active</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.2em]">Offline State Active</span>
         </div>
       )}
 
-      <header className="bg-background/80 backdrop-blur-2xl border-b border-border/50 h-20 sticky top-0 z-50 flex items-center justify-between px-8">
+      {/* Smart Sticky Header */}
+      <header className={cn(
+        "bg-background/80 backdrop-blur-2xl border-b border-border/50 h-20 sticky top-0 z-50 flex items-center justify-between px-8 transition-transform duration-500 ease-in-out",
+        isHeaderVisible ? "translate-y-0" : "-translate-y-full"
+      )}>
         <div className="flex items-center gap-6">
-          <Button variant="ghost" size="icon" onClick={() => router.push('/')} className="rounded-2xl h-11 w-11 border border-border/50 hover:bg-muted/50">
+          <Button variant="ghost" size="icon" onClick={() => router.push('/')} className="rounded-2xl h-11 w-11 border border-border/50 hover:bg-muted/50 transition-all hover:scale-110">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-4">
@@ -241,7 +288,11 @@ function AdminContent() {
 
       <div className="container mx-auto px-6 py-12 max-w-7xl">
         <Tabs defaultValue="profile" className="space-y-16">
-          <div className="flex justify-center sticky top-24 z-40">
+          {/* Smart Sticky Tabs List */}
+          <div className={cn(
+            "flex justify-center sticky z-40 transition-all duration-500",
+            isHeaderVisible ? "top-24" : "top-4"
+          )}>
             <TabsList className="h-16 bg-card/80 backdrop-blur-2xl border border-border/50 shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-2 w-full max-w-5xl overflow-x-auto no-scrollbar rounded-[2rem]">
               <TabsTrigger value="profile" className="rounded-2xl font-black uppercase text-[10px] tracking-[0.15em] gap-3 px-6 h-full data-[state=active]:shadow-lg">
                 <UserCircle className="h-4 w-4" /> <span className="hidden lg:inline">Profile</span>
@@ -270,7 +321,7 @@ function AdminContent() {
                 <CardHeader className="p-10 border-b border-border/50 bg-muted/20 flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="space-y-2">
                     <CardTitle className="font-black font-headline text-3xl tracking-tighter uppercase">Brand Identity</CardTitle>
-                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground">Modify global professional persona</CardDescription>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground">Manage Global Professional State</CardDescription>
                   </div>
                   <div className="flex gap-3">
                     <Button type="button" variant="outline" onClick={() => handleAITranslate('profile', profileFormData, setProfileFormData, 'id-to-en')} disabled={isTranslating === 'profile'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5">
@@ -280,18 +331,18 @@ function AdminContent() {
                   </div>
                 </CardHeader>
                 <CardContent className="p-10">
-                  <form onSubmit={(e) => { e.preventDefault(); updateProfile(profileFormData); toast({ title: "Identity Updated", description: "Global profile records have been overwritten." }); }} className="space-y-12">
+                  <form onSubmit={(e) => { e.preventDefault(); updateProfile(profileFormData); toast({ title: "Identity Updated", description: "Global records overwritten." }); }} className="space-y-12">
                     <div className="grid lg:grid-cols-3 gap-8">
                        <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">Legal Full Name</label>
-                          <Input value={profileFormData.name} onChange={e => setProfileFormData({...profileFormData, name: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50 focus:ring-primary/20" />
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">Full Name</label>
+                          <Input value={profileFormData.name} onChange={e => setProfileFormData({...profileFormData, name: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                        </div>
                        <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">Professional Role (ID)</label>
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">Role (ID)</label>
                           <Input value={profileFormData.roleId} onChange={e => setProfileFormData({...profileFormData, roleId: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                        </div>
                        <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">Professional Role (EN)</label>
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">Role (EN)</label>
                           <Input value={profileFormData.roleEn} onChange={e => setProfileFormData({...profileFormData, roleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                        </div>
                     </div>
@@ -307,33 +358,22 @@ function AdminContent() {
                        </div>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-8">
-                       <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">About Me (ID)</label>
-                          <Textarea value={profileFormData.aboutMeId} onChange={e => setProfileFormData({...profileFormData, aboutMeId: e.target.value})} className="h-40 rounded-3xl bg-background/50 border-border/50" />
-                       </div>
-                       <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">About Me (EN)</label>
-                          <Textarea value={profileFormData.aboutMeEn} onChange={e => setProfileFormData({...profileFormData, aboutMeEn: e.target.value})} className="h-40 rounded-3xl bg-background/50 border-border/50" />
-                       </div>
-                    </div>
-
                     <div className="grid lg:grid-cols-3 gap-8">
                        <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">Public Email</label>
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">Email</label>
                           <Input value={profileFormData.email} onChange={e => setProfileFormData({...profileFormData, email: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                        </div>
                        <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">WhatsApp</label>
-                          <Input value={profileFormData.whatsapp} onChange={e => setProfileFormData({...profileFormData, whatsapp: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">Instagram URL</label>
+                          <Input value={profileFormData.instagram} onChange={e => setProfileFormData({...profileFormData, instagram: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                        </div>
                        <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">LinkedIn URL</label>
-                          <Input value={profileFormData.linkedin} onChange={e => setProfileFormData({...profileFormData, linkedin: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">TikTok URL</label>
+                          <Input value={profileFormData.tiktok} onChange={e => setProfileFormData({...profileFormData, tiktok: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                        </div>
                     </div>
 
-                    <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20 hover:scale-[0.99] transition-transform">Commit Identity State</Button>
+                    <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20 hover:scale-[0.99] transition-all">Archive Identity</Button>
                   </form>
                 </CardContent>
              </Card>
@@ -346,12 +386,18 @@ function AdminContent() {
                 <CardHeader className="p-10 border-b border-border/50 bg-muted/20 flex flex-row items-center justify-between">
                   <div className="space-y-2">
                     <CardTitle className="font-black font-headline text-2xl uppercase tracking-tighter">Case Study Forge</CardTitle>
-                    <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Deploy new professional deployment unit</CardDescription>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Deploy New Professional Assets</CardDescription>
                   </div>
-                  <Button type="button" variant="outline" onClick={() => handleAITranslate('project', projectForm, setProjectForm)} disabled={isTranslating === 'project'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
-                    {isTranslating === 'project' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
-                    AI Localize
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button type="button" variant="outline" onClick={handleGenerateProjectSuggestion} disabled={isAIThinking === 'project'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest border-accent/20 text-accent">
+                      {isAIThinking === 'project' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                      AI Suggest
+                    </Button>
+                    <Button type="button" variant="outline" onClick={() => handleAITranslate('project', projectForm, setProjectForm)} disabled={isTranslating === 'project'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
+                      {isTranslating === 'project' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
+                      AI Localize
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent className="p-10">
                   <form onSubmit={(e) => {
@@ -365,57 +411,53 @@ function AdminContent() {
                       resultId: '', resultEn: '', impactStats: '',
                       technologies: '', imageUrl: '', demoUrl: '', featured: false 
                     });
-                    toast({ title: "Deployment Executed", description: "Project case study pushed to production." });
+                    toast({ title: "Deployment Executed", description: "Case study live." });
                   }} className="space-y-10">
                     <div className="grid md:grid-cols-2 gap-8">
                       <div className="space-y-2.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Project Title (ID)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Title (ID)</label>
                         <Input required value={projectForm.titleId} onChange={e => setProjectForm({...projectForm, titleId: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                       </div>
                       <div className="space-y-2.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Project Title (EN)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Title (EN)</label>
                         <Input value={projectForm.titleEn} onChange={e => setProjectForm({...projectForm, titleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                       </div>
                     </div>
-
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Short Bio (ID)</label>
+                        <Textarea value={projectForm.shortDescriptionId} onChange={e => setProjectForm({...projectForm, shortDescriptionId: e.target.value})} className="h-24 rounded-2xl bg-background/50 border-border/50" />
+                      </div>
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Short Bio (EN)</label>
+                        <Textarea value={projectForm.shortDescriptionEn} onChange={e => setProjectForm({...projectForm, shortDescriptionEn: e.target.value})} className="h-24 rounded-2xl bg-background/50 border-border/50" />
+                      </div>
+                    </div>
                     <div className="grid md:grid-cols-2 gap-8">
                        <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Problem Statement (ID)</label>
-                          <Textarea value={projectForm.problemId} onChange={e => setProjectForm({...projectForm, problemId: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" placeholder="What challenge was solved?" />
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Technical Problem (ID)</label>
+                          <Textarea value={projectForm.problemId} onChange={e => setProjectForm({...projectForm, problemId: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
                        </div>
                        <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Problem Statement (EN)</label>
-                          <Textarea value={projectForm.problemEn} onChange={e => setProjectForm({...projectForm, problemEn: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Resolution (ID)</label>
+                          <Textarea value={projectForm.solutionId} onChange={e => setProjectForm({...projectForm, solutionId: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
                        </div>
                     </div>
-
-                    <div className="grid md:grid-cols-2 gap-8">
-                       <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Technical Solution (ID)</label>
-                          <Textarea value={projectForm.solutionId} onChange={e => setProjectForm({...projectForm, solutionId: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" placeholder="How did you solve it?" />
-                       </div>
-                       <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Technical Solution (EN)</label>
-                          <Textarea value={projectForm.solutionEn} onChange={e => setProjectForm({...projectForm, solutionEn: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
-                       </div>
-                    </div>
-
                     <div className="grid lg:grid-cols-3 gap-8">
                        <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Key Technologies</label>
-                          <Input placeholder="Next.js, Tailwind, etc" value={projectForm.technologies} onChange={e => setProjectForm({...projectForm, technologies: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Stack (CSV)</label>
+                          <Input placeholder="Next.js, Tailwind" value={projectForm.technologies} onChange={e => setProjectForm({...projectForm, technologies: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                       </div>
+                       <div className="space-y-2.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Media URL</label>
+                          <Input value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                        </div>
                        <div className="space-y-2.5">
                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Impact Stats</label>
-                          <Input placeholder="99.9% Uptime / 10k Users" value={projectForm.impactStats} onChange={e => setProjectForm({...projectForm, impactStats: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
-                       </div>
-                       <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Image URL</label>
-                          <Input value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                          <Input placeholder="99.9% Uptime" value={projectForm.impactStats} onChange={e => setProjectForm({...projectForm, impactStats: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                        </div>
                     </div>
-
-                    <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20">Finalize Deployment</Button>
+                    <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20">Commit Deployment</Button>
                   </form>
                 </CardContent>
               </Card>
@@ -425,21 +467,13 @@ function AdminContent() {
                 <div className="w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center">
                   <Laptop className="h-3 w-3 text-primary" />
                 </div>
-                Active Infrastructure ({projects.length})
+                Live Infrastructure ({projects.length})
               </h3>
               <div className="grid gap-4">
-                {projects.length === 0 ? (
-                  <div className="p-12 border-2 border-dashed border-border/50 rounded-[3rem] text-center space-y-4 bg-muted/10">
-                    <FileText className="h-12 w-12 text-muted-foreground mx-auto opacity-20" />
-                    <div className="space-y-1">
-                      <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Empty Repository</p>
-                      <p className="text-[9px] text-muted-foreground/60 uppercase font-bold tracking-widest">Awaiting first case study deployment.</p>
-                    </div>
-                  </div>
-                ) : projects.map(p => (
+                {projects.map(p => (
                   <Card key={p.id} className="p-4 flex gap-5 items-center group bg-card/50 backdrop-blur-md border-border/50 hover:border-primary/50 transition-all rounded-[1.5rem] shadow-sm">
                     <div className="w-16 h-16 rounded-2xl bg-muted overflow-hidden shrink-0 shadow-inner">
-                      <img src={p.imageUrl || "https://placehold.co/100x100"} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                      <img src={p.imageUrl || "https://placehold.co/100x100"} className="w-full h-full object-cover group-hover:scale-110 transition-all" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-black truncate text-sm tracking-tight">{p.titleId}</h4>
@@ -449,7 +483,7 @@ function AdminContent() {
                       </div>
                     </div>
                     {isSuper && (
-                      <Button variant="ghost" size="icon" onClick={() => { if(confirm("Confirm deletion of deployment unit?")) deleteProject(p.id) }} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button variant="ghost" size="icon" onClick={() => deleteProject(p.id)} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100">
                         <Trash2 className="h-5 w-5" />
                       </Button>
                     )}
@@ -466,27 +500,33 @@ function AdminContent() {
                 <CardHeader className="p-10 border-b border-border/50 bg-muted/20 flex flex-row items-center justify-between">
                   <div className="space-y-2">
                     <CardTitle className="font-black font-headline text-2xl uppercase tracking-tighter">Credential Vault</CardTitle>
-                    <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Authenticate new technical certification</CardDescription>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Archive Technical Authentication</CardDescription>
                   </div>
-                  <Button type="button" variant="outline" onClick={() => handleAITranslate('certificate', certForm, setCertForm)} disabled={isTranslating === 'certificate'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
-                    {isTranslating === 'certificate' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
-                    AI Localize
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button type="button" variant="outline" onClick={handleGenerateCertDesc} disabled={isAIThinking === 'cert'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest border-accent/20 text-accent">
+                      {isAIThinking === 'cert' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                      AI Suggest
+                    </Button>
+                    <Button type="button" variant="outline" onClick={() => handleAITranslate('certificate', certForm, setCertForm)} disabled={isTranslating === 'certificate'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
+                      {isTranslating === 'certificate' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
+                      AI Localize
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent className="p-10">
                   <form onSubmit={(e) => {
                     e.preventDefault();
                     addCertificate({ ...certForm, id: Date.now().toString() } as any);
                     setCertForm({ titleId: '', titleEn: '', issuer: '', year: '', validUntil: '', imageUrl: '', shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '' });
-                    toast({ title: "Credential Locked", description: "Certificate added to global records." });
+                    toast({ title: "Credential Locked", description: "Record pushed." });
                   }} className="space-y-8">
                     <div className="grid md:grid-cols-2 gap-8">
                       <div className="space-y-2.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cert Title (ID)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (ID)</label>
                         <Input required value={certForm.titleId} onChange={e => setCertForm({...certForm, titleId: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                       </div>
                       <div className="space-y-2.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cert Title (EN)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (EN)</label>
                         <Input value={certForm.titleEn} onChange={e => setCertForm({...certForm, titleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                       </div>
                     </div>
@@ -496,31 +536,21 @@ function AdminContent() {
                         <Input required value={certForm.issuer} onChange={e => setCertForm({...certForm, issuer: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                       </div>
                       <div className="space-y-2.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Image URL</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Media URL</label>
                         <Input value={certForm.imageUrl} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                       </div>
                     </div>
-                    <div className="grid lg:grid-cols-3 gap-8">
-                       <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Year Issued</label>
-                          <Input value={certForm.year} onChange={e => setCertForm({...certForm, year: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
-                       </div>
-                       <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Valid Until</label>
-                          <Input value={certForm.validUntil} onChange={e => setCertForm({...certForm, validUntil: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
-                       </div>
-                       <div className="flex items-end pb-1">
-                          <Button type="button" variant="outline" onClick={handleGenerateCertDesc} disabled={isAIThinking === 'cert'} className="w-full h-14 rounded-2xl gap-3 text-[10px] font-black uppercase tracking-widest border-accent/20 text-accent">
-                             {isAIThinking === 'cert' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                             AI Write Desc
-                          </Button>
-                       </div>
-                    </div>
-                    <div className="space-y-2.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Full Description (ID)</label>
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Narrative (ID)</label>
                         <Textarea value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
+                      </div>
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Narrative (EN)</label>
+                        <Textarea value={certForm.fullDescriptionEn} onChange={e => setCertForm({...certForm, fullDescriptionEn: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
+                      </div>
                     </div>
-                    <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20">Archive Credential</Button>
+                    <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20">Finalize Credential</Button>
                   </form>
                 </CardContent>
               </Card>
@@ -530,7 +560,7 @@ function AdminContent() {
                 <div className="w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center">
                   <Award className="h-3 w-3 text-primary" />
                 </div>
-                Verified Certs ({certificates.length})
+                Active Credentials ({certificates.length})
               </h3>
               <div className="grid gap-4">
                 {certificates.map(c => (
@@ -559,8 +589,8 @@ function AdminContent() {
                 <Card className="rounded-[3rem] shadow-2xl border-border/50 bg-card/50 backdrop-blur-xl">
                   <CardHeader className="p-10 border-b border-border/50 bg-muted/20 flex flex-row items-center justify-between">
                     <div className="space-y-2">
-                      <CardTitle className="font-black font-headline text-2xl uppercase tracking-tighter">Social Proof Console</CardTitle>
-                      <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Log client and collaborator testimonials</CardDescription>
+                      <CardTitle className="font-black font-headline text-2xl uppercase tracking-tighter">Social Proof console</CardTitle>
+                      <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Log Client & Collaborator Feedback</CardDescription>
                     </div>
                     <Button type="button" variant="outline" onClick={() => handleAITranslate('feedback', testForm, setTestForm)} disabled={isTranslating === 'feedback'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
                       {isTranslating === 'feedback' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
@@ -572,11 +602,11 @@ function AdminContent() {
                       e.preventDefault();
                       addTestimonial({ ...testForm, id: Date.now().toString() } as any);
                       setTestForm({ name: '', roleId: '', roleEn: '', contentId: '', contentEn: '', avatarUrl: '' });
-                      toast({ title: "Feedback Archived", description: "Testimonial record has been pushed." });
+                      toast({ title: "Feedback Pushed", description: "Testimonial record live." });
                     }} className="space-y-8">
                        <div className="grid md:grid-cols-2 gap-8">
                           <div className="space-y-2.5">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Author Name</label>
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Author</label>
                              <Input required value={testForm.name} onChange={e => setTestForm({...testForm, name: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                           </div>
                           <div className="space-y-2.5">
@@ -586,19 +616,25 @@ function AdminContent() {
                        </div>
                        <div className="grid md:grid-cols-2 gap-8">
                           <div className="space-y-2.5">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Author Role (ID)</label>
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Role (ID)</label>
                              <Input required value={testForm.roleId} onChange={e => setTestForm({...testForm, roleId: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                           </div>
                           <div className="space-y-2.5">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Author Role (EN)</label>
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Role (EN)</label>
                              <Input value={testForm.roleEn} onChange={e => setTestForm({...testForm, roleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                           </div>
                        </div>
-                       <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Testimonial Content (ID)</label>
-                          <Textarea required value={testForm.contentId} onChange={e => setTestForm({...testForm, contentId: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
+                       <div className="grid md:grid-cols-2 gap-8">
+                          <div className="space-y-2.5">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Content (ID)</label>
+                             <Textarea required value={testForm.contentId} onChange={e => setTestForm({...testForm, contentId: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
+                          </div>
+                          <div className="space-y-2.5">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Content (EN)</label>
+                             <Textarea value={testForm.contentEn} onChange={e => setTestForm({...testForm, contentEn: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
+                          </div>
                        </div>
-                       <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20">Commit Testimonial</Button>
+                       <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20">Commit Proof</Button>
                     </form>
                   </CardContent>
                 </Card>
@@ -608,7 +644,7 @@ function AdminContent() {
                 <div className="w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center">
                   <Quote className="h-3 w-3 text-primary" />
                 </div>
-                Active Proof ({testimonials.length})
+                Proof Logs ({testimonials.length})
               </h3>
               <div className="grid gap-4">
                 {testimonials.map(t => (
@@ -638,7 +674,7 @@ function AdminContent() {
                   <CardHeader className="p-10 border-b border-border/50 bg-muted/20 flex flex-row items-center justify-between">
                     <div className="space-y-2">
                       <CardTitle className="font-black font-headline text-2xl uppercase tracking-tighter">Timeline Architect</CardTitle>
-                      <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Map professional and educational milestones</CardDescription>
+                      <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Map Professional & Academic Milestones</CardDescription>
                     </div>
                     <Button type="button" variant="outline" onClick={() => handleAITranslate('journey', expForm, setExpForm)} disabled={isTranslating === 'journey'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
                       {isTranslating === 'journey' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
@@ -650,31 +686,37 @@ function AdminContent() {
                       e.preventDefault();
                       addExperience({ ...expForm, id: Date.now().toString() } as any);
                       setExpForm({ year: '', company: '', titleId: '', titleEn: '', descriptionId: '', descriptionEn: '' });
-                      toast({ title: "Milestone Pushed", description: "Journey timeline updated successfully." });
+                      toast({ title: "Milestone Pushed", description: "Journey timeline updated." });
                     }} className="space-y-8">
                        <div className="grid md:grid-cols-2 gap-8">
                           <div className="space-y-2.5">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Timeline Span (e.g. 2021 - Present)</label>
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Timeline Span</label>
                              <Input required value={expForm.year} onChange={e => setExpForm({...expForm, year: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                           </div>
                           <div className="space-y-2.5">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Org / Company</label>
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Organization</label>
                              <Input required value={expForm.company} onChange={e => setExpForm({...expForm, company: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                           </div>
                        </div>
                        <div className="grid md:grid-cols-2 gap-8">
                           <div className="space-y-2.5">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Milestone Title (ID)</label>
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (ID)</label>
                              <Input required value={expForm.titleId} onChange={e => setExpForm({...expForm, titleId: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                           </div>
                           <div className="space-y-2.5">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Milestone Title (EN)</label>
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (EN)</label>
                              <Input value={expForm.titleEn} onChange={e => setExpForm({...expForm, titleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                           </div>
                        </div>
-                       <div className="space-y-2.5">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Role Description (ID)</label>
-                          <Textarea required value={expForm.descriptionId} onChange={e => setExpForm({...expForm, descriptionId: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
+                       <div className="grid md:grid-cols-2 gap-8">
+                          <div className="space-y-2.5">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Description (ID)</label>
+                             <Textarea required value={expForm.descriptionId} onChange={e => setExpForm({...expForm, descriptionId: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
+                          </div>
+                          <div className="space-y-2.5">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Description (EN)</label>
+                             <Textarea value={expForm.descriptionEn} onChange={e => setExpForm({...expForm, descriptionEn: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
+                          </div>
                        </div>
                        <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20">Finalize Milestone</Button>
                     </form>
@@ -686,7 +728,7 @@ function AdminContent() {
                 <div className="w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center">
                   <History className="h-3 w-3 text-primary" />
                 </div>
-                Journey Logs ({experiences.length})
+                Active Journey ({experiences.length})
               </h3>
               <div className="grid gap-4">
                 {experiences.map(exp => (
@@ -719,7 +761,7 @@ function AdminContent() {
                   </div>
                   <div className="space-y-1">
                     <CardTitle className="text-2xl font-black font-headline tracking-tighter uppercase">Enterprise Maintenance</CardTitle>
-                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground">Global recovery and system synchronization</CardDescription>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground">Global Recovery & Integrity State</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -753,10 +795,10 @@ function AdminContent() {
                     <div className="p-8 bg-amber-500/5 border border-amber-500/20 rounded-[2.5rem] space-y-6">
                       <div className="flex items-center gap-4 text-amber-600">
                         <ShieldAlert className="h-6 w-6" />
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Restricted Authorization</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Restricted Auth</h4>
                       </div>
                       <p className="text-[11px] leading-relaxed text-amber-700/80 font-bold uppercase tracking-wide">
-                        Atomic operations (Delete/Restore) are strictly limited to <strong className="text-amber-800">Super Admin</strong> credentials. 
+                        Atomic operations are strictly limited to <strong className="text-amber-800">Super Admin</strong>. 
                       </p>
                       <div className="flex items-center justify-between pt-4 border-t border-amber-500/20">
                         <span className="text-[8px] font-black uppercase tracking-widest text-amber-600">Current Role</span>
