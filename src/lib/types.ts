@@ -47,3 +47,10 @@ export interface PortfolioStats {
   techMastered: string;
   clientSatisfaction: string;
 }
+
+export interface ProfileData {
+  name: string;
+  role: string;
+  aboutText: string;
+  profileImageUrl: string;
+}

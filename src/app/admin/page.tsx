@@ -9,17 +9,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, Save } from 'lucide-react';
+import { Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, Save, UserCircle } from 'lucide-react';
 import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-portfolio-description-suggestion';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
 import { useToast } from '@/hooks/use-toast';
-import { Project, Certificate } from '@/lib/types';
+import { Project, Certificate, ProfileData } from '@/lib/types';
 
 function AdminContent() {
   const { 
     projects, addProject, deleteProject, 
     certificates, addCertificate, deleteCertificate,
-    stats, updateStats
+    stats, updateStats,
+    profile, updateProfile
   } = useProjectStore();
   
   const router = useRouter();
@@ -27,22 +28,18 @@ function AdminContent() {
   const [isAIThinking, setIsAIThinking] = useState(false);
   const [isCertAIThinking, setIsCertAIThinking] = useState(false);
   
-  // New Project Form State
-  const [formData, setFormData] = useState({
+  // Forms state
+  const [projectForm, setProjectForm] = useState({
     title: '',
     type: 'web' as 'web' | 'ui' | 'backend',
     shortDescription: '',
     fullDescription: '',
     technologies: '',
-    problemSolved: '',
-    process: '',
-    results: '',
     imageUrl: '',
     demoUrl: ''
   });
 
-  // New Certificate Form State
-  const [certData, setCertData] = useState({
+  const [certForm, setCertForm] = useState({
     title: '',
     shortDescription: '',
     fullDescription: '',
@@ -52,8 +49,8 @@ function AdminContent() {
     imageUrl: ''
   });
 
-  // Stats Settings State
   const [statsData, setStatsData] = useState(stats);
+  const [profileData, setProfileData] = useState<ProfileData>(profile);
 
   useEffect(() => {
     const auth = sessionStorage.getItem('karyapro-auth');
@@ -62,7 +59,8 @@ function AdminContent() {
 
   useEffect(() => {
     setStatsData(stats);
-  }, [stats]);
+    setProfileData(profile);
+  }, [stats, profile]);
 
   const handleLogout = () => {
     sessionStorage.removeItem('karyapro-auth');
@@ -70,88 +68,65 @@ function AdminContent() {
   };
 
   const handleGenerateAI = async () => {
-    if (!formData.title) {
-      toast({ title: "Title Required", description: "Please enter a project title first.", variant: "destructive" });
+    if (!projectForm.title) {
+      toast({ title: "Title Required", description: "Please enter a title.", variant: "destructive" });
       return;
     }
-
     setIsAIThinking(true);
     try {
       const result = await generatePortfolioDescriptionSuggestion({
-        title: formData.title,
-        projectType: formData.type,
-        technologiesUsed: formData.technologies.split(',').map(s => s.trim()),
-        problemSolved: formData.problemSolved,
+        title: projectForm.title,
+        projectType: projectForm.type,
+        technologiesUsed: projectForm.technologies.split(',').map(s => s.trim()),
       });
-      setFormData(prev => ({ ...prev, fullDescription: result.descriptionSuggestion }));
-      toast({ title: "AI Generated!", description: "Description suggested!" });
-    } catch (error) {
-      toast({ title: "AI Error", description: "Could not generate description.", variant: "destructive" });
+      setProjectForm(prev => ({ ...prev, fullDescription: result.descriptionSuggestion }));
+    } catch (e) {
+      toast({ title: "AI Error", variant: "destructive" });
     } finally {
       setIsAIThinking(false);
     }
   };
 
   const handleGenerateCertAI = async () => {
-    if (!certData.title || !certData.issuer) {
-      toast({ title: "Details Required", description: "Please enter title and issuer.", variant: "destructive" });
+    if (!certForm.title || !certForm.issuer) {
+      toast({ title: "Details Required", variant: "destructive" });
       return;
     }
-
     setIsCertAIThinking(true);
     try {
       const result = await generateCertificateDescription({
-        title: certData.title,
-        issuer: certData.issuer,
-        shortDescription: certData.shortDescription,
+        title: certForm.title,
+        issuer: certForm.issuer,
       });
-      setCertData(prev => ({ ...prev, fullDescription: result.descriptionSuggestion }));
-      toast({ title: "AI Generated!", description: "Certificate description suggested!" });
-    } catch (error) {
-      toast({ title: "AI Error", description: "Could not generate description.", variant: "destructive" });
+      setCertForm(prev => ({ ...prev, fullDescription: result.descriptionSuggestion }));
+    } catch (e) {
+      toast({ title: "AI Error", variant: "destructive" });
     } finally {
       setIsCertAIThinking(false);
     }
   };
 
-  const handleSubmitProject = (e: React.FormEvent) => {
+  const submitProject = (e: React.FormEvent) => {
     e.preventDefault();
-    const newProject: Project = {
+    addProject({
+      ...projectForm,
       id: Date.now().toString(),
-      ...formData,
-      technologies: formData.technologies.split(',').map(s => s.trim()),
-      featured: false
-    };
-    addProject(newProject);
-    toast({ title: "Success", description: "Project added!" });
-    setFormData({
-      title: '', type: 'web', shortDescription: '', fullDescription: '',
-      technologies: '', problemSolved: '', process: '', results: '',
-      imageUrl: '', demoUrl: ''
-    });
+      technologies: projectForm.technologies.split(',').map(s => s.trim()),
+      problemSolved: '', process: '', results: ''
+    } as any);
+    toast({ title: "Project Added" });
+    setProjectForm({ title: '', type: 'web', shortDescription: '', fullDescription: '', technologies: '', imageUrl: '', demoUrl: '' });
   };
 
-  const handleSubmitCertificate = (e: React.FormEvent) => {
+  const submitCertificate = (e: React.FormEvent) => {
     e.preventDefault();
-    const newCert: Certificate = {
-      id: Date.now().toString(),
-      ...certData
-    };
-    addCertificate(newCert);
-    toast({ title: "Success", description: "Certificate added!" });
-    setCertData({
-      title: '', shortDescription: '', fullDescription: '',
-      year: '', issuer: '', validUntil: '', imageUrl: ''
-    });
-  };
-
-  const handleSaveStats = () => {
-    updateStats(statsData);
-    toast({ title: "Stats Updated", description: "Portfolio statistics have been updated successfully!" });
+    addCertificate({ ...certForm, id: Date.now().toString() });
+    toast({ title: "Certificate Added" });
+    setCertForm({ title: '', shortDescription: '', fullDescription: '', year: '', issuer: '', validUntil: '', imageUrl: '' });
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 pb-20 theme-transition">
+    <div className="min-h-screen bg-muted/30 pb-20">
       <header className="bg-background border-b h-16 sticky top-0 z-30 flex items-center justify-between px-6 shadow-sm">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => router.push('/')}>
@@ -167,186 +142,134 @@ function AdminContent() {
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="projects" className="space-y-8">
           <div className="flex justify-center">
-            <TabsList className="grid w-full max-w-lg grid-cols-3 h-12 rounded-xl">
-              <TabsTrigger value="projects" className="rounded-lg">Projects</TabsTrigger>
-              <TabsTrigger value="certificates" className="rounded-lg">Certificates</TabsTrigger>
-              <TabsTrigger value="settings" className="rounded-lg">Stats</TabsTrigger>
+            <TabsList className="grid w-full max-w-2xl grid-cols-4 h-12 rounded-xl bg-card border shadow-sm p-1">
+              <TabsTrigger value="projects" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white">Projects</TabsTrigger>
+              <TabsTrigger value="certificates" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white">Certs</TabsTrigger>
+              <TabsTrigger value="stats" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white">Stats</TabsTrigger>
+              <TabsTrigger value="profile" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white">Profile</TabsTrigger>
             </TabsList>
           </div>
 
           <TabsContent value="projects" className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-8">
-              <Card className="rounded-3xl shadow-lg border-none overflow-hidden">
-                <CardHeader className="bg-primary text-primary-foreground p-8">
-                  <CardTitle className="text-2xl font-bold font-headline flex items-center gap-3">
-                    <Plus className="h-6 w-6" /> Add New Project
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-8">
-                  <form onSubmit={handleSubmitProject} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold">Project Title</label>
-                        <Input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} placeholder="E.g. Healthcare Mobile App" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold">Category</label>
-                        <select 
-                          className="w-full h-10 px-3 rounded-md border border-input bg-background"
-                          value={formData.type}
-                          onChange={e => setFormData({...formData, type: e.target.value as any})}
-                        >
-                          <option value="web">Web Development</option>
-                          <option value="ui">UI/UX Design</option>
-                          <option value="backend">Backend Services</option>
-                        </select>
-                      </div>
+            <Card className="lg:col-span-2 rounded-3xl shadow-lg border-none">
+              <CardHeader className="bg-primary text-primary-foreground p-8 rounded-t-3xl">
+                <CardTitle className="flex items-center gap-3"><Plus /> Add Project</CardTitle>
+              </CardHeader>
+              <CardContent className="p-8 space-y-6">
+                <form onSubmit={submitProject} className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold">Title</label>
+                      <Input required value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <label className="text-sm font-semibold">Description</label>
-                        <Button type="button" variant="outline" size="sm" onClick={handleGenerateAI} disabled={isAIThinking} className="gap-2">
-                          <Sparkles className="h-4 w-4" /> {isAIThinking ? 'AI Working...' : 'AI Suggest'}
-                        </Button>
-                      </div>
-                      <Textarea required value={formData.fullDescription} onChange={e => setFormData({...formData, fullDescription: e.target.value})} placeholder="Project details..." className="min-h-[120px]" />
+                      <label className="text-sm font-bold">Category</label>
+                      <select className="w-full h-10 px-3 rounded-md border" value={projectForm.type} onChange={e => setProjectForm({...projectForm, type: e.target.value as any})}>
+                        <option value="web">Web</option>
+                        <option value="ui">UI/UX</option>
+                        <option value="backend">Backend</option>
+                      </select>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold">Technologies</label>
-                        <Input required value={formData.technologies} onChange={e => setFormData({...formData, technologies: e.target.value})} placeholder="React, Node.js" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold">Image URL</label>
-                        <Input required value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value})} placeholder="https://..." />
-                      </div>
-                    </div>
-                    <Button type="submit" className="w-full h-12 rounded-xl text-lg font-bold">Publish Project</Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
-            <div className="space-y-6">
-              <h2 className="text-xl font-bold font-headline flex items-center gap-2 px-2"><Laptop className="h-5 w-5" /> Current Portfolio</h2>
-              <div className="space-y-4">
-                {projects.map(project => (
-                  <Card key={project.id} className="p-4 flex gap-4">
-                    <img src={project.imageUrl} className="w-16 h-16 rounded-lg object-cover" />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold truncate">{project.title}</h3>
-                      <Badge variant="secondary" className="text-[10px]">{project.type}</Badge>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive ml-auto block" onClick={() => deleteProject(project.id)}>
-                        <Trash2 className="h-4 w-4" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-sm font-bold">Description</label>
+                      <Button type="button" variant="outline" size="sm" onClick={handleGenerateAI} disabled={isAIThinking} className="gap-2">
+                        <Sparkles className="h-4 w-4" /> {isAIThinking ? 'AI Working...' : 'AI Suggest'}
                       </Button>
                     </div>
-                  </Card>
-                ))}
-              </div>
+                    <Textarea required value={projectForm.fullDescription} onChange={e => setProjectForm({...projectForm, fullDescription: e.target.value})} className="min-h-[120px]" />
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <Input placeholder="Technologies (comma separated)" value={projectForm.technologies} onChange={e => setProjectForm({...projectForm, technologies: e.target.value})} />
+                    <Input placeholder="Demo URL" value={projectForm.demoUrl} onChange={e => setProjectForm({...projectForm, demoUrl: e.target.value})} />
+                  </div>
+                  <Input placeholder="Image URL" value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} />
+                  <Button type="submit" className="w-full h-12 rounded-xl text-lg font-bold">Add Project</Button>
+                </form>
+              </CardContent>
+            </Card>
+            <div className="space-y-4">
+              <h3 className="font-bold text-lg flex items-center gap-2 px-2"><Laptop className="h-5 w-5" /> Active Projects</h3>
+              {projects.map(p => (
+                <Card key={p.id} className="p-4 flex gap-4 items-center">
+                  <img src={p.imageUrl} className="w-12 h-12 rounded-lg object-cover" />
+                  <div className="flex-1 min-w-0"><h4 className="font-bold truncate">{p.title}</h4><Badge variant="secondary" className="text-[10px]">{p.type}</Badge></div>
+                  <Button variant="ghost" size="icon" onClick={() => deleteProject(p.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                </Card>
+              ))}
             </div>
           </TabsContent>
 
           <TabsContent value="certificates" className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-8">
-              <Card className="rounded-3xl shadow-lg border-none overflow-hidden">
-                <CardHeader className="bg-accent text-accent-foreground p-8">
-                  <CardTitle className="text-2xl font-bold font-headline flex items-center gap-3">
-                    <Award className="h-6 w-6" /> Add New Certificate
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-8">
-                  <form onSubmit={handleSubmitCertificate} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold">Title</label>
-                        <Input required value={certData.title} onChange={e => setCertData({...certData, title: e.target.value})} placeholder="Certificate Name" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold">Issuer</label>
-                        <Input required value={certData.issuer} onChange={e => setCertData({...certData, issuer: e.target.value})} placeholder="Organization" />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <label className="text-sm font-semibold">Detailed Description</label>
-                        <Button type="button" variant="outline" size="sm" onClick={handleGenerateCertAI} disabled={isCertAIThinking} className="gap-2 text-accent border-accent/20">
-                          <Sparkles className="h-4 w-4" /> {isCertAIThinking ? 'AI Working...' : 'AI Suggest'}
-                        </Button>
-                      </div>
-                      <Textarea required value={certData.fullDescription} onChange={e => setCertData({...certData, fullDescription: e.target.value})} placeholder="What did you learn?" className="min-h-[120px]" />
-                    </div>
-                    <div className="grid md:grid-cols-3 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold">Short Desc</label>
-                        <Input required value={certData.shortDescription} onChange={e => setCertData({...certData, shortDescription: e.target.value})} placeholder="Quick summary" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold">Year</label>
-                        <Input required value={certData.year} onChange={e => setCertData({...certData, year: e.target.value})} placeholder="2023" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold">Valid Until</label>
-                        <Input required value={certData.validUntil} onChange={e => setCertData({...certData, validUntil: e.target.value})} placeholder="Expiry date" />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold">Image URL</label>
-                      <Input required value={certData.imageUrl} onChange={e => setCertData({...certData, imageUrl: e.target.value})} placeholder="https://..." />
-                    </div>
-                    <Button type="submit" className="w-full h-12 rounded-xl text-lg font-bold bg-accent hover:bg-accent/90">Add Certificate</Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
-            <div className="space-y-6">
-              <h2 className="text-xl font-bold font-headline flex items-center gap-2 px-2"><Award className="h-5 w-5" /> All Certificates</h2>
-              <div className="space-y-4">
-                {certificates.map(cert => (
-                  <Card key={cert.id} className="p-4 flex gap-4">
-                    <img src={cert.imageUrl} className="w-16 h-16 rounded-lg object-cover" />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold truncate">{cert.title}</h3>
-                      <p className="text-xs text-muted-foreground">{cert.issuer}</p>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive ml-auto block" onClick={() => deleteCertificate(cert.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+            <Card className="lg:col-span-2 rounded-3xl shadow-lg border-none">
+              <CardHeader className="bg-accent text-accent-foreground p-8 rounded-t-3xl">
+                <CardTitle className="flex items-center gap-3"><Award /> Add Certificate</CardTitle>
+              </CardHeader>
+              <CardContent className="p-8 space-y-6">
+                <form onSubmit={submitCertificate} className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <Input required placeholder="Cert Title" value={certForm.title} onChange={e => setCertForm({...certForm, title: e.target.value})} />
+                    <Input required placeholder="Issuer" value={certForm.issuer} onChange={e => setCertForm({...certForm, issuer: e.target.value})} />
+                  </div>
+                  <div className="space-y-2">
+                    <Button type="button" variant="outline" size="sm" onClick={handleGenerateCertAI} disabled={isCertAIThinking} className="gap-2">
+                      <Sparkles className="h-4 w-4" /> {isCertAIThinking ? 'AI Working...' : 'AI Suggest'}
+                    </Button>
+                    <Textarea required placeholder="Full Description" value={certForm.fullDescription} onChange={e => setCertForm({...certForm, fullDescription: e.target.value})} />
+                  </div>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <Input placeholder="Short Desc" value={certForm.shortDescription} onChange={e => setCertForm({...certForm, shortDescription: e.target.value})} />
+                    <Input placeholder="Year" value={certForm.year} onChange={e => setCertForm({...certForm, year: e.target.value})} />
+                    <Input placeholder="Valid Until" value={certForm.validUntil} onChange={e => setCertForm({...certForm, validUntil: e.target.value})} />
+                  </div>
+                  <Input placeholder="Image URL" value={certForm.imageUrl} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} />
+                  <Button type="submit" className="w-full h-12 rounded-xl text-lg font-bold bg-accent hover:bg-accent/90">Add Certificate</Button>
+                </form>
+              </CardContent>
+            </Card>
+            <div className="space-y-4">
+              <h3 className="font-bold text-lg flex items-center gap-2 px-2"><Award className="h-5 w-5" /> Your Certs</h3>
+              {certificates.map(c => (
+                <Card key={c.id} className="p-4 flex gap-4 items-center">
+                  <img src={c.imageUrl} className="w-12 h-12 rounded-lg object-cover" />
+                  <div className="flex-1 min-w-0"><h4 className="font-bold truncate">{c.title}</h4><p className="text-xs text-muted-foreground">{c.issuer}</p></div>
+                  <Button variant="ghost" size="icon" onClick={() => deleteCertificate(c.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                </Card>
+              ))}
             </div>
           </TabsContent>
 
-          <TabsContent value="settings" className="max-w-4xl mx-auto">
+          <TabsContent value="stats" className="max-w-4xl mx-auto">
             <Card className="rounded-3xl shadow-lg border-none overflow-hidden">
               <CardHeader className="bg-slate-800 text-white p-8">
-                <CardTitle className="text-2xl font-bold font-headline flex items-center gap-3">
-                  <Settings className="h-6 w-6" /> Portfolio Statistics
-                </CardTitle>
+                <CardTitle className="flex items-center gap-3"><Settings /> Counter Stats</CardTitle>
               </CardHeader>
-              <CardContent className="p-8">
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Projects Completed</label>
-                    <Input value={statsData.completedProjects} onChange={e => setStatsData({...statsData, completedProjects: e.target.value})} className="h-12 text-lg font-bold" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Years Experience</label>
-                    <Input value={statsData.yearsExperience} onChange={e => setStatsData({...statsData, yearsExperience: e.target.value})} className="h-12 text-lg font-bold" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Technologies Mastered</label>
-                    <Input value={statsData.techMastered} onChange={e => setStatsData({...statsData, techMastered: e.target.value})} className="h-12 text-lg font-bold" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Client Satisfaction (%)</label>
-                    <Input value={statsData.clientSatisfaction} onChange={e => setStatsData({...statsData, clientSatisfaction: e.target.value})} className="h-12 text-lg font-bold" />
-                  </div>
+              <CardContent className="p-8 space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2"><label className="text-sm font-bold">Projects Done</label><Input value={statsData.completedProjects} onChange={e => setStatsData({...statsData, completedProjects: e.target.value})} /></div>
+                  <div className="space-y-2"><label className="text-sm font-bold">Years Exp</label><Input value={statsData.yearsExperience} onChange={e => setStatsData({...statsData, yearsExperience: e.target.value})} /></div>
+                  <div className="space-y-2"><label className="text-sm font-bold">Tech Mastered</label><Input value={statsData.techMastered} onChange={e => setStatsData({...statsData, techMastered: e.target.value})} /></div>
+                  <div className="space-y-2"><label className="text-sm font-bold">Satisfaction (%)</label><Input value={statsData.clientSatisfaction} onChange={e => setStatsData({...statsData, clientSatisfaction: e.target.value})} /></div>
                 </div>
-                <div className="mt-10">
-                  <Button onClick={handleSaveStats} className="w-full h-14 rounded-2xl text-xl font-bold gap-2 bg-slate-800 hover:bg-slate-700">
-                    <Save className="h-6 w-6" /> Save Statistics
-                  </Button>
+                <Button onClick={() => {updateStats(statsData); toast({title: "Stats Saved"});}} className="w-full h-14 rounded-2xl text-xl font-bold bg-slate-800 hover:bg-slate-700">Save Stats</Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="profile" className="max-w-4xl mx-auto">
+            <Card className="rounded-3xl shadow-lg border-none overflow-hidden">
+              <CardHeader className="bg-indigo-600 text-white p-8">
+                <CardTitle className="flex items-center gap-3"><UserCircle /> About Me Profile</CardTitle>
+              </CardHeader>
+              <CardContent className="p-8 space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2"><label className="text-sm font-bold">Full Name</label><Input value={profileData.name} onChange={e => setProfileData({...profileData, name: e.target.value})} /></div>
+                  <div className="space-y-2"><label className="text-sm font-bold">Headline Role</label><Input value={profileData.role} onChange={e => setProfileData({...profileData, role: e.target.value})} /></div>
                 </div>
+                <div className="space-y-2"><label className="text-sm font-bold">Bio / About Text</label><Textarea value={profileData.aboutText} onChange={e => setProfileData({...profileData, aboutText: e.target.value})} className="min-h-[200px]" /></div>
+                <div className="space-y-2"><label className="text-sm font-bold">Profile Image URL</label><Input value={profileData.profileImageUrl} onChange={e => setProfileData({...profileData, profileImageUrl: e.target.value})} /></div>
+                <Button onClick={() => {updateProfile(profileData); toast({title: "Profile Updated"});}} className="w-full h-14 rounded-2xl text-xl font-bold bg-indigo-600 hover:bg-indigo-500">Update Profile</Button>
               </CardContent>
             </Card>
           </TabsContent>
