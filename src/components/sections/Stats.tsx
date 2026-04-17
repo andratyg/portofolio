@@ -46,27 +46,27 @@ export const Stats = () => {
   ];
 
   return (
-    <section className="py-24 bg-card/30 border-y border-border/50 relative overflow-hidden">
+    <section className="py-20 bg-card/30 border-y border-border/50 relative overflow-hidden">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {statsData.map((stat, i) => (
             <div key={i} className="group relative">
-               <div className="absolute -inset-2 bg-primary/5 rounded-[3rem] opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-               <Card className="relative h-full border border-border/50 bg-card/50 backdrop-blur-xl rounded-[3rem] overflow-hidden shadow-2xl hover:border-primary/50 transition-all duration-500">
-                  <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-30 transition-opacity">
-                    <BarChart3 className={stat.color + " h-16 w-16"} />
+               <div className="absolute -inset-2 bg-primary/5 rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-all duration-500 blur-lg"></div>
+               <Card className="relative h-full border border-border/50 bg-card/50 backdrop-blur-xl rounded-[2.5rem] overflow-hidden shadow-xl hover:border-primary/50 transition-all duration-500">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 transition-opacity">
+                    <BarChart3 className={stat.color + " h-12 w-12"} />
                   </div>
-                  <CardContent className="p-10">
-                    <div className={`w-16 h-16 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500`}>
-                      <stat.icon className="h-8 w-8" />
+                  <CardContent className="p-8">
+                    <div className={`w-12 h-12 rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500`}>
+                      <stat.icon className="h-6 w-6" />
                     </div>
                     <div className="space-y-1">
-                       <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">{stat.tag}</p>
-                       <div className="text-5xl font-black font-headline tracking-tighter flex items-end gap-1 text-foreground">
+                       <p className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground">{stat.tag}</p>
+                       <div className="text-4xl font-black font-headline tracking-tighter flex items-end gap-1 text-foreground">
                           {stat.value}
-                          {stat.label.includes('Satisfaction') && <span className="text-2xl text-primary">%</span>}
+                          {stat.label.includes('Satisfaction') && <span className="text-xl text-primary">%</span>}
                        </div>
-                       <p className="text-sm font-bold text-muted-foreground pt-4">{stat.label}</p>
+                       <p className="text-xs font-bold text-muted-foreground pt-3">{stat.label}</p>
                     </div>
                   </CardContent>
                </Card>

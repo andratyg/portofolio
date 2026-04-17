@@ -29,26 +29,26 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden py-32 bg-background selection:bg-primary/30">
+    <section className="relative min-h-[90vh] flex flex-col justify-center overflow-hidden py-24 bg-background selection:bg-primary/30">
       {/* Advanced Aura blobs */}
       <div className="aura-blob top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/20 animate-pulse"></div>
       <div className="aura-blob bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-accent/20 animate-pulse delay-1000"></div>
       <div className="aura-blob top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[40%] bg-primary/5 animate-spin-slow"></div>
 
-      <div className="container mx-auto px-6 grid lg:grid-cols-12 gap-16 items-center relative z-10">
+      <div className="container mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center relative z-10">
         <div className={cn(
           "lg:col-span-7 transition-all duration-1000 transform",
           isVisible ? "translate-x-0 opacity-100" : "-translate-x-20 opacity-0"
         )}>
-          <div className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-12 shadow-xl shadow-primary/5 animate-bounce">
-            <Zap className="h-4 w-4 fill-primary" />
+          <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[9px] font-black uppercase tracking-[0.3em] mb-8 shadow-xl shadow-primary/5 animate-bounce">
+            <Zap className="h-3.5 w-3.5 fill-primary" />
             <span>{language === 'id' ? 'Sistem Aktif & Siap Berkolaborasi' : 'System Online & Ready for Deployment'}</span>
           </div>
           
-          <h1 className="text-7xl md:text-8xl lg:text-[9rem] font-black font-headline leading-[0.85] mb-12 tracking-tighter">
+          <h1 className="text-5xl md:text-6xl lg:text-[7.5rem] font-black font-headline leading-[0.9] mb-10 tracking-tighter">
             {heroTitle.split(' ').map((word, i) => (
               <span key={i} className={cn(
-                "inline-block mr-4 transition-colors duration-700",
+                "inline-block mr-3 transition-colors duration-700",
                 i % 2 !== 0 ? 'text-primary' : 'text-foreground'
               )}>
                 {word}
@@ -56,27 +56,27 @@ export const Hero = () => {
             ))}
           </h1>
           
-          <div className="flex items-center gap-6 mb-16">
-            <div className="w-16 h-px bg-border"></div>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-xl leading-relaxed font-medium">
+          <div className="flex items-center gap-5 mb-12">
+            <div className="w-12 h-px bg-border"></div>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-lg leading-relaxed font-medium">
               {heroSubtitle}
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-8 no-print">
+          <div className="flex flex-wrap gap-6 no-print">
             <Link href="#portfolio">
-              <Button size="lg" className="h-20 px-12 rounded-[2.5rem] gap-4 group shadow-2xl shadow-primary/20 text-xl font-black uppercase tracking-widest bg-primary hover:scale-[1.02] active:scale-95 transition-all">
+              <Button size="lg" className="h-16 px-10 rounded-2xl gap-3 group shadow-2xl shadow-primary/20 text-lg font-black uppercase tracking-widest bg-primary hover:scale-[1.02] active:scale-95 transition-all">
                 {t.viewProjects}
-                <ArrowRight className="h-6 w-6 group-hover:translate-x-3 transition-transform" />
+                <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
               </Button>
             </Link>
             <Button 
               variant="outline" 
               size="lg" 
               onClick={() => window.print()}
-              className="h-20 px-12 rounded-[2.5rem] border-primary/20 hover:bg-primary/5 text-xl font-black uppercase tracking-widest backdrop-blur-md gap-3 hover:scale-[1.02] active:scale-95 transition-all"
+              className="h-16 px-10 rounded-2xl border-primary/20 hover:bg-primary/5 text-lg font-black uppercase tracking-widest backdrop-blur-md gap-3 hover:scale-[1.02] active:scale-95 transition-all"
             >
-              <Download className="h-6 w-6" />
+              <Download className="h-5 w-5" />
               {language === 'id' ? 'Ekspor PDF' : 'Export PDF'}
             </Button>
           </div>
@@ -86,9 +86,9 @@ export const Hero = () => {
           "lg:col-span-5 transition-all duration-1000 delay-300 transform",
           isVisible ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"
         )}>
-          <div className="relative group p-6">
-            <div className="absolute -inset-4 bg-gradient-to-r from-primary via-accent to-primary rounded-[4rem] blur-3xl opacity-20 group-hover:opacity-40 transition duration-1000 animate-spin-slow"></div>
-            <div className="relative glass-panel rounded-[3.5rem] overflow-hidden shadow-2xl aspect-[4/5] group-hover:-translate-y-4 transition-transform duration-700 border-primary/10">
+          <div className="relative group p-4">
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary via-accent to-primary rounded-[3rem] blur-2xl opacity-20 group-hover:opacity-40 transition duration-1000 animate-spin-slow"></div>
+            <div className="relative glass-panel rounded-[2.5rem] overflow-hidden shadow-2xl aspect-[4/5] group-hover:-translate-y-3 transition-transform duration-700 border-primary/10">
               {heroProject && isValidImageUrl(heroProject.imageUrl) ? (
                 <>
                   <Image 
@@ -99,15 +99,15 @@ export const Hero = () => {
                     sizes="(max-width: 768px) 100vw, 50vw"
                     className="object-cover group-hover:scale-110 transition-transform duration-1000"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-12 text-white">
-                    <div className="w-fit mb-6 bg-primary/20 backdrop-blur-xl border border-primary/30 text-primary-foreground uppercase text-[10px] font-black tracking-[0.3em] px-5 py-2 rounded-full">{t.featuredProjects}</div>
-                    <h3 className="text-4xl font-black mb-4 font-headline tracking-tighter leading-tight">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-8 text-white">
+                    <div className="w-fit mb-4 bg-primary/20 backdrop-blur-xl border border-primary/30 text-primary-foreground uppercase text-[8px] font-black tracking-[0.3em] px-4 py-1.5 rounded-full">{t.featuredProjects}</div>
+                    <h3 className="text-3xl font-black mb-3 font-headline tracking-tighter leading-tight">
                       {language === 'id' ? heroProject.titleId : heroProject.titleEn}
                     </h3>
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-wrap gap-2">
                       {heroProject.technologies.slice(0, 3).map(tech => (
-                        <div key={tech} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-white/10 backdrop-blur-xl px-4 py-2 rounded-xl border border-white/10">
-                           <Code2 className="h-3.5 w-3.5 text-primary" />
+                        <div key={tech} className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest bg-white/10 backdrop-blur-xl px-3 py-1.5 rounded-lg border border-white/10">
+                           <Code2 className="h-3 w-3 text-primary" />
                            {tech}
                         </div>
                       ))}
@@ -115,11 +115,11 @@ export const Hero = () => {
                   </div>
                 </>
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center gap-6 p-12 text-center bg-muted/20">
-                   <Globe2 className="h-20 w-20 text-primary animate-pulse" />
-                   <div className="space-y-2">
-                     <p className="text-xs font-black uppercase tracking-[0.3em] text-primary">System Node Active</p>
-                     <p className="text-muted-foreground text-sm font-medium">Awaiting visual synchronization.</p>
+                <div className="w-full h-full flex flex-col items-center justify-center gap-4 p-8 text-center bg-muted/20">
+                   <Globe2 className="h-16 w-16 text-primary animate-pulse" />
+                   <div className="space-y-1">
+                     <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary">System Node Active</p>
+                     <p className="text-muted-foreground text-xs font-medium">Awaiting visual synchronization.</p>
                    </div>
                 </div>
               )}
