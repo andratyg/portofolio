@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useProjectStore } from '@/components/ProjectStore';
+import { useProjectStore, ProjectStoreProvider } from '@/components/ProjectStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -224,7 +224,6 @@ function AdminContent() {
             </div>
           </TabsContent>
 
-          {/* Similar structure for Certificates, Stats, Profile */}
           <TabsContent value="certificates" className="grid lg:grid-cols-3 gap-8">
             <Card className="lg:col-span-2 rounded-3xl shadow-lg border-none">
               <CardHeader className="bg-accent text-accent-foreground p-8 rounded-t-3xl">

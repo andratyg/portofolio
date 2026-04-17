@@ -23,13 +23,13 @@ export const Portfolio = () => {
   }, []);
 
   const filteredProjects = projects.filter(p => {
-    const title = language === 'id' ? p.titleId : (p.titleEn || p.titleId);
-    const safeTitle = title || "";
-    const safeSearch = search || "";
+    // Safety check for null/undefined values
+    const title = language === 'id' ? (p.titleId || "") : (p.titleEn || p.titleId || "");
+    const safeSearch = (search || "").toLowerCase();
     
     const matchesFilter = filter === 'all' || p.type === filter;
-    const matchesSearch = safeTitle.toLowerCase().includes(safeSearch.toLowerCase()) || 
-                          (p.technologies || []).some(tech => (tech || "").toLowerCase().includes(safeSearch.toLowerCase()));
+    const matchesSearch = title.toLowerCase().includes(safeSearch) || 
+                          (p.technologies || []).some(tech => (tech || "").toLowerCase().includes(safeSearch));
     return matchesFilter && matchesSearch;
   });
 
@@ -80,7 +80,7 @@ export const Portfolio = () => {
               <Card className="overflow-hidden h-full hover:shadow-2xl transition-all duration-500 border-none bg-card shadow-lg rounded-[2.5rem] flex flex-col group-hover:-translate-y-2">
                 <div className="relative aspect-video overflow-hidden">
                   <Image 
-                    src={project.imageUrl} 
+                    src={project.imageUrl || `https://picsum.photos/seed/${project.id}/800/600`} 
                     alt={language === 'id' ? project.titleId : project.titleEn} 
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-700"
