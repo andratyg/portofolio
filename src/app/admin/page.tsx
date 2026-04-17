@@ -587,6 +587,16 @@ function AdminContent() {
                       </div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Year Obtained</label>
+                        <Input required placeholder="2024" value={certForm.year} onChange={e => setCertForm({...certForm, year: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Valid Until</label>
+                        <Input placeholder="Lifetime / 2026" value={certForm.validUntil} onChange={e => setCertForm({...certForm, validUntil: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-8">
                        <div className="space-y-3">
                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><LinkIcon className="h-3 w-3" /> Verification URL</label>
                           <Input value={certForm.credentialUrl} onChange={e => setCertForm({...certForm, credentialUrl: e.target.value})} placeholder="https://..." className="h-16 rounded-2xl bg-muted/30 border-none" />
@@ -615,7 +625,7 @@ function AdminContent() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-black truncate text-sm tracking-tight text-foreground">{c.titleId}</h4>
-                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-1">{c.issuer}</p>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-1">{c.issuer} • {c.year}</p>
                     </div>
                     {isSuper && (
                       <Button variant="ghost" size="icon" onClick={() => deleteCertificate(c.id)} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100 transition-all">
