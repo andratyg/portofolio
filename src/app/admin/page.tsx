@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, UserCircle, Languages, Loader2, Image as ImageIcon, ExternalLink } from 'lucide-react';
+import { Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, UserCircle, Languages, Loader2, Image as ImageIcon, ExternalLink, Quote } from 'lucide-react';
 import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-portfolio-description-suggestion';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
 import { translateContent } from '@/ai/flows/translate-content';
@@ -21,6 +21,7 @@ function AdminContent() {
   const { 
     projects, addProject, deleteProject, 
     certificates, addCertificate, deleteCertificate,
+    testimonials, addTestimonial, deleteTestimonial,
     stats, updateStats,
     profile, updateProfile
   } = useProjectStore();
@@ -45,6 +46,13 @@ function AdminContent() {
     shortDescriptionId: '', shortDescriptionEn: '',
     fullDescriptionId: '', fullDescriptionEn: '',
     year: '', issuer: '', validUntil: '', imageUrl: ''
+  });
+
+  const [testForm, setTestForm] = useState({
+    name: '',
+    roleId: '', roleEn: '',
+    contentId: '', contentEn: '',
+    avatarUrl: ''
   });
 
   const [statsData, setStatsData] = useState(stats);
@@ -130,6 +138,30 @@ function AdminContent() {
     }
   };
 
+  const handleTranslateTestimonial = async () => {
+    const { roleId, contentId } = testForm;
+    if (!roleId && !contentId) {
+      toast({ title: "Isi konten Indonesia terlebih dahulu", variant: "destructive" });
+      return;
+    }
+    setIsTranslating(true);
+    try {
+      if (roleId) {
+        const r = await translateContent({ text: roleId, targetLang: 'en' });
+        setTestForm(prev => ({ ...prev, roleEn: r.translatedText }));
+      }
+      if (contentId) {
+        const r = await translateContent({ text: contentId, targetLang: 'en' });
+        setTestForm(prev => ({ ...prev, contentEn: r.translatedText }));
+      }
+      toast({ title: "Testimonial translated successfully" });
+    } catch (e) {
+      toast({ title: "Translation Error", variant: "destructive" });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
   const handleGenerateAIProject = async () => {
     if (!projectForm.titleId) {
       toast({ title: "Judul (ID) Diperlukan", variant: "destructive" });
@@ -187,6 +219,13 @@ function AdminContent() {
     setCertForm({ titleId: '', titleEn: '', shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '', year: '', issuer: '', validUntil: '', imageUrl: '' });
   };
 
+  const submitTestimonial = (e: React.FormEvent) => {
+    e.preventDefault();
+    addTestimonial({ ...testForm, id: Date.now().toString() });
+    toast({ title: "Testimonial Added" });
+    setTestForm({ name: '', roleId: '', roleEn: '', contentId: '', contentEn: '', avatarUrl: '' });
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
       <header className="bg-card/50 backdrop-blur-xl border-b h-20 sticky top-0 z-50 flex items-center justify-between px-8">
@@ -209,9 +248,10 @@ function AdminContent() {
       <div className="container mx-auto px-4 py-12 max-w-7xl">
         <Tabs defaultValue="projects" className="space-y-12">
           <div className="flex justify-center">
-            <TabsList className="inline-flex h-14 items-center justify-center rounded-2xl bg-card border shadow-xl p-1.5 w-full max-w-2xl">
+            <TabsList className="inline-flex h-14 items-center justify-center rounded-2xl bg-card border shadow-xl p-1.5 w-full max-w-3xl overflow-x-auto no-scrollbar">
               <TabsTrigger value="projects" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm">Projects</TabsTrigger>
               <TabsTrigger value="certificates" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm">Certs</TabsTrigger>
+              <TabsTrigger value="testimonials" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm">Testimonials</TabsTrigger>
               <TabsTrigger value="stats" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm">Stats</TabsTrigger>
               <TabsTrigger value="profile" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm">Profile</TabsTrigger>
             </TabsList>
@@ -328,11 +368,6 @@ function AdminContent() {
                     </Button>
                   </Card>
                 ))}
-                {projects.length === 0 && (
-                  <div className="text-center py-12 border-2 border-dashed rounded-[2rem] text-muted-foreground">
-                    No projects yet.
-                  </div>
-                )}
               </div>
             </div>
           </TabsContent>
@@ -421,6 +456,84 @@ function AdminContent() {
                       <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-1">{c.issuer}</p>
                     </div>
                     <Button variant="ghost" size="icon" onClick={() => deleteCertificate(c.id)} className="text-destructive hover:bg-destructive/10 rounded-lg shrink-0">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="testimonials" className="grid lg:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="lg:col-span-8 space-y-8">
+              <Card className="rounded-[2rem] shadow-2xl border-none overflow-hidden bg-card">
+                <CardHeader className="bg-gradient-to-r from-pink-500/10 to-transparent p-8 border-b">
+                  <div className="flex flex-row items-center justify-between gap-4">
+                    <CardTitle className="flex items-center gap-3 text-2xl"><Quote className="text-pink-500" /> Add Testimonial</CardTitle>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleTranslateTestimonial}
+                      disabled={isTranslating}
+                      className="rounded-xl gap-2 border-pink-500/20 hover:bg-pink-500/5"
+                    >
+                      {isTranslating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
+                      Translate to EN
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-8">
+                  <form onSubmit={submitTestimonial} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Client Name</label>
+                        <Input required value={testForm.name} onChange={e => setTestForm({...testForm, name: e.target.value})} className="h-12 rounded-xl bg-background/50" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Avatar URL</label>
+                        <Input value={testForm.avatarUrl} onChange={e => setTestForm({...testForm, avatarUrl: e.target.value})} className="h-12 rounded-xl bg-background/50" />
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Role (ID)</label>
+                        <Input required value={testForm.roleId} onChange={e => setTestForm({...testForm, roleId: e.target.value})} className="h-12 rounded-xl bg-background/50" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Role (EN)</label>
+                        <Input value={testForm.roleEn} onChange={e => setTestForm({...testForm, roleEn: e.target.value})} className="h-12 rounded-xl bg-background/50" />
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Content (ID)</label>
+                      <Textarea required value={testForm.contentId} onChange={e => setTestForm({...testForm, contentId: e.target.value})} className="min-h-[100px] rounded-xl bg-background/50" />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Content (EN)</label>
+                      <Textarea value={testForm.contentEn} onChange={e => setTestForm({...testForm, contentEn: e.target.value})} className="min-h-[100px] rounded-xl bg-background/50" />
+                    </div>
+                    <Button type="submit" className="w-full h-14 rounded-2xl text-lg font-bold bg-pink-500 hover:bg-pink-600 shadow-xl shadow-pink-500/20">Add Testimonial</Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="lg:col-span-4 space-y-6">
+              <div className="flex items-center justify-between px-2">
+                <h3 className="font-bold text-xl flex items-center gap-2"><Quote className="h-5 w-5 text-pink-500" /> Feedbacks</h3>
+                <Badge variant="secondary" className="rounded-lg">{testimonials.length}</Badge>
+              </div>
+              <div className="grid gap-4">
+                {testimonials.map(t => (
+                  <Card key={t.id} className="p-4 flex gap-4 items-center group bg-card hover:bg-pink-500/5 transition-colors rounded-2xl border-none shadow-sm">
+                    <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0 border shadow-inner">
+                      <img src={t.avatarUrl || `https://picsum.photos/seed/${t.id}/100/100`} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold truncate text-sm">{t.name}</h4>
+                      <p className="text-[10px] text-muted-foreground truncate">{t.roleId}</p>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => deleteTestimonial(t.id)} className="text-destructive hover:bg-destructive/10 rounded-lg shrink-0">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </Card>

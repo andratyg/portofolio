@@ -1,18 +1,21 @@
 "use client"
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Project, Certificate, PortfolioStats, ProfileData } from '@/lib/types';
-import { initialProjects, initialCertificates } from '@/lib/data';
+import { Project, Certificate, PortfolioStats, ProfileData, Testimonial } from '@/lib/types';
+import { initialProjects, initialCertificates, initialTestimonials } from '@/lib/data';
 
 interface ProjectStoreType {
   projects: Project[];
   certificates: Certificate[];
+  testimonials: Testimonial[];
   stats: PortfolioStats;
   profile: ProfileData;
   addProject: (project: Project) => void;
   deleteProject: (id: string) => void;
   addCertificate: (cert: Certificate) => void;
   deleteCertificate: (id: string) => void;
+  addTestimonial: (test: Testimonial) => void;
+  deleteTestimonial: (id: string) => void;
   updateStats: (newStats: PortfolioStats) => void;
   updateProfile: (newProfile: ProfileData) => void;
 }
@@ -38,6 +41,7 @@ const ProjectStoreContext = createContext<ProjectStoreType | undefined>(undefine
 export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [stats, setStats] = useState<PortfolioStats>(defaultStats);
   const [profile, setProfile] = useState<ProfileData>(defaultProfile);
 
@@ -51,6 +55,11 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const savedCerts = localStorage.getItem('karyapro-certificates');
     if (savedCerts) setCertificates(JSON.parse(savedCerts));
     else setCertificates(initialCertificates as any);
+
+    // Load Testimonials
+    const savedTestimonials = localStorage.getItem('karyapro-testimonials');
+    if (savedTestimonials) setTestimonials(JSON.parse(savedTestimonials));
+    else setTestimonials(initialTestimonials as any);
 
     // Load Stats
     const savedStats = localStorage.getItem('karyapro-stats');
@@ -85,6 +94,18 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     localStorage.setItem('karyapro-certificates', JSON.stringify(updated));
   };
 
+  const addTestimonial = (test: Testimonial) => {
+    const updated = [test, ...testimonials];
+    setTestimonials(updated);
+    localStorage.setItem('karyapro-testimonials', JSON.stringify(updated));
+  };
+
+  const deleteTestimonial = (id: string) => {
+    const updated = testimonials.filter(t => t.id !== id);
+    setTestimonials(updated);
+    localStorage.setItem('karyapro-testimonials', JSON.stringify(updated));
+  };
+
   const updateStats = (newStats: PortfolioStats) => {
     setStats(newStats);
     localStorage.setItem('karyapro-stats', JSON.stringify(newStats));
@@ -99,12 +120,15 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     <ProjectStoreContext.Provider value={{ 
       projects, 
       certificates, 
+      testimonials,
       stats,
       profile,
       addProject, 
       deleteProject, 
       addCertificate, 
       deleteCertificate,
+      addTestimonial,
+      deleteTestimonial,
       updateStats,
       updateProfile
     }}>
