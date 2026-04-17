@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Trash2, Sparkles, LogOut, ArrowLeft, Image as ImageIcon, Laptop, Award } from 'lucide-react';
 import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-portfolio-description-suggestion';
+import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
 import { useToast } from '@/hooks/use-toast';
 import { Project, Certificate } from '@/lib/types';
 
@@ -19,6 +20,7 @@ function AdminContent() {
   const router = useRouter();
   const { toast } = useToast();
   const [isAIThinking, setIsAIThinking] = useState(false);
+  const [isCertAIThinking, setIsCertAIThinking] = useState(false);
   
   // New Project Form State
   const [formData, setFormData] = useState({
@@ -78,6 +80,28 @@ function AdminContent() {
     }
   };
 
+  const handleGenerateCertAI = async () => {
+    if (!certData.title || !certData.issuer) {
+      toast({ title: "Details Required", description: "Please enter title and issuer first.", variant: "destructive" });
+      return;
+    }
+
+    setIsCertAIThinking(true);
+    try {
+      const result = await generateCertificateDescription({
+        title: certData.title,
+        issuer: certData.issuer,
+        shortDescription: certData.shortDescription,
+      });
+      setCertData(prev => ({ ...prev, fullDescription: result.descriptionSuggestion }));
+      toast({ title: "AI Generated!", description: "Certificate description suggested!" });
+    } catch (error) {
+      toast({ title: "AI Error", description: "Could not generate description at this time.", variant: "destructive" });
+    } finally {
+      setIsCertAIThinking(false);
+    }
+  };
+
   const handleSubmitProject = (e: React.FormEvent) => {
     e.preventDefault();
     const newProject: Project = {
@@ -110,7 +134,7 @@ function AdminContent() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 pb-20">
+    <div className="min-h-screen bg-muted/30 pb-20 theme-transition">
       <header className="bg-background border-b h-16 sticky top-0 z-30 flex items-center justify-between px-6 shadow-sm">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => router.push('/')}>
@@ -207,7 +231,7 @@ function AdminContent() {
               </h2>
               <div className="space-y-4">
                 {projects.map(project => (
-                  <Card key={project.id} className="group hover:border-primary transition-colors">
+                  <Card key={project.id} className="group hover:border-primary transition-colors bg-card">
                     <CardContent className="p-4 flex gap-4">
                       <div className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0">
                         <img src={project.imageUrl} className="object-cover w-full h-full" alt="" />
@@ -265,8 +289,26 @@ function AdminContent() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold">Full Description</label>
-                      <Textarea required value={certData.fullDescription} onChange={e => setCertData({...certData, fullDescription: e.target.value})} placeholder="Detailed information about the certificate..." />
+                      <div className="flex justify-between items-center">
+                        <label className="text-sm font-semibold">Full Description</label>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={handleGenerateCertAI}
+                          disabled={isCertAIThinking}
+                          className="gap-2 text-accent border-accent/20 hover:bg-accent/5"
+                        >
+                          <Sparkles className="h-4 w-4" /> {isCertAIThinking ? 'Thinking...' : 'AI Suggestion'}
+                        </Button>
+                      </div>
+                      <Textarea 
+                        required 
+                        value={certData.fullDescription} 
+                        onChange={e => setCertData({...certData, fullDescription: e.target.value})} 
+                        placeholder="Detailed information about the certificate..." 
+                        className="min-h-[120px]"
+                      />
                     </div>
 
                     <div className="space-y-2">
@@ -286,7 +328,7 @@ function AdminContent() {
               </h2>
               <div className="space-y-4">
                 {certificates.map(cert => (
-                  <Card key={cert.id} className="group hover:border-accent transition-colors">
+                  <Card key={cert.id} className="group hover:border-accent transition-colors bg-card">
                     <CardContent className="p-4 flex gap-4">
                       <div className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0">
                         <img src={cert.imageUrl} className="object-cover w-full h-full" alt="" />
