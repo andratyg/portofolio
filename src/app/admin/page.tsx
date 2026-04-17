@@ -14,7 +14,7 @@ import {
   Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, 
   UserCircle, Languages, Loader2, Image as ImageIcon, Quote, 
   Briefcase, LayoutDashboard, Github, Instagram, Linkedin, 
-  MessageSquare, Video, History 
+  MessageSquare, Video, History, ShieldAlert, CheckCircle2
 } from 'lucide-react';
 import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-portfolio-description-suggestion';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
@@ -22,8 +22,9 @@ import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
 import { ProfileData } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { useUser, useAuth } from '@/firebase';
+import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
+import { doc } from 'firebase/firestore';
 
 function AdminContent() {
   const { 
@@ -40,11 +41,20 @@ function AdminContent() {
   const { toast } = useToast();
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const db = useFirestore();
   
   const [isAIThinking, setIsAIThinking] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isTabsVisible, setIsTabsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+
+  // Check if current user is an authorized admin in Firestore
+  const adminDocRef = useMemoFirebase(() => {
+    if (!db || !user) return null;
+    return doc(db, 'admins', user.uid);
+  }, [db, user]);
+
+  const { data: adminData, isLoading: isAdminLoading } = useDoc(adminDocRef);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -107,10 +117,43 @@ function AdminContent() {
     if (profile) setProfileData(profile);
   }, [stats, profile]);
 
-  if (isUserLoading || storeLoading) {
+  if (isUserLoading || storeLoading || isAdminLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Synchronizing Cloud Data</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If logged in but not an authorized admin
+  if (user && !adminData && !isAdminLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-lg rounded-[3rem] border-none shadow-2xl bg-card/50 backdrop-blur-xl p-12 text-center space-y-8">
+          <div className="w-20 h-20 bg-destructive/10 rounded-3xl flex items-center justify-center mx-auto">
+            <ShieldAlert className="h-10 w-10 text-destructive" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-3xl font-black font-headline">Unauthorized Access</h2>
+            <p className="text-muted-foreground text-sm">
+              Your account (<strong>{user.email}</strong>) is authenticated but not authorized as an administrator.
+            </p>
+          </div>
+          <div className="p-6 bg-muted/30 rounded-3xl text-left space-y-4">
+            <p className="text-[10px] font-black uppercase tracking-widest text-primary">Required Steps:</p>
+            <ol className="text-xs text-muted-foreground space-y-2 list-decimal list-inside">
+              <li>Copy your UID: <code className="bg-background px-2 py-1 rounded text-primary font-bold">{user.uid}</code></li>
+              <li>Go to Firebase Console -> Firestore.</li>
+              <li>Add this UID as a document ID in the <code className="font-bold text-foreground">admins</code> collection.</li>
+            </ol>
+          </div>
+          <Button onClick={() => signOut(auth)} variant="outline" className="w-full h-12 rounded-2xl gap-2 font-bold">
+            <LogOut className="h-4 w-4" /> Sign Out
+          </Button>
+        </Card>
       </div>
     );
   }
