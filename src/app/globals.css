@@ -37,10 +37,10 @@
     --border: 216 34% 20%;
   }
 
-  /* Accent-Only Themes: Background stays dark/light, only primary changes */
+  /* Accent-Only Themes */
   [data-theme='emerald'] {
-    --primary: 142 76% 55%;
-    --accent: 142 76% 55%;
+    --primary: 142 76% 45%;
+    --accent: 142 76% 45%;
   }
 
   [data-theme='sunset'] {
@@ -61,6 +61,21 @@
   [data-theme='amber'] {
     --primary: 45 93% 47%;
     --accent: 45 93% 47%;
+  }
+
+  [data-theme='ramadan'] {
+    --primary: 142 72% 29%;
+    --accent: 45 93% 47%;
+  }
+
+  [data-theme='imlek'] {
+    --primary: 0 100% 45%;
+    --accent: 45 93% 47%;
+  }
+
+  [data-theme='natal'] {
+    --primary: 350 100% 40%;
+    --accent: 142 76% 45%;
   }
 }
 
@@ -96,7 +111,7 @@
 }
 .skeleton-shimmer::after {
   content: '';
-  @apply absolute inset-0 -translate-x-full;
+  @apply absolute inset-0 -z-0 -translate-x-full;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   animation: shimmer 2s infinite;
 }

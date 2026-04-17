@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type Theme = 'light' | 'dark' | 'emerald' | 'sunset' | 'royal' | 'cyber' | 'amber';
+export type Theme = 'light' | 'dark' | 'emerald' | 'sunset' | 'royal' | 'cyber' | 'amber' | 'ramadan' | 'imlek' | 'natal';
 
 interface ThemeContextType {
   theme: Theme;
@@ -12,7 +12,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const themes: Theme[] = ['light', 'dark', 'emerald', 'sunset', 'royal', 'cyber', 'amber'];
+export const themes: Theme[] = ['light', 'dark', 'emerald', 'sunset', 'royal', 'cyber', 'amber', 'ramadan', 'imlek', 'natal'];
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>('light');
