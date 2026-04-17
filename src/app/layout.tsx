@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   description: 'Showcase your career journey and projects with premium style, AI-powered descriptions, and real-time data.',
   keywords: ['Portfolio', 'Full Stack Developer', 'NAT', 'Next.js', 'React', 'Firebase'],
   authors: [{ name: 'Nara Andra Tyaga' }],
+  verification: {
+    google: 'cu0oN6kGs748IQbeUkW1eFLhaKDJwYpJ6Gn9daxm9tk',
+  },
   openGraph: {
     title: 'NAT | Professional Portfolio',
     description: 'Transforming Ideas Into Reality with Modern Web Solutions.',
