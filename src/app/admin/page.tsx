@@ -10,6 +10,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { 
   Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, 
   UserCircle, Loader2, Image as ImageIcon, Quote, 
@@ -17,7 +20,7 @@ import {
   Download, Upload, WifiOff, Edit3, Save, X,
   Activity, Terminal, Link as LinkIcon, FileUp, FileType, Zap, AlertCircle, 
   Instagram, Github, Linkedin, MessageSquare, Video, Globe2, Camera,
-  GraduationCap, Milestone, Calendar
+  GraduationCap, Milestone, Calendar, CheckCircle2
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
@@ -51,6 +54,7 @@ function AdminContent() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const profileImageInputRef = useRef<HTMLInputElement>(null);
+  const projectImageInputRef = useRef<HTMLInputElement>(null);
 
   // Edit States
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
@@ -103,8 +107,7 @@ function AdminContent() {
     shortDescriptionId: '', shortDescriptionEn: '', 
     fullDescriptionId: '', fullDescriptionEn: '',
     problemId: '', problemEn: '', solutionId: '', solutionEn: '',
-    resultId: '', resultEn: '', impactStats: '',
-    technologies: '', imageUrl: '', demoUrl: '', featured: false
+    impactStats: '', technologies: '', imageUrl: '', demoUrl: '', featured: false
   };
 
   const initialCertState = {
@@ -188,19 +191,19 @@ function AdminContent() {
       ...p,
       technologies: p.technologies?.join(', ') || ''
     } as any);
-    window.scrollTo({ top: 400, behavior: 'smooth' });
+    window.scrollTo({ top: 300, behavior: 'smooth' });
   };
 
   const startEditCert = (c: Certificate) => {
     setEditingCertId(c.id);
     setCertForm({ ...c } as any);
-    window.scrollTo({ top: 400, behavior: 'smooth' });
+    window.scrollTo({ top: 300, behavior: 'smooth' });
   };
 
   const startEditJourney = (j: Experience) => {
     setEditingJourneyId(j.id);
     setJourneyForm({ ...j } as any);
-    window.scrollTo({ top: 400, behavior: 'smooth' });
+    window.scrollTo({ top: 300, behavior: 'smooth' });
   };
 
   const cancelEdit = () => {
@@ -402,11 +405,16 @@ function AdminContent() {
                       Archive Professional Technical Infrastructure
                     </CardDescription>
                   </div>
-                  {editingProjectId && (
-                    <Button variant="ghost" onClick={cancelEdit} className="rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest h-12">
-                      <X className="h-4 w-4" /> Cancel Edit
+                  <div className="flex gap-2">
+                    {editingProjectId && (
+                      <Button variant="ghost" onClick={cancelEdit} className="rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest h-12">
+                        <X className="h-4 w-4" /> Cancel Edit
+                      </Button>
+                    )}
+                    <Button type="button" size="sm" onClick={() => handleAITranslate('projects', projectForm, setProjectForm)} disabled={isTranslating === 'projects'} className="rounded-xl bg-primary/10 text-primary hover:bg-primary/20 h-12 px-6 text-[9px] font-black uppercase tracking-widest">
+                       {isTranslating === 'projects' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3 mr-2" />} AI SYNC LOCALES
                     </Button>
-                  )}
+                  </div>
                 </CardHeader>
                 <CardContent className="p-0">
                   <form onSubmit={(e) => {
@@ -414,12 +422,13 @@ function AdminContent() {
                     addProject({ 
                       ...projectForm, 
                       id: editingProjectId || Date.now().toString(), 
-                      technologies: projectForm.technologies?.split(',').map(s => s.trim()) || []
+                      technologies: typeof projectForm.technologies === 'string' ? projectForm.technologies.split(',').map(s => s.trim()) : projectForm.technologies
                     } as any);
                     setProjectForm(initialProjectState);
                     setEditingProjectId(null);
                     toast({ title: editingProjectId ? "Update Success" : "Deployment Success", description: "Case study synced to live node." });
                   }} className="space-y-12">
+                    {/* Title Section */}
                     <div className="grid md:grid-cols-2 gap-8">
                       <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Title (ID)</label>
@@ -430,10 +439,85 @@ function AdminContent() {
                         <Input value={projectForm.titleEn} onChange={e => setProjectForm({...projectForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
                       </div>
                     </div>
-                    <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Visual Architecture (Image)</label>
-                        <Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setProjectForm({...projectForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none cursor-pointer pt-5" />
+
+                    {/* Metadata Section */}
+                    <div className="grid md:grid-cols-3 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Domain Category</label>
+                        <Select value={projectForm.type} onValueChange={(val: any) => setProjectForm({...projectForm, type: val})}>
+                           <SelectTrigger className="h-16 rounded-2xl bg-muted/30 border-none">
+                              <SelectValue placeholder="Select Domain" />
+                           </SelectTrigger>
+                           <SelectContent className="rounded-2xl border-none shadow-2xl">
+                              <SelectItem value="web">Web System</SelectItem>
+                              <SelectItem value="ui">UI/UX Architecture</SelectItem>
+                              <SelectItem value="backend">Backend Service</SelectItem>
+                           </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Impact Stats (e.g. 99% Uptime)</label>
+                        <Input value={projectForm.impactStats} onChange={e => setProjectForm({...projectForm, impactStats: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Core Tech Stack (Comma Separated)</label>
+                        <Input value={projectForm.technologies} onChange={e => setProjectForm({...projectForm, technologies: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
+                      </div>
                     </div>
+
+                    {/* Description Section */}
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Short Brief (ID)</label>
+                        <Textarea value={projectForm.shortDescriptionId} onChange={e => setProjectForm({...projectForm, shortDescriptionId: e.target.value})} className="h-24 rounded-2xl bg-muted/30 border-none" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Short Brief (EN)</label>
+                        <Textarea value={projectForm.shortDescriptionEn} onChange={e => setProjectForm({...projectForm, shortDescriptionEn: e.target.value})} className="h-24 rounded-2xl bg-muted/30 border-none" />
+                      </div>
+                    </div>
+
+                    {/* Challenge Section */}
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><AlertCircle className="h-3 w-3" /> Technical Challenge (ID)</label>
+                        <Textarea value={projectForm.problemId} onChange={e => setProjectForm({...projectForm, problemId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><AlertCircle className="h-3 w-3" /> Technical Challenge (EN)</label>
+                        <Textarea value={projectForm.problemEn} onChange={e => setProjectForm({...projectForm, problemEn: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" />
+                      </div>
+                    </div>
+
+                    {/* Solution Section */}
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Strategic Implementation (ID)</label>
+                        <Textarea value={projectForm.solutionId} onChange={e => setProjectForm({...projectForm, solutionId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Strategic Implementation (EN)</label>
+                        <Textarea value={projectForm.solutionEn} onChange={e => setProjectForm({...projectForm, solutionEn: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" />
+                      </div>
+                    </div>
+
+                    {/* Visuals & Connectivity */}
+                    <div className="grid md:grid-cols-2 gap-8">
+                       <div className="space-y-3">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Deployment URL / Live Preview</label>
+                          <Input value={projectForm.demoUrl} onChange={e => setProjectForm({...projectForm, demoUrl: e.target.value})} placeholder="https://..." className="h-16 rounded-2xl bg-muted/30 border-none" />
+                       </div>
+                       <div className="space-y-3">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><ImageIcon className="h-3 w-3" /> Visual Architecture (Image)</label>
+                          <Input type="file" ref={projectImageInputRef} accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setProjectForm({...projectForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none cursor-pointer pt-5" />
+                       </div>
+                    </div>
+
+                    <div className="flex items-center space-x-2 bg-muted/20 p-6 rounded-2xl border border-border/50">
+                       <Switch id="featured" checked={projectForm.featured} onCheckedChange={(val) => setProjectForm({...projectForm, featured: val})} />
+                       <Label htmlFor="featured" className="text-[10px] font-black uppercase tracking-widest">Pin as Featured Core Deployment</Label>
+                    </div>
+
                     <Button type="submit" className="w-full h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-xl">
                       {editingProjectId ? <Save className="h-4 w-4 mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
                       {editingProjectId ? 'SAVE DEPLOYMENT' : 'COMMIT DEPLOYMENT'}
@@ -452,6 +536,7 @@ function AdminContent() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-black truncate text-sm tracking-tight text-foreground">{p.titleId}</h4>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em]">{p.type} • {p.impactStats || 'Standard'}</p>
                     </div>
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
                       <Button variant="ghost" size="icon" onClick={() => startEditProject(p)} className="text-primary hover:bg-primary/10 h-10 w-10 rounded-xl">
@@ -522,6 +607,16 @@ function AdminContent() {
                        <div className="space-y-3">
                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><FileUp className="h-3 w-3" /> Upload PDF Document</label>
                           <Input type="file" accept=".pdf" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, credentialUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none cursor-pointer pt-5" />
+                       </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-8">
+                       <div className="space-y-3">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Full Validation Narrative (ID)</label>
+                          <Textarea value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="h-32 rounded-3xl bg-muted/30 border-none" />
+                       </div>
+                       <div className="space-y-3">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Visual Thumbnail (Image)</label>
+                          <Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none cursor-pointer pt-5" />
                        </div>
                     </div>
                     <Button type="submit" className="w-full h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-xl">
