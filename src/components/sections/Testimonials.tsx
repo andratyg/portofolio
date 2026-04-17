@@ -1,3 +1,4 @@
+
 "use client"
 
 import React from 'react';
@@ -22,6 +23,9 @@ export const Testimonials = () => {
             const role = language === 'id' ? test.roleId : (test.roleEn || test.roleId);
             const content = language === 'id' ? test.contentId : (test.contentEn || test.contentId);
             
+            // Safe URL Check
+            const isValidAvatarUrl = test.avatarUrl && (test.avatarUrl.startsWith('http') || test.avatarUrl.startsWith('/'));
+            
             return (
               <Card key={test.id} className="border-none shadow-xl bg-gradient-to-br from-primary/5 to-accent/5 rounded-3xl p-8 relative overflow-hidden group">
                 <Quote className="absolute -top-4 -right-4 h-24 w-24 text-primary/5 rotate-12 transition-transform group-hover:scale-125 duration-500" />
@@ -30,11 +34,19 @@ export const Testimonials = () => {
                     "{content}"
                   </p>
                   <div className="flex items-center gap-4">
-                    <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-primary shadow-lg bg-muted">
-                      {test.avatarUrl ? (
-                        <Image src={test.avatarUrl} alt={test.name} fill className="object-cover" />
+                    <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-primary shadow-lg bg-muted flex items-center justify-center">
+                      {isValidAvatarUrl ? (
+                        <Image 
+                          src={test.avatarUrl} 
+                          alt={test.name} 
+                          fill 
+                          className="object-cover"
+                          sizes="56px"
+                        />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-primary font-bold">{test.name[0]}</div>
+                        <div className="w-full h-full flex items-center justify-center text-primary font-black bg-primary/10">
+                          {test.name ? test.name[0].toUpperCase() : 'U'}
+                        </div>
                       )}
                     </div>
                     <div>
