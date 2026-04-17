@@ -1,7 +1,6 @@
-
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProjectStore, ProjectStoreProvider } from '@/components/ProjectStore';
 import { Button } from '@/components/ui/button';
@@ -13,10 +12,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, 
   UserCircle, Languages, Loader2, Image as ImageIcon, Quote, 
-  Briefcase, LayoutDashboard, Github, Instagram, Linkedin, 
-  MessageSquare, Video, History, ShieldAlert, CheckCircle2, ChevronRight, ExternalLink, Calendar
+  Briefcase, LayoutDashboard, History, ShieldAlert, CheckCircle2, 
+  Download, Upload, HelpCircle, Info, Wifi, WifiOff, AlertTriangle
 } from 'lucide-react';
-import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-portfolio-description-suggestion';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
@@ -34,6 +32,7 @@ function AdminContent() {
     experiences, addExperience, deleteExperience,
     stats, updateStats,
     profile, updateProfile,
+    backupData, restoreData,
     isLoading: storeLoading
   } = useProjectStore();
   
@@ -47,8 +46,22 @@ function AdminContent() {
   const [isTranslating, setIsTranslating] = useState<string | null>(null);
   const [isTabsVisible, setIsTabsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isOnline, setIsOnline] = useState(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Check if current user is an authorized admin in Firestore
+  // Check Online Status
+  useEffect(() => {
+    setIsOnline(navigator.onLine);
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   const adminDocRef = useMemoFirebase(() => {
     if (!db || !user) return null;
     return doc(db, 'admins', user.uid);
@@ -62,53 +75,28 @@ function AdminContent() {
     }
   }, [user, isUserLoading, router]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY < 120) {
-        setIsTabsVisible(true);
-      } else if (currentScrollY > lastScrollY) {
-        setIsTabsVisible(false);
-      } else {
-        setIsTabsVisible(true);
-      }
-      setLastScrollY(currentScrollY);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  // Role Checks
+  const userRole = adminData?.role || 'editor';
+  const isSuper = userRole === 'super';
   
   // Forms State
   const [projectForm, setProjectForm] = useState({
-    titleId: '', titleEn: '',
-    type: 'web' as 'web' | 'ui' | 'backend',
-    shortDescriptionId: '', shortDescriptionEn: '',
-    fullDescriptionId: '', fullDescriptionEn: '',
-    technologies: '',
-    imageUrl: '',
-    demoUrl: '',
-    featured: false
+    titleId: '', titleEn: '', type: 'web' as 'web' | 'ui' | 'backend',
+    shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '',
+    technologies: '', imageUrl: '', demoUrl: '', featured: false
   });
 
   const [certForm, setCertForm] = useState({
-    titleId: '', titleEn: '',
-    shortDescriptionId: '', shortDescriptionEn: '',
-    fullDescriptionId: '', fullDescriptionEn: '',
-    year: '', issuer: '', validUntil: '', imageUrl: ''
+    titleId: '', titleEn: '', shortDescriptionId: '', shortDescriptionEn: '',
+    fullDescriptionId: '', fullDescriptionEn: '', year: '', issuer: '', validUntil: '', imageUrl: ''
   });
 
   const [testForm, setTestForm] = useState({
-    name: '',
-    roleId: '', roleEn: '',
-    contentId: '', contentEn: '',
-    avatarUrl: ''
+    name: '', roleId: '', roleEn: '', contentId: '', contentEn: '', avatarUrl: ''
   });
 
   const [expForm, setExpForm] = useState({
-    year: '',
-    company: '',
-    titleId: '', titleEn: '',
-    descriptionId: '', descriptionEn: ''
+    year: '', company: '', titleId: '', titleEn: '', descriptionId: '', descriptionEn: ''
   });
 
   const [statsData, setStatsData] = useState(stats);
@@ -124,166 +112,110 @@ function AdminContent() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Synchronizing Cloud Data</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Initializing Command Center</p>
         </div>
       </div>
     );
   }
 
-  // If logged in but not an authorized admin
-  if (user && !adminData && !isAdminLoading) {
+  if (user && !adminData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-xl rounded-[2.5rem] border-none shadow-2xl bg-card/50 backdrop-blur-xl p-10 text-center space-y-8">
-          <div className="w-20 h-20 bg-destructive/10 rounded-3xl flex items-center justify-center mx-auto">
-            <ShieldAlert className="h-10 w-10 text-destructive" />
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-3xl font-black font-headline">Unauthorized Account</h2>
-            <p className="text-muted-foreground text-sm">
-              Your account (<strong>{user.email}</strong>) is authenticated but not authorized as an administrator in the database.
-            </p>
-          </div>
-          <div className="p-6 bg-muted/30 rounded-3xl text-left space-y-4">
-            <p className="text-[10px] font-black uppercase tracking-widest text-primary">Required Action:</p>
-            <ol className="text-xs text-muted-foreground space-y-3 list-decimal list-inside">
-              <li>
-                Copy your UID: <code className="bg-background px-2 py-1 rounded text-primary font-bold select-all">{user.uid}</code>
-              </li>
-              <li>
-                Go to <span className="font-bold text-foreground">Firebase Console</span> &rarr; <span className="font-bold text-foreground">Firestore</span>.
-              </li>
-              <li>
-                Add this UID as a <span className="font-bold">Document ID</span> in the <code className="font-bold text-foreground">admins</code> collection.
-              </li>
+        <Card className="w-full max-w-xl rounded-[2.5rem] p-10 text-center space-y-8">
+          <ShieldAlert className="h-16 w-16 text-destructive mx-auto" />
+          <h2 className="text-3xl font-black font-headline">Access Denied</h2>
+          <p className="text-muted-foreground">Account {user.email} is not in the system registry.</p>
+          <div className="p-6 bg-muted rounded-3xl text-left text-xs space-y-4">
+            <p className="font-bold text-primary">To Fix:</p>
+            <ol className="list-decimal list-inside space-y-2">
+              <li>Copy UID: <code className="bg-background px-2 py-1 rounded select-all">{user.uid}</code></li>
+              <li>Go to Firebase Console &rarr; Firestore.</li>
+              <li>Add to <code className="font-bold">admins</code> collection with field <code className="text-primary">role: "super"</code>.</li>
             </ol>
           </div>
-          <Button onClick={() => handleLogout()} variant="outline" className="w-full h-12 rounded-2xl gap-2 font-bold">
-            <LogOut className="h-4 w-4" /> Sign Out
-          </Button>
+          <Button onClick={() => signOut(auth)} variant="outline" className="w-full h-12 rounded-2xl">Sign Out</Button>
         </Card>
       </div>
     );
   }
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    router.push('/admin/login');
-  };
-
-  const translateSingleField = async (text: string, callback: (val: string) => void) => {
-    if (!text) return;
-    try {
-      const result = await translateContent({ text, targetLang: 'en' });
-      callback(result.translatedText);
-    } catch (e) {
-      console.error(e);
-    }
+  const handleBackup = () => backupData();
+  
+  const handleRestoreClick = () => fileInputRef.current?.click();
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const content = event.target?.result as string;
+      await restoreData(content);
+    };
+    reader.readAsText(file);
   };
 
   const handleAutoTranslateForm = async (type: 'project' | 'cert' | 'test' | 'journey') => {
     setIsTranslating(type);
     try {
-      if (type === 'project') {
-        if (projectForm.titleId) await translateSingleField(projectForm.titleId, (v) => setProjectForm(p => ({...p, titleEn: v})));
-        if (projectForm.shortDescriptionId) await translateSingleField(projectForm.shortDescriptionId, (v) => setProjectForm(p => ({...p, shortDescriptionEn: v})));
-        if (projectForm.fullDescriptionId) await translateSingleField(projectForm.fullDescriptionId, (v) => setProjectForm(p => ({...p, fullDescriptionEn: v})));
-      } else if (type === 'cert') {
-        if (certForm.titleId) await translateSingleField(certForm.titleId, (v) => setCertForm(p => ({...p, titleEn: v})));
-        if (certForm.shortDescriptionId) await translateSingleField(certForm.shortDescriptionId, (v) => setCertForm(p => ({...p, shortDescriptionEn: v})));
-        if (certForm.fullDescriptionId) await translateSingleField(certForm.fullDescriptionId, (v) => setCertForm(p => ({...p, fullDescriptionEn: v})));
-      } else if (type === 'test') {
-        if (testForm.roleId) await translateSingleField(testForm.roleId, (v) => setTestForm(p => ({...p, roleEn: v})));
-        if (testForm.contentId) await translateSingleField(testForm.contentId, (v) => setTestForm(p => ({...p, contentEn: v})));
-      } else if (type === 'journey') {
-        if (expForm.titleId) await translateSingleField(expForm.titleId, (v) => setExpForm(p => ({...p, titleEn: v})));
-        if (expForm.descriptionId) await translateSingleField(expForm.descriptionId, (v) => setExpForm(p => ({...p, descriptionEn: v})));
+      const fields: any = {
+        project: ['title', 'shortDescription', 'fullDescription'],
+        cert: ['title', 'shortDescription', 'fullDescription'],
+        test: ['role', 'content'],
+        journey: ['title', 'description']
+      };
+      
+      const currentForm: any = type === 'project' ? projectForm : type === 'cert' ? certForm : type === 'test' ? testForm : expForm;
+      const setter: any = type === 'project' ? setProjectForm : type === 'cert' ? setCertForm : type === 'test' ? setTestForm : setExpForm;
+
+      for (const field of fields[type]) {
+        const idVal = currentForm[`${field}Id`];
+        if (idVal) {
+          const res = await translateContent({ text: idVal, targetLang: 'en' });
+          setter((p: any) => ({ ...p, [`${field}En`]: res.translatedText }));
+        }
       }
-      toast({ title: "AI Berhasil Menerjemahkan Form" });
+      toast({ title: "Translation Complete", description: "English fields updated." });
     } catch (e) {
-      toast({ title: "Gagal Menerjemahkan", variant: "destructive" });
+      toast({ variant: "destructive", title: "Translation Failed", description: "AI service error." });
     } finally {
       setIsTranslating(null);
     }
   };
 
-  const handleAIComposeCert = async () => {
-    if (!certForm.titleId || !certForm.issuer) {
-      toast({ title: "Isi Nama Sertifikat & Penerbit terlebih dahulu", variant: "destructive" });
-      return;
-    }
-    setIsAIThinking(true);
-    try {
-      const result = await generateCertificateDescription({
-        title: certForm.titleId,
-        issuer: certForm.issuer,
-        shortDescription: certForm.shortDescriptionId
-      });
-      setCertForm(p => ({...p, fullDescriptionId: result.descriptionSuggestion}));
-      toast({ title: "AI Berhasil Menulis Deskripsi" });
-    } catch (e) {
-      toast({ title: "AI Gagal Menulis", variant: "destructive" });
-    } finally {
-      setIsAIThinking(false);
-    }
-  };
-
   const submitProject = (e: React.FormEvent) => {
     e.preventDefault();
-    addProject({
-      ...projectForm,
-      id: Date.now().toString(),
-      technologies: projectForm.technologies.split(',').map(s => s.trim()),
-    } as any);
-    toast({ title: "Proyek Ditambahkan" });
+    if (!projectForm.titleId) return;
+    addProject({ ...projectForm, id: Date.now().toString(), technologies: projectForm.technologies.split(',').map(s => s.trim()) } as any);
     setProjectForm({ titleId: '', titleEn: '', type: 'web', shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '', technologies: '', imageUrl: '', demoUrl: '', featured: false });
-  };
-
-  const submitCertificate = (e: React.FormEvent) => {
-    e.preventDefault();
-    addCertificate({ ...certForm, id: Date.now().toString() });
-    toast({ title: "Sertifikat Ditambahkan" });
-    setCertForm({ titleId: '', titleEn: '', shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '', year: '', issuer: '', validUntil: '', imageUrl: '' });
-  };
-
-  const submitTestimonial = (e: React.FormEvent) => {
-    e.preventDefault();
-    addTestimonial({ ...testForm, id: Date.now().toString() });
-    toast({ title: "Testimoni Ditambahkan" });
-    setTestForm({ name: '', roleId: '', roleEn: '', contentId: '', contentEn: '', avatarUrl: '' });
-  };
-
-  const submitExperience = (e: React.FormEvent) => {
-    e.preventDefault();
-    addExperience({ ...expForm, id: Date.now().toString() });
-    toast({ title: "Riwayat Perjalanan Ditambahkan" });
-    setExpForm({ year: '', company: '', titleId: '', titleEn: '', descriptionId: '', descriptionEn: '' });
+    toast({ title: "Unit Deployed", description: "Project added to cloud storage." });
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 pb-24">
-      {/* Header Admin */}
+    <div className="min-h-screen bg-background text-foreground pb-24 relative">
+      {!isOnline && (
+        <div className="bg-destructive text-destructive-foreground py-2 px-6 flex items-center justify-center gap-2 sticky top-0 z-[60]">
+          <WifiOff className="h-4 w-4" />
+          <span className="text-xs font-black uppercase tracking-widest">You are currently offline. Changes will sync once reconnected.</span>
+        </div>
+      )}
+
       <header className="bg-background/80 backdrop-blur-xl border-b border-border h-16 sticky top-0 z-50 flex items-center justify-between px-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => router.push('/')} className="rounded-xl h-9 w-9 border border-border">
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-               <LayoutDashboard className="h-4 w-4 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="text-sm font-black font-headline tracking-tight uppercase leading-none">Command Center</h1>
-              <p className="text-[8px] text-muted-foreground font-black uppercase tracking-widest mt-1">v2.4.0 Active</p>
-            </div>
+             <LayoutDashboard className="h-4 w-4 text-primary" />
+             <h1 className="text-sm font-black font-headline uppercase tracking-tight">Command Center</h1>
+             <Badge variant="outline" className="h-5 text-[8px] font-black uppercase bg-primary/5 text-primary border-primary/20">{userRole}</Badge>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Badge variant="outline" className="hidden sm:flex rounded-lg px-3 py-1 text-[10px] font-bold gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+            {isOnline ? <Wifi className="h-3 w-3 text-green-500" /> : <WifiOff className="h-3 w-3 text-destructive" />}
             {user?.email}
           </Badge>
-          <Button variant="ghost" onClick={handleLogout} className="text-destructive hover:bg-destructive/10 rounded-xl gap-2 h-9 px-3 text-xs font-bold">
+          <Button variant="ghost" onClick={() => signOut(auth)} className="text-destructive hover:bg-destructive/10 rounded-xl h-9 px-3 text-xs font-bold gap-2">
             <LogOut className="h-4 w-4" /> Sign Out
           </Button>
         </div>
@@ -291,422 +223,184 @@ function AdminContent() {
 
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <Tabs defaultValue="projects" className="space-y-12">
-          {/* Navigasi Tab */}
-          <div className={cn(
-            "flex justify-center sticky top-20 z-40 transition-all duration-500",
-            isTabsVisible ? "translate-y-0 opacity-100" : "-translate-y-10 opacity-0 pointer-events-none"
-          )}>
-            <TabsList className="inline-flex h-14 items-center justify-center rounded-2xl bg-card/80 backdrop-blur-xl border border-border shadow-2xl p-1.5 w-full max-w-3xl overflow-x-auto no-scrollbar">
-              <TabsTrigger value="projects" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-6 h-full gap-2">
+          <div className="flex justify-center sticky top-20 z-40">
+            <TabsList className="h-14 bg-card/80 backdrop-blur-xl border border-border shadow-2xl p-1.5 w-full max-w-4xl overflow-x-auto no-scrollbar rounded-2xl">
+              <TabsTrigger value="projects" className="rounded-xl font-black uppercase text-[10px] tracking-widest gap-2">
                 <Laptop className="h-4 w-4" /> <span className="hidden sm:inline">Projects</span>
               </TabsTrigger>
-              <TabsTrigger value="certificates" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-6 h-full gap-2">
+              <TabsTrigger value="certificates" className="rounded-xl font-black uppercase text-[10px] tracking-widest gap-2">
                 <Award className="h-4 w-4" /> <span className="hidden sm:inline">Certs</span>
               </TabsTrigger>
-              <TabsTrigger value="testimonials" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-6 h-full gap-2">
-                <MessageSquare className="h-4 w-4" /> <span className="hidden sm:inline">Feedback</span>
+              <TabsTrigger value="feedback" className="rounded-xl font-black uppercase text-[10px] tracking-widest gap-2">
+                <Quote className="h-4 w-4" /> <span className="hidden sm:inline">Feedback</span>
               </TabsTrigger>
-              <TabsTrigger value="journey" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-6 h-full gap-2">
+              <TabsTrigger value="journey" className="rounded-xl font-black uppercase text-[10px] tracking-widest gap-2">
                 <History className="h-4 w-4" /> <span className="hidden sm:inline">Journey</span>
               </TabsTrigger>
-              <TabsTrigger value="stats" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-6 h-full gap-2">
-                <Settings className="h-4 w-4" /> <span className="hidden sm:inline">Stats</span>
+              <TabsTrigger value="system" className="rounded-xl font-black uppercase text-[10px] tracking-widest gap-2">
+                <Settings className="h-4 w-4" /> <span className="hidden sm:inline">System</span>
               </TabsTrigger>
-              <TabsTrigger value="profile" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-6 h-full gap-2">
-                <UserCircle className="h-4 w-4" /> <span className="hidden sm:inline">Profile</span>
+              <TabsTrigger value="help" className="rounded-xl font-black uppercase text-[10px] tracking-widest gap-2">
+                <HelpCircle className="h-4 w-4" /> <span className="hidden sm:inline">Guide</span>
               </TabsTrigger>
             </TabsList>
           </div>
 
-          {/* Tab Content: Projects */}
+          {/* Projects Tab */}
           <TabsContent value="projects" className="grid lg:grid-cols-12 gap-8 animate-in fade-in slide-in-from-bottom-4">
-            <div className="lg:col-span-7 space-y-6">
-              <Card className="rounded-[2.5rem] shadow-xl border-border">
-                <CardHeader className="p-8 border-b border-border/50 bg-muted/20">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="font-black font-headline text-xl">New Deployment</CardTitle>
-                      <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Initialize new project unit</CardDescription>
-                    </div>
-                    <Button type="button" variant="outline" onClick={() => handleAutoTranslateForm('project')} disabled={isTranslating === 'project'} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
-                      {isTranslating === 'project' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />}
-                      AI Translate Form
-                    </Button>
+            <div className="lg:col-span-7">
+               <Card className="rounded-[2.5rem] shadow-xl border-border">
+                <CardHeader className="p-8 border-b border-border/50 bg-muted/20 flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="font-black font-headline text-xl">New Deployment</CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Register new code unit</CardDescription>
                   </div>
+                  <Button type="button" variant="outline" onClick={() => handleAutoTranslateForm('project')} disabled={isTranslating === 'project'} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
+                    {isTranslating === 'project' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />}
+                    AI Translate
+                  </Button>
                 </CardHeader>
                 <CardContent className="p-8">
                   <form onSubmit={submitProject} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Project Name (ID)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Name (ID)</label>
                         <Input required value={projectForm.titleId} onChange={e => setProjectForm({...projectForm, titleId: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Project Name (EN)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Name (EN)</label>
                         <Input value={projectForm.titleEn} onChange={e => setProjectForm({...projectForm, titleEn: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
                       </div>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Short Description (ID)</label>
-                        <Input value={projectForm.shortDescriptionId} onChange={e => setProjectForm({...projectForm, shortDescriptionId: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Short Description (EN)</label>
-                        <Input value={projectForm.shortDescriptionEn} onChange={e => setProjectForm({...projectForm, shortDescriptionEn: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                    </div>
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Unit Specification (ID)</label>
-                      <Textarea required value={projectForm.fullDescriptionId} onChange={e => setProjectForm({...projectForm, fullDescriptionId: e.target.value})} className="min-h-[120px] rounded-xl bg-muted/30" />
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Technologies</label>
+                      <Input placeholder="Next.js, Tailwind, etc" value={projectForm.technologies} onChange={e => setProjectForm({...projectForm, technologies: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
                     </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Unit Specification (EN)</label>
-                      <Textarea value={projectForm.fullDescriptionEn} onChange={e => setProjectForm({...projectForm, fullDescriptionEn: e.target.value})} className="min-h-[120px] rounded-xl bg-muted/30" />
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Asset URL</label>
-                        <Input placeholder="https://..." value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Technologies (comma separated)</label>
-                        <Input placeholder="Next.js, Tailwind, etc" value={projectForm.technologies} onChange={e => setProjectForm({...projectForm, technologies: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                    </div>
-                    <Button type="submit" className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground">Confirm Deployment</Button>
+                    <Button type="submit" className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-xl shadow-primary/20 hover:scale-[0.98] transition-all">Confirm Deployment</Button>
                   </form>
                 </CardContent>
               </Card>
             </div>
-            <div className="lg:col-span-5 space-y-6">
-              <h3 className="font-black text-[10px] uppercase tracking-[0.2em] px-2 flex items-center gap-2">
+            <div className="lg:col-span-5 space-y-4">
+               <h3 className="font-black text-[10px] uppercase tracking-[0.2em] px-2 flex items-center gap-2">
                 <Laptop className="h-3 w-3 text-primary" /> Active Units ({projects.length})
               </h3>
-              <div className="grid gap-4">
-                {projects.map(p => (
-                  <Card key={p.id} className="p-4 flex gap-4 items-center group bg-card border-border hover:border-primary/50 transition-all rounded-2xl">
-                    <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-muted">
-                      <img src={p.imageUrl} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-bold truncate text-sm">{p.titleId}</h4>
-                      <Badge variant="secondary" className="text-[8px] font-black uppercase h-5 mt-1">{p.type}</Badge>
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={() => deleteProject(p.id)} className="text-destructive hover:bg-destructive/10 h-9 w-9 rounded-xl">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </Card>
-                ))}
-              </div>
+              {projects.length === 0 ? (
+                <div className="h-48 border-2 border-dashed border-border rounded-[2.5rem] flex flex-col items-center justify-center text-center p-8 space-y-2 opacity-60">
+                   <AlertTriangle className="h-8 w-8 text-muted-foreground" />
+                   <p className="text-xs font-bold uppercase tracking-widest">No projects found. Add your first masterpiece!</p>
+                </div>
+              ) : (
+                <div className="grid gap-3">
+                  {projects.map(p => (
+                    <Card key={p.id} className="p-3 flex gap-4 items-center group bg-card border-border hover:border-primary/50 transition-all rounded-2xl shadow-sm">
+                      <div className="w-12 h-12 rounded-xl bg-muted overflow-hidden shrink-0">
+                        <img src={p.imageUrl || "https://placehold.co/100x100"} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold truncate text-sm">{p.titleId}</h4>
+                        <Badge variant="secondary" className="text-[8px] font-black uppercase h-4 px-1">{p.type}</Badge>
+                      </div>
+                      {isSuper && (
+                        <Button variant="ghost" size="icon" onClick={() => deleteProject(p.id)} className="text-destructive hover:bg-destructive/10 h-8 w-8 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           </TabsContent>
 
-          {/* Tab Content: Certificates */}
-          <TabsContent value="certificates" className="grid lg:grid-cols-12 gap-8 animate-in fade-in">
-             <div className="lg:col-span-7 space-y-6">
-              <Card className="rounded-[2.5rem] shadow-xl border-border">
-                <CardHeader className="p-8 border-b border-border/50 bg-muted/20">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="font-black font-headline text-xl">Issue Certificate</CardTitle>
-                      <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Register official credentials</CardDescription>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button type="button" variant="outline" onClick={handleAIComposeCert} disabled={isAIThinking} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-accent/20 text-accent">
-                        {isAIThinking ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
-                        AI Write
-                      </Button>
-                      <Button type="button" variant="outline" onClick={() => handleAutoTranslateForm('cert')} disabled={isTranslating === 'cert'} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
-                        {isTranslating === 'cert' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />}
-                        AI Translate
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-8">
-                  <form onSubmit={submitCertificate} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Cert Title (ID)</label>
-                        <Input required value={certForm.titleId} onChange={e => setCertForm({...certForm, titleId: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Cert Title (EN)</label>
-                        <Input value={certForm.titleEn} onChange={e => setCertForm({...certForm, titleEn: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Issuer Name</label>
-                        <Input required value={certForm.issuer} onChange={e => setCertForm({...certForm, issuer: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Asset URL</label>
-                        <Input placeholder="https://..." value={certForm.imageUrl} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Description (ID)</label>
-                      <Textarea required value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="min-h-[100px] rounded-xl bg-muted/30" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Description (EN)</label>
-                      <Textarea value={certForm.fullDescriptionEn} onChange={e => setCertForm({...certForm, fullDescriptionEn: e.target.value})} className="min-h-[100px] rounded-xl bg-muted/30" />
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Issue Year</label>
-                        <Input placeholder="2024" value={certForm.year} onChange={e => setCertForm({...certForm, year: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Valid Until</label>
-                        <Input placeholder="Lifetime / 2026" value={certForm.validUntil} onChange={e => setCertForm({...certForm, validUntil: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                    </div>
-                    <Button type="submit" className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-accent text-accent-foreground">Validate Credential</Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
-            <div className="lg:col-span-5 space-y-6">
-              <h3 className="font-black text-[10px] uppercase tracking-[0.2em] px-2 flex items-center gap-2">
-                <Award className="h-3 w-3 text-accent" /> Valid Credentials ({certificates.length})
-              </h3>
-              <div className="grid gap-4">
-                {certificates.map(c => (
-                  <Card key={c.id} className="p-4 flex gap-4 items-center group bg-card border-border hover:border-accent/50 transition-all rounded-2xl">
-                    <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-muted">
-                      <img src={c.imageUrl} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-bold truncate text-sm">{c.titleId}</h4>
-                      <p className="text-[8px] text-muted-foreground font-black uppercase mt-1">{c.issuer} &bull; {c.year}</p>
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={() => deleteCertificate(c.id)} className="text-destructive hover:bg-destructive/10 h-9 w-9 rounded-xl">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Tab Content: Testimonials (Feedback) */}
-          <TabsContent value="testimonials" className="grid lg:grid-cols-12 gap-8 animate-in fade-in">
-             <div className="lg:col-span-7 space-y-6">
-              <Card className="rounded-[2.5rem] shadow-xl border-border">
-                <CardHeader className="p-8 border-b border-border/50 bg-muted/20">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="font-black font-headline text-xl">Client Feedback</CardTitle>
-                      <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Manage public testimonials</CardDescription>
-                    </div>
-                    <Button type="button" variant="outline" onClick={() => handleAutoTranslateForm('test')} disabled={isTranslating === 'test'} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
-                      {isTranslating === 'test' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />} AI Translate
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-8">
-                  <form onSubmit={submitTestimonial} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Author Name</label>
-                        <Input required value={testForm.name} onChange={e => setTestForm({...testForm, name: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Avatar URL</label>
-                        <Input value={testForm.avatarUrl} onChange={e => setTestForm({...testForm, avatarUrl: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-1.5">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Professional Role (ID)</label>
-                          <Input required value={testForm.roleId} onChange={e => setTestForm({...testForm, roleId: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                      <div className="space-y-1.5">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Professional Role (EN)</label>
-                          <Input value={testForm.roleEn} onChange={e => setTestForm({...testForm, roleEn: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Testimonial Content (ID)</label>
-                      <Textarea required value={testForm.contentId} onChange={e => setTestForm({...testForm, contentId: e.target.value})} className="min-h-[120px] rounded-xl bg-muted/30" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Testimonial Content (EN)</label>
-                      <Textarea value={testForm.contentEn} onChange={e => setTestForm({...testForm, contentEn: e.target.value})} className="min-h-[120px] rounded-xl bg-muted/30" />
-                    </div>
-                    <Button type="submit" className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground">Archive Feedback</Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
-            <div className="lg:col-span-5 space-y-6">
-              <h3 className="font-black text-[10px] uppercase tracking-[0.2em] px-2 flex items-center gap-2">
-                <Quote className="h-3 w-3 text-primary" /> Archived Feedbacks ({testimonials.length})
-              </h3>
-              <div className="grid gap-4">
-                {testimonials.map(t => (
-                  <Card key={t.id} className="p-4 flex gap-4 items-center group bg-card border-border hover:border-primary/50 transition-all rounded-2xl">
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0 bg-muted border border-border">
-                      <img src={t.avatarUrl} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-bold truncate text-sm">{t.name}</h4>
-                      <p className="text-[9px] text-muted-foreground font-medium truncate">{t.roleId}</p>
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={() => deleteTestimonial(t.id)} className="text-destructive hover:bg-destructive/10 h-8 w-8 rounded-lg">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Tab Content: Journey (Experiences) */}
-          <TabsContent value="journey" className="grid lg:grid-cols-12 gap-8 animate-in fade-in">
-             <div className="lg:col-span-7 space-y-6">
-              <Card className="rounded-[2.5rem] shadow-xl border-border">
-                <CardHeader className="p-8 border-b border-border/50 bg-muted/20">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="font-black font-headline text-xl">Career Journey</CardTitle>
-                      <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Log professional milestones</CardDescription>
-                    </div>
-                    <Button type="button" variant="outline" onClick={() => handleAutoTranslateForm('journey')} disabled={isTranslating === 'journey'} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
-                      {isTranslating === 'journey' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />} AI Translate
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-8">
-                  <form onSubmit={submitExperience} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Period (e.g. 2023 - Now)</label>
-                        <Input required value={expForm.year} onChange={e => setExpForm({...expForm, year: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Organization / Company</label>
-                        <Input required value={expForm.company} onChange={e => setExpForm({...expForm, company: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-1.5">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Professional Title (ID)</label>
-                          <Input required value={expForm.titleId} onChange={e => setExpForm({...expForm, titleId: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                      <div className="space-y-1.5">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Professional Title (EN)</label>
-                          <Input value={expForm.titleEn} onChange={e => setExpForm({...expForm, titleEn: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Key Responsibilities (ID)</label>
-                      <Textarea required value={expForm.descriptionId} onChange={e => setExpForm({...expForm, descriptionId: e.target.value})} className="min-h-[120px] rounded-xl bg-muted/30" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Key Responsibilities (EN)</label>
-                      <Textarea value={expForm.descriptionEn} onChange={e => setExpForm({...expForm, descriptionEn: e.target.value})} className="min-h-[120px] rounded-xl bg-muted/30" />
-                    </div>
-                    <Button type="submit" className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground">Log Milestone</Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
-            <div className="lg:col-span-5 space-y-6">
-              <h3 className="font-black text-[10px] uppercase tracking-[0.2em] px-2 flex items-center gap-2">
-                <History className="h-3 w-3 text-primary" /> Timeline Feed ({experiences.length})
-              </h3>
-              <div className="grid gap-4">
-                {experiences.map(e => (
-                  <Card key={e.id} className="p-4 flex gap-4 items-center group bg-card border-border hover:border-primary/50 transition-all rounded-2xl">
-                    <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
-                      <Briefcase className="h-4 w-4 text-primary/60" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-bold truncate text-sm">{e.titleId}</h4>
-                      <p className="text-[9px] text-muted-foreground font-black uppercase">{e.company} &bull; {e.year}</p>
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={() => deleteExperience(e.id)} className="text-destructive hover:bg-destructive/10 h-8 w-8 rounded-lg">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Tab Content: Stats */}
-          <TabsContent value="stats" className="max-w-2xl mx-auto animate-in fade-in">
-             <Card className="rounded-[2.5rem] shadow-xl border-border bg-card">
+          {/* System Tab: Backup & Restore */}
+          <TabsContent value="system" className="max-w-2xl mx-auto space-y-8 animate-in fade-in">
+             <Card className="rounded-[2.5rem] shadow-xl border-border bg-card overflow-hidden">
               <CardHeader className="p-8 border-b border-border/50 bg-muted/20">
-                <CardTitle className="flex items-center gap-3 text-xl font-black font-headline"><Settings className="text-primary h-5 w-5" /> Analytics Propagator</CardTitle>
-                <CardDescription className="text-[10px] uppercase font-bold tracking-widest">Update global performance counters</CardDescription>
+                <CardTitle className="flex items-center gap-3 text-xl font-black font-headline"><Settings className="text-primary h-5 w-5" /> Infrastructure Health</CardTitle>
+                <CardDescription className="text-[10px] uppercase font-bold tracking-widest">Database recovery and maintenance</CardDescription>
               </CardHeader>
               <CardContent className="p-8 space-y-8">
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Completed Units</label>
-                    <Input value={statsData.completedProjects} onChange={e => setStatsData({...statsData, completedProjects: e.target.value})} className="h-12 rounded-xl bg-muted/30 text-center font-black text-lg" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Dev Cycle Years</label>
-                    <Input value={statsData.yearsExperience} onChange={e => setStatsData({...statsData, yearsExperience: e.target.value})} className="h-12 rounded-xl bg-muted/30 text-center font-black text-lg" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Frameworks Mastered</label>
-                    <Input value={statsData.techMastered} onChange={e => setStatsData({...statsData, techMastered: e.target.value})} className="h-12 rounded-xl bg-muted/30 text-center font-black text-lg" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Satisfaction Rate</label>
-                    <Input value={statsData.clientSatisfaction} onChange={e => setStatsData({...statsData, clientSatisfaction: e.target.value})} className="h-12 rounded-xl bg-muted/30 text-center font-black text-lg" />
-                  </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <Button variant="outline" onClick={handleBackup} className="h-24 flex-col gap-3 rounded-[2rem] border-primary/20 hover:bg-primary/5 transition-all">
+                    <Download className="h-6 w-6 text-primary" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Backup Database</span>
+                  </Button>
+                  <Button variant="outline" onClick={handleRestoreClick} className="h-24 flex-col gap-3 rounded-[2rem] border-accent/20 hover:bg-accent/5 transition-all">
+                    <Upload className="h-6 w-6 text-accent" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Restore System</span>
+                    <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={handleFileChange} />
+                  </Button>
                 </div>
-                <Button onClick={() => {updateStats(statsData); toast({title: "Metrics Synced"});}} className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-foreground text-background">Propagate Core Metrics</Button>
+
+                <div className="p-6 bg-amber-500/10 border border-amber-500/20 rounded-3xl space-y-4">
+                  <div className="flex items-center gap-3 text-amber-500">
+                    <AlertTriangle className="h-5 w-5" />
+                    <h4 className="text-xs font-black uppercase tracking-widest">Security Warning</h4>
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-amber-600/80 font-medium">
+                    Only <strong className="text-amber-700">Super Admins</strong> can delete records or perform system restores. Current Role: <span className="underline">{userRole}</span>.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                   <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Performance Stats</h4>
+                   <div className="grid grid-cols-3 gap-4">
+                      <div className="p-4 bg-muted rounded-2xl text-center">
+                        <p className="text-lg font-black">{projects.length}</p>
+                        <p className="text-[8px] uppercase font-bold text-muted-foreground">Units</p>
+                      </div>
+                      <div className="p-4 bg-muted rounded-2xl text-center">
+                        <p className="text-lg font-black">{certificates.length}</p>
+                        <p className="text-[8px] uppercase font-bold text-muted-foreground">Certs</p>
+                      </div>
+                      <div className="p-4 bg-muted rounded-2xl text-center">
+                        <p className="text-lg font-black">2.4.0</p>
+                        <p className="text-[8px] uppercase font-bold text-muted-foreground">Build</p>
+                      </div>
+                   </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Tab Content: Profile */}
-          <TabsContent value="profile" className="max-w-3xl mx-auto animate-in fade-in">
+          {/* Guide Tab */}
+          <TabsContent value="help" className="max-w-3xl mx-auto animate-in fade-in">
              <Card className="rounded-[2.5rem] shadow-xl border-border bg-card">
-              <CardHeader className="p-8 border-b border-border/50 bg-muted/20">
-                <CardTitle className="flex items-center gap-3 text-xl font-black font-headline"><UserCircle className="text-primary h-5 w-5" /> Brand Identity</CardTitle>
-                <CardDescription className="text-[10px] uppercase font-bold tracking-widest">Modify public profile metadata</CardDescription>
-              </CardHeader>
-              <CardContent className="p-8 space-y-8">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Full Name</label>
-                    <Input value={profileData.name} onChange={e => setProfileData({...profileData, name: e.target.value})} className="h-11 rounded-xl bg-muted/30 font-bold" />
+                <CardHeader className="p-8 border-b border-border/50">
+                  <CardTitle className="flex items-center gap-3 text-xl font-black font-headline"><HelpCircle className="text-primary h-5 w-5" /> Admin Protocol Guide</CardTitle>
+                </CardHeader>
+                <CardContent className="p-8 space-y-8">
+                  <div className="space-y-6">
+                    <div className="flex gap-4">
+                      <div className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-black text-xs">1</div>
+                      <div className="space-y-1">
+                        <p className="font-bold text-sm">Managing Projects</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">Always fill the ID (Indonesian) fields first. Use the "AI Translate" button to auto-fill English fields to maintain professional bilingual standards.</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="h-8 w-8 rounded-full bg-accent/10 text-accent flex items-center justify-center shrink-0 font-black text-xs">2</div>
+                      <div className="space-y-1">
+                        <p className="font-bold text-sm">Visual Identity</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">Use Unsplash or high-quality CDN links for project images. Pro-tip: 800x600px is the optimal aspect ratio for the portfolio cards.</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="h-8 w-8 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center shrink-0 font-black text-xs">3</div>
+                      <div className="space-y-1">
+                        <p className="font-bold text-sm">Security & Roles</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">Editors can add and modify content. Only Super Admins can perform deletions or infrastructure backups. If you need Super access, update your record in Firestore admins collection.</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Current Role (ID)</label>
-                    <Input value={profileData.roleId} onChange={e => setProfileData({...profileData, roleId: e.target.value})} className="h-11 rounded-xl bg-muted/30 font-bold" />
+                  
+                  <div className="p-6 bg-muted rounded-3xl flex items-center gap-4">
+                    <Info className="h-5 w-5 text-primary" />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Need technical support? Contact dev@karyapro.app</p>
                   </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Biography (ID)</label>
-                  <Textarea value={profileData.aboutTextId} onChange={e => setProfileData({...profileData, aboutTextId: e.target.value})} className="min-h-[120px] rounded-xl bg-muted/30 text-sm resize-none" />
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">WhatsApp</label>
-                    <Input placeholder="628..." value={profileData.whatsapp} onChange={e => setProfileData({...profileData, whatsapp: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">LinkedIn URL</label>
-                    <Input value={profileData.linkedin} onChange={e => setProfileData({...profileData, linkedin: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                  </div>
-                </div>
-
-                <Button onClick={() => {updateProfile(profileData); toast({title: "Identity Synced"});}} className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground">Update Cloud Identity</Button>
-              </CardContent>
-            </Card>
+                </CardContent>
+             </Card>
           </TabsContent>
         </Tabs>
       </div>

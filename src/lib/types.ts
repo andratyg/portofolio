@@ -11,6 +11,7 @@ export interface Project {
   imageUrl: string;
   demoUrl?: string;
   featured?: boolean;
+  updatedAt?: string;
 }
 
 export interface Experience {
@@ -70,4 +71,10 @@ export interface ProfileData {
   instagram?: string;
   github?: string;
   tiktok?: string;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  role: 'super' | 'editor';
 }

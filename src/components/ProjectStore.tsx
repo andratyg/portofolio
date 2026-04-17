@@ -1,14 +1,14 @@
-
 "use client"
 
 import React, { createContext, useContext, useState } from 'react';
 import { Project, Certificate, PortfolioStats, ProfileData, Testimonial, Experience } from '@/lib/types';
 import { useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
+import { collection, doc, writeBatch } from 'firebase/firestore';
 import { 
   setDocumentNonBlocking, 
   deleteDocumentNonBlocking 
 } from '@/firebase/non-blocking-updates';
+import { useToast } from '@/hooks/use-toast';
 
 interface ProjectStoreType {
   projects: Project[];
@@ -29,6 +29,8 @@ interface ProjectStoreType {
   deleteExperience: (id: string) => void;
   updateStats: (newStats: PortfolioStats) => void;
   updateProfile: (newProfile: ProfileData) => void;
+  backupData: () => void;
+  restoreData: (json: string) => Promise<void>;
 }
 
 const defaultStats: PortfolioStats = {
@@ -60,15 +62,14 @@ const ProjectStoreContext = createContext<ProjectStoreType | undefined>(undefine
 
 export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const firestore = useFirestore();
+  const { toast } = useToast();
 
-  // Firestore Queries
   const projectsQuery = useMemoFirebase(() => collection(firestore, 'projects'), [firestore]);
   const certsQuery = useMemoFirebase(() => collection(firestore, 'certificates'), [firestore]);
   const testsQuery = useMemoFirebase(() => collection(firestore, 'testimonials'), [firestore]);
   const journeyQuery = useMemoFirebase(() => collection(firestore, 'careerTimelineEntries'), [firestore]);
   const profileDocRef = useMemoFirebase(() => doc(firestore, 'portfolioOwner', 'profile'), [firestore]);
 
-  // Real-time Data
   const { data: projectsData, isLoading: loadingProjects, error: errorProjects } = useCollection<Project>(projectsQuery);
   const { data: certsData, isLoading: loadingCerts, error: errorCerts } = useCollection<Certificate>(certsQuery);
   const { data: testsData, isLoading: loadingTests, error: errorTests } = useCollection<Testimonial>(testsQuery);
@@ -79,15 +80,14 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const certificates = certsData || [];
   const testimonials = testsData || [];
   const experiences = journeyData || [];
-  const error = errorProjects || errorCerts || errorTests || errorJourney || errorProfile;
   
   const profile: ProfileData = profileData ? {
     name: profileData.name || defaultProfile.name,
     roleId: profileData.roleId || defaultProfile.roleId,
     roleEn: profileData.roleEn || defaultProfile.roleEn,
-    aboutTextId: profileData.aboutMeId || defaultProfile.aboutTextId,
-    aboutTextEn: profileData.aboutMeEn || defaultProfile.aboutTextEn,
-    profileImageUrl: profileData.profilePictureUrl || defaultProfile.profileImageUrl,
+    aboutMeId: profileData.aboutMeId || defaultProfile.aboutTextId,
+    aboutMeEn: profileData.aboutMeEn || defaultProfile.aboutTextEn,
+    profilePictureUrl: profileData.profilePictureUrl || defaultProfile.profileImageUrl,
     heroTitleId: profileData.heroTitleId || defaultProfile.heroTitleId,
     heroTitleEn: profileData.heroTitleEn || defaultProfile.heroTitleEn,
     heroSubtitleId: profileData.heroSubtitleId || defaultProfile.heroSubtitleId,
@@ -107,46 +107,80 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   } : defaultStats;
 
   const isLoading = loadingProjects || loadingCerts || loadingTests || loadingJourney || loadingProfile;
+  const error = errorProjects || errorCerts || errorTests || errorJourney || errorProfile;
 
-  // Mutations
+  const backupData = () => {
+    const data = {
+      projects,
+      certificates,
+      testimonials,
+      experiences,
+      profile,
+      stats,
+      version: '2.4.0',
+      exportedAt: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `karyapro-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    toast({ title: "Backup Created", description: "JSON file downloaded successfully." });
+  };
+
+  const restoreData = async (json: string) => {
+    try {
+      const data = JSON.parse(json);
+      const batch = writeBatch(firestore);
+      
+      // Basic validation
+      if (!data.projects || !data.certificates) throw new Error("Invalid backup format");
+
+      // Warning: This is a destructive operation in a real app, but useful for MVP
+      data.projects.forEach((p: any) => batch.set(doc(firestore, 'projects', p.id), p));
+      data.certificates.forEach((c: any) => batch.set(doc(firestore, 'certificates', c.id), c));
+      data.testimonials.forEach((t: any) => batch.set(doc(firestore, 'testimonials', t.id), t));
+      data.experiences.forEach((e: any) => batch.set(doc(firestore, 'careerTimelineEntries', e.id), e));
+      
+      await batch.commit();
+      toast({ title: "Restore Successful", description: "All database records have been synced." });
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Restore Failed", description: e.message });
+    }
+  };
+
   const addProject = (project: Project) => {
     const docRef = doc(firestore, 'projects', project.id);
-    setDocumentNonBlocking(docRef, project, { merge: true });
+    setDocumentNonBlocking(docRef, { ...project, updatedAt: new Date().toISOString() }, { merge: true });
   };
 
   const deleteProject = (id: string) => {
-    const docRef = doc(firestore, 'projects', id);
-    deleteDocumentNonBlocking(docRef);
+    deleteDocumentNonBlocking(doc(firestore, 'projects', id));
   };
 
   const addCertificate = (cert: Certificate) => {
-    const docRef = doc(firestore, 'certificates', cert.id);
-    setDocumentNonBlocking(docRef, cert, { merge: true });
+    setDocumentNonBlocking(doc(firestore, 'certificates', cert.id), cert, { merge: true });
   };
 
   const deleteCertificate = (id: string) => {
-    const docRef = doc(firestore, 'certificates', id);
-    deleteDocumentNonBlocking(docRef);
+    deleteDocumentNonBlocking(doc(firestore, 'certificates', id));
   };
 
   const addTestimonial = (test: Testimonial) => {
-    const docRef = doc(firestore, 'testimonials', test.id);
-    setDocumentNonBlocking(docRef, test, { merge: true });
+    setDocumentNonBlocking(doc(firestore, 'testimonials', test.id), test, { merge: true });
   };
 
   const deleteTestimonial = (id: string) => {
-    const docRef = doc(firestore, 'testimonials', id);
-    deleteDocumentNonBlocking(docRef);
+    deleteDocumentNonBlocking(doc(firestore, 'testimonials', id));
   };
 
   const addExperience = (exp: Experience) => {
-    const docRef = doc(firestore, 'careerTimelineEntries', exp.id);
-    setDocumentNonBlocking(docRef, exp, { merge: true });
+    setDocumentNonBlocking(doc(firestore, 'careerTimelineEntries', exp.id), exp, { merge: true });
   };
 
   const deleteExperience = (id: string) => {
-    const docRef = doc(firestore, 'careerTimelineEntries', id);
-    deleteDocumentNonBlocking(docRef);
+    deleteDocumentNonBlocking(doc(firestore, 'careerTimelineEntries', id));
   };
 
   const updateStats = (newStats: PortfolioStats) => {
@@ -180,24 +214,10 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   return (
     <ProjectStoreContext.Provider value={{ 
-      projects, 
-      certificates, 
-      testimonials,
-      experiences,
-      stats,
-      profile,
-      isLoading,
-      error,
-      addProject, 
-      deleteProject, 
-      addCertificate, 
-      deleteCertificate,
-      addTestimonial,
-      deleteTestimonial,
-      addExperience,
-      deleteExperience,
-      updateStats,
-      updateProfile
+      projects, certificates, testimonials, experiences, stats, profile, isLoading, error,
+      addProject, deleteProject, addCertificate, deleteCertificate,
+      addTestimonial, deleteTestimonial, addExperience, deleteExperience,
+      updateStats, updateProfile, backupData, restoreData
     }}>
       {children}
     </ProjectStoreContext.Provider>

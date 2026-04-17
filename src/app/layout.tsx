@@ -50,7 +50,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Schema.org JSON-LD for Person & Portfolio
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -73,7 +72,6 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {/* Google Analytics Placeholder */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
           strategy="afterInteractive"
@@ -95,7 +93,6 @@ export default function RootLayout({
                 {children}
               </div>
               <div className="hidden print:block print:p-8">
-                {/* Print Version will be handled by CSS */}
                 {children}
               </div>
               <Toaster />
