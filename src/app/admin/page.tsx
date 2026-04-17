@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useEffect, useState } from 'react';
@@ -9,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, UserCircle, Languages } from 'lucide-react';
+import { Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, UserCircle, Languages, Loader2 } from 'lucide-react';
 import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-portfolio-description-suggestion';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
 import { translateContent } from '@/ai/flows/translate-content';
@@ -65,7 +66,7 @@ function AdminContent() {
     router.push('/');
   };
 
-  const handleTranslate = async (text: string, targetLang: 'id' | 'en', callback: (val: string) => void) => {
+  const translateSingle = async (text: string, targetLang: 'id' | 'en', callback: (val: string) => void) => {
     if (!text) return;
     setIsTranslating(true);
     try {
@@ -78,7 +79,59 @@ function AdminContent() {
     }
   };
 
-  const handleGenerateAI = async () => {
+  const handleTranslateProject = async () => {
+    const { titleId, shortDescriptionId, fullDescriptionId } = projectForm;
+    if (!titleId && !shortDescriptionId && !fullDescriptionId) {
+      toast({ title: "Isi konten Indonesia terlebih dahulu", variant: "destructive" });
+      return;
+    }
+    setIsTranslating(true);
+    try {
+      if (titleId) {
+        const r = await translateContent({ text: titleId, targetLang: 'en' });
+        setProjectForm(prev => ({ ...prev, titleEn: r.translatedText }));
+      }
+      if (shortDescriptionId) {
+        const r = await translateContent({ text: shortDescriptionId, targetLang: 'en' });
+        setProjectForm(prev => ({ ...prev, shortDescriptionEn: r.translatedText }));
+      }
+      if (fullDescriptionId) {
+        const r = await translateContent({ text: fullDescriptionId, targetLang: 'en' });
+        setProjectForm(prev => ({ ...prev, fullDescriptionEn: r.translatedText }));
+      }
+      toast({ title: "Project translated successfully" });
+    } catch (e) {
+      toast({ title: "Translation Error", variant: "destructive" });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  const handleTranslateCertificate = async () => {
+    const { titleId, fullDescriptionId } = certForm;
+    if (!titleId && !fullDescriptionId) {
+      toast({ title: "Isi konten Indonesia terlebih dahulu", variant: "destructive" });
+      return;
+    }
+    setIsTranslating(true);
+    try {
+      if (titleId) {
+        const r = await translateContent({ text: titleId, targetLang: 'en' });
+        setCertForm(prev => ({ ...prev, titleEn: r.translatedText }));
+      }
+      if (fullDescriptionId) {
+        const r = await translateContent({ text: fullDescriptionId, targetLang: 'en' });
+        setCertForm(prev => ({ ...prev, fullDescriptionEn: r.translatedText }));
+      }
+      toast({ title: "Certificate translated successfully" });
+    } catch (e) {
+      toast({ title: "Translation Error", variant: "destructive" });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  const handleGenerateAIProject = async () => {
     if (!projectForm.titleId) {
       toast({ title: "Judul (ID) Diperlukan", variant: "destructive" });
       return;
@@ -91,6 +144,25 @@ function AdminContent() {
         technologiesUsed: projectForm.technologies.split(',').map(s => s.trim()),
       });
       setProjectForm(prev => ({ ...prev, fullDescriptionId: result.descriptionSuggestion }));
+    } catch (e) {
+      toast({ title: "AI Error", variant: "destructive" });
+    } finally {
+      setIsAIThinking(false);
+    }
+  };
+
+  const handleGenerateAICert = async () => {
+    if (!certForm.titleId || !certForm.issuer) {
+      toast({ title: "Judul & Penerbit Diperlukan", variant: "destructive" });
+      return;
+    }
+    setIsAIThinking(true);
+    try {
+      const result = await generateCertificateDescription({
+        title: certForm.titleId,
+        issuer: certForm.issuer,
+      });
+      setCertForm(prev => ({ ...prev, fullDescriptionId: result.descriptionSuggestion }));
     } catch (e) {
       toast({ title: "AI Error", variant: "destructive" });
     } finally {
@@ -143,8 +215,19 @@ function AdminContent() {
 
           <TabsContent value="projects" className="grid lg:grid-cols-3 gap-8">
             <Card className="lg:col-span-2 rounded-3xl shadow-lg border-none">
-              <CardHeader className="bg-primary text-primary-foreground p-8 rounded-t-3xl">
+              <CardHeader className="bg-primary text-primary-foreground p-8 rounded-t-3xl flex flex-row items-center justify-between">
                 <CardTitle className="flex items-center gap-3"><Plus /> Add Project</CardTitle>
+                <Button 
+                  type="button" 
+                  variant="secondary" 
+                  size="sm" 
+                  onClick={handleTranslateProject}
+                  disabled={isTranslating}
+                  className="rounded-full gap-2"
+                >
+                  {isTranslating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
+                  Translate All to EN
+                </Button>
               </CardHeader>
               <CardContent className="p-8 space-y-6">
                 <form onSubmit={submitProject} className="space-y-6">
@@ -154,10 +237,7 @@ function AdminContent() {
                       <Input required value={projectForm.titleId} onChange={e => setProjectForm({...projectForm, titleId: e.target.value})} />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <label className="text-xs font-bold uppercase">Title (English)</label>
-                        <Button type="button" variant="ghost" size="xs" onClick={() => handleTranslate(projectForm.titleId, 'en', (v) => setProjectForm(p => ({...p, titleEn: v})))}><Languages className="h-3 w-3 mr-1"/> Translate</Button>
-                      </div>
+                      <label className="text-xs font-bold uppercase">Title (English)</label>
                       <Input value={projectForm.titleEn} onChange={e => setProjectForm({...projectForm, titleEn: e.target.value})} />
                     </div>
                   </div>
@@ -168,10 +248,7 @@ function AdminContent() {
                       <Input value={projectForm.shortDescriptionId} onChange={e => setProjectForm({...projectForm, shortDescriptionId: e.target.value})} />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <label className="text-xs font-bold uppercase">Short Desc (EN)</label>
-                        <Button type="button" variant="ghost" size="xs" onClick={() => handleTranslate(projectForm.shortDescriptionId, 'en', (v) => setProjectForm(p => ({...p, shortDescriptionEn: v})))}><Languages className="h-3 w-3 mr-1"/> Translate</Button>
-                      </div>
+                      <label className="text-xs font-bold uppercase">Short Desc (EN)</label>
                       <Input value={projectForm.shortDescriptionEn} onChange={e => setProjectForm({...projectForm, shortDescriptionEn: e.target.value})} />
                     </div>
                   </div>
@@ -179,18 +256,16 @@ function AdminContent() {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <label className="text-xs font-bold uppercase">Full Description (ID)</label>
-                      <Button type="button" variant="outline" size="sm" onClick={handleGenerateAI} disabled={isAIThinking} className="gap-2">
-                        <Sparkles className="h-3 w-3" /> AI Generate
+                      <Button type="button" variant="outline" size="sm" onClick={handleGenerateAIProject} disabled={isAIThinking} className="gap-2">
+                        {isAIThinking ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                        AI Generate Suggestions
                       </Button>
                     </div>
                     <Textarea required value={projectForm.fullDescriptionId} onChange={e => setProjectForm({...projectForm, fullDescriptionId: e.target.value})} className="min-h-[100px]" />
                   </div>
 
                   <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <label className="text-xs font-bold uppercase">Full Description (EN)</label>
-                      <Button type="button" variant="ghost" size="xs" onClick={() => handleTranslate(projectForm.fullDescriptionId, 'en', (v) => setProjectForm(p => ({...p, fullDescriptionEn: v})))}><Languages className="h-3 w-3 mr-1"/> Translate</Button>
-                    </div>
+                    <label className="text-xs font-bold uppercase">Full Description (EN)</label>
                     <Textarea value={projectForm.fullDescriptionEn} onChange={e => setProjectForm({...projectForm, fullDescriptionEn: e.target.value})} className="min-h-[100px]" />
                   </div>
 
@@ -226,14 +301,31 @@ function AdminContent() {
 
           <TabsContent value="certificates" className="grid lg:grid-cols-3 gap-8">
             <Card className="lg:col-span-2 rounded-3xl shadow-lg border-none">
-              <CardHeader className="bg-accent text-accent-foreground p-8 rounded-t-3xl">
+              <CardHeader className="bg-accent text-accent-foreground p-8 rounded-t-3xl flex flex-row items-center justify-between">
                 <CardTitle className="flex items-center gap-3"><Award /> Add Certificate</CardTitle>
+                <Button 
+                  type="button" 
+                  variant="secondary" 
+                  size="sm" 
+                  onClick={handleTranslateCertificate}
+                  disabled={isTranslating}
+                  className="rounded-full gap-2"
+                >
+                  {isTranslating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
+                  Translate All to EN
+                </Button>
               </CardHeader>
               <CardContent className="p-8 space-y-6">
                 <form onSubmit={submitCertificate} className="space-y-4">
                   <div className="grid md:grid-cols-2 gap-4">
                     <Input required placeholder="Judul (ID)" value={certForm.titleId} onChange={e => setCertForm({...certForm, titleId: e.target.value})} />
                     <Input placeholder="Title (EN)" value={certForm.titleEn} onChange={e => setCertForm({...certForm, titleEn: e.target.value})} />
+                  </div>
+                  <div className="flex justify-end">
+                    <Button type="button" variant="outline" size="sm" onClick={handleGenerateAICert} disabled={isAIThinking} className="gap-2">
+                       {isAIThinking ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                       AI Generate Description
+                    </Button>
                   </div>
                   <Textarea required placeholder="Deskripsi Lengkap (ID)" value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} />
                   <Textarea placeholder="Full Description (EN)" value={certForm.fullDescriptionEn} onChange={e => setCertForm({...certForm, fullDescriptionEn: e.target.value})} />
@@ -293,9 +385,12 @@ function AdminContent() {
                   <div className="flex justify-between items-center">
                     <label className="text-sm font-bold text-indigo-600">English Version (AI Powered)</label>
                     <Button variant="ghost" size="sm" onClick={() => {
-                       handleTranslate(profileData.roleId, 'en', (v) => setProfileData(p => ({...p, roleEn: v})));
-                       handleTranslate(profileData.aboutTextId, 'en', (v) => setProfileData(p => ({...p, aboutTextEn: v})));
-                    }}><Languages className="h-4 w-4 mr-1"/> Translate All</Button>
+                       translateSingle(profileData.roleId, 'en', (v) => setProfileData(p => ({...p, roleEn: v})));
+                       translateSingle(profileData.aboutTextId, 'en', (v) => setProfileData(p => ({...p, aboutTextEn: v})));
+                    }} disabled={isTranslating}>
+                      {isTranslating ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Languages className="h-4 w-4 mr-1"/>}
+                      Translate All Profile
+                    </Button>
                   </div>
                   <div className="space-y-2"><label className="text-xs font-bold uppercase">Role (EN)</label><Input value={profileData.roleEn} onChange={e => setProfileData({...profileData, roleEn: e.target.value})} /></div>
                   <div className="space-y-2"><label className="text-xs font-bold uppercase">About (EN)</label><Textarea value={profileData.aboutTextEn} onChange={e => setProfileData({...profileData, aboutTextEn: e.target.value})} className="min-h-[120px]" /></div>
