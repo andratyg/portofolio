@@ -1,9 +1,10 @@
+
 export type Language = 'en' | 'id';
 
 export const translations = {
   en: {
     navHome: 'Home',
-    navPortfolio: 'Portfolio',
+    navPortfolio: 'Projects',
     navJourney: 'Journey',
     navContact: 'Contact',
     navAdmin: 'Admin',
@@ -55,7 +56,7 @@ export const translations = {
   },
   id: {
     navHome: 'Beranda',
-    navPortfolio: 'Portofolio',
+    navPortfolio: 'Proyek Website',
     navJourney: 'Perjalanan',
     navContact: 'Kontak',
     navAdmin: 'Admin',

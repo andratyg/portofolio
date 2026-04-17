@@ -7,10 +7,9 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { Search, ExternalLink, Award } from 'lucide-react';
+import { Search, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import { useProjectStore } from '../ProjectStore';
-import { Project } from '@/lib/types';
 
 export const Portfolio = () => {
   const { t } = useLanguage();
@@ -20,7 +19,7 @@ export const Portfolio = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1000);
+    const timer = setTimeout(() => setLoading(false), 800);
     return () => clearTimeout(timer);
   }, []);
 
@@ -32,8 +31,8 @@ export const Portfolio = () => {
   });
 
   const SkeletonCard = () => (
-    <div className="rounded-2xl border bg-card animate-pulse">
-      <div className="aspect-video bg-muted rounded-t-2xl"></div>
+    <div className="rounded-3xl border bg-card animate-pulse overflow-hidden">
+      <div className="aspect-video bg-muted"></div>
       <div className="p-6 space-y-3">
         <div className="h-6 w-2/3 bg-muted rounded"></div>
         <div className="h-4 w-full bg-muted rounded"></div>
@@ -46,20 +45,20 @@ export const Portfolio = () => {
   );
 
   return (
-    <section id="portfolio" className="py-24">
+    <section id="portfolio" className="py-24 bg-background">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-          <div>
-            <h2 className="text-4xl font-bold font-headline mb-2">{t.navPortfolio}</h2>
-            <p className="text-muted-foreground">{t.featuredProjects}</p>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16">
+          <div className="space-y-2">
+            <h2 className="text-4xl md:text-5xl font-bold font-headline">{t.navPortfolio}</h2>
+            <p className="text-muted-foreground text-lg">Click any project to visit the live website.</p>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 placeholder={t.searchPlaceholder} 
-                className="pl-10 w-full sm:w-64 rounded-full"
+                className="pl-12 w-full sm:w-64 rounded-full h-11 border-primary/20"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -70,7 +69,7 @@ export const Portfolio = () => {
                   key={cat}
                   variant={filter === cat ? 'default' : 'outline'}
                   size="sm"
-                  className="rounded-full whitespace-nowrap"
+                  className="rounded-full h-11 px-6 whitespace-nowrap"
                   onClick={() => setFilter(cat)}
                 >
                   {cat === 'all' ? t.filterAll : cat === 'web' ? t.filterWeb : cat === 'ui' ? t.filterUI : t.filterBackend}
@@ -82,58 +81,51 @@ export const Portfolio = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {loading ? (
-            Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)
+            Array(3).fill(0).map((_, i) => <SkeletonCard key={i} />)
           ) : (
             filteredProjects.map((project) => (
               <a 
                 key={project.id} 
                 href={project.demoUrl || '#'} 
-                target={project.demoUrl ? "_blank" : "_self"} 
+                target="_blank" 
                 rel="noopener noreferrer"
                 className="block group"
               >
-                <Card className="overflow-hidden h-full hover:shadow-xl transition-all duration-300 border-none bg-card/50 backdrop-blur-sm shadow-md flex flex-col">
+                <Card className="overflow-hidden h-full hover:shadow-2xl transition-all duration-500 border-none bg-card shadow-lg rounded-[2.5rem] flex flex-col group-hover:-translate-y-2">
                   <div className="relative aspect-video overflow-hidden">
                     <Image 
                       src={project.imageUrl} 
                       alt={project.title} 
                       fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
                     />
-                    <div className="absolute top-3 left-3 flex gap-2">
-                      <Badge variant="secondary" className="bg-background/80 backdrop-blur-md uppercase text-[10px] tracking-widest">{project.type}</Badge>
+                    <div className="absolute top-4 left-4">
+                      <Badge className="bg-white/90 backdrop-blur-md text-black hover:bg-white uppercase text-[10px] tracking-widest font-bold px-3 py-1 rounded-full">{project.type}</Badge>
                     </div>
-                    {project.demoUrl && (
-                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="bg-white text-black px-4 py-2 rounded-full font-bold flex items-center gap-2">
-                          <ExternalLink className="h-4 w-4" />
-                          {t.liveDemo}
-                        </div>
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="bg-primary text-primary-foreground px-6 py-3 rounded-full font-bold flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <ExternalLink className="h-5 w-5" />
+                        {t.liveDemo}
                       </div>
-                    )}
+                    </div>
                   </div>
-                  <CardHeader>
-                    <CardTitle className="group-hover:text-primary transition-colors">{project.title}</CardTitle>
+                  <CardHeader className="pt-8">
+                    <CardTitle className="text-2xl font-bold font-headline group-hover:text-primary transition-colors">{project.title}</CardTitle>
                   </CardHeader>
-                  <CardContent className="flex-1">
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                  <CardContent className="flex-1 px-6">
+                    <p className="text-muted-foreground leading-relaxed line-clamp-3 mb-6">
                       {project.shortDescription}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {project.technologies.slice(0, 3).map((tech) => (
-                        <Badge key={tech} variant="outline" className="text-[10px]">{tech}</Badge>
+                      {project.technologies.map((tech) => (
+                        <Badge key={tech} variant="secondary" className="text-[10px] font-bold rounded-lg px-2 py-0.5">{tech}</Badge>
                       ))}
-                      {project.technologies.length > 3 && (
-                        <Badge variant="outline" className="text-[10px]">+{project.technologies.length - 3}</Badge>
-                      )}
                     </div>
                   </CardContent>
-                  <CardFooter className="pt-0 flex justify-between items-center text-xs text-muted-foreground font-medium">
-                    <div className="flex items-center gap-1">
-                      <Award className="h-3 w-3 text-accent" />
-                      {t.certificates}: {project.certificates?.length || 0}
-                    </div>
-                    <span className="group-hover:translate-x-1 transition-transform">{project.demoUrl ? t.liveDemo : t.details} →</span>
+                  <CardFooter className="p-6 pt-0 flex justify-between items-center">
+                    <span className="text-sm font-bold text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
+                      {t.liveDemo} <ExternalLink className="h-4 w-4" />
+                    </span>
                   </CardFooter>
                 </Card>
               </a>
@@ -142,10 +134,13 @@ export const Portfolio = () => {
         </div>
 
         {!loading && filteredProjects.length === 0 && (
-          <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed">
-            <Search className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-            <h3 className="text-xl font-medium">No projects found matching your search.</h3>
-            <Button variant="link" onClick={() => {setSearch(''); setFilter('all');}}>Clear filters</Button>
+          <div className="text-center py-32 bg-muted/20 rounded-[3rem] border-2 border-dashed border-primary/20">
+            <div className="bg-muted w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+               <Search className="h-10 w-10 text-muted-foreground/50" />
+            </div>
+            <h3 className="text-2xl font-bold font-headline mb-2">No projects found</h3>
+            <p className="text-muted-foreground mb-6">Try adjusting your filters or search terms.</p>
+            <Button variant="link" className="text-primary font-bold" onClick={() => {setSearch(''); setFilter('all');}}>Clear all filters</Button>
           </div>
         )}
       </div>

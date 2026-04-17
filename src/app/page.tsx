@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Navbar } from '@/components/Navbar';
@@ -22,14 +23,16 @@ export default function Home() {
         <Hero />
         <About />
         <Stats />
-        <Portfolio />
-        <Certificates />
+        <div className="space-y-12">
+          <Portfolio />
+          <Certificates />
+        </div>
         <Timeline />
         <Testimonials />
         <Contact />
-        <footer className="py-12 border-t bg-muted/20">
+        <footer className="py-16 border-t bg-muted/20">
           <div className="container mx-auto px-4 text-center">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm font-medium text-muted-foreground">
               {t.footerCopyright}
             </p>
           </div>
