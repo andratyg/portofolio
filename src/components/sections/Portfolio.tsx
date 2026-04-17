@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -33,42 +34,51 @@ export const Portfolio = () => {
   return (
     <section id="portfolio" className="py-32 bg-background relative overflow-hidden">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col lg:flex-row justify-between items-end gap-10 mb-24">
-          <div className="space-y-6 max-w-2xl">
-            <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-2 rounded-full font-black uppercase tracking-widest text-[10px]">{t.navPortfolio}</Badge>
-            <h2 className="text-5xl md:text-7xl font-black font-headline tracking-tighter leading-[0.9]">{language === 'id' ? 'Karya Pilihan Saya' : 'My Selected Works'}</h2>
-            <p className="text-xl text-muted-foreground leading-relaxed font-medium">
-              {language === 'id' ? 'Eksplorasi solusi digital yang menggabungkan estetika dan performa tinggi.' : 'Exploring digital solutions that combine aesthetics and high performance.'}
-            </p>
-          </div>
+        {/* Header Section based on the image */}
+        <div className="mb-20">
+          <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-full font-black uppercase tracking-widest text-[10px]">
+            {language === 'id' ? 'PROYEK WEBSITE' : 'WEBSITE PROJECTS'}
+          </Badge>
           
-          <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-            <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-              <Input 
-                placeholder={t.searchPlaceholder} 
-                className="pl-12 w-full sm:w-72 rounded-2xl h-14 bg-card border-none shadow-xl focus:ring-2 focus:ring-primary/20"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10">
+            <div className="max-w-3xl">
+              <h2 className="text-6xl md:text-[5.5rem] font-black font-headline tracking-tighter leading-[1.05] mb-8 text-foreground">
+                {language === 'id' ? 'Karya Pilihan Saya' : 'My Selected Works'}
+              </h2>
+              <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-xl font-medium">
+                {language === 'id' ? 'Eksplorasi solusi digital yang menggabungkan estetika dan performa tinggi.' : 'Exploring digital solutions that combine aesthetics and high performance.'}
+              </p>
             </div>
-            <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 no-scrollbar">
-              {(['all', 'web', 'ui', 'backend'] as const).map((cat) => (
-                <Button 
-                  key={cat}
-                  variant={filter === cat ? 'default' : 'secondary'}
-                  size="lg"
-                  className={`rounded-2xl h-14 px-8 whitespace-nowrap font-bold transition-all ${filter === cat ? 'shadow-xl shadow-primary/20' : ''}`}
-                  onClick={() => setFilter(cat)}
-                >
-                  {cat === 'all' ? t.filterAll : cat === 'web' ? t.filterWeb : cat === 'ui' ? t.filterUI : t.filterBackend}
-                </Button>
-              ))}
+            
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
+              <div className="relative w-full sm:w-auto">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input 
+                  placeholder={language === 'id' ? 'Cari proyek...' : 'Search projects...'} 
+                  className="pl-12 w-full sm:w-80 rounded-2xl h-16 bg-card border-none shadow-[0_10px_40px_rgba(0,0,0,0.08)] focus:ring-2 focus:ring-primary/20 text-lg"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+              <div className="flex gap-2 w-full sm:w-auto overflow-x-auto no-scrollbar pb-2 sm:pb-0">
+                {(['all', 'web', 'ui', 'backend'] as const).map((cat) => (
+                  <Button 
+                    key={cat}
+                    variant={filter === cat ? 'default' : 'secondary'}
+                    size="lg"
+                    className={`rounded-2xl h-16 px-8 whitespace-nowrap font-bold text-base transition-all ${filter === cat ? 'shadow-xl shadow-primary/30' : 'bg-muted/40'}`}
+                    onClick={() => setFilter(cat)}
+                  >
+                    {cat === 'all' ? t.filterAll : cat === 'web' ? t.filterWeb : cat === 'ui' ? t.filterUI : t.filterBackend}
+                  </Button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+        {/* Projects Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
           {filteredProjects.map((project, idx) => (
             <a 
               key={project.id} 
@@ -78,7 +88,7 @@ export const Portfolio = () => {
               className={`block group transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`}
               style={{ transitionDelay: `${idx * 100}ms` }}
             >
-              <Card className="glow-effect overflow-hidden h-full border-none bg-card shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[3rem] flex flex-col group-hover:-translate-y-4 transition-transform duration-500">
+              <Card className="glow-effect overflow-hidden h-full border-none bg-card shadow-[0_20px_60px_rgba(0,0,0,0.07)] rounded-[3rem] flex flex-col group-hover:-translate-y-4 transition-transform duration-500">
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image 
                     src={project.imageUrl || `https://picsum.photos/seed/${project.id}/800/600`} 
