@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -61,11 +60,6 @@ export const Navbar = () => {
   const getThemeColor = (tName: string) => {
     switch(tName) {
       case 'dark': return 'bg-[#1a1c23]';
-      case 'emerald': return 'bg-[#10b981]';
-      case 'sunset': return 'bg-[#f97316]';
-      case 'royal': return 'bg-[#8b5cf6]';
-      case 'cyber': return 'bg-[#22d3ee]';
-      case 'amber': return 'bg-[#f59e0b]';
       case 'ramadan': return 'bg-[#15803d]';
       case 'imlek': return 'bg-[#dc2626]';
       case 'natal': return 'bg-[#ef4444]';
