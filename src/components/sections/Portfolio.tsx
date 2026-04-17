@@ -18,7 +18,7 @@ import {
   Terminal,
   Activity
 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
 import Image from 'next/image';
 import { useProjectStore } from '../ProjectStore';
 import { cn } from '@/lib/utils';
@@ -231,7 +231,9 @@ const ProjectCard = ({ project, index, isVisible, handleShare }: { project: Proj
                       <Badge className="bg-primary text-primary-foreground font-black px-4 py-1.5 rounded-full shadow-xl">{project.type}</Badge>
                       <Badge className="bg-accent/20 text-accent border-accent/30 font-black px-4 py-1.5 rounded-full backdrop-blur-xl">{project.impactStats || 'Verified Deployment'}</Badge>
                     </div>
-                    <h2 className="text-4xl md:text-6xl font-black font-headline text-white tracking-tighter leading-tight drop-shadow-2xl">{title}</h2>
+                    <DialogTitle className="text-4xl md:text-6xl font-black font-headline text-white tracking-tighter leading-tight drop-shadow-2xl">
+                      {title}
+                    </DialogTitle>
                   </div>
                   <div className="flex gap-3 no-print">
                     <Button variant="outline" size="icon" onClick={(e) => handleShare(e, project)} className="rounded-2xl h-14 w-14 bg-white/10 backdrop-blur-xl border-white/20 text-white hover:bg-white/20 shadow-2xl transition-all">
@@ -259,9 +261,9 @@ const ProjectCard = ({ project, index, isVisible, handleShare }: { project: Proj
                            </div>
                            <h3 className="text-2xl font-black font-headline uppercase tracking-tight">Technical Bottleneck</h3>
                         </div>
-                        <p className="text-muted-foreground text-lg leading-relaxed font-medium">
+                        <DialogDescription className="text-muted-foreground text-lg leading-relaxed font-medium">
                            {project.problemId || project.problemEn || 'Detailed challenge narrative pending data synchronization...'}
-                        </p>
+                        </DialogDescription>
                      </section>
 
                      <section className="space-y-6">

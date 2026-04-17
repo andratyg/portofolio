@@ -6,7 +6,7 @@ import { useLanguage } from '../LanguageContext';
 import { useProjectStore } from '../ProjectStore';
 import { Card, CardContent } from '../ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
 import { Award, Calendar, ShieldCheck, Info, ExternalLink, FileText, CheckCircle2, FileType, Eye } from 'lucide-react';
 import Image from 'next/image';
 import { Certificate } from '@/lib/types';
@@ -176,9 +176,9 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                    </div>
                    <h4 className="text-lg font-black font-headline uppercase tracking-tight">Full Validation Narrative</h4>
                 </div>
-                <p className="text-muted-foreground leading-relaxed text-base font-medium">
+                <DialogDescription className="text-muted-foreground leading-relaxed text-base font-medium">
                   {cert.fullDescriptionId || cert.fullDescriptionEn || t.certFullDesc}
-                </p>
+                </DialogDescription>
              </div>
           </div>
         </div>
