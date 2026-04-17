@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from './LanguageContext';
 import { useTheme, themes } from './ThemeContext';
@@ -8,6 +8,7 @@ import { Button } from './ui/button';
 import { Globe, Palette, LogIn, Menu, X } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 export const Navbar = () => {
   const { t, language, setLanguage } = useLanguage();
@@ -15,6 +16,27 @@ export const Navbar = () => {
   const { toast } = useToast();
   const [logoClicks, setLogoClicks] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY < 10) {
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const handleLogoClick = () => {
     const newClicks = logoClicks + 1;
@@ -36,7 +58,10 @@ export const Navbar = () => {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b">
+    <nav className={cn(
+      "sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b transition-transform duration-500 ease-in-out",
+      isVisible ? "translate-y-0" : "-translate-y-full"
+    )}>
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <Link 

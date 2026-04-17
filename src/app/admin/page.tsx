@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useEffect, useState } from 'react';
@@ -21,6 +20,7 @@ import { generateCertificateDescription } from '@/ai/flows/generate-certificate-
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
 import { ProfileData } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 function AdminContent() {
   const { 
@@ -36,6 +36,28 @@ function AdminContent() {
   const { toast } = useToast();
   const [isAIThinking, setIsAIThinking] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [isTabsVisible, setIsTabsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  // Scroll handler for Tabs
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY < 120) {
+        setIsTabsVisible(true);
+      } else if (currentScrollY > lastScrollY) {
+        setIsTabsVisible(false);
+      } else {
+        setIsTabsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
   
   // Forms States
   const [projectForm, setProjectForm] = useState({
@@ -284,7 +306,10 @@ function AdminContent() {
 
       <div className="container mx-auto px-6 py-16 max-w-7xl">
         <Tabs defaultValue="projects" className="space-y-16">
-          <div className="flex justify-center sticky top-28 z-40">
+          <div className={cn(
+            "flex justify-center sticky top-28 z-40 transition-all duration-500 ease-in-out",
+            isTabsVisible ? "translate-y-0 opacity-100" : "-translate-y-10 opacity-0 pointer-events-none"
+          )}>
             <TabsList className="inline-flex h-16 items-center justify-center rounded-[2rem] bg-slate-900/80 backdrop-blur-3xl border border-slate-800 shadow-2xl p-2 w-full max-w-5xl overflow-x-auto no-scrollbar">
               <TabsTrigger value="projects" className="rounded-[1.5rem] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-black uppercase text-[10px] tracking-widest px-8 h-full">Projects</TabsTrigger>
               <TabsTrigger value="certificates" className="rounded-[1.5rem] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-black uppercase text-[10px] tracking-widest px-8 h-full">Certs</TabsTrigger>
@@ -465,7 +490,7 @@ function AdminContent() {
                     </div>
                     <Button type="submit" className="w-full h-20 rounded-[2.5rem] text-xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-accent/30 bg-accent hover:scale-[0.98] transition-transform">Issue Certificate</Button>
                   </form>
-                </CardContent>
+                </CardHeader>
               </Card>
              </div>
              <div className="lg:col-span-4 space-y-8">
