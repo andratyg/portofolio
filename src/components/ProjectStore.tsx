@@ -1,13 +1,15 @@
+
 "use client"
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Project, Certificate, PortfolioStats, ProfileData, Testimonial } from '@/lib/types';
-import { initialProjects, initialCertificates, initialTestimonials } from '@/lib/data';
+import { Project, Certificate, PortfolioStats, ProfileData, Testimonial, Experience } from '@/lib/types';
+import { initialProjects, initialCertificates, initialTestimonials, timeline as initialTimeline } from '@/lib/data';
 
 interface ProjectStoreType {
   projects: Project[];
   certificates: Certificate[];
   testimonials: Testimonial[];
+  experiences: Experience[];
   stats: PortfolioStats;
   profile: ProfileData;
   addProject: (project: Project) => void;
@@ -16,6 +18,8 @@ interface ProjectStoreType {
   deleteCertificate: (id: string) => void;
   addTestimonial: (test: Testimonial) => void;
   deleteTestimonial: (id: string) => void;
+  addExperience: (exp: Experience) => void;
+  deleteExperience: (id: string) => void;
   updateStats: (newStats: PortfolioStats) => void;
   updateProfile: (newProfile: ProfileData) => void;
 }
@@ -46,6 +50,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [projects, setProjects] = useState<Project[]>([]);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
   const [stats, setStats] = useState<PortfolioStats>(defaultStats);
   const [profile, setProfile] = useState<ProfileData>(defaultProfile);
 
@@ -64,6 +69,11 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const savedTestimonials = localStorage.getItem('karyapro-testimonials');
     if (savedTestimonials) setTestimonials(JSON.parse(savedTestimonials));
     else setTestimonials(initialTestimonials as any);
+
+    // Load Experiences
+    const savedExperiences = localStorage.getItem('karyapro-experiences');
+    if (savedExperiences) setExperiences(JSON.parse(savedExperiences));
+    else setExperiences(initialTimeline as any);
 
     // Load Stats
     const savedStats = localStorage.getItem('karyapro-stats');
@@ -113,6 +123,18 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     localStorage.setItem('karyapro-testimonials', JSON.stringify(updated));
   };
 
+  const addExperience = (exp: Experience) => {
+    const updated = [exp, ...experiences];
+    setExperiences(updated);
+    localStorage.setItem('karyapro-experiences', JSON.stringify(updated));
+  };
+
+  const deleteExperience = (id: string) => {
+    const updated = experiences.filter(e => e.id !== id);
+    setExperiences(updated);
+    localStorage.setItem('karyapro-experiences', JSON.stringify(updated));
+  };
+
   const updateStats = (newStats: PortfolioStats) => {
     setStats(newStats);
     localStorage.setItem('karyapro-stats', JSON.stringify(newStats));
@@ -128,6 +150,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       projects, 
       certificates, 
       testimonials,
+      experiences,
       stats,
       profile,
       addProject, 
@@ -136,6 +159,8 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       deleteCertificate,
       addTestimonial,
       deleteTestimonial,
+      addExperience,
+      deleteExperience,
       updateStats,
       updateProfile
     }}>

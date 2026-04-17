@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useEffect, useState } from 'react';
@@ -9,19 +10,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, UserCircle, Languages, Loader2, Image as ImageIcon, ExternalLink, Quote } from 'lucide-react';
+import { Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, UserCircle, Languages, Loader2, Image as ImageIcon, Quote, Briefcase } from 'lucide-react';
 import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-portfolio-description-suggestion';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
 import { ProfileData } from '@/lib/types';
-import { cn } from '@/lib/utils';
 
 function AdminContent() {
   const { 
     projects, addProject, deleteProject, 
     certificates, addCertificate, deleteCertificate,
     testimonials, addTestimonial, deleteTestimonial,
+    experiences, addExperience, deleteExperience,
     stats, updateStats,
     profile, updateProfile
   } = useProjectStore();
@@ -53,6 +54,13 @@ function AdminContent() {
     roleId: '', roleEn: '',
     contentId: '', contentEn: '',
     avatarUrl: ''
+  });
+
+  const [expForm, setExpForm] = useState({
+    year: '',
+    company: '',
+    titleId: '', titleEn: '',
+    descriptionId: '', descriptionEn: ''
   });
 
   const [statsData, setStatsData] = useState(stats);
@@ -116,10 +124,6 @@ function AdminContent() {
 
   const handleTranslateCertificate = async () => {
     const { titleId, fullDescriptionId } = certForm;
-    if (!titleId && !fullDescriptionId) {
-      toast({ title: "Isi konten Indonesia terlebih dahulu", variant: "destructive" });
-      return;
-    }
     setIsTranslating(true);
     try {
       if (titleId) {
@@ -140,10 +144,6 @@ function AdminContent() {
 
   const handleTranslateTestimonial = async () => {
     const { roleId, contentId } = testForm;
-    if (!roleId && !contentId) {
-      toast({ title: "Isi konten Indonesia terlebih dahulu", variant: "destructive" });
-      return;
-    }
     setIsTranslating(true);
     try {
       if (roleId) {
@@ -155,6 +155,26 @@ function AdminContent() {
         setTestForm(prev => ({ ...prev, contentEn: r.translatedText }));
       }
       toast({ title: "Testimonial translated successfully" });
+    } catch (e) {
+      toast({ title: "Translation Error", variant: "destructive" });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  const handleTranslateJourney = async () => {
+    const { titleId, descriptionId } = expForm;
+    setIsTranslating(true);
+    try {
+      if (titleId) {
+        const r = await translateContent({ text: titleId, targetLang: 'en' });
+        setExpForm(prev => ({ ...prev, titleEn: r.translatedText }));
+      }
+      if (descriptionId) {
+        const r = await translateContent({ text: descriptionId, targetLang: 'en' });
+        setExpForm(prev => ({ ...prev, descriptionEn: r.translatedText }));
+      }
+      toast({ title: "Journey translated successfully" });
     } catch (e) {
       toast({ title: "Translation Error", variant: "destructive" });
     } finally {
@@ -226,7 +246,15 @@ function AdminContent() {
     setTestForm({ name: '', roleId: '', roleEn: '', contentId: '', contentEn: '', avatarUrl: '' });
   };
 
+  const submitExperience = (e: React.FormEvent) => {
+    e.preventDefault();
+    addExperience({ ...expForm, id: Date.now().toString() });
+    toast({ title: "Journey Experience Added" });
+    setExpForm({ year: '', company: '', titleId: '', titleEn: '', descriptionId: '', descriptionEn: '' });
+  };
+
   return (
+    <ProjectStoreProvider>
     <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
       <header className="bg-card/50 backdrop-blur-xl border-b h-20 sticky top-0 z-50 flex items-center justify-between px-8">
         <div className="flex items-center gap-6">
@@ -248,12 +276,13 @@ function AdminContent() {
       <div className="container mx-auto px-4 py-12 max-w-7xl">
         <Tabs defaultValue="projects" className="space-y-12">
           <div className="flex justify-center">
-            <TabsList className="inline-flex h-14 items-center justify-center rounded-2xl bg-card border shadow-xl p-1.5 w-full max-w-3xl overflow-x-auto no-scrollbar">
-              <TabsTrigger value="projects" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm">Projects</TabsTrigger>
-              <TabsTrigger value="certificates" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm">Certs</TabsTrigger>
-              <TabsTrigger value="testimonials" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm">Testimonials</TabsTrigger>
-              <TabsTrigger value="stats" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm">Stats</TabsTrigger>
-              <TabsTrigger value="profile" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm">Profile</TabsTrigger>
+            <TabsList className="inline-flex h-14 items-center justify-center rounded-2xl bg-card border shadow-xl p-1.5 w-full max-w-4xl overflow-x-auto no-scrollbar">
+              <TabsTrigger value="projects" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm px-6">Projects</TabsTrigger>
+              <TabsTrigger value="certificates" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm px-6">Certs</TabsTrigger>
+              <TabsTrigger value="testimonials" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm px-6">Feedback</TabsTrigger>
+              <TabsTrigger value="journey" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm px-6">Journey</TabsTrigger>
+              <TabsTrigger value="stats" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm px-6">Stats</TabsTrigger>
+              <TabsTrigger value="profile" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 font-bold text-sm px-6">Profile</TabsTrigger>
             </TabsList>
           </div>
 
@@ -263,16 +292,9 @@ function AdminContent() {
                 <CardHeader className="bg-gradient-to-r from-primary/10 to-transparent p-8 border-b">
                   <div className="flex flex-row items-center justify-between gap-4">
                     <CardTitle className="flex items-center gap-3 text-2xl"><Plus className="text-primary" /> Add New Project</CardTitle>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleTranslateProject}
-                      disabled={isTranslating}
-                      className="rounded-xl gap-2 border-primary/20 hover:bg-primary/5"
-                    >
+                    <Button type="button" variant="outline" size="sm" onClick={handleTranslateProject} disabled={isTranslating} className="rounded-xl gap-2 border-primary/20 hover:bg-primary/5">
                       {isTranslating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
-                      Translate to EN
+                      Translate All to EN
                     </Button>
                   </div>
                 </CardHeader>
@@ -288,7 +310,6 @@ function AdminContent() {
                         <Input value={projectForm.titleEn} onChange={e => setProjectForm({...projectForm, titleEn: e.target.value})} className="h-12 rounded-xl bg-background/50" />
                       </div>
                     </div>
-                    
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-3">
                         <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Short Description (ID)</label>
@@ -299,7 +320,6 @@ function AdminContent() {
                         <Input value={projectForm.shortDescriptionEn} onChange={e => setProjectForm({...projectForm, shortDescriptionEn: e.target.value})} className="h-12 rounded-xl bg-background/50" />
                       </div>
                     </div>
-
                     <div className="space-y-3">
                       <div className="flex justify-between items-center px-1">
                         <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Full Description (ID)</label>
@@ -310,12 +330,10 @@ function AdminContent() {
                       </div>
                       <Textarea required value={projectForm.fullDescriptionId} onChange={e => setProjectForm({...projectForm, fullDescriptionId: e.target.value})} className="min-h-[120px] rounded-xl bg-background/50" />
                     </div>
-
                     <div className="space-y-3">
                       <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Full Description (EN)</label>
                       <Textarea value={projectForm.fullDescriptionEn} onChange={e => setProjectForm({...projectForm, fullDescriptionEn: e.target.value})} className="min-h-[120px] rounded-xl bg-background/50" />
                     </div>
-
                     <div className="grid md:grid-cols-3 gap-6">
                       <div className="space-y-3">
                         <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Category</label>
@@ -378,14 +396,7 @@ function AdminContent() {
                 <CardHeader className="bg-gradient-to-r from-accent/10 to-transparent p-8 border-b">
                   <div className="flex flex-row items-center justify-between gap-4">
                     <CardTitle className="flex items-center gap-3 text-2xl"><Award className="text-accent" /> Add New Certificate</CardTitle>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleTranslateCertificate}
-                      disabled={isTranslating}
-                      className="rounded-xl gap-2 border-accent/20 hover:bg-accent/5"
-                    >
+                    <Button type="button" variant="outline" size="sm" onClick={handleTranslateCertificate} disabled={isTranslating} className="rounded-xl gap-2 border-accent/20 hover:bg-accent/5">
                       {isTranslating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
                       Translate to EN
                     </Button>
@@ -470,14 +481,7 @@ function AdminContent() {
                 <CardHeader className="bg-gradient-to-r from-pink-500/10 to-transparent p-8 border-b">
                   <div className="flex flex-row items-center justify-between gap-4">
                     <CardTitle className="flex items-center gap-3 text-2xl"><Quote className="text-pink-500" /> Add Testimonial</CardTitle>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleTranslateTestimonial}
-                      disabled={isTranslating}
-                      className="rounded-xl gap-2 border-pink-500/20 hover:bg-pink-500/5"
-                    >
+                    <Button type="button" variant="outline" size="sm" onClick={handleTranslateTestimonial} disabled={isTranslating} className="rounded-xl gap-2 border-pink-500/20 hover:bg-pink-500/5">
                       {isTranslating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
                       Translate to EN
                     </Button>
@@ -534,6 +538,77 @@ function AdminContent() {
                       <p className="text-[10px] text-muted-foreground truncate">{t.roleId}</p>
                     </div>
                     <Button variant="ghost" size="icon" onClick={() => deleteTestimonial(t.id)} className="text-destructive hover:bg-destructive/10 rounded-lg shrink-0">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="journey" className="grid lg:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="lg:col-span-8 space-y-8">
+              <Card className="rounded-[2rem] shadow-2xl border-none overflow-hidden bg-card">
+                <CardHeader className="bg-gradient-to-r from-orange-500/10 to-transparent p-8 border-b">
+                  <div className="flex flex-row items-center justify-between gap-4">
+                    <CardTitle className="flex items-center gap-3 text-2xl"><Briefcase className="text-orange-500" /> Add Career Milestone</CardTitle>
+                    <Button type="button" variant="outline" size="sm" onClick={handleTranslateJourney} disabled={isTranslating} className="rounded-xl gap-2 border-orange-500/20 hover:bg-orange-500/5">
+                      {isTranslating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
+                      Translate to EN
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-8">
+                  <form onSubmit={submitExperience} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Period (e.g. 2023 - Present)</label>
+                        <Input required value={expForm.year} onChange={e => setExpForm({...expForm, year: e.target.value})} className="h-12 rounded-xl bg-background/50" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Company / Organization</label>
+                        <Input required value={expForm.company} onChange={e => setExpForm({...expForm, company: e.target.value})} className="h-12 rounded-xl bg-background/50" />
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Job Title (ID)</label>
+                        <Input required value={expForm.titleId} onChange={e => setExpForm({...expForm, titleId: e.target.value})} className="h-12 rounded-xl bg-background/50" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Job Title (EN)</label>
+                        <Input value={expForm.titleEn} onChange={e => setExpForm({...expForm, titleEn: e.target.value})} className="h-12 rounded-xl bg-background/50" />
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Description (ID)</label>
+                      <Textarea required value={expForm.descriptionId} onChange={e => setExpForm({...expForm, descriptionId: e.target.value})} className="min-h-[100px] rounded-xl bg-background/50" />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Description (EN)</label>
+                      <Textarea value={expForm.descriptionEn} onChange={e => setExpForm({...expForm, descriptionEn: e.target.value})} className="min-h-[100px] rounded-xl bg-background/50" />
+                    </div>
+                    <Button type="submit" className="w-full h-14 rounded-2xl text-lg font-bold bg-orange-500 hover:bg-orange-600 shadow-xl shadow-orange-500/20">Add Milestone</Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="lg:col-span-4 space-y-6">
+              <div className="flex items-center justify-between px-2">
+                <h3 className="font-bold text-xl flex items-center gap-2"><Briefcase className="h-5 w-5 text-orange-500" /> Career Timeline</h3>
+                <Badge variant="secondary" className="rounded-lg">{experiences.length}</Badge>
+              </div>
+              <div className="grid gap-4">
+                {experiences.map(e => (
+                  <Card key={e.id} className="p-4 flex gap-4 items-center group bg-card hover:bg-orange-500/5 transition-colors rounded-2xl border-none shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center shrink-0">
+                      <Briefcase className="h-5 w-5 text-orange-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold truncate text-sm">{e.titleId}</h4>
+                      <p className="text-[10px] text-muted-foreground truncate">{e.company} | {e.year}</p>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => deleteExperience(e.id)} className="text-destructive hover:bg-destructive/10 rounded-lg shrink-0">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </Card>
@@ -602,12 +677,10 @@ function AdminContent() {
                     <Input value={profileData.roleId} onChange={e => setProfileData({...profileData, roleId: e.target.value})} className="h-12 rounded-xl bg-background/50" />
                   </div>
                 </div>
-
                 <div className="space-y-3">
                   <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Role Title (EN)</label>
                   <Input value={profileData.roleEn} onChange={e => setProfileData({...profileData, roleEn: e.target.value})} className="h-12 rounded-xl bg-background/50" />
                 </div>
-
                 <div className="grid md:grid-cols-2 gap-8 border-t pt-8">
                    <div className="space-y-3">
                     <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Hero Title (ID)</label>
@@ -618,7 +691,6 @@ function AdminContent() {
                     <Input value={profileData.heroTitleEn} onChange={e => setProfileData({...profileData, heroTitleEn: e.target.value})} className="h-12 rounded-xl bg-background/50 font-bold" />
                   </div>
                 </div>
-
                 <div className="grid md:grid-cols-2 gap-8">
                    <div className="space-y-3">
                     <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Hero Subtitle (ID)</label>
@@ -629,7 +701,6 @@ function AdminContent() {
                     <Textarea value={profileData.heroSubtitleEn} onChange={e => setProfileData({...profileData, heroSubtitleEn: e.target.value})} className="h-20 rounded-xl bg-background/50" />
                   </div>
                 </div>
-                
                 <div className="grid md:grid-cols-2 gap-8 border-t pt-8">
                   <div className="space-y-3">
                     <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">About Bio (ID)</label>
@@ -640,7 +711,6 @@ function AdminContent() {
                     <Textarea value={profileData.aboutTextEn} onChange={e => setProfileData({...profileData, aboutTextEn: e.target.value})} className="min-h-[150px] rounded-2xl bg-background/50 leading-relaxed" />
                   </div>
                 </div>
-                
                 <div className="space-y-3">
                   <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Profile Photo URL</label>
                   <div className="flex gap-4">
@@ -650,7 +720,6 @@ function AdminContent() {
                     </div>
                   </div>
                 </div>
-                
                 <Button onClick={() => {updateProfile(profileData); toast({title: "Profile Updated"});}} className="w-full h-16 rounded-[2rem] text-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-600/20">Update Personal Profile</Button>
               </CardContent>
             </Card>
@@ -658,6 +727,7 @@ function AdminContent() {
         </Tabs>
       </div>
     </div>
+    </ProjectStoreProvider>
   );
 }
 
