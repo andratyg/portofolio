@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { Button } from '../ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useProjectStore } from '../ProjectStore';
@@ -18,92 +18,86 @@ export const Hero = () => {
   }, []);
 
   const featured = projects.filter(p => p.featured);
-  // Fallback to first project if no featured project is set
   const heroProject = featured.length > 0 ? featured[0] : projects[0];
 
   const heroTitle = language === 'id' ? profile.heroTitleId : (profile.heroTitleEn || profile.heroTitleId);
   const heroSubtitle = language === 'id' ? profile.heroSubtitleId : (profile.heroSubtitleEn || profile.heroSubtitleId);
 
   return (
-    <section className="relative min-h-[90vh] flex flex-col justify-center overflow-hidden py-20 bg-background transition-colors duration-300">
-      <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center relative z-10">
-        <div className={`transition-all duration-1000 transform ${isVisible ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}>
-          <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6 border border-primary/20">
-            ✨ Available for New Projects
+    <section className="relative min-h-[95vh] flex flex-col justify-center overflow-hidden py-24 bg-background">
+      {/* Background Aura */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[160px] animate-pulse"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/20 rounded-full blur-[160px] animate-pulse delay-700"></div>
+
+      <div className="container mx-auto px-4 grid lg:grid-cols-12 gap-12 items-center relative z-10">
+        <div className={`lg:col-span-7 transition-all duration-1000 transform ${isVisible ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-black uppercase tracking-widest mb-8 animate-bounce shadow-xl shadow-primary/5">
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>{language === 'id' ? 'Tersedia untuk Proyek Baru' : 'Available for New Projects'}</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold font-headline leading-tight mb-6">
-            {heroTitle}
+          
+          <h1 className="text-6xl md:text-8xl font-black font-headline leading-[0.95] mb-8 tracking-tighter">
+            {heroTitle.split(' ').map((word, i) => (
+              <span key={i} className={i % 2 !== 0 ? 'text-primary' : ''}>
+                {word}{' '}
+              </span>
+            ))}
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-lg">
+          
+          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-xl leading-relaxed font-medium">
             {heroSubtitle}
           </p>
-          <div className="flex flex-wrap gap-4">
+
+          <div className="flex flex-wrap gap-6">
             <Link href="#portfolio">
-              <Button size="lg" className="h-12 px-8 rounded-full gap-2 group shadow-lg shadow-primary/20">
+              <Button size="lg" className="h-16 px-10 rounded-2xl gap-3 group shadow-2xl shadow-primary/30 text-lg font-bold">
                 {t.viewProjects}
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
               </Button>
             </Link>
             <Link href="#contact">
-              <Button variant="outline" size="lg" className="h-12 px-8 rounded-full border-primary/30 hover:bg-primary/5">
+              <Button variant="outline" size="lg" className="h-16 px-10 rounded-2xl border-primary/20 hover:bg-primary/5 text-lg font-bold backdrop-blur-sm">
                 {t.navContact}
               </Button>
             </Link>
           </div>
         </div>
 
-        <div className={`grid gap-4 transition-all duration-1000 delay-300 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}>
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-            <div className="relative bg-card rounded-2xl overflow-hidden shadow-2xl border border-border aspect-[16/9]">
+        <div className={`lg:col-span-5 transition-all duration-1000 delay-300 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}>
+          <div className="relative group p-4">
+            <div className="absolute -inset-2 bg-gradient-to-r from-primary via-accent to-primary rounded-[3rem] blur-2xl opacity-20 group-hover:opacity-40 transition duration-1000 animate-spin-slow"></div>
+            <div className="relative bg-card rounded-[2.5rem] overflow-hidden shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] border border-white/10 aspect-[4/5]">
               {heroProject && (
                 <>
                   <Image 
                     src={heroProject.imageUrl} 
-                    alt={language === 'id' ? heroProject.titleId : heroProject.titleEn} 
+                    alt="Featured" 
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-700"
-                    data-ai-hint="finance analytics"
+                    className="object-cover group-hover:scale-110 transition-transform duration-1000"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-8 text-white">
-                    <span className="text-xs uppercase tracking-widest text-primary font-bold mb-2">{t.featuredProjects}</span>
-                    <h3 className="text-2xl font-bold mb-2">
-                      {language === 'id' ? heroProject.titleId : (heroProject.titleEn || heroProject.titleId)}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-10 text-white">
+                    <Badge className="w-fit mb-4 bg-primary/20 backdrop-blur-md border-primary/30 text-primary-foreground uppercase text-[10px] font-black tracking-widest">{t.featuredProjects}</Badge>
+                    <h3 className="text-3xl font-bold mb-3 font-headline leading-tight">
+                      {language === 'id' ? heroProject.titleId : heroProject.titleEn}
                     </h3>
-                    <p className="text-sm text-gray-300 line-clamp-2">
-                      {language === 'id' ? heroProject.shortDescriptionId : (heroProject.shortDescriptionEn || heroProject.shortDescriptionId)}
-                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {heroProject.technologies.slice(0, 3).map(tech => (
+                        <span key={tech} className="text-[10px] font-bold bg-white/10 backdrop-blur-md px-2 py-1 rounded-md">{tech}</span>
+                      ))}
+                    </div>
                   </div>
                 </>
               )}
             </div>
           </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            {featured.slice(1, 3).map((proj) => {
-              const pTitle = language === 'id' ? proj.titleId : (proj.titleEn || proj.titleId);
-              return (
-                <div key={proj.id} className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border shadow-lg group">
-                  <Image 
-                    src={proj.imageUrl} 
-                    alt={pTitle} 
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    data-ai-hint="ecommerce website"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                     <Button variant="secondary" size="sm" className="rounded-full">View</Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
         </div>
       </div>
-
-      {/* Decorative background elements */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-[120px] animate-pulse delay-700"></div>
     </section>
   );
 };
+
+const Badge = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+  <div className={`px-3 py-1 rounded-full text-xs font-bold ${className}`}>
+    {children}
+  </div>
+);

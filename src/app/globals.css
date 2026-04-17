@@ -23,13 +23,13 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
-    --radius: 1.25rem;
+    --radius: 1.5rem;
   }
 
   [data-theme='dark'] {
     --background: 224 71% 4%;
     --foreground: 213 31% 91%;
-    --card: 224 71% 7%;
+    --card: 224 71% 6%;
     --card-foreground: 213 31% 91%;
     --popover: 224 71% 4%;
     --popover-foreground: 215 20.2% 65.1%;
@@ -43,127 +43,77 @@
     --accent-foreground: 210 40% 98%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 216 34% 17%;
-    --input: 216 34% 17%;
-    --ring: 216 34% 17%;
-  }
-
-  [data-theme='emerald'] {
-    --background: 150 20% 94%;
-    --foreground: 160 50% 10%;
-    --primary: 160 84% 39%;
-    --primary-foreground: 0 0% 100%;
-    --accent: 142 71% 45%;
-    --card: 0 0% 100%;
-    --muted: 150 20% 90%;
-    --border: 150 20% 85%;
-    --input: 150 20% 85%;
-  }
-
-  [data-theme='sunset'] {
-    --background: 20 40% 94%;
-    --foreground: 20 50% 10%;
-    --primary: 15 80% 55%;
-    --primary-foreground: 0 0% 100%;
-    --accent: 35 90% 65%;
-    --card: 0 0% 100%;
-    --muted: 20 40% 90%;
-    --border: 20 40% 85%;
-    --input: 20 40% 85%;
-  }
-
-  [data-theme='royal'] {
-    --background: 270 20% 94%;
-    --foreground: 270 50% 10%;
-    --primary: 265 80% 60%;
-    --primary-foreground: 0 0% 100%;
-    --accent: 280 85% 70%;
-    --card: 0 0% 100%;
-    --muted: 270 20% 90%;
-    --border: 270 20% 85%;
-    --input: 270 20% 85%;
+    --border: 216 34% 20%;
+    --input: 216 34% 20%;
+    --ring: 216 34% 25%;
   }
 
   [data-theme='cyber'] {
-    --background: 230 50% 5%;
+    --background: 230 50% 3%;
     --foreground: 180 100% 50%;
     --primary: 320 100% 60%;
     --primary-foreground: 230 50% 5%;
     --accent: 180 100% 50%;
     --accent-foreground: 230 50% 5%;
-    --card: 230 50% 8%;
+    --card: 230 50% 6%;
     --card-foreground: 180 100% 50%;
-    --muted: 230 50% 15%;
-    --border: 320 100% 30%;
-    --input: 320 100% 20%;
-    --popover: 230 50% 5%;
+    --muted: 230 50% 12%;
+    --border: 320 100% 40%;
+    --input: 320 100% 25%;
+    --popover: 230 50% 3%;
     --popover-foreground: 180 100% 50%;
   }
 
-  [data-theme='slate'] {
-    --background: 215 25% 95%;
-    --foreground: 215 25% 10%;
-    --primary: 215 25% 27%;
-    --primary-foreground: 0 0% 100%;
-    --accent: 215 15% 50%;
-    --card: 0 0% 100%;
-    --muted: 215 25% 90%;
-    --border: 215 25% 85%;
-    --input: 215 25% 85%;
-  }
-
-  [data-theme='amber'] {
-    --background: 45 40% 94%;
-    --foreground: 45 50% 10%;
-    --primary: 35 90% 50%;
-    --primary-foreground: 0 0% 100%;
-    --accent: 48 96% 53%;
-    --card: 0 0% 100%;
-    --muted: 45 40% 90%;
-    --border: 45 40% 85%;
-    --input: 45 40% 85%;
-  }
-
-  [data-theme='rose'] {
-    --background: 350 30% 95%;
-    --foreground: 350 50% 10%;
-    --primary: 346 84% 61%;
-    --primary-foreground: 0 0% 100%;
-    --accent: 346 84% 75%;
-    --card: 0 0% 100%;
-    --muted: 350 30% 90%;
-    --border: 350 30% 85%;
-    --input: 350 30% 85%;
-  }
-
-  [data-theme='forest'] {
-    --background: 140 20% 92%;
-    --foreground: 140 50% 5%;
-    --primary: 140 70% 25%;
-    --primary-foreground: 0 0% 100%;
-    --accent: 140 50% 45%;
-    --card: 0 0% 100%;
-    --muted: 140 20% 85%;
-    --border: 140 20% 80%;
-    --input: 140 20% 80%;
-  }
+  /* Custom Themes maintained but optimized */
+  [data-theme='emerald'] { --primary: 160 84% 39%; --accent: 142 71% 45%; }
+  [data-theme='sunset'] { --primary: 15 80% 55%; --accent: 35 90% 65%; }
+  [data-theme='royal'] { --primary: 265 80% 60%; --accent: 280 85% 70%; }
+  [data-theme='rose'] { --primary: 346 84% 61%; --accent: 346 84% 75%; }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-none;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-700 selection:bg-primary selection:text-primary-foreground;
   }
 }
 
 .theme-transition {
-  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
-              border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
-              color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.theme-transition * {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+/* OP Glow Animations */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
+}
+
+.glow-effect {
+  position: relative;
+}
+
+.glow-effect::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--accent)));
+  filter: blur(20px);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: -1;
+  border-radius: inherit;
+}
+
+.glow-effect:hover::before {
+  opacity: 0.4;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

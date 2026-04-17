@@ -6,7 +6,7 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { Search, ExternalLink } from 'lucide-react';
+import { Search, ExternalLink, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { useProjectStore } from '../ProjectStore';
 
@@ -15,18 +15,15 @@ export const Portfolio = () => {
   const { projects } = useProjectStore();
   const [filter, setFilter] = useState<'all' | 'web' | 'ui' | 'backend'>('all');
   const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 800);
-    return () => clearTimeout(timer);
+    setIsVisible(true);
   }, []);
 
   const filteredProjects = projects.filter(p => {
-    // Safety check for null/undefined values
     const title = language === 'id' ? (p.titleId || "") : (p.titleEn || p.titleId || "");
     const safeSearch = (search || "").toLowerCase();
-    
     const matchesFilter = filter === 'all' || p.type === filter;
     const matchesSearch = title.toLowerCase().includes(safeSearch) || 
                           (p.technologies || []).some(tech => (tech || "").toLowerCase().includes(safeSearch));
@@ -34,20 +31,23 @@ export const Portfolio = () => {
   });
 
   return (
-    <section id="portfolio" className="py-24 bg-background">
+    <section id="portfolio" className="py-32 bg-background relative overflow-hidden">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16">
-          <div className="space-y-2">
-            <h2 className="text-4xl md:text-5xl font-bold font-headline">{t.navPortfolio}</h2>
-            <p className="text-muted-foreground text-lg">{language === 'id' ? 'Klik proyek untuk melihat website.' : 'Click any project to visit the live website.'}</p>
+        <div className="flex flex-col lg:flex-row justify-between items-end gap-10 mb-24">
+          <div className="space-y-6 max-w-2xl">
+            <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-2 rounded-full font-black uppercase tracking-widest text-[10px]">{t.navPortfolio}</Badge>
+            <h2 className="text-5xl md:text-7xl font-black font-headline tracking-tighter leading-[0.9]">{language === 'id' ? 'Karya Pilihan Saya' : 'My Selected Works'}</h2>
+            <p className="text-xl text-muted-foreground leading-relaxed font-medium">
+              {language === 'id' ? 'Eksplorasi solusi digital yang menggabungkan estetika dan performa tinggi.' : 'Exploring digital solutions that combine aesthetics and high performance.'}
+            </p>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+            <div className="relative group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input 
                 placeholder={t.searchPlaceholder} 
-                className="pl-12 w-full sm:w-64 rounded-full h-11 border-primary/20"
+                className="pl-12 w-full sm:w-72 rounded-2xl h-14 bg-card border-none shadow-xl focus:ring-2 focus:ring-primary/20"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -56,9 +56,9 @@ export const Portfolio = () => {
               {(['all', 'web', 'ui', 'backend'] as const).map((cat) => (
                 <Button 
                   key={cat}
-                  variant={filter === cat ? 'default' : 'outline'}
-                  size="sm"
-                  className="rounded-full h-11 px-6 whitespace-nowrap"
+                  variant={filter === cat ? 'default' : 'secondary'}
+                  size="lg"
+                  className={`rounded-2xl h-14 px-8 whitespace-nowrap font-bold transition-all ${filter === cat ? 'shadow-xl shadow-primary/20' : ''}`}
                   onClick={() => setFilter(cat)}
                 >
                   {cat === 'all' ? t.filterAll : cat === 'web' ? t.filterWeb : cat === 'ui' ? t.filterUI : t.filterBackend}
@@ -68,45 +68,51 @@ export const Portfolio = () => {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project) => (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {filteredProjects.map((project, idx) => (
             <a 
               key={project.id} 
               href={project.demoUrl || '#'} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="block group"
+              className={`block group transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`}
+              style={{ transitionDelay: `${idx * 100}ms` }}
             >
-              <Card className="overflow-hidden h-full hover:shadow-2xl transition-all duration-500 border-none bg-card shadow-lg rounded-[2.5rem] flex flex-col group-hover:-translate-y-2">
-                <div className="relative aspect-video overflow-hidden">
+              <Card className="glow-effect overflow-hidden h-full border-none bg-card shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[3rem] flex flex-col group-hover:-translate-y-4 transition-transform duration-500">
+                <div className="relative aspect-[4/3] overflow-hidden">
                   <Image 
                     src={project.imageUrl || `https://picsum.photos/seed/${project.id}/800/600`} 
                     alt={language === 'id' ? project.titleId : project.titleEn} 
                     fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    className="object-cover group-hover:scale-110 transition-transform duration-1000"
                   />
-                  <div className="absolute top-4 left-4">
-                    <Badge className="bg-white/90 backdrop-blur-md text-black hover:bg-white uppercase text-[10px] tracking-widest font-bold px-3 py-1 rounded-full">{project.type}</Badge>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="bg-white/20 backdrop-blur-xl p-4 rounded-full border border-white/30 text-white">
+                       <Zap className="h-8 w-8 fill-white" />
+                    </div>
+                  </div>
+                  <div className="absolute top-6 left-6">
+                    <Badge className="bg-white/95 backdrop-blur-md text-black hover:bg-white uppercase text-[10px] tracking-widest font-black px-4 py-1.5 rounded-full border-none shadow-lg">{project.type}</Badge>
                   </div>
                 </div>
-                <CardHeader className="pt-8">
-                  <CardTitle className="text-2xl font-bold font-headline group-hover:text-primary transition-colors">
+                <CardHeader className="pt-10 px-8">
+                  <CardTitle className="text-3xl font-black font-headline group-hover:text-primary transition-colors leading-tight">
                     {language === 'id' ? project.titleId : (project.titleEn || project.titleId)}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 px-6">
-                  <p className="text-muted-foreground leading-relaxed line-clamp-3 mb-6">
+                <CardContent className="flex-1 px-8 pb-8">
+                  <p className="text-muted-foreground leading-relaxed line-clamp-3 mb-8 text-lg font-medium italic">
                     {language === 'id' ? project.shortDescriptionId : (project.shortDescriptionEn || project.shortDescriptionId)}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {(project.technologies || []).map((tech) => (
-                      <Badge key={tech} variant="secondary" className="text-[10px] font-bold rounded-lg px-2 py-0.5">{tech}</Badge>
+                      <Badge key={tech} variant="secondary" className="text-[10px] font-black uppercase tracking-wider rounded-xl px-3 py-1 bg-muted/50 border-none">{tech}</Badge>
                     ))}
                   </div>
                 </CardContent>
-                <CardFooter className="p-6 pt-0 flex justify-between items-center">
-                  <span className="text-sm font-bold text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
-                    {t.liveDemo} <ExternalLink className="h-4 w-4" />
+                <CardFooter className="px-8 pb-10 flex justify-between items-center">
+                  <span className="text-sm font-black text-primary flex items-center gap-2 group-hover:gap-4 transition-all uppercase tracking-widest">
+                    {t.liveDemo} <ExternalLink className="h-5 w-5" />
                   </span>
                 </CardFooter>
               </Card>
