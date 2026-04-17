@@ -84,7 +84,7 @@ export const Navbar = () => {
             onClick={handleLogoClick}
             className="text-2xl font-bold font-headline text-primary hover:scale-110 transition-transform cursor-pointer"
           >
-            KaryaPro
+            NAT
           </Link>
           
           <div className="hidden md:flex gap-6">

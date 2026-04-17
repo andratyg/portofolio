@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -64,7 +63,7 @@ export default function AdminLogin() {
           <div className="mx-auto w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
              <LogIn className="h-6 w-6" />
           </div>
-          <CardTitle className="text-2xl font-headline font-bold">Admin Portal</CardTitle>
+          <CardTitle className="text-2xl font-headline font-bold">NAT Portal</CardTitle>
           <p className="text-primary-foreground/70 text-xs mt-1">Authenticate to manage infrastructure</p>
         </CardHeader>
         <CardContent className="pt-8 px-8">
@@ -73,7 +72,7 @@ export default function AdminLogin() {
               <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Email</label>
               <Input 
                 type="email" 
-                placeholder="admin@karyapro.com" 
+                placeholder="admin@nat.app" 
                 className="h-12 rounded-xl bg-background/50"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}

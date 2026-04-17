@@ -14,21 +14,21 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'KaryaPro | Professional Portfolio OP Edition',
+  title: 'NAT | Professional Portfolio OP Edition',
   description: 'Showcase your career journey and projects with premium style, AI-powered descriptions, and real-time data.',
-  keywords: ['Portfolio', 'Full Stack Developer', 'KaryaPro', 'Next.js', 'React', 'Firebase'],
-  authors: [{ name: 'KaryaPro Owner' }],
+  keywords: ['Portfolio', 'Full Stack Developer', 'NAT', 'Next.js', 'React', 'Firebase'],
+  authors: [{ name: 'Nara Andra Tyaga' }],
   openGraph: {
-    title: 'KaryaPro | Professional Portfolio',
+    title: 'NAT | Professional Portfolio',
     description: 'Transforming Ideas Into Reality with Modern Web Solutions.',
-    url: 'https://karyapro.app',
-    siteName: 'KaryaPro',
+    url: 'https://nat.app',
+    siteName: 'NAT',
     images: [
       {
-        url: 'https://picsum.photos/seed/karyapro-og/1200/630',
+        url: 'https://picsum.photos/seed/nat-og/1200/630',
         width: 1200,
         height: 630,
-        alt: 'KaryaPro Portfolio Preview',
+        alt: 'NAT Portfolio Preview',
       },
     ],
     locale: 'id_ID',
@@ -36,9 +36,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'KaryaPro | Professional Portfolio',
+    title: 'NAT | Professional Portfolio',
     description: 'Modern Full-Stack Developer Portfolio',
-    images: ['https://picsum.photos/seed/karyapro-og/1200/630'],
+    images: ['https://picsum.photos/seed/nat-og/1200/630'],
   },
   robots: {
     index: true,
@@ -54,9 +54,9 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
-    "name": "KaryaPro Owner",
+    "name": "Nara Andra Tyaga",
     "jobTitle": "Full-Stack Developer",
-    "url": "https://karyapro.app",
+    "url": "https://nat.app",
     "sameAs": [
       "https://github.com",
       "https://linkedin.com"

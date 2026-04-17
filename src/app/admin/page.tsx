@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useEffect, useState, useRef } from 'react';
@@ -238,7 +237,7 @@ function AdminContent() {
           </Button>
           <div>
             <h1 className="text-xs font-black font-headline uppercase tracking-widest flex items-center gap-2">
-              KaryaPro Control Panel
+              NAT Control Panel
               <Badge variant="outline" className="h-5 text-[8px] bg-primary/10 text-primary border-primary/20">{userRole}</Badge>
             </h1>
             <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em]">{user?.email}</p>
