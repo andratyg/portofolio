@@ -7,7 +7,17 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardFooter } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { Search, ExternalLink, Zap, Share2, AlertCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { 
+  Search, 
+  ExternalLink, 
+  Zap, 
+  Share2, 
+  AlertCircle, 
+  ArrowRight, 
+  CheckCircle2,
+  Terminal,
+  Activity
+} from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import Image from 'next/image';
 import { useProjectStore } from '../ProjectStore';
