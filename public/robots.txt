@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://nat.app/sitemap.xml
+
+Sitemap: https://nara-andra-tyaga.vercel.app/sitemap.xml

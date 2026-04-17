@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Nara Andra Tyaga | PPLG SMK Wikrama Bogor',
     description: 'Portofolio Nara Andra Tyaga, siswa PPLG SMK Wikrama Bogor. Fokus pada pengembangan aplikasi web dan logika sistem yang efisien.',
-    url: 'https://nat.app',
+    url: 'https://nara-andra-tyaga.vercel.app',
     siteName: 'Nara Andra Tyaga Portfolio',
     images: [
       {
@@ -59,7 +59,7 @@ export default function RootLayout({
     "@type": "Person",
     "name": "Nara Andra Tyaga",
     "jobTitle": "Full-Stack Developer",
-    "url": "https://nat.app",
+    "url": "https://nara-andra-tyaga.vercel.app",
     "affiliation": {
       "@type": "EducationalOrganization",
       "name": "SMK Wikrama Bogor"
