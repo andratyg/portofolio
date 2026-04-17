@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, 
   UserCircle, Languages, Loader2, Image as ImageIcon, Quote, 
-  Briefcase, LayoutDashboard, History, ShieldAlert, CheckCircle2, 
+  Briefcase, LayoutDashboard, History, ShieldAlert, ShieldCheck, CheckCircle2, 
   Download, Upload, HelpCircle, Info, Wifi, WifiOff, AlertTriangle, 
   Mail, Instagram, Github, Linkedin, Video, Send, Wand2, Type, FileText,
   UserPlus, Calendar, Zap, BarChart3, Terminal, Activity
@@ -239,7 +239,6 @@ function AdminContent() {
         </div>
       )}
 
-      {/* Sticky Header */}
       <header className={cn(
         "bg-background/80 backdrop-blur-2xl border-b h-20 sticky top-0 z-50 flex items-center justify-between px-8 transition-transform duration-500",
         isHeaderVisible ? "translate-y-0" : "-translate-y-full"
@@ -277,7 +276,6 @@ function AdminContent() {
             </TabsList>
           </div>
 
-          {/* Profile Tab */}
           <TabsContent value="profile" className="animate-in fade-in slide-in-from-bottom-8 duration-500">
              <Card className="rounded-[3rem] shadow-2xl border-none bg-card/50 backdrop-blur-xl">
                 <CardHeader className="p-10 border-b flex flex-row items-center justify-between">
@@ -292,7 +290,6 @@ function AdminContent() {
                 </CardHeader>
                 <CardContent className="p-10">
                   <form onSubmit={handleProfileSubmit} className="space-y-16">
-                    {/* Identity Info */}
                     <div className="space-y-8">
                       <h3 className="text-xs font-black uppercase tracking-[0.3em] text-primary flex items-center gap-3"><UserCircle className="h-4 w-4" /> Core Identity</h3>
                       <div className="grid lg:grid-cols-3 gap-8">
@@ -311,7 +308,6 @@ function AdminContent() {
                       </div>
                     </div>
 
-                    {/* Strategic Metrics (Stats) */}
                     <div className="space-y-8">
                       <h3 className="text-xs font-black uppercase tracking-[0.3em] text-primary flex items-center gap-3"><BarChart3 className="h-4 w-4" /> Strategic Metrics (OP Stats)</h3>
                       <div className="grid lg:grid-cols-4 gap-8">
@@ -334,7 +330,6 @@ function AdminContent() {
                       </div>
                     </div>
 
-                    {/* Hero & About */}
                     <div className="space-y-12">
                       <h3 className="text-xs font-black uppercase tracking-[0.3em] text-primary flex items-center gap-3"><Type className="h-4 w-4" /> Visual Narrative</h3>
                       <div className="grid md:grid-cols-2 gap-8">
@@ -371,7 +366,6 @@ function AdminContent() {
                       </div>
                     </div>
 
-                    {/* Social & Meta */}
                     <div className="space-y-8">
                       <h3 className="text-xs font-black uppercase tracking-[0.3em] text-primary flex items-center gap-3"><Zap className="h-4 w-4" /> Connectivity & Media</h3>
                       <div className="grid lg:grid-cols-3 gap-8">
@@ -408,7 +402,6 @@ function AdminContent() {
              </Card>
           </TabsContent>
 
-          {/* Projects Tab */}
           <TabsContent value="projects" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
             <div className="xl:col-span-8">
                <Card className="rounded-[3rem] shadow-2xl border-none bg-card/50 backdrop-blur-xl">
@@ -468,7 +461,7 @@ function AdminContent() {
                           <Textarea value={projectForm.problemId} onChange={e => setProjectForm({...projectForm, problemId: e.target.value})} className="h-32 rounded-3xl bg-background/50" />
                        </div>
                        <div className="space-y-2">
-                          <label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground px-1">The Solution (ID)</label>
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">The Solution (ID)</label>
                           <Textarea value={projectForm.solutionId} onChange={e => setProjectForm({...projectForm, solutionId: e.target.value})} className="h-32 rounded-3xl bg-background/50" />
                        </div>
                     </div>
@@ -517,7 +510,6 @@ function AdminContent() {
             </div>
           </TabsContent>
 
-          {/* Certificates Tab */}
           <TabsContent value="certificates" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
             <div className="xl:col-span-8">
               <Card className="rounded-[3rem] shadow-2xl border-none bg-card/50 backdrop-blur-xl">
@@ -550,7 +542,7 @@ function AdminContent() {
                         <Input required value={certForm.titleId} onChange={e => setCertForm({...certForm, titleId: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (EN)</label>
+                        <label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground">Title (EN)</label>
                         <Input value={certForm.titleEn} onChange={e => setCertForm({...certForm, titleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
                       </div>
                     </div>
@@ -602,7 +594,6 @@ function AdminContent() {
             </div>
           </TabsContent>
 
-          {/* Feedback Tab */}
           <TabsContent value="feedback" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
              <div className="xl:col-span-8">
                 <Card className="rounded-[3rem] shadow-2xl border-none bg-card/50 backdrop-blur-xl">
@@ -681,7 +672,6 @@ function AdminContent() {
             </div>
           </TabsContent>
 
-          {/* Journey Tab */}
           <TabsContent value="journey" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
              <div className="xl:col-span-8">
                 <Card className="rounded-[3rem] shadow-2xl border-none bg-card/50 backdrop-blur-xl">
@@ -760,7 +750,6 @@ function AdminContent() {
             </div>
           </TabsContent>
 
-          {/* System Tab */}
           <TabsContent value="system" className="max-w-4xl mx-auto space-y-12 animate-in fade-in">
              <Card className="rounded-[3rem] shadow-2xl border-none bg-card/50 backdrop-blur-xl overflow-hidden">
               <CardHeader className="p-10 border-b">
