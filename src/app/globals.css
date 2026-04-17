@@ -23,7 +23,7 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
-    --radius: 1.5rem;
+    --radius: 1rem;
   }
 
   [data-theme='dark'] {
@@ -64,7 +64,6 @@
     --popover-foreground: 180 100% 50%;
   }
 
-  /* Custom Themes maintained but optimized */
   [data-theme='emerald'] { --primary: 160 84% 39%; --accent: 142 71% 45%; }
   [data-theme='sunset'] { --primary: 15 80% 55%; --accent: 35 90% 65%; }
   [data-theme='royal'] { --primary: 265 80% 60%; --accent: 280 85% 70%; }
@@ -73,41 +72,16 @@
 
 @layer base {
   * {
-    @apply border-border outline-none;
+    @apply border-border outline-none transition-colors duration-300;
   }
   body {
-    @apply bg-background text-foreground transition-colors duration-700 selection:bg-primary selection:text-primary-foreground;
+    @apply bg-background text-foreground antialiased selection:bg-primary/30;
   }
 }
 
-.theme-transition {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* OP Glow Animations */
-@keyframes glow-pulse {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.1); }
-}
-
-.glow-effect {
-  position: relative;
-}
-
-.glow-effect::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  background: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--accent)));
-  filter: blur(20px);
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  z-index: -1;
-  border-radius: inherit;
-}
-
-.glow-effect:hover::before {
-  opacity: 0.4;
+.font-headline {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.04em;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -116,4 +90,34 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 15s linear infinite;
+}
+
+.glow-effect {
+  position: relative;
+  z-index: 1;
+}
+
+.glow-effect::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(45deg, hsl(var(--primary)/0.5), hsl(var(--accent)/0.5));
+  filter: blur(20px);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  border-radius: inherit;
+}
+
+.glow-effect:hover::after {
+  opacity: 1;
 }
