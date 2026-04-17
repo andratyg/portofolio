@@ -4,16 +4,20 @@ KaryaPro adalah website portofolio profesional kelas atas yang dibangun dengan t
 
 ## 🚀 Fitur Utama
 - **Real-time Database:** Menggunakan Firebase Firestore untuk sinkronisasi data instan di seluruh dunia.
-- **AI-Powered:** Integrasi Genkit AI (Google Gemini) untuk terjemahan otomatis (ID ↔ EN) dan saran deskripsi konten cerdas.
+- **AI-Powered (Genkit AI):** 
+  - **Smart Auto-Translate:** Fitur terjemahan otomatis (ID ↔ EN) di setiap formulir admin menggunakan Google Gemini.
+  - **AI Suggestions:** Saran deskripsi kreatif untuk proyek dan sertifikat secara otomatis.
 - **Smart Navigation:** Navbar dan Admin Tabs dengan sistem *auto-hide* berbasis arah scroll untuk ruang pandang maksimal.
-- **Multi-Language:** Dukungan penuh untuk Bahasa Indonesia dan Inggris.
-- **Multi-Theme:** Tersedia 10+ tema termasuk tema khusus **Ramadan** (Emerald/Gold) dan **Lunar** (Red/Gold).
-- **Export to PDF:** Fitur satu klik untuk mengubah portofolio menjadi format CV profesional yang siap dikirim ke HR/Klien.
+- **Multi-Language:** Dukungan penuh untuk Bahasa Indonesia dan Inggris (Bilingual).
+- **Multi-Theme (10+ Themes):** Termasuk tema khusus **Ramadan** (Emerald/Gold) dan **Lunar** (Red/Gold).
+- **Export to PDF:** Fitur satu klik untuk mengubah portofolio menjadi format CV profesional yang bersih dan siap dikirim ke HR/Klien.
+- **Performance Optimized:** Penggunaan format gambar WebP, lazy loading, dan pengurangan beban visual pada perangkat mobile.
 
 ## 🎨 Desain & Gaya ("OP" Style)
 - **Typography:** Tipografi raksasa menggunakan font *Space Grotesk* untuk kesan berani dan modern.
-- **Visuals:** Efek Aura Background, Card Glow, dan Glassmorphism 2.0 yang dioptimalkan untuk performa.
-- **Responsive:** Desain mobile-first dengan pengurangan beban blur pada perangkat seluler untuk kecepatan maksimal.
+- **Visuals:** Efek Aura Background, Card Glow, dan Glassmorphism 2.0 yang memberikan kesan premium.
+- **Accessibility:** Mendukung navigasi keyboard, kontras warna tinggi, dan ARIA attributes lengkap.
+- **SEO Ready:** Markup Schema.org (Person & Portfolio) untuk meningkatkan discoverability di Google.
 
 ## 🔐 Akses Admin
 Halaman Admin dapat diakses melalui `/admin/login`. 
