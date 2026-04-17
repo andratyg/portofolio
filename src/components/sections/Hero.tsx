@@ -1,10 +1,9 @@
-
 "use client"
 
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { Button } from '../ui/button';
-import { ArrowRight, Sparkles, Download, Code2, Globe2, Zap } from 'lucide-react';
+import { ArrowRight, Zap, Download, Code2, Globe2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useProjectStore } from '../ProjectStore';
@@ -25,7 +24,6 @@ export const Hero = () => {
   const heroTitle = language === 'id' ? profile.heroTitleId : (profile.heroTitleEn || profile.heroTitleId);
   const heroSubtitle = language === 'id' ? profile.heroSubtitleId : (profile.heroSubtitleEn || profile.heroSubtitleId);
 
-  // Safe Image URL Check
   const isValidImageUrl = (url: string) => {
     return url && (url.startsWith('http') || url.startsWith('/'));
   };
@@ -33,9 +31,9 @@ export const Hero = () => {
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden py-32 bg-background selection:bg-primary/30">
       {/* Advanced Aura blobs */}
-      <div className="aura-blob top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/30 animate-pulse"></div>
-      <div className="aura-blob bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-accent/30 animate-pulse delay-1000"></div>
-      <div className="aura-blob top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[40%] bg-primary/10 animate-spin-slow"></div>
+      <div className="aura-blob top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/20 animate-pulse"></div>
+      <div className="aura-blob bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-accent/20 animate-pulse delay-1000"></div>
+      <div className="aura-blob top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[40%] bg-primary/5 animate-spin-slow"></div>
 
       <div className="container mx-auto px-6 grid lg:grid-cols-12 gap-16 items-center relative z-10">
         <div className={cn(
@@ -50,7 +48,7 @@ export const Hero = () => {
           <h1 className="text-7xl md:text-8xl lg:text-[9rem] font-black font-headline leading-[0.85] mb-12 tracking-tighter">
             {heroTitle.split(' ').map((word, i) => (
               <span key={i} className={cn(
-                "inline-block mr-4",
+                "inline-block mr-4 transition-colors duration-700",
                 i % 2 !== 0 ? 'text-primary' : 'text-foreground'
               )}>
                 {word}
@@ -67,7 +65,7 @@ export const Hero = () => {
 
           <div className="flex flex-wrap gap-8 no-print">
             <Link href="#portfolio">
-              <Button size="lg" className="h-20 px-12 rounded-[2rem] gap-4 group shadow-[0_20px_50px_rgba(var(--primary),0.3)] text-xl font-black uppercase tracking-widest bg-primary hover:scale-[1.02] active:scale-95 transition-all">
+              <Button size="lg" className="h-20 px-12 rounded-[2.5rem] gap-4 group shadow-2xl shadow-primary/20 text-xl font-black uppercase tracking-widest bg-primary hover:scale-[1.02] active:scale-95 transition-all">
                 {t.viewProjects}
                 <ArrowRight className="h-6 w-6 group-hover:translate-x-3 transition-transform" />
               </Button>
@@ -76,7 +74,7 @@ export const Hero = () => {
               variant="outline" 
               size="lg" 
               onClick={() => window.print()}
-              className="h-20 px-12 rounded-[2rem] border-primary/20 hover:bg-primary/5 text-xl font-black uppercase tracking-widest backdrop-blur-md gap-3 hover:scale-[1.02] active:scale-95 transition-all"
+              className="h-20 px-12 rounded-[2.5rem] border-primary/20 hover:bg-primary/5 text-xl font-black uppercase tracking-widest backdrop-blur-md gap-3 hover:scale-[1.02] active:scale-95 transition-all"
             >
               <Download className="h-6 w-6" />
               {language === 'id' ? 'Ekspor PDF' : 'Export PDF'}
@@ -90,7 +88,7 @@ export const Hero = () => {
         )}>
           <div className="relative group p-6">
             <div className="absolute -inset-4 bg-gradient-to-r from-primary via-accent to-primary rounded-[4rem] blur-3xl opacity-20 group-hover:opacity-40 transition duration-1000 animate-spin-slow"></div>
-            <div className="relative glass-panel rounded-[3.5rem] overflow-hidden shadow-2xl aspect-[4/5] group-hover:-translate-y-4 transition-transform duration-700">
+            <div className="relative glass-panel rounded-[3.5rem] overflow-hidden shadow-2xl aspect-[4/5] group-hover:-translate-y-4 transition-transform duration-700 border-primary/10">
               {heroProject && isValidImageUrl(heroProject.imageUrl) ? (
                 <>
                   <Image 
@@ -121,7 +119,7 @@ export const Hero = () => {
                    <Globe2 className="h-20 w-20 text-primary animate-pulse" />
                    <div className="space-y-2">
                      <p className="text-xs font-black uppercase tracking-[0.3em] text-primary">System Node Active</p>
-                     <p className="text-muted-foreground text-sm font-medium">Awaiting visual synchronization. Please verify project data in the command center.</p>
+                     <p className="text-muted-foreground text-sm font-medium">Awaiting visual synchronization.</p>
                    </div>
                 </div>
               )}
