@@ -220,7 +220,7 @@ function AdminContent() {
         <Card className="w-full max-w-lg rounded-[2.5rem] p-10 text-center space-y-8 shadow-2xl border-destructive/20">
           <ShieldAlert className="h-16 w-16 text-destructive mx-auto" />
           <div className="space-y-2">
-            <h2 className="text-3xl font-black font-headline uppercase">Access Restricted</h2>
+            <h2 className="text-3xl font-black font-headline uppercase text-foreground">Access Restricted</h2>
             <p className="text-muted-foreground text-sm">UID: <code className="bg-muted px-2 py-1 rounded select-all font-bold">{user.uid}</code></p>
             <p className="text-xs text-muted-foreground italic mt-4">Please register this UID in Firestore under 'admins' collection with role 'super'.</p>
           </div>
@@ -244,13 +244,13 @@ function AdminContent() {
         isHeaderVisible ? "translate-y-0" : "-translate-y-full"
       )}>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.push('/')} className="rounded-xl h-10 w-10 border">
+          <Button variant="ghost" size="icon" onClick={() => router.push('/')} className="rounded-xl h-10 w-10 border border-border/50">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-xs font-black font-headline uppercase tracking-widest flex items-center gap-2">
+            <h1 className="text-xs font-black font-headline uppercase tracking-widest flex items-center gap-2 text-foreground">
               NAT Control Panel
-              <Badge variant="outline" className="h-5 text-[8px] bg-primary/10 text-primary border-primary/20">{userRole}</Badge>
+              <Badge className="h-5 text-[8px] bg-primary/10 text-primary border-primary/20 font-black">{userRole}</Badge>
             </h1>
             <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em]">{user?.email}</p>
           </div>
@@ -266,137 +266,149 @@ function AdminContent() {
             "flex justify-center sticky z-40 transition-all duration-500",
             isHeaderVisible ? "top-24" : "top-4"
           )}>
-            <TabsList className="h-16 bg-card/80 backdrop-blur-2xl border shadow-2xl p-2 rounded-[2rem] w-full max-w-4xl overflow-x-auto no-scrollbar">
-              <TabsTrigger value="profile" className="rounded-2xl font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full"><UserCircle className="h-4 w-4" /> Profile</TabsTrigger>
-              <TabsTrigger value="projects" className="rounded-2xl font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full"><Laptop className="h-4 w-4" /> Projects</TabsTrigger>
-              <TabsTrigger value="certificates" className="rounded-2xl font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full"><Award className="h-4 w-4" /> Certs</TabsTrigger>
-              <TabsTrigger value="feedback" className="rounded-2xl font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full"><Quote className="h-4 w-4" /> Feedback</TabsTrigger>
-              <TabsTrigger value="journey" className="rounded-2xl font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full"><History className="h-4 w-4" /> Journey</TabsTrigger>
-              <TabsTrigger value="system" className="rounded-2xl font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full"><Settings className="h-4 w-4" /> System</TabsTrigger>
+            <TabsList className="h-16 bg-card/40 backdrop-blur-2xl border border-border/30 shadow-2xl p-1.5 rounded-[2rem] w-full max-w-4xl overflow-x-auto no-scrollbar">
+              <TabsTrigger value="profile" className="rounded-2xl font-black uppercase text-[9px] tracking-[0.2em] gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><UserCircle className="h-4 w-4" /> Profile</TabsTrigger>
+              <TabsTrigger value="projects" className="rounded-2xl font-black uppercase text-[9px] tracking-[0.2em] gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Laptop className="h-4 w-4" /> Projects</TabsTrigger>
+              <TabsTrigger value="certificates" className="rounded-2xl font-black uppercase text-[9px] tracking-[0.2em] gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Award className="h-4 w-4" /> Certs</TabsTrigger>
+              <TabsTrigger value="feedback" className="rounded-2xl font-black uppercase text-[9px] tracking-[0.2em] gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Quote className="h-4 w-4" /> Feedback</TabsTrigger>
+              <TabsTrigger value="journey" className="rounded-2xl font-black uppercase text-[9px] tracking-[0.2em] gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><History className="h-4 w-4" /> Journey</TabsTrigger>
+              <TabsTrigger value="system" className="rounded-2xl font-black uppercase text-[9px] tracking-[0.2em] gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Settings className="h-4 w-4" /> System</TabsTrigger>
             </TabsList>
           </div>
 
           <TabsContent value="profile" className="animate-in fade-in slide-in-from-bottom-8 duration-500">
-             <Card className="rounded-[3rem] shadow-2xl border-none bg-card/50 backdrop-blur-xl">
-                <CardHeader className="p-10 border-b flex flex-row items-center justify-between">
-                  <div>
-                    <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">Global Identity</CardTitle>
-                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.2em] mt-1">Configure Public Branding & Strategic Metrics</CardDescription>
+             <Card className="rounded-[2.5rem] shadow-2xl border-border/30 bg-card/30 backdrop-blur-2xl overflow-hidden">
+                <CardHeader className="p-10 border-b border-border/20 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-muted/10">
+                  <div className="space-y-1">
+                    <CardTitle className="font-black font-headline text-4xl uppercase tracking-tighter text-foreground">Global Identity</CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em] text-muted-foreground/80">Configure Public Branding & Strategic Metrics</CardDescription>
                   </div>
-                  <Button type="button" variant="outline" onClick={() => handleAITranslate('profile', profileFormData, setProfileFormData)} disabled={isTranslating === 'profile'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest">
+                  <Button type="button" variant="outline" onClick={() => handleAITranslate('profile', profileFormData, setProfileFormData)} disabled={isTranslating === 'profile'} className="rounded-2xl gap-3 h-14 px-8 text-[10px] font-black uppercase tracking-widest border-primary/30 hover:bg-primary/10 text-primary">
                     {isTranslating === 'profile' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
                     AI Translate All
                   </Button>
                 </CardHeader>
                 <CardContent className="p-10">
-                  <form onSubmit={handleProfileSubmit} className="space-y-16">
-                    <div className="space-y-8">
-                      <h3 className="text-xs font-black uppercase tracking-[0.3em] text-primary flex items-center gap-3"><UserCircle className="h-4 w-4" /> Core Identity</h3>
-                      <div className="grid lg:grid-cols-3 gap-8">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Full Name</label>
-                            <Input value={profileFormData.name} onChange={e => setProfileFormData({...profileFormData, name: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                  <form onSubmit={handleProfileSubmit} className="space-y-20">
+                    <div className="space-y-10">
+                      <div className="flex items-center gap-4">
+                        <div className="h-10 w-1 h-1 bg-primary rounded-full"></div>
+                        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-primary">Core Identity</h3>
+                      </div>
+                      <div className="grid lg:grid-cols-3 gap-10">
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Full Name</label>
+                            <Input value={profileFormData.name} onChange={e => setProfileFormData({...profileFormData, name: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30 focus:ring-primary/20" />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Role (ID)</label>
-                            <Input value={profileFormData.roleId} onChange={e => setProfileFormData({...profileFormData, roleId: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Role (ID)</label>
+                            <Input value={profileFormData.roleId} onChange={e => setProfileFormData({...profileFormData, roleId: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Role (EN)</label>
-                            <Input value={profileFormData.roleEn} onChange={e => setProfileFormData({...profileFormData, roleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Role (EN)</label>
+                            <Input value={profileFormData.roleEn} onChange={e => setProfileFormData({...profileFormData, roleEn: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                         </div>
                       </div>
                     </div>
 
-                    <div className="space-y-8">
-                      <h3 className="text-xs font-black uppercase tracking-[0.3em] text-primary flex items-center gap-3"><BarChart3 className="h-4 w-4" /> Strategic Metrics (OP Stats)</h3>
+                    <div className="space-y-10 p-8 bg-muted/5 rounded-[2.5rem] border border-border/20">
+                      <div className="flex items-center gap-4">
+                        <div className="h-10 w-1 h-1 bg-accent rounded-full"></div>
+                        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-accent">Strategic Metrics (OP Stats)</h3>
+                      </div>
                       <div className="grid lg:grid-cols-4 gap-8">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Briefcase className="h-3 w-3" /> Units Deployed</label>
-                            <Input value={statsFormData.completedProjects} onChange={e => setStatsFormData({...statsFormData, completedProjects: e.target.value})} className="h-14 rounded-2xl bg-background/50" placeholder="e.g. 15" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Briefcase className="h-3.5 w-3.5" /> Units Deployed</label>
+                            <Input value={statsFormData.completedProjects} onChange={e => setStatsFormData({...statsFormData, completedProjects: e.target.value})} className="h-16 rounded-2xl bg-background/50 border-border/30 font-black text-lg" placeholder="e.g. 15" />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Activity className="h-3 w-3" /> Industry Tenure (Years)</label>
-                            <Input value={statsFormData.yearsExperience} onChange={e => setStatsFormData({...statsFormData, yearsExperience: e.target.value})} className="h-14 rounded-2xl bg-background/50" placeholder="e.g. 5" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Activity className="h-3.5 w-3.5" /> Industry Tenure</label>
+                            <Input value={statsFormData.yearsExperience} onChange={e => setStatsFormData({...statsFormData, yearsExperience: e.target.value})} className="h-16 rounded-2xl bg-background/50 border-border/30 font-black text-lg" placeholder="e.g. 5" />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Terminal className="h-3 w-3" /> System Stack Count</label>
-                            <Input value={statsFormData.techMastered} onChange={e => setStatsFormData({...statsFormData, techMastered: e.target.value})} className="h-14 rounded-2xl bg-background/50" placeholder="e.g. 24" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Terminal className="h-3.5 w-3.5" /> System Stack</label>
+                            <Input value={statsFormData.techMastered} onChange={e => setStatsFormData({...statsFormData, techMastered: e.target.value})} className="h-16 rounded-2xl bg-background/50 border-border/30 font-black text-lg" placeholder="e.g. 24" />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><ShieldCheck className="h-3 w-3" /> Uptime SLA / Satisfaction</label>
-                            <Input value={statsFormData.clientSatisfaction} onChange={e => setStatsFormData({...statsFormData, clientSatisfaction: e.target.value})} className="h-14 rounded-2xl bg-background/50" placeholder="e.g. 99.9%" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5" /> Uptime SLA</label>
+                            <Input value={statsFormData.clientSatisfaction} onChange={e => setStatsFormData({...statsFormData, clientSatisfaction: e.target.value})} className="h-16 rounded-2xl bg-background/50 border-border/30 font-black text-lg" placeholder="e.g. 99.9%" />
                         </div>
                       </div>
                     </div>
 
                     <div className="space-y-12">
-                      <h3 className="text-xs font-black uppercase tracking-[0.3em] text-primary flex items-center gap-3"><Type className="h-4 w-4" /> Visual Narrative</h3>
-                      <div className="grid md:grid-cols-2 gap-8">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Hero Title (ID)</label>
-                            <Input value={profileFormData.heroTitleId} onChange={e => setProfileFormData({...profileFormData, heroTitleId: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                      <div className="flex items-center gap-4">
+                        <div className="h-10 w-1 h-1 bg-primary rounded-full"></div>
+                        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-primary">Visual Narrative</h3>
+                      </div>
+                      <div className="grid md:grid-cols-2 gap-10">
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Title (ID)</label>
+                            <Input value={profileFormData.heroTitleId} onChange={e => setProfileFormData({...profileFormData, heroTitleId: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Hero Title (EN)</label>
-                            <Input value={profileFormData.heroTitleEn} onChange={e => setProfileFormData({...profileFormData, heroTitleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Title (EN)</label>
+                            <Input value={profileFormData.heroTitleEn} onChange={e => setProfileFormData({...profileFormData, heroTitleEn: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                         </div>
                       </div>
 
-                      <div className="grid md:grid-cols-2 gap-8">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Hero Subtitle (ID)</label>
-                            <Textarea value={profileFormData.heroSubtitleId} onChange={e => setProfileFormData({...profileFormData, heroSubtitleId: e.target.value})} className="h-24 rounded-2xl bg-background/50" />
+                      <div className="grid md:grid-cols-2 gap-10">
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Subtitle (ID)</label>
+                            <Textarea value={profileFormData.heroSubtitleId} onChange={e => setProfileFormData({...profileFormData, heroSubtitleId: e.target.value})} className="h-28 rounded-2xl bg-background/40 border-border/30 resize-none" />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Hero Subtitle (EN)</label>
-                            <Textarea value={profileFormData.heroSubtitleEn} onChange={e => setProfileFormData({...profileFormData, heroSubtitleEn: e.target.value})} className="h-24 rounded-2xl bg-background/50" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Hero Subtitle (EN)</label>
+                            <Textarea value={profileFormData.heroSubtitleEn} onChange={e => setProfileFormData({...profileFormData, heroSubtitleEn: e.target.value})} className="h-28 rounded-2xl bg-background/40 border-border/30 resize-none" />
                         </div>
                       </div>
 
-                      <div className="grid md:grid-cols-2 gap-8">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">About Me (ID)</label>
-                            <Textarea value={profileFormData.aboutMeId} onChange={e => setProfileFormData({...profileFormData, aboutMeId: e.target.value})} className="h-40 rounded-3xl bg-background/50" />
+                      <div className="grid md:grid-cols-2 gap-10">
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">About Me (ID)</label>
+                            <Textarea value={profileFormData.aboutMeId} onChange={e => setProfileFormData({...profileFormData, aboutMeId: e.target.value})} className="h-44 rounded-3xl bg-background/40 border-border/30" />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">About Me (EN)</label>
-                            <Textarea value={profileFormData.aboutMeEn} onChange={e => setProfileFormData({...profileFormData, aboutMeEn: e.target.value})} className="h-40 rounded-3xl bg-background/50" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">About Me (EN)</label>
+                            <Textarea value={profileFormData.aboutMeEn} onChange={e => setProfileFormData({...profileFormData, aboutMeEn: e.target.value})} className="h-44 rounded-3xl bg-background/40 border-border/30" />
                         </div>
                       </div>
                     </div>
 
-                    <div className="space-y-8">
-                      <h3 className="text-xs font-black uppercase tracking-[0.3em] text-primary flex items-center gap-3"><Zap className="h-4 w-4" /> Connectivity & Media</h3>
+                    <div className="space-y-10">
+                      <div className="flex items-center gap-4">
+                        <div className="h-10 w-1 h-1 bg-accent rounded-full"></div>
+                        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-accent">Connectivity & Media</h3>
+                      </div>
                       <div className="grid lg:grid-cols-3 gap-8">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Public Email</label>
-                            <Input value={profileFormData.email} onChange={e => setProfileFormData({...profileFormData, email: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Public Email</label>
+                            <Input value={profileFormData.email} onChange={e => setProfileFormData({...profileFormData, email: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">WA Number</label>
-                            <Input value={profileFormData.whatsapp} onChange={e => setProfileFormData({...profileFormData, whatsapp: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">WA Number</label>
+                            <Input value={profileFormData.whatsapp} onChange={e => setProfileFormData({...profileFormData, whatsapp: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">LinkedIn URL</label>
-                            <Input value={profileFormData.linkedin} onChange={e => setProfileFormData({...profileFormData, linkedin: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">LinkedIn URL</label>
+                            <Input value={profileFormData.linkedin} onChange={e => setProfileFormData({...profileFormData, linkedin: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Instagram URL</label>
-                            <Input value={profileFormData.instagram} onChange={e => setProfileFormData({...profileFormData, instagram: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Instagram URL</label>
+                            <Input value={profileFormData.instagram} onChange={e => setProfileFormData({...profileFormData, instagram: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">GitHub URL</label>
-                            <Input value={profileFormData.github} onChange={e => setProfileFormData({...profileFormData, github: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">GitHub URL</label>
+                            <Input value={profileFormData.github} onChange={e => setProfileFormData({...profileFormData, github: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Profile Picture URL</label>
-                            <Input value={profileFormData.profilePictureUrl} onChange={e => setProfileFormData({...profileFormData, profilePictureUrl: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Profile Picture URL</label>
+                            <Input value={profileFormData.profilePictureUrl} onChange={e => setProfileFormData({...profileFormData, profilePictureUrl: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                         </div>
                       </div>
                     </div>
 
-                    <Button type="submit" className="w-full h-20 rounded-[2.5rem] text-[12px] font-black uppercase tracking-[0.4em] bg-primary shadow-2xl shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all">Sync Global Node & Metrics</Button>
+                    <Button type="submit" className="w-full h-24 rounded-[2.5rem] text-[14px] font-black uppercase tracking-[0.5em] bg-primary text-primary-foreground shadow-[0_20px_50px_rgba(0,0,0,0.3)] shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all">Sync Global Node & Metrics</Button>
                   </form>
                 </CardContent>
              </Card>
@@ -404,18 +416,18 @@ function AdminContent() {
 
           <TabsContent value="projects" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
             <div className="xl:col-span-8">
-               <Card className="rounded-[3rem] shadow-2xl border-none bg-card/50 backdrop-blur-xl">
-                <CardHeader className="p-10 border-b flex flex-row items-center justify-between">
-                  <div>
-                    <CardTitle className="font-black font-headline text-2xl uppercase tracking-tighter">Case Study Deployment</CardTitle>
-                    <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Publish New Professional Infrastructure</CardDescription>
+               <Card className="rounded-[2.5rem] shadow-2xl border-border/30 bg-card/30 backdrop-blur-2xl">
+                <CardHeader className="p-10 border-b border-border/20 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="space-y-1">
+                    <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter text-foreground">Case Study Deployment</CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em] text-muted-foreground/80">Publish New Professional Infrastructure</CardDescription>
                   </div>
-                  <div className="flex gap-2">
-                    <Button type="button" variant="outline" onClick={handleGenerateProjectSuggestion} disabled={isAIThinking === 'project'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest">
+                  <div className="flex gap-4">
+                    <Button type="button" variant="outline" onClick={handleGenerateProjectSuggestion} disabled={isAIThinking === 'project'} className="rounded-2xl gap-3 h-14 px-6 text-[10px] font-black uppercase tracking-widest border-primary/30 hover:bg-primary/10 text-primary">
                       {isAIThinking === 'project' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                       AI Suggest
                     </Button>
-                    <Button type="button" variant="outline" onClick={() => handleAITranslate('project', projectForm, setProjectForm)} disabled={isTranslating === 'project'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest">
+                    <Button type="button" variant="outline" onClick={() => handleAITranslate('project', projectForm, setProjectForm)} disabled={isTranslating === 'project'} className="rounded-2xl gap-3 h-14 px-6 text-[10px] font-black uppercase tracking-widest border-accent/30 hover:bg-accent/10 text-accent">
                       {isTranslating === 'project' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
                       AI Translate
                     </Button>
@@ -434,73 +446,73 @@ function AdminContent() {
                       technologies: '', imageUrl: '', demoUrl: '', featured: false 
                     });
                     toast({ title: "Project Deployed", description: "Case study added to live cluster." });
-                  }} className="space-y-10">
+                  }} className="space-y-12">
                     <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Title (ID)</label>
-                        <Input required value={projectForm.titleId} onChange={e => setProjectForm({...projectForm, titleId: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                        <Input required value={projectForm.titleId} onChange={e => setProjectForm({...projectForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Title (EN)</label>
-                        <Input value={projectForm.titleEn} onChange={e => setProjectForm({...projectForm, titleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                        <Input value={projectForm.titleEn} onChange={e => setProjectForm({...projectForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                       </div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Summary (ID)</label>
-                        <Textarea value={projectForm.shortDescriptionId} onChange={e => setProjectForm({...projectForm, shortDescriptionId: e.target.value})} className="h-24 rounded-2xl bg-background/50" />
+                        <Textarea value={projectForm.shortDescriptionId} onChange={e => setProjectForm({...projectForm, shortDescriptionId: e.target.value})} className="h-28 rounded-2xl bg-background/40 border-border/30" />
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Summary (EN)</label>
-                        <Textarea value={projectForm.shortDescriptionEn} onChange={e => setProjectForm({...projectForm, shortDescriptionEn: e.target.value})} className="h-24 rounded-2xl bg-background/50" />
+                        <Textarea value={projectForm.shortDescriptionEn} onChange={e => setProjectForm({...projectForm, shortDescriptionEn: e.target.value})} className="h-28 rounded-2xl bg-background/40 border-border/30" />
                       </div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-8">
-                       <div className="space-y-2">
+                       <div className="space-y-3">
                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">The Problem (ID)</label>
-                          <Textarea value={projectForm.problemId} onChange={e => setProjectForm({...projectForm, problemId: e.target.value})} className="h-32 rounded-3xl bg-background/50" />
+                          <Textarea value={projectForm.problemId} onChange={e => setProjectForm({...projectForm, problemId: e.target.value})} className="h-36 rounded-3xl bg-background/40 border-border/30" />
                        </div>
-                       <div className="space-y-2">
+                       <div className="space-y-3">
                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">The Solution (ID)</label>
-                          <Textarea value={projectForm.solutionId} onChange={e => setProjectForm({...projectForm, solutionId: e.target.value})} className="h-32 rounded-3xl bg-background/50" />
+                          <Textarea value={projectForm.solutionId} onChange={e => setProjectForm({...projectForm, solutionId: e.target.value})} className="h-36 rounded-3xl bg-background/40 border-border/30" />
                        </div>
                     </div>
                     <div className="grid lg:grid-cols-3 gap-8">
-                       <div className="space-y-2">
+                       <div className="space-y-3">
                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Stack (CSV)</label>
-                          <Input placeholder="Next.js, Tailwind" value={projectForm.technologies} onChange={e => setProjectForm({...projectForm, technologies: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                          <Input placeholder="Next.js, Tailwind" value={projectForm.technologies} onChange={e => setProjectForm({...projectForm, technologies: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                        </div>
-                       <div className="space-y-2">
+                       <div className="space-y-3">
                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Media URL</label>
-                          <Input value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                          <Input value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                        </div>
-                       <div className="space-y-2">
+                       <div className="space-y-3">
                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Impact Stats</label>
-                          <Input placeholder="99.9% Performance" value={projectForm.impactStats} onChange={e => setProjectForm({...projectForm, impactStats: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                          <Input placeholder="99.9% Performance" value={projectForm.impactStats} onChange={e => setProjectForm({...projectForm, impactStats: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                        </div>
                     </div>
-                    <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20">Commit Deployment</Button>
+                    <Button type="submit" className="w-full h-20 rounded-[2rem] text-[12px] font-black uppercase tracking-[0.4em] bg-primary text-primary-foreground shadow-2xl shadow-primary/20">Commit Deployment</Button>
                   </form>
                 </CardContent>
               </Card>
             </div>
             <div className="xl:col-span-4 space-y-8">
-               <h3 className="font-black text-[10px] uppercase tracking-[0.3em] px-4 flex items-center gap-3"><Laptop className="h-4 w-4" /> Live Repositories ({projects.length})</h3>
+               <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 flex items-center gap-4 text-primary"><Laptop className="h-4 w-4" /> Live Cluster ({projects.length})</h3>
               <div className="grid gap-4">
                 {projects.map(p => (
-                  <Card key={p.id} className="p-4 flex gap-5 items-center group bg-card/50 backdrop-blur-md border-none hover:bg-muted/50 transition-all rounded-[1.5rem] shadow-xl">
-                    <div className="w-16 h-16 rounded-2xl bg-muted overflow-hidden shrink-0">
+                  <Card key={p.id} className="p-5 flex gap-5 items-center group bg-card/40 backdrop-blur-md border-border/20 hover:border-primary/50 transition-all rounded-[1.5rem] shadow-xl overflow-hidden relative">
+                    <div className="w-16 h-16 rounded-2xl bg-muted overflow-hidden shrink-0 border border-border/50">
                       <img src={p.imageUrl && p.imageUrl.startsWith('http') ? p.imageUrl : "https://placehold.co/100x100?text=Project"} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-black truncate text-sm tracking-tight">{p.titleId}</h4>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="secondary" className="text-[8px] font-black uppercase h-5 px-2">{p.type}</Badge>
-                        {p.featured && <Sparkles className="h-3 w-3 text-accent" />}
+                      <h4 className="font-black truncate text-sm tracking-tight text-foreground">{p.titleId}</h4>
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <Badge variant="secondary" className="text-[8px] font-black uppercase h-5 px-2 bg-muted/50">{p.type}</Badge>
+                        {p.featured && <Sparkles className="h-3 w-3 text-primary animate-pulse" />}
                       </div>
                     </div>
                     {isSuper && (
-                      <Button variant="ghost" size="icon" onClick={() => deleteProject(p.id)} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100">
+                      <Button variant="ghost" size="icon" onClick={() => deleteProject(p.id)} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100 transition-all">
                         <Trash2 className="h-5 w-5" />
                       </Button>
                     )}
@@ -512,18 +524,18 @@ function AdminContent() {
 
           <TabsContent value="certificates" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
             <div className="xl:col-span-8">
-              <Card className="rounded-[3rem] shadow-2xl border-none bg-card/50 backdrop-blur-xl">
-                <CardHeader className="p-10 border-b flex flex-row items-center justify-between">
-                  <div>
-                    <CardTitle className="font-black font-headline text-2xl uppercase tracking-tighter">Credential Vault</CardTitle>
-                    <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Archive Specialized Technical Validations</CardDescription>
+              <Card className="rounded-[2.5rem] shadow-2xl border-border/30 bg-card/30 backdrop-blur-2xl">
+                <CardHeader className="p-10 border-b border-border/20 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="space-y-1">
+                    <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter text-foreground">Credential Vault</CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em] text-muted-foreground/80">Archive Specialized Technical Validations</CardDescription>
                   </div>
-                  <div className="flex gap-2">
-                    <Button type="button" variant="outline" onClick={handleGenerateCertDesc} disabled={isAIThinking === 'cert'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest">
+                  <div className="flex gap-4">
+                    <Button type="button" variant="outline" onClick={handleGenerateCertDesc} disabled={isAIThinking === 'cert'} className="rounded-2xl gap-3 h-14 px-6 text-[10px] font-black uppercase tracking-widest border-primary/30 hover:bg-primary/10 text-primary">
                       {isAIThinking === 'cert' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                       AI Suggest
                     </Button>
-                    <Button type="button" variant="outline" onClick={() => handleAITranslate('certificate', certForm, setCertForm)} disabled={isTranslating === 'certificate'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest">
+                    <Button type="button" variant="outline" onClick={() => handleAITranslate('certificate', certForm, setCertForm)} disabled={isTranslating === 'certificate'} className="rounded-2xl gap-3 h-14 px-6 text-[10px] font-black uppercase tracking-widest border-accent/30 hover:bg-accent/10 text-accent">
                       {isTranslating === 'certificate' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
                       AI Translate
                     </Button>
@@ -535,56 +547,56 @@ function AdminContent() {
                     addCertificate({ ...certForm, id: Date.now().toString() } as any);
                     setCertForm({ titleId: '', titleEn: '', issuer: '', year: '', validUntil: '', imageUrl: '', shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '' });
                     toast({ title: "Credential Locked", description: "Certificate added to global vault." });
-                  }} className="space-y-8">
+                  }} className="space-y-10">
                     <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (ID)</label>
-                        <Input required value={certForm.titleId} onChange={e => setCertForm({...certForm, titleId: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Title (ID)</label>
+                        <Input required value={certForm.titleId} onChange={e => setCertForm({...certForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                       </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground">Title (EN)</label>
-                        <Input value={certForm.titleEn} onChange={e => setCertForm({...certForm, titleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Title (EN)</label>
+                        <Input value={certForm.titleEn} onChange={e => setCertForm({...certForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                       </div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Issuer Org</label>
-                        <Input required value={certForm.issuer} onChange={e => setCertForm({...certForm, issuer: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Issuer Org</label>
+                        <Input required value={certForm.issuer} onChange={e => setCertForm({...certForm, issuer: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                       </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Media URL</label>
-                        <Input value={certForm.imageUrl} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Media URL</label>
+                        <Input value={certForm.imageUrl} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                       </div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Narrative (ID)</label>
-                        <Textarea value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="h-32 rounded-3xl bg-background/50" />
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Narrative (ID)</label>
+                        <Textarea value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="h-36 rounded-3xl bg-background/40 border-border/30" />
                       </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Narrative (EN)</label>
-                        <Textarea value={certForm.fullDescriptionEn} onChange={e => setCertForm({...certForm, fullDescriptionEn: e.target.value})} className="h-32 rounded-3xl bg-background/50" />
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Narrative (EN)</label>
+                        <Textarea value={certForm.fullDescriptionEn} onChange={e => setCertForm({...certForm, fullDescriptionEn: e.target.value})} className="h-36 rounded-3xl bg-background/40 border-border/30" />
                       </div>
                     </div>
-                    <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20">Finalize Credential</Button>
+                    <Button type="submit" className="w-full h-20 rounded-[2rem] text-[12px] font-black uppercase tracking-[0.4em] bg-primary text-primary-foreground shadow-2xl shadow-primary/20">Finalize Credential</Button>
                   </form>
                 </CardContent>
               </Card>
             </div>
             <div className="xl:col-span-4 space-y-8">
-               <h3 className="font-black text-[10px] uppercase tracking-[0.3em] px-4 flex items-center gap-3"><Award className="h-4 w-4" /> Active Validations ({certificates.length})</h3>
+               <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 flex items-center gap-4 text-primary"><Award className="h-4 w-4" /> Active Validations ({certificates.length})</h3>
               <div className="grid gap-4">
                 {certificates.map(c => (
-                  <Card key={c.id} className="p-4 flex gap-5 items-center group bg-card/50 backdrop-blur-md border-none hover:bg-muted/50 transition-all rounded-[1.5rem] shadow-xl">
-                    <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden shrink-0">
+                  <Card key={c.id} className="p-5 flex gap-5 items-center group bg-card/40 backdrop-blur-md border-border/20 hover:border-primary/50 transition-all rounded-[1.5rem] shadow-xl overflow-hidden">
+                    <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden shrink-0 border border-border/50">
                       <img src={c.imageUrl && c.imageUrl.startsWith('http') ? c.imageUrl : "https://placehold.co/100x100?text=Cert"} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-black truncate text-sm tracking-tight">{c.titleId}</h4>
-                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{c.issuer}</p>
+                      <h4 className="font-black truncate text-sm tracking-tight text-foreground">{c.titleId}</h4>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-1">{c.issuer}</p>
                     </div>
                     {isSuper && (
-                      <Button variant="ghost" size="icon" onClick={() => deleteCertificate(c.id)} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100">
+                      <Button variant="ghost" size="icon" onClick={() => deleteCertificate(c.id)} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100 transition-all">
                         <Trash2 className="h-5 w-5" />
                       </Button>
                     )}
@@ -596,13 +608,13 @@ function AdminContent() {
 
           <TabsContent value="feedback" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
              <div className="xl:col-span-8">
-                <Card className="rounded-[3rem] shadow-2xl border-none bg-card/50 backdrop-blur-xl">
-                  <CardHeader className="p-10 border-b flex flex-row items-center justify-between">
-                    <div>
-                      <CardTitle className="font-black font-headline text-2xl uppercase tracking-tighter">Impact Logs</CardTitle>
-                      <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Archive Client & Partner Testimonials</CardDescription>
+                <Card className="rounded-[2.5rem] shadow-2xl border-border/30 bg-card/30 backdrop-blur-2xl">
+                  <CardHeader className="p-10 border-b border-border/20 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="space-y-1">
+                      <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter text-foreground">Impact Logs</CardTitle>
+                      <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em] text-muted-foreground/80">Archive Client & Partner Testimonials</CardDescription>
                     </div>
-                    <Button type="button" variant="outline" onClick={() => handleAITranslate('feedback', testForm, setTestForm)} disabled={isTranslating === 'feedback'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest">
+                    <Button type="button" variant="outline" onClick={() => handleAITranslate('feedback', testForm, setTestForm)} disabled={isTranslating === 'feedback'} className="rounded-2xl gap-3 h-14 px-6 text-[10px] font-black uppercase tracking-widest border-primary/30 hover:bg-primary/10 text-primary">
                       {isTranslating === 'feedback' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
                       AI Translate
                     </Button>
@@ -613,56 +625,56 @@ function AdminContent() {
                       addTestimonial({ ...testForm, id: Date.now().toString() } as any);
                       setTestForm({ name: '', roleId: '', roleEn: '', contentId: '', contentEn: '', avatarUrl: '' });
                       toast({ title: "Feedback Archived", description: "Proof added to social grid." });
-                    }} className="space-y-8">
+                    }} className="space-y-10">
                        <div className="grid md:grid-cols-2 gap-8">
-                          <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Author</label>
-                             <Input required value={testForm.name} onChange={e => setTestForm({...testForm, name: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Author Name</label>
+                             <Input required value={testForm.name} onChange={e => setTestForm({...testForm, name: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                           </div>
-                          <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Avatar URL</label>
-                             <Input value={testForm.avatarUrl} onChange={e => setTestForm({...testForm, avatarUrl: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Avatar URL</label>
+                             <Input value={testForm.avatarUrl} onChange={e => setTestForm({...testForm, avatarUrl: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                           </div>
                        </div>
                        <div className="grid md:grid-cols-2 gap-8">
-                          <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Role (ID)</label>
-                             <Input required value={testForm.roleId} onChange={e => setTestForm({...testForm, roleId: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Role (ID)</label>
+                             <Input required value={testForm.roleId} onChange={e => setTestForm({...testForm, roleId: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                           </div>
-                          <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Role (EN)</label>
-                             <Input value={testForm.roleEn} onChange={e => setTestForm({...testForm, roleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Role (EN)</label>
+                             <Input value={testForm.roleEn} onChange={e => setTestForm({...testForm, roleEn: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                           </div>
                        </div>
                        <div className="grid md:grid-cols-2 gap-8">
-                          <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Proof (ID)</label>
-                             <Textarea required value={testForm.contentId} onChange={e => setTestForm({...testForm, contentId: e.target.value})} className="h-32 rounded-3xl bg-background/50" />
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Proof (ID)</label>
+                             <Textarea required value={testForm.contentId} onChange={e => setTestForm({...testForm, contentId: e.target.value})} className="h-36 rounded-3xl bg-background/40 border-border/30" />
                           </div>
-                          <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Proof (EN)</label>
-                             <Textarea value={testForm.contentEn} onChange={e => setTestForm({...testForm, contentEn: e.target.value})} className="h-32 rounded-3xl bg-background/50" />
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Proof (EN)</label>
+                             <Textarea value={testForm.contentEn} onChange={e => setTestForm({...testForm, contentEn: e.target.value})} className="h-36 rounded-3xl bg-background/40 border-border/30" />
                           </div>
                        </div>
-                       <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20">Commit Proof</Button>
+                       <Button type="submit" className="w-full h-20 rounded-[2rem] text-[12px] font-black uppercase tracking-[0.4em] bg-primary text-primary-foreground shadow-2xl shadow-primary/20">Commit Proof</Button>
                     </form>
                   </CardContent>
                 </Card>
              </div>
              <div className="xl:col-span-4 space-y-8">
-               <h3 className="font-black text-[10px] uppercase tracking-[0.3em] px-4 flex items-center gap-3"><Quote className="h-4 w-4" /> Proof Records ({testimonials.length})</h3>
+               <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 flex items-center gap-4 text-primary"><Quote className="h-4 w-4" /> Impact Records ({testimonials.length})</h3>
               <div className="grid gap-4">
                 {testimonials.map(t => (
-                  <Card key={t.id} className="p-4 flex gap-5 items-center group bg-card/50 backdrop-blur-md border-none hover:bg-muted/50 transition-all rounded-[1.5rem] shadow-xl">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
-                      {t.avatarUrl && t.avatarUrl.startsWith('http') ? <img src={t.avatarUrl} className="w-full h-full object-cover" /> : <UserCircle className="h-6 w-6 text-primary" />}
+                  <Card key={t.id} className="p-5 flex gap-5 items-center group bg-card/40 backdrop-blur-md border-border/20 hover:border-primary/50 transition-all rounded-[1.5rem] shadow-xl">
+                    <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0 border-2 border-primary/20">
+                      {t.avatarUrl && t.avatarUrl.startsWith('http') ? <img src={t.avatarUrl} className="w-full h-full object-cover" /> : <UserCircle className="h-7 w-7 text-primary" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-black truncate text-sm tracking-tight">{t.name}</h4>
-                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{t.roleId}</p>
+                      <h4 className="font-black truncate text-sm tracking-tight text-foreground">{t.name}</h4>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-1">{t.roleId}</p>
                     </div>
                     {isSuper && (
-                      <Button variant="ghost" size="icon" onClick={() => deleteTestimonial(t.id)} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100">
+                      <Button variant="ghost" size="icon" onClick={() => deleteTestimonial(t.id)} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100 transition-all">
                         <Trash2 className="h-5 w-5" />
                       </Button>
                     )}
@@ -674,13 +686,13 @@ function AdminContent() {
 
           <TabsContent value="journey" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
              <div className="xl:col-span-8">
-                <Card className="rounded-[3rem] shadow-2xl border-none bg-card/50 backdrop-blur-xl">
-                  <CardHeader className="p-10 border-b flex flex-row items-center justify-between">
-                    <div>
-                      <CardTitle className="font-black font-headline text-2xl uppercase tracking-tighter">Timeline Evolution</CardTitle>
-                      <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Map Professional & Academic Milestones</CardDescription>
+                <Card className="rounded-[2.5rem] shadow-2xl border-border/30 bg-card/30 backdrop-blur-2xl">
+                  <CardHeader className="p-10 border-b border-border/20 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="space-y-1">
+                      <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter text-foreground">Timeline Evolution</CardTitle>
+                      <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em] text-muted-foreground/80">Map Professional & Academic Milestones</CardDescription>
                     </div>
-                    <Button type="button" variant="outline" onClick={() => handleAITranslate('journey', expForm, setExpForm)} disabled={isTranslating === 'journey'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest">
+                    <Button type="button" variant="outline" onClick={() => handleAITranslate('journey', expForm, setExpForm)} disabled={isTranslating === 'journey'} className="rounded-2xl gap-3 h-14 px-6 text-[10px] font-black uppercase tracking-widest border-primary/30 hover:bg-primary/10 text-primary">
                       {isTranslating === 'journey' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
                       AI Translate
                     </Button>
@@ -691,56 +703,56 @@ function AdminContent() {
                       addExperience({ ...expForm, id: Date.now().toString() } as any);
                       setExpForm({ year: '', company: '', titleId: '', titleEn: '', descriptionId: '', descriptionEn: '' });
                       toast({ title: "Timeline Pushed", description: "Experience record updated." });
-                    }} className="space-y-8">
+                    }} className="space-y-10">
                        <div className="grid md:grid-cols-2 gap-8">
-                          <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Time Period</label>
-                             <Input required value={expForm.year} onChange={e => setExpForm({...expForm, year: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Time Period</label>
+                             <Input required value={expForm.year} onChange={e => setExpForm({...expForm, year: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                           </div>
-                          <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Entity</label>
-                             <Input required value={expForm.company} onChange={e => setExpForm({...expForm, company: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Entity / Organization</label>
+                             <Input required value={expForm.company} onChange={e => setExpForm({...expForm, company: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                           </div>
                        </div>
                        <div className="grid md:grid-cols-2 gap-8">
-                          <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (ID)</label>
-                             <Input required value={expForm.titleId} onChange={e => setExpForm({...expForm, titleId: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Title (ID)</label>
+                             <Input required value={expForm.titleId} onChange={e => setExpForm({...expForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                           </div>
-                          <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (EN)</label>
-                             <Input value={expForm.titleEn} onChange={e => setExpForm({...expForm, titleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50" />
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Title (EN)</label>
+                             <Input value={expForm.titleEn} onChange={e => setExpForm({...expForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-background/40 border-border/30" />
                           </div>
                        </div>
                        <div className="grid md:grid-cols-2 gap-8">
-                          <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Narrative (ID)</label>
-                             <Textarea required value={expForm.descriptionId} onChange={e => setExpForm({...expForm, descriptionId: e.target.value})} className="h-32 rounded-3xl bg-background/50" />
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Narrative (ID)</label>
+                             <Textarea required value={expForm.descriptionId} onChange={e => setExpForm({...expForm, descriptionId: e.target.value})} className="h-36 rounded-3xl bg-background/40 border-border/30" />
                           </div>
-                          <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Narrative (EN)</label>
-                             <Textarea value={expForm.descriptionEn} onChange={e => setExpForm({...expForm, descriptionEn: e.target.value})} className="h-32 rounded-3xl bg-background/50" />
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Narrative (EN)</label>
+                             <Textarea value={expForm.descriptionEn} onChange={e => setExpForm({...expForm, descriptionEn: e.target.value})} className="h-36 rounded-3xl bg-background/40 border-border/30" />
                           </div>
                        </div>
-                       <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20">Finalize Milestone</Button>
+                       <Button type="submit" className="w-full h-20 rounded-[2rem] text-[12px] font-black uppercase tracking-[0.4em] bg-primary text-primary-foreground shadow-2xl shadow-primary/20">Finalize Milestone</Button>
                     </form>
                   </CardContent>
                 </Card>
              </div>
              <div className="xl:col-span-4 space-y-8">
-               <h3 className="font-black text-[10px] uppercase tracking-[0.3em] px-4 flex items-center gap-3"><History className="h-4 w-4" /> Career Progression ({experiences.length})</h3>
+               <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 flex items-center gap-4 text-primary"><History className="h-4 w-4" /> Progression Hub ({experiences.length})</h3>
               <div className="grid gap-4">
                 {experiences.map(exp => (
-                  <Card key={exp.id} className="p-4 flex gap-5 items-center group bg-card/50 backdrop-blur-md border-none hover:bg-muted/50 transition-all rounded-[1.5rem] shadow-xl">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <Card key={exp.id} className="p-5 flex gap-5 items-center group bg-card/40 backdrop-blur-md border-border/20 hover:border-primary/50 transition-all rounded-[1.5rem] shadow-xl">
+                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
                       <Calendar className="h-6 w-6 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-black truncate text-sm tracking-tight">{exp.titleId}</h4>
-                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{exp.year}</p>
+                      <h4 className="font-black truncate text-sm tracking-tight text-foreground">{exp.titleId}</h4>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-1">{exp.year}</p>
                     </div>
                     {isSuper && (
-                      <Button variant="ghost" size="icon" onClick={() => deleteExperience(exp.id)} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100">
+                      <Button variant="ghost" size="icon" onClick={() => deleteExperience(exp.id)} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100 transition-all">
                         <Trash2 className="h-5 w-5" />
                       </Button>
                     )}
@@ -750,31 +762,35 @@ function AdminContent() {
             </div>
           </TabsContent>
 
-          <TabsContent value="system" className="max-w-4xl mx-auto space-y-12 animate-in fade-in">
-             <Card className="rounded-[3rem] shadow-2xl border-none bg-card/50 backdrop-blur-xl overflow-hidden">
-              <CardHeader className="p-10 border-b">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
-                    <Settings className="text-primary h-6 w-6" />
+          <TabsContent value="system" className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
+             <Card className="rounded-[2.5rem] shadow-2xl border-border/30 bg-card/30 backdrop-blur-2xl overflow-hidden">
+              <CardHeader className="p-10 border-b border-border/20 bg-muted/10">
+                <div className="flex items-center gap-6">
+                  <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20">
+                    <Settings className="text-primary h-8 w-8" />
                   </div>
-                  <div>
-                    <CardTitle className="text-2xl font-black font-headline tracking-tighter uppercase">Enterprise Maintenance</CardTitle>
-                    <CardDescription className="text-[10px] uppercase font-bold tracking-widest">Manage Global Data Persistence & Recovery</CardDescription>
+                  <div className="space-y-1">
+                    <CardTitle className="text-3xl font-black font-headline tracking-tighter uppercase text-foreground">Enterprise Maintenance</CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em] text-muted-foreground/80">Manage Global Data Persistence & Recovery</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="p-10 space-y-12">
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2">Data Operations</h4>
-                    <div className="grid grid-cols-2 gap-4">
-                      <Button variant="outline" onClick={backupData} className="h-32 flex-col gap-4 rounded-[2.5rem] border-primary/20 hover:bg-primary/5 transition-all">
-                        <Download className="h-7 w-7 text-primary" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">Export JSON</span>
+                <div className="grid md:grid-cols-2 gap-12">
+                  <div className="space-y-6">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary px-2">Data Operations</h4>
+                    <div className="grid grid-cols-2 gap-6">
+                      <Button variant="outline" onClick={backupData} className="h-40 flex-col gap-5 rounded-[2.5rem] border-primary/20 hover:bg-primary/5 transition-all bg-background/20 shadow-xl group">
+                        <div className="p-4 bg-primary/10 rounded-2xl group-hover:scale-110 transition-transform">
+                          <Download className="h-8 w-8 text-primary" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Export JSON</span>
                       </Button>
-                      <Button variant="outline" onClick={() => { if(isSuper) fileInputRef.current?.click(); else toast({variant:"destructive", title:"Security Error", description:"Super Admin required."}) }} className="h-32 flex-col gap-4 rounded-[2.5rem] border-accent/20 hover:bg-accent/5 transition-all">
-                        <Upload className="h-7 w-7 text-accent" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">Restore State</span>
+                      <Button variant="outline" onClick={() => { if(isSuper) fileInputRef.current?.click(); else toast({variant:"destructive", title:"Security Error", description:"Super Admin required."}) }} className="h-40 flex-col gap-5 rounded-[2.5rem] border-accent/20 hover:bg-accent/5 transition-all bg-background/20 shadow-xl group">
+                        <div className="p-4 bg-accent/10 rounded-2xl group-hover:scale-110 transition-transform">
+                          <Upload className="h-8 w-8 text-accent" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">Restore State</span>
                         <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (!file) return;
@@ -788,19 +804,22 @@ function AdminContent() {
                       </Button>
                     </div>
                   </div>
-                  <div className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2">Security Audit</h4>
-                    <div className="p-8 bg-amber-500/5 border border-amber-500/20 rounded-[2.5rem] space-y-6">
-                      <div className="flex items-center gap-4 text-amber-600">
-                        <ShieldAlert className="h-6 w-6" />
-                        <h4 className="text-[10px] font-black uppercase tracking-widest">Active Access</h4>
+                  <div className="space-y-6">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-2">Security Audit</h4>
+                    <div className="p-10 bg-amber-500/5 border border-amber-500/20 rounded-[2.5rem] space-y-8 relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-125 transition-transform duration-700">
+                        <ShieldAlert className="h-20 w-20 text-amber-600" />
                       </div>
-                      <p className="text-[11px] leading-relaxed text-amber-700/80 font-bold uppercase tracking-wide">
-                        Atomic operations are restricted to <strong className="text-amber-800">Super Admin</strong> role to prevent data loss.
+                      <div className="flex items-center gap-4 text-amber-600 relative z-10">
+                        <ShieldAlert className="h-6 w-6" />
+                        <h4 className="text-[11px] font-black uppercase tracking-[0.2em]">Active Access Profile</h4>
+                      </div>
+                      <p className="text-[12px] leading-relaxed text-amber-700/80 font-bold uppercase tracking-wide relative z-10">
+                        Atomic write operations are restricted to <strong className="text-amber-800 underline decoration-amber-500/30">Super Admin</strong> role to prevent global node corruption or accidental data loss.
                       </p>
-                      <div className="flex items-center justify-between pt-4 border-t border-amber-500/10">
-                        <span className="text-[8px] font-black uppercase tracking-widest text-amber-600">Status</span>
-                        <Badge className="bg-amber-600 text-white font-black text-[9px] px-3">{userRole}</Badge>
+                      <div className="flex items-center justify-between pt-6 border-t border-amber-500/10 relative z-10">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600/70">Role Status</span>
+                        <Badge className="bg-amber-600/20 text-amber-600 border-amber-600/30 font-black text-[10px] px-4 py-1.5 rounded-full">{userRole}</Badge>
                       </div>
                     </div>
                   </div>
