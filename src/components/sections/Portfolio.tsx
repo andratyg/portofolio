@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -6,8 +7,7 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import { Search, Filter, ExternalLink, ChevronLeft, ChevronRight, Award, Layers, Target, CheckCircle } from 'lucide-react';
+import { Search, ExternalLink, Award } from 'lucide-react';
 import Image from 'next/image';
 import { useProjectStore } from '../ProjectStore';
 import { Project } from '@/lib/types';
@@ -18,7 +18,6 @@ export const Portfolio = () => {
   const [filter, setFilter] = useState<'all' | 'web' | 'ui' | 'backend'>('all');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1000);
@@ -86,116 +85,58 @@ export const Portfolio = () => {
             Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)
           ) : (
             filteredProjects.map((project) => (
-              <Dialog key={project.id}>
-                <DialogTrigger asChild>
-                  <Card className="overflow-hidden group cursor-pointer hover:shadow-xl transition-all duration-300 border-none bg-card/50 backdrop-blur-sm shadow-md">
-                    <div className="relative aspect-video overflow-hidden">
-                      <Image 
-                        src={project.imageUrl} 
-                        alt={project.title} 
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute top-3 left-3 flex gap-2">
-                        <Badge variant="secondary" className="bg-background/80 backdrop-blur-md uppercase text-[10px] tracking-widest">{project.type}</Badge>
-                      </div>
+              <a 
+                key={project.id} 
+                href={project.demoUrl || '#'} 
+                target={project.demoUrl ? "_blank" : "_self"} 
+                rel="noopener noreferrer"
+                className="block group"
+              >
+                <Card className="overflow-hidden h-full hover:shadow-xl transition-all duration-300 border-none bg-card/50 backdrop-blur-sm shadow-md flex flex-col">
+                  <div className="relative aspect-video overflow-hidden">
+                    <Image 
+                      src={project.imageUrl} 
+                      alt={project.title} 
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      <Badge variant="secondary" className="bg-background/80 backdrop-blur-md uppercase text-[10px] tracking-widest">{project.type}</Badge>
                     </div>
-                    <CardHeader>
-                      <CardTitle className="group-hover:text-primary transition-colors">{project.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                        {project.shortDescription}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {project.technologies.slice(0, 3).map((tech) => (
-                          <Badge key={tech} variant="outline" className="text-[10px]">{tech}</Badge>
-                        ))}
-                        {project.technologies.length > 3 && (
-                          <Badge variant="outline" className="text-[10px]">+{project.technologies.length - 3}</Badge>
-                        )}
-                      </div>
-                    </CardContent>
-                    <CardFooter className="pt-0 flex justify-between items-center text-xs text-muted-foreground font-medium">
-                      <div className="flex items-center gap-1">
-                        <Award className="h-3 w-3 text-accent" />
-                        {t.certificates}: {project.certificates?.length || 0}
-                      </div>
-                      <span className="group-hover:translate-x-1 transition-transform">{t.details} →</span>
-                    </CardFooter>
-                  </Card>
-                </DialogTrigger>
-                
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <div className="flex items-center gap-4 mb-4">
-                       <Badge className="rounded-full px-4">{project.type}</Badge>
-                       <DialogTitle className="text-3xl font-bold font-headline">{project.title}</DialogTitle>
-                    </div>
-                  </DialogHeader>
-
-                  <div className="grid md:grid-cols-2 gap-8 mt-4">
-                    <div className="space-y-6">
-                      <div className="relative aspect-video rounded-2xl overflow-hidden border shadow-inner">
-                        <Image src={project.imageUrl} alt={project.title} fill className="object-cover" />
-                      </div>
-                      
-                      <div className="flex gap-4">
-                        {project.demoUrl && (
-                          <Button className="flex-1 gap-2 rounded-full" asChild>
-                            <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
-                              <ExternalLink className="h-4 w-4" />
-                              {t.liveDemo}
-                            </a>
-                          </Button>
-                        )}
-                        <Button variant="outline" className="flex-1 rounded-full gap-2">
-                           <Award className="h-4 w-4" />
-                           {t.certificates}
-                        </Button>
-                      </div>
-
-                      <div className="space-y-4">
-                        <h4 className="text-lg font-bold flex items-center gap-2">
-                          <Layers className="h-5 w-5 text-primary" />
-                          {t.tech}
-                        </h4>
-                        <div className="flex flex-wrap gap-2">
-                          {project.technologies.map(tech => (
-                            <Badge key={tech} variant="secondary" className="px-3 py-1">{tech}</Badge>
-                          ))}
+                    {project.demoUrl && (
+                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="bg-white text-black px-4 py-2 rounded-full font-bold flex items-center gap-2">
+                          <ExternalLink className="h-4 w-4" />
+                          {t.liveDemo}
                         </div>
                       </div>
-                    </div>
-
-                    <div className="space-y-8">
-                      <div>
-                        <h4 className="text-lg font-bold flex items-center gap-2 mb-3">
-                          <Target className="h-5 w-5 text-destructive" />
-                          {t.problem}
-                        </h4>
-                        <p className="text-muted-foreground">{project.problemSolved}</p>
-                      </div>
-
-                      <div>
-                        <h4 className="text-lg font-bold flex items-center gap-2 mb-3">
-                          <Search className="h-5 w-5 text-accent" />
-                          {t.process}
-                        </h4>
-                        <p className="text-muted-foreground">{project.process}</p>
-                      </div>
-
-                      <div className="p-6 bg-primary/5 rounded-2xl border border-primary/10">
-                        <h4 className="text-lg font-bold flex items-center gap-2 mb-3 text-primary">
-                          <CheckCircle className="h-5 w-5" />
-                          {t.resultsImpact}
-                        </h4>
-                        <p className="text-muted-foreground font-medium italic">"{project.results}"</p>
-                      </div>
-                    </div>
+                    )}
                   </div>
-                </DialogContent>
-              </Dialog>
+                  <CardHeader>
+                    <CardTitle className="group-hover:text-primary transition-colors">{project.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                      {project.shortDescription}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {project.technologies.slice(0, 3).map((tech) => (
+                        <Badge key={tech} variant="outline" className="text-[10px]">{tech}</Badge>
+                      ))}
+                      {project.technologies.length > 3 && (
+                        <Badge variant="outline" className="text-[10px]">+{project.technologies.length - 3}</Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                  <CardFooter className="pt-0 flex justify-between items-center text-xs text-muted-foreground font-medium">
+                    <div className="flex items-center gap-1">
+                      <Award className="h-3 w-3 text-accent" />
+                      {t.certificates}: {project.certificates?.length || 0}
+                    </div>
+                    <span className="group-hover:translate-x-1 transition-transform">{project.demoUrl ? t.liveDemo : t.details} →</span>
+                  </CardFooter>
+                </Card>
+              </a>
             ))
           )}
         </div>

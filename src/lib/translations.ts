@@ -1,3 +1,4 @@
+
 export type Language = 'en' | 'id';
 
 export const translations = {
@@ -43,7 +44,9 @@ export const translations = {
     loading: 'Loading...',
     details: 'View Details',
     certificates: 'Certificates',
-    resultsImpact: 'Impact & Results'
+    resultsImpact: 'Impact & Results',
+    aboutMeTitle: 'About Me',
+    aboutMeText: 'I am a passionate Full-Stack Developer dedicated to building high-quality web applications. With a strong foundation in modern technologies and a keen eye for design, I strive to create digital solutions that are not only functional but also provide an exceptional user experience. My approach combines technical expertise with creative problem-solving to deliver projects that make a real impact.'
   },
   id: {
     navHome: 'Beranda',
@@ -87,6 +90,8 @@ export const translations = {
     loading: 'Memuat...',
     details: 'Lihat Detail',
     certificates: 'Sertifikat',
-    resultsImpact: 'Dampak & Hasil'
+    resultsImpact: 'Dampak & Hasil',
+    aboutMeTitle: 'Tentang Saya',
+    aboutMeText: 'Saya adalah Pengembang Full-Stack yang bersemangat dalam membangun aplikasi web berkualitas tinggi. Dengan dasar yang kuat dalam teknologi modern dan perhatian detail pada desain, saya berusaha menciptakan solusi digital yang tidak hanya fungsional tetapi juga memberikan pengalaman pengguna yang luar biasa. Pendekatan saya menggabungkan keahlian teknis dengan penyelesaian masalah yang kreatif untuk menghasilkan proyek yang memberikan dampak nyata.'
   }
 };

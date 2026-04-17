@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState } from 'react';
@@ -16,8 +17,8 @@ export default function AdminLogin() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Conceptional Placeholder Authentication
-    if (password === 'admin123') {
+    // Updated access code to 26052010
+    if (password === '26052010') {
       sessionStorage.setItem('karyapro-auth', 'true');
       router.push('/admin');
     } else {

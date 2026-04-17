@@ -1,7 +1,9 @@
+
 "use client"
 
 import { Navbar } from '@/components/Navbar';
 import { Hero } from '@/components/sections/Hero';
+import { About } from '@/components/sections/About';
 import { Stats } from '@/components/sections/Stats';
 import { Portfolio } from '@/components/sections/Portfolio';
 import { Timeline } from '@/components/sections/Timeline';
@@ -18,6 +20,7 @@ export default function Home() {
       <main className="min-h-screen selection:bg-primary selection:text-primary-foreground">
         <Navbar />
         <Hero />
+        <About />
         <Stats />
         <Portfolio />
         <Timeline />

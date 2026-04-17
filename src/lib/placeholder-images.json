@@ -1,3 +1,10 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "profile-about",
+      "description": "Professional profile picture for about section",
+      "imageUrl": "https://picsum.photos/seed/karyapro-profile/600/800",
+      "imageHint": "professional man"
+    }
+  ]
 }
