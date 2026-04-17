@@ -1,17 +1,17 @@
 /**
- * KaryaPro Production-Grade Security Rules
+ * KaryaPro Enterprise Security Rules (v2.5.0)
  * 
  * Access Model:
- * - Public: Read-only access to all content.
- * - Editor: Create and Update access (for projects, certs, etc.)
- * - Super Admin: Full CRUD access including Delete and User Management.
+ * - Public: Read-only access to all content (projects, certs, etc.)
+ * - Editor: Create and Update access.
+ * - Super Admin: Full CRUD access including Delete and Global State changes.
  */
 
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // --- Helper Functions ---
+    // --- Core Helper Functions ---
     function isSignedIn() {
       return request.auth != null;
     }
@@ -28,23 +28,35 @@ service cloud.firestore {
       return isAdmin() && getAdminData().role == 'super';
     }
 
+    // --- Content Validation Helpers ---
+    function isValidProject() {
+      return request.resource.data.titleId is string && 
+             request.resource.data.titleId.size() > 0;
+    }
+
     // --- Rules ---
 
+    // Administrative access configuration
     match /admins/{adminId} {
-      allow get: if isSignedIn();
+      allow get: if isSignedIn() && request.auth.uid == adminId;
       allow list, create, update, delete: if isSuperAdmin();
     }
 
+    // Public Profile Configuration
     match /portfolioOwner/profile {
       allow get, list: if true;
       allow create, update: if isAdmin();
       allow delete: if isSuperAdmin();
     }
 
+    // Global Content Collections (Projects, Certificates, Testimonials, Journey)
     match /{collection}/{docId} {
-      // Logic for all content collections (projects, certificates, etc.)
       allow get, list: if true;
-      allow create, update: if isAdmin();
+      
+      // Standard writes restricted to authorized admins
+      allow create, update: if isAdmin() && (collection != 'admins');
+      
+      // Destructive operations restricted to Super Admins
       allow delete: if isSuperAdmin();
     }
   }

@@ -6,6 +6,13 @@ export interface Project {
   shortDescriptionEn: string;
   fullDescriptionId: string;
   fullDescriptionEn: string;
+  problemId?: string;
+  problemEn?: string;
+  solutionId?: string;
+  solutionEn?: string;
+  resultId?: string;
+  resultEn?: string;
+  impactStats?: string; // e.g. "99.9% Uptime", "10k+ Users"
   type: 'web' | 'ui' | 'backend';
   technologies: string[];
   imageUrl: string;

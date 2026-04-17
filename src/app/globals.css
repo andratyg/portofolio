@@ -99,6 +99,21 @@
   scrollbar-width: none;
 }
 
+/* Skeleton Shimmer Effect */
+.skeleton-shimmer {
+  @apply relative overflow-hidden bg-muted/50;
+}
+.skeleton-shimmer::after {
+  content: '';
+  @apply absolute inset-0 -translate-x-full;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
 /* Optimize Blur for Mobile */
 @media (max-width: 768px) {
   .blur-aura {
@@ -145,7 +160,7 @@
   body {
     background: white !important;
     color: black !important;
-    font-size: 12pt;
+    font-size: 11pt;
   }
   .container {
     max-width: 100% !important;
@@ -170,9 +185,13 @@
   h1, h2, h3 {
     color: black !important;
     page-break-after: avoid;
+    letter-spacing: normal !important;
   }
   img {
-    max-width: 200px !important;
+    max-width: 150px !important;
     height: auto !important;
+  }
+  .print-only {
+    display: block !important;
   }
 }

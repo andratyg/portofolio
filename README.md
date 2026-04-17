@@ -1,48 +1,40 @@
-# KaryaPro | Professional Portfolio "OP" Edition
+# KaryaPro | Professional Portfolio "OP" Enterprise Edition
 
-KaryaPro adalah website portofolio profesional kelas atas yang dibangun dengan teknologi modern dan fitur kecerdasan buatan (AI) standar industri. Website ini dirancang untuk memberikan kesan "Premium & High-Authority" bagi pengembang profesional.
+KaryaPro adalah platform branding digital kelas dunia yang dirancang untuk pengembang profesional. Versi ini (v2.5.0) mengusung standar arsitektur perusahaan dengan fokus pada narasi teknis (Case Studies), ketahanan sistem, dan keamanan tingkat tinggi.
 
-## 🎨 Gaya Visual & Estetika ("OP" Style)
-Website ini mengusung estetika **Modern-Cyber-Premium** dengan detail:
-- **Typography Raksasa:** Menggunakan font *Space Grotesk* dengan ukuran ekstrem (hingga 9xl) pada bagian portofolio untuk kesan berani dan percaya diri.
-- **Visuals Premium:** Efek **Aura Background**, **Card Glow**, dan **Glassmorphism 2.0** yang memberikan kedalaman visual mewah.
-- **Smart Navigation:** Navbar dan Admin Tabs dengan sistem *auto-hide* berbasis arah scroll untuk memberikan ruang pandang maksimal bagi pengunjung.
-- **Multi-Theme (10+ Themes):** Mendukung pergantian tema instan, termasuk tema khusus **Ramadan** (Emerald/Gold) dan **Lunar/Imlek** (Red/Gold).
+## 🏛️ Arsitektur & Teknologi (Tech Stack)
+- **Framework:** Next.js 15 (App Router) - Optimasi performa dan SEO.
+- **State Management:** Layered Context-Store - Pemisahan logika bisnis dari UI.
+- **Backend-as-a-Service:** Firebase (Firestore, Auth, App Hosting).
+- **Intelligence:** Google Gemini 2.0 via Genkit - Auto-localization & content generation.
+- **UI System:** ShadCN UI + Tailwind CSS + Lucide Icons.
 
-## 🚀 Fitur Utama
-- **Real-time Database:** Menggunakan Firebase Firestore untuk sinkronisasi data instan di seluruh dunia tanpa perlu refresh halaman.
-- **AI-Powered (Genkit AI):** 
-  - **Smart Auto-Translate:** Fitur terjemahan otomatis (ID ↔ EN) di setiap formulir admin menggunakan Google Gemini.
-  - **AI Suggestions:** Menghasilkan saran deskripsi kreatif dan profesional untuk proyek dan sertifikat secara otomatis.
-- **Export to PDF (CV Mode):** Fitur satu klik untuk mengubah portofolio menjadi format CV profesional yang bersih dan siap dikirim ke HR/Klien.
-- **Multi-Language:** Dukungan penuh untuk Bahasa Indonesia dan Inggris (Bilingual).
+## 💎 Fitur Unggulan Enterprise
+- **Case Study Narrative:** Setiap proyek bukan sekadar gambar, melainkan dokumentasi masalah, solusi, dan dampak nyata.
+- **Recruiter Experience:** 
+  - **Recruiter Quick Mode:** Akses cepat ke CV/PDF tanpa animasi berat.
+  - **Verified Impact Stats:** Menampilkan metrik nyata (performa, user base).
+- **Advanced Admin Dashboard:**
+  - **Smart AI Localization:** Terjemahan konten ID ↔ EN otomatis dengan satu klik.
+  - **Global System Maintenance:** Fitur Ekspor/Impor data (JSON) untuk mitigasi bencana data.
+  - **Role-Based Access Control (RBAC):** Perbedaan hak akses antara `super` admin (Full CRUD) dan `editor` (Read/Write).
+- **Ketahanan Sistem (Resilience):**
+  - **Skeleton Shimmer Loading:** Pengalaman pemuatan yang halus dan modern.
+  - **Network-Aware UI:** Indikator status koneksi internet dan handling offline.
+  - **Security Rules Berstandar:** Aturan Firestore yang ketat (DBAC) mencegah akses ilegal.
 
-## 💼 Fitur Karir & Profesional
-- **SEO Ready:** Markup Schema.org (Person & Portfolio) dan Meta OG Tags lengkap untuk meningkatkan discoverability di Google.
-- **Accessibility (A11y):** Mendukung navigasi keyboard, kontras warna tinggi, dan ARIA attributes lengkap untuk pembaca layar.
-- **Performance Optimized:** Penggunaan format gambar WebP, lazy loading, dan optimasi beban visual pada perangkat mobile untuk kecepatan maksimal.
-- **Analytics & Tracking:** Terintegrasi untuk memantau trafik pengunjung dan interaksi pada setiap proyek.
+## 🎨 Estetika Visual ("OP" Style)
+- **Giant Bold Typography:** Font *Space Grotesk* dengan ukuran ekstrem untuk kesan confident.
+- **Glassmorphism 2.0:** Detail UI transparan dengan blur mendalam (Aura & Glow).
+- **Seasonal Themes:** Mendukung tema Ramadan, Lunar (Imlek), Cyber, dan 7 tema lainnya secara instan.
 
-## 🔐 Akses Admin & Keamanan
-Halaman Admin dapat diakses melalui `/admin/login` dan diamankan dengan Firebase Authentication.
+## 🔐 Keamanan & Deployment
+Akses admin dibatasi secara ketat melalui Firebase Authentication. 
+**PENTING:** Untuk akses Admin, email harus terdaftar di koleksi `admins` Firestore dengan field `role: "super"`.
 
-### 🛠 Langkah Setup Akun Admin (Wajib):
-Agar email Anda bisa mengelola konten, silakan ikuti langkah ini di Firebase Console:
-1. **Authentication:** Tambahkan user baru dengan email & password berikut:
-   - `indraandra545@gmail.com` (Password: `indra2605`)
-   - `naraandratyaga@smkwikrama.sc.id` (Password: `indra2605`)
-2. **Salin UID:** Setelah user dibuat, salin **User UID** milik mereka.
-3. **Firestore Database:** 
-   - Buat koleksi baru bernama `admins`.
-   - Tambahkan dokumen baru. Gunakan **User UID** tersebut sebagai **Document ID**. 
-   - Anda bisa membiarkan isi dokumennya kosong `{}`.
-4. **Selesai:** Sekarang akun tersebut memiliki izin penuh untuk mengelola konten via Cloud.
-
-## 🛠 Tech Stack
-- **Frontend:** Next.js 15 (App Router), React 19, TypeScript.
-- **Styling:** Tailwind CSS, ShadCN UI, Lucide Icons.
-- **Backend:** Firebase Firestore (Database) & Firebase Authentication (Security).
-- **GenAI:** Google Gemini via Genkit AI.
+## 🛠️ Pengembangan & Debugging
+- **Structured Logging:** Log sistem tercatat untuk mempermudah tracking error.
+- **Optimasi Mobile:** Filter visual dan blur aura disesuaikan secara otomatis pada perangkat mobile untuk menjaga FPS.
 
 ---
-*Dibuat dengan dedikasi untuk profesionalitas tingkat tinggi dan personal branding yang tak terlupakan.*
+*KaryaPro - Elevating Digital Identity with Technical Integrity.*
