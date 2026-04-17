@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'light' | 'dark' | 'emerald' | 'sunset' | 'royal' | 'cyber' | 'slate' | 'amber' | 'rose' | 'forest';
+export type Theme = 'light' | 'dark' | 'emerald' | 'sunset' | 'royal' | 'cyber' | 'slate' | 'amber' | 'rose' | 'forest';
 
 interface ThemeContextType {
   theme: Theme;
@@ -22,6 +22,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (savedTheme && themes.includes(savedTheme)) {
       setThemeState(savedTheme);
       document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
     }
   }, []);
 
@@ -33,7 +35,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, themes }}>
-      {children}
+      <div className="theme-transition min-h-screen">
+        {children}
+      </div>
     </ThemeContext.Provider>
   );
 };

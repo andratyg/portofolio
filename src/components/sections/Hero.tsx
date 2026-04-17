@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { Button } from '../ui/button';
-import { ChevronRight, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { initialProjects } from '@/lib/data';
 import Image from 'next/image';
@@ -19,10 +19,10 @@ export const Hero = () => {
   const featured = initialProjects.filter(p => p.featured);
 
   return (
-    <section className="relative min-h-[90vh] flex flex-col justify-center overflow-hidden py-20">
-      <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center">
+    <section className="relative min-h-[90vh] flex flex-col justify-center overflow-hidden py-20 bg-background transition-colors duration-300">
+      <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center relative z-10">
         <div className={`transition-all duration-1000 transform ${isVisible ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}>
-          <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6">
+          <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6 border border-primary/20">
             ✨ Available for New Projects
           </div>
           <h1 className="text-5xl md:text-7xl font-bold font-headline leading-tight mb-6">
@@ -33,13 +33,13 @@ export const Hero = () => {
           </p>
           <div className="flex flex-wrap gap-4">
             <Link href="#portfolio">
-              <Button size="lg" className="h-12 px-8 rounded-full gap-2 group">
+              <Button size="lg" className="h-12 px-8 rounded-full gap-2 group shadow-lg shadow-primary/20">
                 {t.viewProjects}
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
             <Link href="#contact">
-              <Button variant="outline" size="lg" className="h-12 px-8 rounded-full">
+              <Button variant="outline" size="lg" className="h-12 px-8 rounded-full border-primary/30 hover:bg-primary/5">
                 {t.navContact}
               </Button>
             </Link>
@@ -49,7 +49,7 @@ export const Hero = () => {
         <div className={`grid gap-4 transition-all duration-1000 delay-300 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}>
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-            <div className="relative bg-card rounded-2xl overflow-hidden shadow-2xl border aspect-[16/9]">
+            <div className="relative bg-card rounded-2xl overflow-hidden shadow-2xl border border-border aspect-[16/9]">
               <Image 
                 src={featured[0].imageUrl} 
                 alt={featured[0].title} 
@@ -67,7 +67,7 @@ export const Hero = () => {
           
           <div className="grid grid-cols-2 gap-4">
             {featured.slice(1, 3).map((proj) => (
-              <div key={proj.id} className="relative aspect-[4/3] rounded-2xl overflow-hidden border shadow-lg group">
+              <div key={proj.id} className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border shadow-lg group">
                 <Image 
                   src={proj.imageUrl} 
                   alt={proj.title} 
@@ -85,8 +85,8 @@ export const Hero = () => {
       </div>
 
       {/* Decorative background elements */}
-      <div className="absolute -z-10 top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute -z-10 bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse delay-700"></div>
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] animate-pulse"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-[120px] animate-pulse delay-700"></div>
     </section>
   );
 };
