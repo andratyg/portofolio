@@ -109,7 +109,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
         </div>
       </DialogTrigger>
       
-      <DialogContent className="sm:max-w-[900px] h-[95vh] rounded-[3rem] overflow-hidden border-none p-0 shadow-2xl flex flex-col">
+      <DialogContent className="sm:max-w-[700px] h-[85vh] rounded-[3rem] overflow-hidden border-none p-0 shadow-2xl flex flex-col">
         <div className="bg-card border-b p-8 shrink-0 flex items-center justify-between gap-6">
            <div className="space-y-1">
              <div className="flex items-center gap-2">

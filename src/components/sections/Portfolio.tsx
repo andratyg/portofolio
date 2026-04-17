@@ -212,7 +212,7 @@ const ProjectCard = ({ project, index, isVisible, handleShare }: { project: Proj
           </div>
         </DialogTrigger>
 
-        <DialogContent className="sm:max-w-[1000px] h-[90vh] p-0 rounded-[3rem] overflow-hidden border-none shadow-2xl bg-card flex flex-col">
+        <DialogContent className="sm:max-w-[800px] h-[85vh] p-0 rounded-[3rem] overflow-hidden border-none shadow-2xl bg-card flex flex-col">
           <div className="flex-1 flex flex-col h-full bg-background overflow-hidden">
             <div className="relative h-[45%] shrink-0">
                <Image src={safeImageUrl} alt={title || "Project"} fill className="object-cover" />
@@ -235,7 +235,7 @@ const ProjectCard = ({ project, index, isVisible, handleShare }: { project: Proj
                       <Badge className="bg-primary text-primary-foreground font-black px-4 py-1.5 rounded-full shadow-xl">{project.type}</Badge>
                       <Badge className="bg-accent/20 text-accent border-accent/30 font-black px-4 py-1.5 rounded-full backdrop-blur-xl">{project.impactStats || 'Verified Deployment'}</Badge>
                     </div>
-                    <DialogTitle className="text-4xl md:text-6xl font-black font-headline text-white tracking-tighter leading-tight drop-shadow-2xl">
+                    <DialogTitle className="text-4xl md:text-5xl font-black font-headline text-white tracking-tighter leading-tight drop-shadow-2xl">
                       {title}
                     </DialogTitle>
                   </div>
