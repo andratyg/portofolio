@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useEffect, useState, useRef } from 'react';
@@ -535,7 +534,7 @@ function AdminContent() {
                       {isAIThinking === 'cert' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                       AI Suggest
                     </Button>
-                    <Button type="button" variant="outline" onClick={() => handleAITranslate('certificate', certForm, setCertForm)} disabled={isTranslating === 'certificate'} className="rounded-2xl gap-3 h-14 px-6 text-[10px] font-black uppercase tracking-widest border-accent/30 hover:bg-accent/10 text-accent">
+                    <Button type="button" variant="outline" onClick={() => handleAITranslate('certificate', certForm, setProjectForm)} disabled={isTranslating === 'certificate'} className="rounded-2xl gap-3 h-14 px-6 text-[10px] font-black uppercase tracking-widest border-accent/30 hover:bg-accent/10 text-accent">
                       {isTranslating === 'certificate' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
                       AI Translate
                     </Button>
