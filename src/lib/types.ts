@@ -65,4 +65,9 @@ export interface ProfileData {
   heroTitleEn: string;
   heroSubtitleId: string;
   heroSubtitleEn: string;
+  whatsapp?: string;
+  linkedin?: string;
+  instagram?: string;
+  github?: string;
+  tiktok?: string;
 }

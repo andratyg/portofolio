@@ -41,7 +41,12 @@ const defaultProfile: ProfileData = {
   heroTitleId: 'Mengubah Ide Menjadi Realitas',
   heroTitleEn: 'Transforming Ideas Into Reality',
   heroSubtitleId: 'Pengembang Full-Stack Profesional menciptakan pengalaman web modern.',
-  heroSubtitleEn: 'Professional Full-Stack Developer creating modern web experiences.'
+  heroSubtitleEn: 'Professional Full-Stack Developer creating modern web experiences.',
+  whatsapp: '',
+  linkedin: '',
+  instagram: '',
+  github: '',
+  tiktok: ''
 };
 
 const ProjectStoreContext = createContext<ProjectStoreType | undefined>(undefined);

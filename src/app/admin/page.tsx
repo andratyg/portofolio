@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useEffect, useState } from 'react';
@@ -9,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, UserCircle, Languages, Loader2, Image as ImageIcon, Quote, Briefcase, LayoutDashboard, ShieldCheck } from 'lucide-react';
+import { Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, UserCircle, Languages, Loader2, Image as ImageIcon, Quote, Briefcase, LayoutDashboard, ShieldCheck, Github, Instagram, Linkedin, MessageSquare, Video } from 'lucide-react';
 import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-portfolio-description-suggestion';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
 import { translateContent } from '@/ai/flows/translate-content';
@@ -134,46 +135,6 @@ function AdminContent() {
         setCertForm(prev => ({ ...prev, fullDescriptionEn: r.translatedText }));
       }
       toast({ title: "Certificate translated successfully" });
-    } catch (e) {
-      toast({ title: "Translation Error", variant: "destructive" });
-    } finally {
-      setIsTranslating(false);
-    }
-  };
-
-  const handleTranslateTestimonial = async () => {
-    const { roleId, contentId } = testForm;
-    setIsTranslating(true);
-    try {
-      if (roleId) {
-        const r = await translateContent({ text: roleId, targetLang: 'en' });
-        setTestForm(prev => ({ ...prev, roleEn: r.translatedText }));
-      }
-      if (contentId) {
-        const r = await translateContent({ text: contentId, targetLang: 'en' });
-        setTestForm(prev => ({ ...prev, contentEn: r.translatedText }));
-      }
-      toast({ title: "Testimonial translated successfully" });
-    } catch (e) {
-      toast({ title: "Translation Error", variant: "destructive" });
-    } finally {
-      setIsTranslating(false);
-    }
-  };
-
-  const handleTranslateJourney = async () => {
-    const { titleId, descriptionId } = expForm;
-    setIsTranslating(true);
-    try {
-      if (titleId) {
-        const r = await translateContent({ text: titleId, targetLang: 'en' });
-        setExpForm(prev => ({ ...prev, titleEn: r.translatedText }));
-      }
-      if (descriptionId) {
-        const r = await translateContent({ text: descriptionId, targetLang: 'en' });
-        setExpForm(prev => ({ ...prev, descriptionEn: r.translatedText }));
-      }
-      toast({ title: "Journey translated successfully" });
     } catch (e) {
       toast({ title: "Translation Error", variant: "destructive" });
     } finally {
@@ -396,7 +357,6 @@ function AdminContent() {
             </div>
           </TabsContent>
 
-          {/* Similar updates for other tabs but maintaining logic... */}
           <TabsContent value="stats" className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
              <Card className="rounded-[4rem] shadow-2xl border-none overflow-hidden bg-slate-900/40 backdrop-blur-xl">
               <CardHeader className="bg-gradient-to-br from-slate-800/50 to-transparent p-14 border-b border-slate-800">
@@ -427,7 +387,6 @@ function AdminContent() {
             </Card>
           </TabsContent>
 
-          {/* Placeholder for other tabs to keep the file consistent but improved... */}
           <TabsContent value="certificates" className="grid lg:grid-cols-12 gap-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
              <div className="lg:col-span-8 space-y-10">
               <Card className="rounded-[3rem] shadow-2xl border-none overflow-hidden bg-slate-900/40 backdrop-blur-xl">
@@ -516,7 +475,6 @@ function AdminContent() {
              </div>
           </TabsContent>
 
-          {/* Additional tabs like testimonials and profile should follow this premium design... */}
           <TabsContent value="profile" className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
              <Card className="rounded-[4rem] shadow-2xl border-none overflow-hidden bg-slate-900/40 backdrop-blur-xl">
               <CardHeader className="bg-gradient-to-br from-indigo-900/30 to-transparent p-14 border-b border-slate-800">
@@ -574,7 +532,33 @@ function AdminContent() {
                   </div>
                 </div>
 
-                <div className="space-y-4 pt-10">
+                <div className="space-y-10 border-t border-slate-800 pt-12">
+                  <h3 className="font-black uppercase tracking-widest text-sm flex items-center gap-3 text-primary"><Settings className="h-5 w-5" /> Social Connections</h3>
+                  <div className="grid md:grid-cols-2 gap-10">
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2"><MessageSquare className="h-3 w-3" /> WhatsApp (Phone Number)</label>
+                      <Input value={profileData.whatsapp} onChange={e => setProfileData({...profileData, whatsapp: e.target.value})} placeholder="628..." className="h-16 rounded-2xl bg-slate-950/50 border-slate-800" />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2"><Linkedin className="h-3 w-3" /> LinkedIn URL</label>
+                      <Input value={profileData.linkedin} onChange={e => setProfileData({...profileData, linkedin: e.target.value})} placeholder="https://linkedin.com/in/..." className="h-16 rounded-2xl bg-slate-950/50 border-slate-800" />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2"><Instagram className="h-3 w-3" /> Instagram URL</label>
+                      <Input value={profileData.instagram} onChange={e => setProfileData({...profileData, instagram: e.target.value})} placeholder="https://instagram.com/..." className="h-16 rounded-2xl bg-slate-950/50 border-slate-800" />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2"><Github className="h-3 w-3" /> GitHub URL</label>
+                      <Input value={profileData.github} onChange={e => setProfileData({...profileData, github: e.target.value})} placeholder="https://github.com/..." className="h-16 rounded-2xl bg-slate-950/50 border-slate-800" />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2"><Video className="h-3 w-3" /> TikTok URL</label>
+                      <Input value={profileData.tiktok} onChange={e => setProfileData({...profileData, tiktok: e.target.value})} placeholder="https://tiktok.com/@..." className="h-16 rounded-2xl bg-slate-950/50 border-slate-800" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-10 border-t border-slate-800">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Avatar Asset URL</label>
                   <div className="flex gap-8 items-center">
                     <Input value={profileData.profileImageUrl} onChange={e => setProfileData({...profileData, profileImageUrl: e.target.value})} className="h-16 rounded-2xl bg-slate-950/50 border-slate-800 flex-1" />

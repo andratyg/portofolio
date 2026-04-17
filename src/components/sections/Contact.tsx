@@ -1,15 +1,18 @@
+
 "use client"
 
 import React, { useState } from 'react';
 import { useLanguage } from '../LanguageContext';
+import { useProjectStore } from '../ProjectStore';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
-import { Send, MessageSquare, Linkedin, ExternalLink } from 'lucide-react';
+import { Send, MessageSquare, Linkedin, ExternalLink, Github, Instagram, Video } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export const Contact = () => {
   const { t } = useLanguage();
+  const { profile } = useProjectStore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -26,6 +29,54 @@ export const Contact = () => {
     }, 1500);
   };
 
+  const socialLinks = [
+    { 
+      id: 'wa', 
+      label: t.waLink, 
+      value: profile.whatsapp, 
+      url: `https://wa.me/${profile.whatsapp}`, 
+      icon: MessageSquare, 
+      color: 'bg-green-500',
+      active: !!profile.whatsapp
+    },
+    { 
+      id: 'li', 
+      label: t.liLink, 
+      value: profile.linkedin?.replace('https://', ''), 
+      url: profile.linkedin, 
+      icon: Linkedin, 
+      color: 'bg-blue-600',
+      active: !!profile.linkedin
+    },
+    { 
+      id: 'ig', 
+      label: 'Instagram', 
+      value: profile.instagram?.split('/').pop(), 
+      url: profile.instagram, 
+      icon: Instagram, 
+      color: 'bg-pink-600',
+      active: !!profile.instagram
+    },
+    { 
+      id: 'gh', 
+      label: 'GitHub', 
+      value: profile.github?.split('/').pop(), 
+      url: profile.github, 
+      icon: Github, 
+      color: 'bg-slate-800',
+      active: !!profile.github
+    },
+    { 
+      id: 'tt', 
+      label: 'TikTok', 
+      value: profile.tiktok?.split('/').pop(), 
+      url: profile.tiktok, 
+      icon: Video, 
+      color: 'bg-black',
+      active: !!profile.tiktok
+    },
+  ].filter(link => link.active);
+
   return (
     <section id="contact" className="py-24 bg-primary text-primary-foreground overflow-hidden relative">
       {/* Background patterns */}
@@ -40,37 +91,28 @@ export const Contact = () => {
             </p>
 
             <div className="space-y-6">
-              <a 
-                href="https://wa.me/1234567890" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-4 p-4 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors border border-white/10 group"
-              >
-                <div className="p-3 bg-green-500 rounded-xl">
-                  <MessageSquare className="h-6 w-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-bold text-lg">{t.waLink}</p>
-                  <p className="text-sm text-primary-foreground/70">+1 (234) 567-890</p>
-                </div>
-                <ExternalLink className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </a>
-
-              <a 
-                href="https://linkedin.com/in/johndoe" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-4 p-4 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors border border-white/10 group"
-              >
-                <div className="p-3 bg-blue-600 rounded-xl">
-                  <Linkedin className="h-6 w-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-bold text-lg">{t.liLink}</p>
-                  <p className="text-sm text-primary-foreground/70">linkedin.com/in/username</p>
-                </div>
-                <ExternalLink className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </a>
+              {socialLinks.map((link) => (
+                <a 
+                  key={link.id}
+                  href={link.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors border border-white/10 group"
+                >
+                  <div className={`p-3 ${link.color} rounded-xl shadow-lg`}>
+                    <link.icon className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold text-lg">{link.label}</p>
+                    <p className="text-sm text-primary-foreground/70 truncate max-w-[200px]">{link.value}</p>
+                  </div>
+                  <ExternalLink className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              ))}
+              
+              {socialLinks.length === 0 && (
+                <p className="italic text-primary-foreground/50">No social links configured in admin.</p>
+              )}
             </div>
           </div>
 
