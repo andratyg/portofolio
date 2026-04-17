@@ -18,8 +18,6 @@
     --muted-foreground: 215.4 16.3% 46.9%;
     --accent: 192 82% 61%;
     --accent-foreground: 222 47% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
@@ -37,7 +35,25 @@
     --border: 216 34% 20%;
   }
 
-  /* Accent-Only Themes */
+  /* Seasonal Themes (Accent-Only Focus) */
+  [data-theme='ramadan'] {
+    --primary: 142 72% 29%;
+    --accent: 45 93% 47%;
+    --ring: 142 72% 29%;
+  }
+
+  [data-theme='imlek'] {
+    --primary: 0 100% 45%;
+    --accent: 45 93% 47%;
+    --ring: 0 100% 45%;
+  }
+
+  [data-theme='natal'] {
+    --primary: 350 100% 40%;
+    --accent: 142 76% 45%;
+    --ring: 350 100% 40%;
+  }
+
   [data-theme='emerald'] {
     --primary: 142 76% 45%;
     --accent: 142 76% 45%;
@@ -61,21 +77,6 @@
   [data-theme='amber'] {
     --primary: 45 93% 47%;
     --accent: 45 93% 47%;
-  }
-
-  [data-theme='ramadan'] {
-    --primary: 142 72% 29%;
-    --accent: 45 93% 47%;
-  }
-
-  [data-theme='imlek'] {
-    --primary: 0 100% 45%;
-    --accent: 45 93% 47%;
-  }
-
-  [data-theme='natal'] {
-    --primary: 350 100% 40%;
-    --accent: 142 76% 45%;
   }
 }
 
