@@ -47,6 +47,34 @@
     --input: 216 34% 20%;
     --ring: 216 34% 25%;
   }
+
+  [data-theme='ramadan'] {
+    --background: 160 80% 3%;
+    --foreground: 142 20% 95%;
+    --card: 160 80% 5%;
+    --card-foreground: 142 20% 95%;
+    --primary: 142 76% 55%;
+    --primary-foreground: 160 80% 3%;
+    --accent: 45 93% 47%;
+    --accent-foreground: 160 80% 3%;
+    --border: 160 30% 15%;
+    --input: 160 30% 15%;
+    --ring: 142 76% 55%;
+  }
+
+  [data-theme='lunar'] {
+    --background: 0 80% 3%;
+    --foreground: 0 20% 95%;
+    --card: 0 80% 5%;
+    --card-foreground: 0 20% 95%;
+    --primary: 0 72% 51%;
+    --primary-foreground: 0 80% 3%;
+    --accent: 48 100% 50%;
+    --accent-foreground: 0 80% 3%;
+    --border: 0 30% 15%;
+    --input: 0 30% 15%;
+    --ring: 0 72% 51%;
+  }
 }
 
 @layer base {
@@ -71,7 +99,7 @@
   scrollbar-width: none;
 }
 
-/* Optimize Blur for Mobile - Fix CSS Parsing Error */
+/* Optimize Blur for Mobile */
 @media (max-width: 768px) {
   .blur-aura {
     filter: blur(40px) !important;
