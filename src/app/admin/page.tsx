@@ -44,7 +44,7 @@ function AdminContent() {
   const db = useFirestore();
   
   const [isAIThinking, setIsAIThinking] = useState(false);
-  const [isTranslating, setIsTranslating] = useState(false);
+  const [isTranslating, setIsTranslating] = useState<string | null>(null);
   const [isTabsVisible, setIsTabsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -86,7 +86,8 @@ function AdminContent() {
     fullDescriptionId: '', fullDescriptionEn: '',
     technologies: '',
     imageUrl: '',
-    demoUrl: ''
+    demoUrl: '',
+    featured: false
   });
 
   const [certForm, setCertForm] = useState({
@@ -157,7 +158,7 @@ function AdminContent() {
               </li>
             </ol>
           </div>
-          <Button onClick={() => signOut(auth)} variant="outline" className="w-full h-12 rounded-2xl gap-2 font-bold">
+          <Button onClick={() => handleLogout()} variant="outline" className="w-full h-12 rounded-2xl gap-2 font-bold">
             <LogOut className="h-4 w-4" /> Sign Out
           </Button>
         </Card>
@@ -180,8 +181,8 @@ function AdminContent() {
     }
   };
 
-  const handleTranslateAll = async (type: 'project' | 'cert' | 'test' | 'journey') => {
-    setIsTranslating(true);
+  const handleAutoTranslateForm = async (type: 'project' | 'cert' | 'test' | 'journey') => {
+    setIsTranslating(type);
     try {
       if (type === 'project') {
         if (projectForm.titleId) await translateSingleField(projectForm.titleId, (v) => setProjectForm(p => ({...p, titleEn: v})));
@@ -198,11 +199,11 @@ function AdminContent() {
         if (expForm.titleId) await translateSingleField(expForm.titleId, (v) => setExpForm(p => ({...p, titleEn: v})));
         if (expForm.descriptionId) await translateSingleField(expForm.descriptionId, (v) => setExpForm(p => ({...p, descriptionEn: v})));
       }
-      toast({ title: "Translation Complete" });
+      toast({ title: "AI Berhasil Menerjemahkan Form" });
     } catch (e) {
-      toast({ title: "Translation Failed", variant: "destructive" });
+      toast({ title: "Gagal Menerjemahkan", variant: "destructive" });
     } finally {
-      setIsTranslating(false);
+      setIsTranslating(null);
     }
   };
 
@@ -235,7 +236,7 @@ function AdminContent() {
       technologies: projectForm.technologies.split(',').map(s => s.trim()),
     } as any);
     toast({ title: "Proyek Ditambahkan" });
-    setProjectForm({ titleId: '', titleEn: '', type: 'web', shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '', technologies: '', imageUrl: '', demoUrl: '' });
+    setProjectForm({ titleId: '', titleEn: '', type: 'web', shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '', technologies: '', imageUrl: '', demoUrl: '', featured: false });
   };
 
   const submitCertificate = (e: React.FormEvent) => {
@@ -327,9 +328,9 @@ function AdminContent() {
                       <CardTitle className="font-black font-headline text-xl">New Deployment</CardTitle>
                       <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Initialize new project unit</CardDescription>
                     </div>
-                    <Button type="button" variant="outline" onClick={() => handleTranslateAll('project')} disabled={isTranslating} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
-                      {isTranslating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />}
-                      Translate All
+                    <Button type="button" variant="outline" onClick={() => handleAutoTranslateForm('project')} disabled={isTranslating === 'project'} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
+                      {isTranslating === 'project' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />}
+                      AI Translate Form
                     </Button>
                   </div>
                 </CardHeader>
@@ -345,9 +346,23 @@ function AdminContent() {
                         <Input value={projectForm.titleEn} onChange={e => setProjectForm({...projectForm, titleEn: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
                       </div>
                     </div>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Short Description (ID)</label>
+                        <Input value={projectForm.shortDescriptionId} onChange={e => setProjectForm({...projectForm, shortDescriptionId: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Short Description (EN)</label>
+                        <Input value={projectForm.shortDescriptionEn} onChange={e => setProjectForm({...projectForm, shortDescriptionEn: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                      </div>
+                    </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Unit Specification (ID)</label>
                       <Textarea required value={projectForm.fullDescriptionId} onChange={e => setProjectForm({...projectForm, fullDescriptionId: e.target.value})} className="min-h-[120px] rounded-xl bg-muted/30" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Unit Specification (EN)</label>
+                      <Textarea value={projectForm.fullDescriptionEn} onChange={e => setProjectForm({...projectForm, fullDescriptionEn: e.target.value})} className="min-h-[120px] rounded-xl bg-muted/30" />
                     </div>
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-1.5">
@@ -355,8 +370,8 @@ function AdminContent() {
                         <Input placeholder="https://..." value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Live Endpoint</label>
-                        <Input placeholder="https://..." value={projectForm.demoUrl} onChange={e => setProjectForm({...projectForm, demoUrl: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Technologies (comma separated)</label>
+                        <Input placeholder="Next.js, Tailwind, etc" value={projectForm.technologies} onChange={e => setProjectForm({...projectForm, technologies: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
                       </div>
                     </div>
                     <Button type="submit" className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground">Confirm Deployment</Button>
@@ -402,9 +417,9 @@ function AdminContent() {
                         {isAIThinking ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
                         AI Write
                       </Button>
-                      <Button type="button" variant="outline" onClick={() => handleTranslateAll('cert')} disabled={isTranslating} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
-                        {isTranslating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />}
-                        Translate
+                      <Button type="button" variant="outline" onClick={() => handleAutoTranslateForm('cert')} disabled={isTranslating === 'cert'} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
+                        {isTranslating === 'cert' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />}
+                        AI Translate
                       </Button>
                     </div>
                   </div>
@@ -417,15 +432,29 @@ function AdminContent() {
                         <Input required value={certForm.titleId} onChange={e => setCertForm({...certForm, titleId: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
                       </div>
                       <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Cert Title (EN)</label>
+                        <Input value={certForm.titleEn} onChange={e => setCertForm({...certForm, titleEn: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-1.5">
                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Issuer Name</label>
                         <Input required value={certForm.issuer} onChange={e => setCertForm({...certForm, issuer: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Asset URL</label>
+                        <Input placeholder="https://..." value={certForm.imageUrl} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
                       </div>
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Description (ID)</label>
                       <Textarea required value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="min-h-[100px] rounded-xl bg-muted/30" />
                     </div>
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Description (EN)</label>
+                      <Textarea value={certForm.fullDescriptionEn} onChange={e => setCertForm({...certForm, fullDescriptionEn: e.target.value})} className="min-h-[100px] rounded-xl bg-muted/30" />
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-6">
                        <div className="space-y-1.5">
                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Issue Year</label>
                         <Input placeholder="2024" value={certForm.year} onChange={e => setCertForm({...certForm, year: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
@@ -433,10 +462,6 @@ function AdminContent() {
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Valid Until</label>
                         <Input placeholder="Lifetime / 2026" value={certForm.validUntil} onChange={e => setCertForm({...certForm, validUntil: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Asset URL</label>
-                        <Input placeholder="https://..." value={certForm.imageUrl} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
                       </div>
                     </div>
                     <Button type="submit" className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-accent text-accent-foreground">Validate Credential</Button>
@@ -477,8 +502,8 @@ function AdminContent() {
                       <CardTitle className="font-black font-headline text-xl">Client Feedback</CardTitle>
                       <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Manage public testimonials</CardDescription>
                     </div>
-                    <Button type="button" variant="outline" onClick={() => handleTranslateAll('test')} disabled={isTranslating} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
-                      <Languages className="h-3 w-3" /> Translate
+                    <Button type="button" variant="outline" onClick={() => handleAutoTranslateForm('test')} disabled={isTranslating === 'test'} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
+                      {isTranslating === 'test' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />} AI Translate
                     </Button>
                   </div>
                 </CardHeader>
@@ -494,13 +519,23 @@ function AdminContent() {
                         <Input value={testForm.avatarUrl} onChange={e => setTestForm({...testForm, avatarUrl: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
                       </div>
                     </div>
-                    <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Professional Role (ID)</label>
-                        <Input required value={testForm.roleId} onChange={e => setTestForm({...testForm, roleId: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Professional Role (ID)</label>
+                          <Input required value={testForm.roleId} onChange={e => setTestForm({...testForm, roleId: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                      </div>
+                      <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Professional Role (EN)</label>
+                          <Input value={testForm.roleEn} onChange={e => setTestForm({...testForm, roleEn: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                      </div>
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Testimonial Content (ID)</label>
                       <Textarea required value={testForm.contentId} onChange={e => setTestForm({...testForm, contentId: e.target.value})} className="min-h-[120px] rounded-xl bg-muted/30" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Testimonial Content (EN)</label>
+                      <Textarea value={testForm.contentEn} onChange={e => setTestForm({...testForm, contentEn: e.target.value})} className="min-h-[120px] rounded-xl bg-muted/30" />
                     </div>
                     <Button type="submit" className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground">Archive Feedback</Button>
                   </form>
@@ -540,8 +575,8 @@ function AdminContent() {
                       <CardTitle className="font-black font-headline text-xl">Career Journey</CardTitle>
                       <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Log professional milestones</CardDescription>
                     </div>
-                    <Button type="button" variant="outline" onClick={() => handleTranslateAll('journey')} disabled={isTranslating} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
-                      <Languages className="h-3 w-3" /> Translate
+                    <Button type="button" variant="outline" onClick={() => handleAutoTranslateForm('journey')} disabled={isTranslating === 'journey'} className="rounded-xl gap-2 h-10 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
+                      {isTranslating === 'journey' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />} AI Translate
                     </Button>
                   </div>
                 </CardHeader>
@@ -557,13 +592,23 @@ function AdminContent() {
                         <Input required value={expForm.company} onChange={e => setExpForm({...expForm, company: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
                       </div>
                     </div>
-                    <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Professional Title (ID)</label>
-                        <Input required value={expForm.titleId} onChange={e => setExpForm({...expForm, titleId: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Professional Title (ID)</label>
+                          <Input required value={expForm.titleId} onChange={e => setExpForm({...expForm, titleId: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                      </div>
+                      <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Professional Title (EN)</label>
+                          <Input value={expForm.titleEn} onChange={e => setExpForm({...expForm, titleEn: e.target.value})} className="h-11 rounded-xl bg-muted/30" />
+                      </div>
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Key Responsibilities (ID)</label>
                       <Textarea required value={expForm.descriptionId} onChange={e => setExpForm({...expForm, descriptionId: e.target.value})} className="min-h-[120px] rounded-xl bg-muted/30" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Key Responsibilities (EN)</label>
+                      <Textarea value={expForm.descriptionEn} onChange={e => setExpForm({...expForm, descriptionEn: e.target.value})} className="min-h-[120px] rounded-xl bg-muted/30" />
                     </div>
                     <Button type="submit" className="w-full h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground">Log Milestone</Button>
                   </form>
