@@ -14,7 +14,8 @@ import {
   UserCircle, Languages, Loader2, Image as ImageIcon, Quote, 
   Briefcase, LayoutDashboard, History, ShieldAlert, CheckCircle2, 
   Download, Upload, HelpCircle, Info, Wifi, WifiOff, AlertTriangle, 
-  Mail, Instagram, Github, Linkedin, Video, Send, Wand2, Type, FileText
+  Mail, Instagram, Github, Linkedin, Video, Send, Wand2, Type, FileText,
+  UserPlus, Calendar
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
@@ -449,6 +450,256 @@ function AdminContent() {
                     </div>
                     {isSuper && (
                       <Button variant="ghost" size="icon" onClick={() => { if(confirm("Confirm deletion of deployment unit?")) deleteProject(p.id) }} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Trash2 className="h-5 w-5" />
+                      </Button>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Certificates Tab */}
+          <TabsContent value="certificates" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="xl:col-span-8">
+              <Card className="rounded-[3rem] shadow-2xl border-border/50 bg-card/50 backdrop-blur-xl">
+                <CardHeader className="p-10 border-b border-border/50 bg-muted/20 flex flex-row items-center justify-between">
+                  <div className="space-y-2">
+                    <CardTitle className="font-black font-headline text-2xl uppercase tracking-tighter">Credential Vault</CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Authenticate new technical certification</CardDescription>
+                  </div>
+                  <Button type="button" variant="outline" onClick={() => handleAITranslate('certificate', certForm, setCertForm)} disabled={isTranslating === 'certificate'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
+                    {isTranslating === 'certificate' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
+                    AI Localize
+                  </Button>
+                </CardHeader>
+                <CardContent className="p-10">
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    addCertificate({ ...certForm, id: Date.now().toString() } as any);
+                    setCertForm({ titleId: '', titleEn: '', issuer: '', year: '', validUntil: '', imageUrl: '', shortDescriptionId: '', shortDescriptionEn: '', fullDescriptionId: '', fullDescriptionEn: '' });
+                    toast({ title: "Credential Locked", description: "Certificate added to global records." });
+                  }} className="space-y-8">
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cert Title (ID)</label>
+                        <Input required value={certForm.titleId} onChange={e => setCertForm({...certForm, titleId: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                      </div>
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cert Title (EN)</label>
+                        <Input value={certForm.titleEn} onChange={e => setCertForm({...certForm, titleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Issuer Org</label>
+                        <Input required value={certForm.issuer} onChange={e => setCertForm({...certForm, issuer: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                      </div>
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Image URL</label>
+                        <Input value={certForm.imageUrl} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                      </div>
+                    </div>
+                    <div className="grid lg:grid-cols-3 gap-8">
+                       <div className="space-y-2.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Year Issued</label>
+                          <Input value={certForm.year} onChange={e => setCertForm({...certForm, year: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                       </div>
+                       <div className="space-y-2.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Valid Until</label>
+                          <Input value={certForm.validUntil} onChange={e => setCertForm({...certForm, validUntil: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                       </div>
+                       <div className="flex items-end pb-1">
+                          <Button type="button" variant="outline" onClick={handleGenerateCertDesc} disabled={isAIThinking === 'cert'} className="w-full h-14 rounded-2xl gap-3 text-[10px] font-black uppercase tracking-widest border-accent/20 text-accent">
+                             {isAIThinking === 'cert' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                             AI Write Desc
+                          </Button>
+                       </div>
+                    </div>
+                    <div className="space-y-2.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Full Description (ID)</label>
+                        <Textarea value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
+                    </div>
+                    <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20">Archive Credential</Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="xl:col-span-4 space-y-8">
+               <h3 className="font-black text-[10px] uppercase tracking-[0.3em] px-4 flex items-center gap-3">
+                <div className="w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Award className="h-3 w-3 text-primary" />
+                </div>
+                Verified Certs ({certificates.length})
+              </h3>
+              <div className="grid gap-4">
+                {certificates.map(c => (
+                  <Card key={c.id} className="p-4 flex gap-5 items-center group bg-card/50 backdrop-blur-md border-border/50 hover:border-primary/50 transition-all rounded-[1.5rem]">
+                    <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden shrink-0 shadow-inner">
+                      <img src={c.imageUrl || "https://placehold.co/100x100"} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-black truncate text-sm tracking-tight">{c.titleId}</h4>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-1">{c.issuer}</p>
+                    </div>
+                    {isSuper && (
+                      <Button variant="ghost" size="icon" onClick={() => deleteCertificate(c.id)} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100">
+                        <Trash2 className="h-5 w-5" />
+                      </Button>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Feedback Tab */}
+          <TabsContent value="feedback" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+             <div className="xl:col-span-8">
+                <Card className="rounded-[3rem] shadow-2xl border-border/50 bg-card/50 backdrop-blur-xl">
+                  <CardHeader className="p-10 border-b border-border/50 bg-muted/20 flex flex-row items-center justify-between">
+                    <div className="space-y-2">
+                      <CardTitle className="font-black font-headline text-2xl uppercase tracking-tighter">Social Proof Console</CardTitle>
+                      <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Log client and collaborator testimonials</CardDescription>
+                    </div>
+                    <Button type="button" variant="outline" onClick={() => handleAITranslate('feedback', testForm, setTestForm)} disabled={isTranslating === 'feedback'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
+                      {isTranslating === 'feedback' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
+                      AI Localize
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="p-10">
+                    <form onSubmit={(e) => {
+                      e.preventDefault();
+                      addTestimonial({ ...testForm, id: Date.now().toString() } as any);
+                      setTestForm({ name: '', roleId: '', roleEn: '', contentId: '', contentEn: '', avatarUrl: '' });
+                      toast({ title: "Feedback Archived", description: "Testimonial record has been pushed." });
+                    }} className="space-y-8">
+                       <div className="grid md:grid-cols-2 gap-8">
+                          <div className="space-y-2.5">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Author Name</label>
+                             <Input required value={testForm.name} onChange={e => setTestForm({...testForm, name: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                          </div>
+                          <div className="space-y-2.5">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Avatar URL</label>
+                             <Input value={testForm.avatarUrl} onChange={e => setTestForm({...testForm, avatarUrl: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                          </div>
+                       </div>
+                       <div className="grid md:grid-cols-2 gap-8">
+                          <div className="space-y-2.5">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Author Role (ID)</label>
+                             <Input required value={testForm.roleId} onChange={e => setTestForm({...testForm, roleId: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                          </div>
+                          <div className="space-y-2.5">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Author Role (EN)</label>
+                             <Input value={testForm.roleEn} onChange={e => setTestForm({...testForm, roleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                          </div>
+                       </div>
+                       <div className="space-y-2.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Testimonial Content (ID)</label>
+                          <Textarea required value={testForm.contentId} onChange={e => setTestForm({...testForm, contentId: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
+                       </div>
+                       <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20">Commit Testimonial</Button>
+                    </form>
+                  </CardContent>
+                </Card>
+             </div>
+             <div className="xl:col-span-4 space-y-8">
+               <h3 className="font-black text-[10px] uppercase tracking-[0.3em] px-4 flex items-center gap-3">
+                <div className="w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Quote className="h-3 w-3 text-primary" />
+                </div>
+                Active Proof ({testimonials.length})
+              </h3>
+              <div className="grid gap-4">
+                {testimonials.map(t => (
+                  <Card key={t.id} className="p-4 flex gap-5 items-center group bg-card/50 backdrop-blur-md border-border/50 hover:border-primary/50 transition-all rounded-[1.5rem]">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0 border border-primary/20">
+                      {t.avatarUrl ? <img src={t.avatarUrl} className="w-full h-full object-cover" /> : <UserCircle className="h-6 w-6 text-primary" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-black truncate text-sm tracking-tight">{t.name}</h4>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-1">{t.roleId}</p>
+                    </div>
+                    {isSuper && (
+                      <Button variant="ghost" size="icon" onClick={() => deleteTestimonial(t.id)} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100">
+                        <Trash2 className="h-5 w-5" />
+                      </Button>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Journey Tab */}
+          <TabsContent value="journey" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+             <div className="xl:col-span-8">
+                <Card className="rounded-[3rem] shadow-2xl border-border/50 bg-card/50 backdrop-blur-xl">
+                  <CardHeader className="p-10 border-b border-border/50 bg-muted/20 flex flex-row items-center justify-between">
+                    <div className="space-y-2">
+                      <CardTitle className="font-black font-headline text-2xl uppercase tracking-tighter">Timeline Architect</CardTitle>
+                      <CardDescription className="text-[10px] uppercase font-bold tracking-widest mt-1">Map professional and educational milestones</CardDescription>
+                    </div>
+                    <Button type="button" variant="outline" onClick={() => handleAITranslate('journey', expForm, setExpForm)} disabled={isTranslating === 'journey'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary">
+                      {isTranslating === 'journey' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
+                      AI Localize
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="p-10">
+                    <form onSubmit={(e) => {
+                      e.preventDefault();
+                      addExperience({ ...expForm, id: Date.now().toString() } as any);
+                      setExpForm({ year: '', company: '', titleId: '', titleEn: '', descriptionId: '', descriptionEn: '' });
+                      toast({ title: "Milestone Pushed", description: "Journey timeline updated successfully." });
+                    }} className="space-y-8">
+                       <div className="grid md:grid-cols-2 gap-8">
+                          <div className="space-y-2.5">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Timeline Span (e.g. 2021 - Present)</label>
+                             <Input required value={expForm.year} onChange={e => setExpForm({...expForm, year: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                          </div>
+                          <div className="space-y-2.5">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Org / Company</label>
+                             <Input required value={expForm.company} onChange={e => setExpForm({...expForm, company: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                          </div>
+                       </div>
+                       <div className="grid md:grid-cols-2 gap-8">
+                          <div className="space-y-2.5">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Milestone Title (ID)</label>
+                             <Input required value={expForm.titleId} onChange={e => setExpForm({...expForm, titleId: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                          </div>
+                          <div className="space-y-2.5">
+                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Milestone Title (EN)</label>
+                             <Input value={expForm.titleEn} onChange={e => setExpForm({...expForm, titleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                          </div>
+                       </div>
+                       <div className="space-y-2.5">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Role Description (ID)</label>
+                          <Textarea required value={expForm.descriptionId} onChange={e => setExpForm({...expForm, descriptionId: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
+                       </div>
+                       <Button type="submit" className="w-full h-16 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] bg-primary shadow-2xl shadow-primary/20">Finalize Milestone</Button>
+                    </form>
+                  </CardContent>
+                </Card>
+             </div>
+             <div className="xl:col-span-4 space-y-8">
+               <h3 className="font-black text-[10px] uppercase tracking-[0.3em] px-4 flex items-center gap-3">
+                <div className="w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <History className="h-3 w-3 text-primary" />
+                </div>
+                Journey Logs ({experiences.length})
+              </h3>
+              <div className="grid gap-4">
+                {experiences.map(exp => (
+                  <Card key={exp.id} className="p-4 flex gap-5 items-center group bg-card/50 backdrop-blur-md border-border/50 hover:border-primary/50 transition-all rounded-[1.5rem]">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <Calendar className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-black truncate text-sm tracking-tight">{exp.titleId}</h4>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-1">{exp.year}</p>
+                    </div>
+                    {isSuper && (
+                      <Button variant="ghost" size="icon" onClick={() => deleteExperience(exp.id)} className="text-destructive hover:bg-destructive/10 h-10 w-10 rounded-xl opacity-0 group-hover:opacity-100">
                         <Trash2 className="h-5 w-5" />
                       </Button>
                     )}

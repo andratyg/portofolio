@@ -59,7 +59,7 @@ export const Navbar = () => {
 
   return (
     <nav className={cn(
-      "sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b transition-transform duration-500 ease-in-out",
+      "fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b transition-transform duration-500 ease-in-out",
       isVisible ? "translate-y-0" : "-translate-y-full"
     )}>
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
