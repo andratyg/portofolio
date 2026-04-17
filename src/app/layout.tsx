@@ -86,7 +86,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className="font-body antialiased transition-colors duration-500">
+      <body className="font-body antialiased transition-colors duration-500 overflow-x-hidden">
         <FirebaseClientProvider>
           <LanguageProvider>
             <ThemeProvider>

@@ -74,25 +74,25 @@ export const Navbar = () => {
 
   return (
     <nav className={cn(
-      "fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b transition-transform duration-500 ease-in-out",
+      "fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-3xl border-b transition-transform duration-700 ease-in-out",
       isVisible ? "translate-y-0" : "-translate-y-full"
     )}>
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-8">
+      <div className="container mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="flex items-center gap-12">
           <Link 
             href="/" 
             onClick={handleLogoClick}
-            className="text-2xl font-bold font-headline text-primary hover:scale-110 transition-transform cursor-pointer"
+            className="text-3xl font-black font-headline text-primary hover:scale-110 transition-transform cursor-pointer tracking-tighter"
           >
             NAT
           </Link>
           
-          <div className="hidden md:flex gap-6">
+          <div className="hidden md:flex gap-8">
             {navItems.map((item) => (
               <Link 
                 key={item.label} 
                 href={item.href}
-                className="text-sm font-medium hover:text-primary transition-colors"
+                className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-colors"
               >
                 {item.label}
               </Link>
@@ -100,46 +100,48 @@ export const Navbar = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Language Toggle */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Globe className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setLanguage('en')}>English {language === 'en' && '✓'}</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setLanguage('id')}>Indonesia {language === 'id' && '✓'}</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-2">
+            {/* Language Toggle */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-xl">
+                  <Globe className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="rounded-2xl border-none shadow-2xl">
+                <DropdownMenuItem onClick={() => setLanguage('en')} className="rounded-xl font-bold">English {language === 'en' && '✓'}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage('id')} className="rounded-xl font-bold">Indonesia {language === 'id' && '✓'}</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          {/* Theme Switcher */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Palette className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="grid grid-cols-2 gap-1 w-56 p-2">
-              {themes.map((tName) => (
-                <DropdownMenuItem 
-                  key={tName} 
-                  onClick={() => setTheme(tName)}
-                  className={cn(
-                    "capitalize rounded-xl gap-2",
-                    theme === tName && "bg-primary/10 text-primary font-bold"
-                  )}
-                >
-                  <div className={cn("w-4 h-4 rounded-full shadow-sm", getThemeColor(tName))} />
-                  {tName}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            {/* Theme Switcher */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-xl">
+                  <Palette className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="grid grid-cols-2 gap-2 w-64 p-3 rounded-[2rem] border-none shadow-2xl bg-card/90 backdrop-blur-xl">
+                {themes.map((tName) => (
+                  <DropdownMenuItem 
+                    key={tName} 
+                    onClick={() => setTheme(tName)}
+                    className={cn(
+                      "capitalize rounded-xl gap-3 p-3 transition-all",
+                      theme === tName ? "bg-primary text-primary-foreground font-black" : "hover:bg-muted"
+                    )}
+                  >
+                    <div className={cn("w-5 h-5 rounded-full shadow-inner border border-white/20", getThemeColor(tName))} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">{tName}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
           <Link href="/admin/login">
-            <Button variant="outline" size="sm" className="hidden md:flex gap-2">
+            <Button variant="outline" size="sm" className="hidden md:flex gap-2 rounded-2xl border-primary/20 hover:bg-primary/10 h-10 px-6 text-[10px] font-black uppercase tracking-widest">
               <LogIn className="h-4 w-4" />
               {t.navAdmin}
             </Button>
@@ -148,7 +150,7 @@ export const Navbar = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="md:hidden"
+            className="md:hidden rounded-xl"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -158,24 +160,29 @@ export const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-background border-b animate-in slide-in-from-top duration-300">
-          <div className="flex flex-col p-4 gap-4">
+        <div className="md:hidden bg-background/95 backdrop-blur-2xl border-b animate-in slide-in-from-top duration-500 overflow-hidden rounded-b-[3rem] shadow-2xl">
+          <div className="flex flex-col p-8 gap-6">
             {navItems.map((item) => (
               <Link 
                 key={item.label} 
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="text-lg font-medium p-2 hover:bg-muted rounded-md"
+                className="text-2xl font-black font-headline uppercase tracking-tight p-2 hover:text-primary"
               >
                 {item.label}
               </Link>
             ))}
-            <Link href="/admin/login" onClick={() => setIsMobileMenuOpen(false)}>
-              <Button variant="outline" className="w-full justify-start gap-2">
-                <LogIn className="h-4 w-4" />
-                {t.navAdmin}
-              </Button>
-            </Link>
+            <div className="flex items-center gap-4 py-4 border-t border-border/10">
+               <Button variant="ghost" size="icon" onClick={() => setLanguage(language === 'id' ? 'en' : 'id')} className="rounded-xl h-14 w-14 bg-muted/50">
+                  <Globe className="h-6 w-6" />
+               </Button>
+               <Link href="/admin/login" onClick={() => setIsMobileMenuOpen(false)} className="flex-1">
+                <Button className="w-full h-14 rounded-2xl gap-3 font-black uppercase tracking-widest">
+                  <LogIn className="h-5 w-5" />
+                  {t.navAdmin}
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       )}

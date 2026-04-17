@@ -21,13 +21,13 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
-    --radius: 1.5rem;
+    --radius: 2rem;
   }
 
   [data-theme='dark'] {
-    --background: 222 47% 4%;
+    --background: 222 47% 3%;
     --foreground: 210 40% 98%;
-    --card: 222 47% 6%;
+    --card: 222 47% 5%;
     --card-foreground: 210 40% 98%;
     --primary: 217 91% 60%;
     --primary-foreground: 210 40% 98%;
@@ -83,20 +83,20 @@
   }
 
   [data-theme='ramadan'] {
-    --background: 140 40% 5%;
+    --background: 140 40% 4%;
     --foreground: 45 90% 70%;
     --primary: 142 72% 35%;
     --accent: 45 93% 47%;
-    --card: 140 40% 8%;
+    --card: 140 40% 7%;
     --border: 142 50% 20%;
   }
 
   [data-theme='imlek'] {
-    --background: 0 40% 4%;
+    --background: 0 40% 3%;
     --foreground: 45 90% 75%;
-    --primary: 0 100% 50%;
+    --primary: 0 100% 45%;
     --accent: 45 93% 55%;
-    --card: 0 40% 8%;
+    --card: 0 40% 6%;
     --border: 0 60% 20%;
   }
 
@@ -114,6 +114,17 @@
   * {
     @apply border-border outline-none transition-all duration-300;
   }
+  
+  /* HIDE SCROLLBAR GLOBALLY */
+  html, body {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+  
+  html::-webkit-scrollbar, body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary-foreground;
     user-select: none;
@@ -161,11 +172,11 @@
 }
 
 .glass-panel {
-  @apply bg-card/60 backdrop-blur-2xl border border-white/10 shadow-2xl;
+  @apply bg-card/60 backdrop-blur-3xl border border-white/10 shadow-2xl;
 }
 
 .aura-blob {
-  @apply absolute rounded-full blur-[120px] mix-blend-screen animate-pulse opacity-20 pointer-events-none;
+  @apply absolute rounded-full blur-[140px] mix-blend-screen animate-pulse opacity-25 pointer-events-none;
 }
 
 @keyframes spin-slow {
@@ -174,7 +185,7 @@
 }
 
 .animate-spin-slow {
-  animation: spin-slow 20s linear infinite;
+  animation: spin-slow 25s linear infinite;
 }
 
 .glow-on-hover {
@@ -183,7 +194,7 @@
 
 .glow-on-hover::before {
   content: '';
-  @apply absolute inset-0 -z-10 bg-gradient-to-tr from-primary/20 via-accent/20 to-primary/20 opacity-0 transition-opacity duration-500 blur-2xl;
+  @apply absolute inset-0 -z-10 bg-gradient-to-tr from-primary/20 via-accent/20 to-primary/20 opacity-0 transition-opacity duration-500 blur-3xl;
 }
 
 .glow-on-hover:hover::before {
