@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -149,6 +150,11 @@ const ProjectCard = ({ project, index, isVisible, handleShare }: { project: Proj
   const solution = language === 'id' ? project.solutionId : project.solutionEn;
   const result = language === 'id' ? project.resultId : project.resultEn;
 
+  // Safe URL Fallback
+  const safeImageUrl = project.imageUrl && project.imageUrl.startsWith('http') 
+    ? project.imageUrl 
+    : `https://placehold.co/800x600?text=${encodeURIComponent(title || 'Project')}`;
+
   return (
     <div 
       className={cn(
@@ -163,8 +169,8 @@ const ProjectCard = ({ project, index, isVisible, handleShare }: { project: Proj
             <Card className="glow-effect overflow-hidden h-full border-border/50 bg-card/50 backdrop-blur-xl shadow-2xl shadow-black/5 rounded-[3rem] flex flex-col group-hover:-translate-y-4 transition-all duration-700">
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image 
-                  src={project.imageUrl || `https://picsum.photos/seed/${project.id}/800/600`} 
-                  alt={title} 
+                  src={safeImageUrl} 
+                  alt={title || "Project"} 
                   fill
                   loading="lazy"
                   sizes="(max-width: 768px) 100vw, 33vw"
@@ -208,7 +214,7 @@ const ProjectCard = ({ project, index, isVisible, handleShare }: { project: Proj
         <DialogContent className="sm:max-w-[1000px] h-[90vh] p-0 rounded-[3rem] overflow-hidden border-none shadow-2xl bg-card">
           <div className="flex flex-col h-full">
             <div className="relative h-2/5 shrink-0">
-               <Image src={project.imageUrl} alt={title} fill className="object-cover" />
+               <Image src={safeImageUrl} alt={title || "Project"} fill className="object-cover" />
                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
                <div className="absolute bottom-10 left-12 right-12 flex justify-between items-end">
                   <div className="space-y-3">
@@ -261,7 +267,7 @@ const ProjectCard = ({ project, index, isVisible, handleShare }: { project: Proj
                      <section className="space-y-6">
                         <h3 className="text-2xl font-black font-headline uppercase tracking-tight">Technical Decision Logs</h3>
                         <div className="grid sm:grid-cols-2 gap-4">
-                           {project.technologies.map(tech => (
+                           {(project.technologies || []).map(tech => (
                              <div key={tech} className="p-5 rounded-[2rem] bg-muted/30 border border-border/50 flex items-center gap-4">
                                <div className="w-3 h-3 rounded-full bg-primary/40"></div>
                                <span className="font-bold text-sm tracking-tight">{tech}</span>

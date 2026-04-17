@@ -1,3 +1,4 @@
+
 "use client"
 
 import React from 'react';
@@ -15,7 +16,7 @@ export const Certificates = () => {
   const { t, language } = useLanguage();
   const { certificates } = useProjectStore();
 
-  if (certificates.length === 0) return null;
+  if (!certificates || certificates.length === 0) return null;
 
   return (
     <section id="certificates" className="py-24 bg-muted/30">
@@ -53,6 +54,11 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
   const title = language === 'id' ? cert.titleId : (cert.titleEn || cert.titleId);
   const shortDesc = language === 'id' ? cert.shortDescriptionId : (cert.shortDescriptionEn || cert.shortDescriptionId);
   const fullDesc = language === 'id' ? cert.fullDescriptionId : (cert.fullDescriptionEn || cert.fullDescriptionId);
+  
+  // Safe URL Fallback
+  const safeImageUrl = cert.imageUrl && cert.imageUrl.startsWith('http') 
+    ? cert.imageUrl 
+    : `https://placehold.co/800x600?text=${encodeURIComponent(title || 'Certificate')}`;
 
   return (
     <Dialog>
@@ -60,7 +66,13 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
         <div className="cursor-pointer group h-full">
           <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-500 bg-card rounded-[2.5rem] group-hover:-translate-y-2">
             <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-              <Image src={cert.imageUrl} alt={title} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+              <Image 
+                src={safeImageUrl} 
+                alt={title || "Certificate"} 
+                fill 
+                className="object-cover group-hover:scale-110 transition-transform duration-700"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
             </div>
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold font-headline mb-3 group-hover:text-accent transition-colors line-clamp-2">{title}</h3>
@@ -76,7 +88,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
       
       <DialogContent className="sm:max-w-[700px] rounded-[3rem] overflow-hidden border-none p-0 shadow-2xl">
         <div className="relative aspect-video w-full bg-muted">
-          <Image src={cert.imageUrl} alt={title} fill className="object-cover" />
+          <Image src={safeImageUrl} alt={title || "Certificate"} fill className="object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
           <div className="absolute bottom-6 left-8 text-white">
              <Badge className="bg-accent text-white mb-2">{cert.issuer}</Badge>

@@ -1,7 +1,7 @@
 
 "use client"
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProjectStore, ProjectStoreProvider } from '@/components/ProjectStore';
 import { Button } from '@/components/ui/button';
@@ -473,7 +473,7 @@ function AdminContent() {
                 {projects.map(p => (
                   <Card key={p.id} className="p-4 flex gap-5 items-center group bg-card/50 backdrop-blur-md border-border/50 hover:border-primary/50 transition-all rounded-[1.5rem] shadow-sm">
                     <div className="w-16 h-16 rounded-2xl bg-muted overflow-hidden shrink-0 shadow-inner">
-                      <img src={p.imageUrl || "https://placehold.co/100x100"} className="w-full h-full object-cover group-hover:scale-110 transition-all" />
+                      <img src={p.imageUrl && p.imageUrl.startsWith('http') ? p.imageUrl : "https://placehold.co/100x100"} className="w-full h-full object-cover group-hover:scale-110 transition-all" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-black truncate text-sm tracking-tight">{p.titleId}</h4>
@@ -566,7 +566,7 @@ function AdminContent() {
                 {certificates.map(c => (
                   <Card key={c.id} className="p-4 flex gap-5 items-center group bg-card/50 backdrop-blur-md border-border/50 hover:border-primary/50 transition-all rounded-[1.5rem]">
                     <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden shrink-0 shadow-inner">
-                      <img src={c.imageUrl || "https://placehold.co/100x100"} className="w-full h-full object-cover" />
+                      <img src={c.imageUrl && c.imageUrl.startsWith('http') ? c.imageUrl : "https://placehold.co/100x100"} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-black truncate text-sm tracking-tight">{c.titleId}</h4>
@@ -650,7 +650,7 @@ function AdminContent() {
                 {testimonials.map(t => (
                   <Card key={t.id} className="p-4 flex gap-5 items-center group bg-card/50 backdrop-blur-md border-border/50 hover:border-primary/50 transition-all rounded-[1.5rem]">
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0 border border-primary/20">
-                      {t.avatarUrl ? <img src={t.avatarUrl} className="w-full h-full object-cover" /> : <UserCircle className="h-6 w-6 text-primary" />}
+                      {t.avatarUrl && t.avatarUrl.startsWith('http') ? <img src={t.avatarUrl} className="w-full h-full object-cover" /> : <UserCircle className="h-6 w-6 text-primary" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-black truncate text-sm tracking-tight">{t.name}</h4>
