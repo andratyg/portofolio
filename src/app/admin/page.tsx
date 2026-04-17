@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, UserCircle, Languages, Loader2, Image as ImageIcon, Quote, Briefcase, LayoutDashboard, ShieldCheck, Github, Instagram, Linkedin, MessageSquare, Video } from 'lucide-react';
+import { Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, UserCircle, Languages, Loader2, Image as ImageIcon, Quote, Briefcase, LayoutDashboard, ShieldCheck, Github, Instagram, Linkedin, MessageSquare, Video, History } from 'lucide-react';
 import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-portfolio-description-suggestion';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
 import { translateContent } from '@/ai/flows/translate-content';
@@ -135,6 +135,46 @@ function AdminContent() {
         setCertForm(prev => ({ ...prev, fullDescriptionEn: r.translatedText }));
       }
       toast({ title: "Certificate translated successfully" });
+    } catch (e) {
+      toast({ title: "Translation Error", variant: "destructive" });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  const handleTranslateTestimonial = async () => {
+    const { roleId, contentId } = testForm;
+    setIsTranslating(true);
+    try {
+      if (roleId) {
+        const r = await translateContent({ text: roleId, targetLang: 'en' });
+        setTestForm(prev => ({ ...prev, roleEn: r.translatedText }));
+      }
+      if (contentId) {
+        const r = await translateContent({ text: contentId, targetLang: 'en' });
+        setTestForm(prev => ({ ...prev, contentEn: r.translatedText }));
+      }
+      toast({ title: "Feedback translated successfully" });
+    } catch (e) {
+      toast({ title: "Translation Error", variant: "destructive" });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  const handleTranslateJourney = async () => {
+    const { titleId, descriptionId } = expForm;
+    setIsTranslating(true);
+    try {
+      if (titleId) {
+        const r = await translateContent({ text: titleId, targetLang: 'en' });
+        setExpForm(prev => ({ ...prev, titleEn: r.translatedText }));
+      }
+      if (descriptionId) {
+        const r = await translateContent({ text: descriptionId, targetLang: 'en' });
+        setExpForm(prev => ({ ...prev, descriptionEn: r.translatedText }));
+      }
+      toast({ title: "Journey translated successfully" });
     } catch (e) {
       toast({ title: "Translation Error", variant: "destructive" });
     } finally {
@@ -473,6 +513,155 @@ function AdminContent() {
                   ))}
                 </div>
              </div>
+          </TabsContent>
+
+          <TabsContent value="testimonials" className="grid lg:grid-cols-12 gap-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="lg:col-span-8 space-y-10">
+              <Card className="rounded-[3rem] shadow-2xl border-none overflow-hidden bg-slate-900/40 backdrop-blur-xl">
+                <CardHeader className="bg-gradient-to-r from-pink-500/10 via-transparent to-transparent p-10 border-b border-slate-800/50">
+                  <div className="flex flex-row items-center justify-between gap-6">
+                    <div>
+                      <CardTitle className="flex items-center gap-4 text-3xl font-black font-headline"><MessageSquare className="text-pink-500 h-8 w-8" /> Client Feedback</CardTitle>
+                      <p className="text-slate-500 text-sm font-medium mt-1 uppercase tracking-widest">Document testimonials and client success stories</p>
+                    </div>
+                    <Button type="button" variant="outline" onClick={handleTranslateTestimonial} disabled={isTranslating} className="rounded-2xl gap-3 border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 h-12 px-6 font-bold">
+                      {isTranslating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Languages className="h-5 w-5" />}
+                      AI Translate
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-10">
+                  <form onSubmit={submitTestimonial} className="space-y-8">
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Client Name</label>
+                        <Input required value={testForm.name} onChange={e => setTestForm({...testForm, name: e.target.value})} className="h-14 rounded-2xl bg-slate-950/50 border-slate-800 text-lg font-bold" />
+                      </div>
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Avatar URL</label>
+                        <Input value={testForm.avatarUrl} onChange={e => setTestForm({...testForm, avatarUrl: e.target.value})} className="h-14 rounded-2xl bg-slate-950/50 border-slate-800" />
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Client Role (ID)</label>
+                        <Input required value={testForm.roleId} onChange={e => setTestForm({...testForm, roleId: e.target.value})} className="h-14 rounded-2xl bg-slate-950/50 border-slate-800" />
+                      </div>
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Client Role (EN)</label>
+                        <Input value={testForm.roleEn} onChange={e => setTestForm({...testForm, roleEn: e.target.value})} className="h-14 rounded-2xl bg-slate-950/50 border-slate-800" />
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Testimonial Content (ID)</label>
+                      <Textarea required value={testForm.contentId} onChange={e => setTestForm({...testForm, contentId: e.target.value})} className="min-h-[120px] rounded-3xl bg-slate-950/50 border-slate-800 p-6" />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Testimonial Content (EN)</label>
+                      <Textarea value={testForm.contentEn} onChange={e => setTestForm({...testForm, contentEn: e.target.value})} className="min-h-[120px] rounded-3xl bg-slate-950/50 border-slate-800 p-6" />
+                    </div>
+                    <Button type="submit" className="w-full h-20 rounded-[2.5rem] text-xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-pink-500/30 bg-pink-600 hover:scale-[0.98] transition-transform">Submit Feedback</Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="lg:col-span-4 space-y-8">
+              <div className="flex items-center justify-between px-4">
+                <h3 className="font-black uppercase tracking-widest text-sm flex items-center gap-3"><Quote className="h-5 w-5 text-pink-500" /> Reviews</h3>
+                <Badge className="rounded-lg bg-slate-800 text-slate-400 font-black">{testimonials.length} UNITS</Badge>
+              </div>
+              <div className="grid gap-6">
+                {testimonials.map(t => (
+                  <Card key={t.id} className="p-6 flex gap-6 items-center group bg-slate-900/40 border-slate-800 hover:border-pink-500/50 transition-all rounded-[2rem] shadow-xl">
+                    <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 border-2 border-slate-800 shadow-xl bg-slate-950">
+                      <img src={t.avatarUrl} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold truncate text-lg group-hover:text-pink-500 transition-colors">{t.name}</h4>
+                      <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1">{t.roleId}</p>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => deleteTestimonial(t.id)} className="text-destructive hover:bg-destructive/10 h-12 w-12 rounded-2xl shrink-0">
+                      <Trash2 className="h-6 w-6" />
+                    </Button>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="journey" className="grid lg:grid-cols-12 gap-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="lg:col-span-8 space-y-10">
+              <Card className="rounded-[3rem] shadow-2xl border-none overflow-hidden bg-slate-900/40 backdrop-blur-xl">
+                <CardHeader className="bg-gradient-to-r from-emerald-500/10 via-transparent to-transparent p-10 border-b border-slate-800/50">
+                  <div className="flex flex-row items-center justify-between gap-6">
+                    <div>
+                      <CardTitle className="flex items-center gap-4 text-3xl font-black font-headline"><History className="text-emerald-500 h-8 w-8" /> Career Journey</CardTitle>
+                      <p className="text-slate-500 text-sm font-medium mt-1 uppercase tracking-widest">Update your professional timeline and experience</p>
+                    </div>
+                    <Button type="button" variant="outline" onClick={handleTranslateJourney} disabled={isTranslating} className="rounded-2xl gap-3 border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 h-12 px-6 font-bold">
+                      {isTranslating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Languages className="h-5 w-5" />}
+                      AI Translate
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-10">
+                  <form onSubmit={submitExperience} className="space-y-8">
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Period (e.g., 2023 - Present)</label>
+                        <Input required value={expForm.year} onChange={e => setExpForm({...expForm, year: e.target.value})} className="h-14 rounded-2xl bg-slate-950/50 border-slate-800 text-lg font-bold" />
+                      </div>
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Company / Institution</label>
+                        <Input required value={expForm.company} onChange={e => setExpForm({...expForm, company: e.target.value})} className="h-14 rounded-2xl bg-slate-950/50 border-slate-800" />
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Job Title (ID)</label>
+                        <Input required value={expForm.titleId} onChange={e => setExpForm({...expForm, titleId: e.target.value})} className="h-14 rounded-2xl bg-slate-950/50 border-slate-800" />
+                      </div>
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Job Title (EN)</label>
+                        <Input value={expForm.titleEn} onChange={e => setExpForm({...expForm, titleEn: e.target.value})} className="h-14 rounded-2xl bg-slate-950/50 border-slate-800" />
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Achievement / Desc (ID)</label>
+                      <Textarea required value={expForm.descriptionId} onChange={e => setExpForm({...expForm, descriptionId: e.target.value})} className="min-h-[100px] rounded-3xl bg-slate-950/50 border-slate-800 p-6" />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-1">Achievement / Desc (EN)</label>
+                      <Textarea value={expForm.descriptionEn} onChange={e => setExpForm({...expForm, descriptionEn: e.target.value})} className="min-h-[100px] rounded-3xl bg-slate-950/50 border-slate-800 p-6" />
+                    </div>
+                    <Button type="submit" className="w-full h-20 rounded-[2.5rem] text-xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/30 bg-emerald-600 hover:scale-[0.98] transition-transform">Add to Journey</Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="lg:col-span-4 space-y-8">
+              <div className="flex items-center justify-between px-4">
+                <h3 className="font-black uppercase tracking-widest text-sm flex items-center gap-3"><Briefcase className="h-5 w-5 text-emerald-500" /> History</h3>
+                <Badge className="rounded-lg bg-slate-800 text-slate-400 font-black">{experiences.length} STAGES</Badge>
+              </div>
+              <div className="grid gap-6">
+                {experiences.map(e => (
+                  <Card key={e.id} className="p-6 flex gap-6 items-center group bg-slate-900/40 border-slate-800 hover:border-emerald-500/50 transition-all rounded-[2rem] shadow-xl">
+                    <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0 border border-emerald-500/20">
+                      <Briefcase className="h-6 w-6 text-emerald-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold truncate text-lg group-hover:text-emerald-500 transition-colors">{e.titleId}</h4>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{e.company}</p>
+                      <Badge variant="outline" className="text-[10px] mt-2 border-slate-800 text-slate-500">{e.year}</Badge>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => deleteExperience(e.id)} className="text-destructive hover:bg-destructive/10 h-12 w-12 rounded-2xl shrink-0">
+                      <Trash2 className="h-6 w-6" />
+                    </Button>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="profile" className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
