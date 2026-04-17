@@ -24,9 +24,12 @@ export const Portfolio = () => {
 
   const filteredProjects = projects.filter(p => {
     const title = language === 'id' ? p.titleId : (p.titleEn || p.titleId);
+    const safeTitle = title || "";
+    const safeSearch = search || "";
+    
     const matchesFilter = filter === 'all' || p.type === filter;
-    const matchesSearch = title.toLowerCase().includes(search.toLowerCase()) || 
-                          p.technologies.some(tech => tech.toLowerCase().includes(search.toLowerCase()));
+    const matchesSearch = safeTitle.toLowerCase().includes(safeSearch.toLowerCase()) || 
+                          (p.technologies || []).some(tech => (tech || "").toLowerCase().includes(safeSearch.toLowerCase()));
     return matchesFilter && matchesSearch;
   });
 
@@ -96,7 +99,7 @@ export const Portfolio = () => {
                     {language === 'id' ? project.shortDescriptionId : (project.shortDescriptionEn || project.shortDescriptionId)}
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((tech) => (
+                    {(project.technologies || []).map((tech) => (
                       <Badge key={tech} variant="secondary" className="text-[10px] font-bold rounded-lg px-2 py-0.5">{tech}</Badge>
                     ))}
                   </div>
