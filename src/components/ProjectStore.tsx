@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { createContext, useContext, useState } from 'react';
@@ -41,7 +42,7 @@ const defaultStats: PortfolioStats = {
 };
 
 const defaultProfile: ProfileData = {
-  name: 'Portfolio Owner',
+  name: 'Nara Andra Tyaga',
   roleId: 'Full-Stack Developer',
   roleEn: 'Full-Stack Developer',
   aboutMeId: '',

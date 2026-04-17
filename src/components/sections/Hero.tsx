@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useEffect, useState } from 'react';
@@ -31,9 +32,9 @@ export const Hero = () => {
   return (
     <section className="relative min-h-[90vh] flex flex-col justify-center overflow-hidden py-24 bg-background selection:bg-primary/30">
       {/* Advanced Aura blobs */}
-      <div className="aura-blob top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/20 animate-pulse"></div>
-      <div className="aura-blob bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-accent/20 animate-pulse delay-1000"></div>
-      <div className="aura-blob top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[40%] bg-primary/5 animate-spin-slow"></div>
+      <div className="aura-blob top-[-10%] left-[-10%] <Changes OMITTED />" />
+      <div className="aura-blob bottom-[-10%] right-[-10%] <Changes OMITTED />" />
+      <div className="aura-blob top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 <Changes OMITTED />" />
 
       <div className="container mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center relative z-10">
         <div className={cn(
@@ -45,6 +46,12 @@ export const Hero = () => {
             <span>{language === 'id' ? 'Sistem Aktif & Siap Berkolaborasi' : 'System Online & Ready for Deployment'}</span>
           </div>
           
+          <div className="mb-6">
+            <span className="text-2xl md:text-3xl font-black font-headline text-foreground/80 tracking-tight block">
+              {profile.name || "Nara Andra Tyaga"}
+            </span>
+          </div>
+
           <h1 className="text-5xl md:text-6xl lg:text-[7.5rem] font-black font-headline leading-[0.9] mb-10 tracking-tighter">
             {heroTitle.split(' ').map((word, i) => (
               <span key={i} className={cn(
