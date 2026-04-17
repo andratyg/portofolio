@@ -14,24 +14,24 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'NAT | Professional Portfolio OP Edition',
-  description: 'Showcase your career journey and projects with premium style, AI-powered descriptions, and real-time data.',
-  keywords: ['Portfolio', 'Full Stack Developer', 'NAT', 'Next.js', 'React', 'Firebase'],
+  title: 'Nara Andra Tyaga | PPLG SMK Wikrama Bogor',
+  description: 'Portofolio Nara Andra Tyaga, siswa PPLG SMK Wikrama Bogor. Fokus pada pengembangan aplikasi web dan logika sistem yang efisien.',
+  keywords: ['Portfolio', 'Nara Andra Tyaga', 'SMK Wikrama Bogor', 'PPLG', 'Web Developer', 'Software Engineering'],
   authors: [{ name: 'Nara Andra Tyaga' }],
   verification: {
     google: 'cu0oN6kGs748IQbeUkW1eFLhaKDJwYpJ6Gn9daxm9tk',
   },
   openGraph: {
-    title: 'NAT | Professional Portfolio',
-    description: 'Transforming Ideas Into Reality with Modern Web Solutions.',
+    title: 'Nara Andra Tyaga | PPLG SMK Wikrama Bogor',
+    description: 'Portofolio Nara Andra Tyaga, siswa PPLG SMK Wikrama Bogor. Fokus pada pengembangan aplikasi web dan logika sistem yang efisien.',
     url: 'https://nat.app',
-    siteName: 'NAT',
+    siteName: 'Nara Andra Tyaga Portfolio',
     images: [
       {
         url: 'https://picsum.photos/seed/nat-og/1200/630',
         width: 1200,
         height: 630,
-        alt: 'NAT Portfolio Preview',
+        alt: 'Nara Andra Tyaga Portfolio Preview',
       },
     ],
     locale: 'id_ID',
@@ -39,8 +39,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NAT | Professional Portfolio',
-    description: 'Modern Full-Stack Developer Portfolio',
+    title: 'Nara Andra Tyaga | PPLG SMK Wikrama Bogor',
+    description: 'Portofolio Nara Andra Tyaga, siswa PPLG SMK Wikrama Bogor. Fokus pada pengembangan aplikasi web dan logika sistem yang efisien.',
     images: ['https://picsum.photos/seed/nat-og/1200/630'],
   },
   robots: {
@@ -60,6 +60,10 @@ export default function RootLayout({
     "name": "Nara Andra Tyaga",
     "jobTitle": "Full-Stack Developer",
     "url": "https://nat.app",
+    "affiliation": {
+      "@type": "EducationalOrganization",
+      "name": "SMK Wikrama Bogor"
+    },
     "sameAs": [
       "https://github.com",
       "https://linkedin.com"
