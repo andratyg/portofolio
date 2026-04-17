@@ -33,7 +33,11 @@ const defaultProfile: ProfileData = {
   roleEn: 'Professional Full-Stack Developer',
   aboutTextId: 'Saya adalah Pengembang Full-Stack yang bersemangat dalam membangun aplikasi web berkualitas tinggi. Dengan dasar yang kuat dalam teknologi modern dan perhatian detail pada desain, saya berusaha menciptakan solusi digital yang fungsional dan luar biasa.',
   aboutTextEn: 'I am a passionate Full-Stack Developer dedicated to building high-quality web applications. With a strong foundation in modern technologies and a keen eye for design, I strive to create digital solutions that are not only functional but also provide an exceptional user experience.',
-  profileImageUrl: 'https://picsum.photos/seed/karyapro-profile/600/800'
+  profileImageUrl: 'https://picsum.photos/seed/karyapro-profile/600/800',
+  heroTitleId: 'Mengubah Ide Menjadi Realitas',
+  heroTitleEn: 'Transforming Ideas Into Reality',
+  heroSubtitleId: 'Pengembang Full-Stack Profesional menciptakan pengalaman web modern.',
+  heroSubtitleEn: 'Professional Full-Stack Developer creating modern web experiences.'
 };
 
 const ProjectStoreContext = createContext<ProjectStoreType | undefined>(undefined);
@@ -67,7 +71,10 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     // Load Profile
     const savedProfile = localStorage.getItem('karyapro-profile');
-    if (savedProfile) setProfile(JSON.parse(savedProfile));
+    if (savedProfile) {
+      const parsed = JSON.parse(savedProfile);
+      setProfile({ ...defaultProfile, ...parsed });
+    }
   }, []);
 
   const addProject = (project: Project) => {

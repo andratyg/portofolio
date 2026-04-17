@@ -61,4 +61,8 @@ export interface ProfileData {
   aboutTextId: string;
   aboutTextEn: string;
   profileImageUrl: string;
+  heroTitleId: string;
+  heroTitleEn: string;
+  heroSubtitleId: string;
+  heroSubtitleEn: string;
 }

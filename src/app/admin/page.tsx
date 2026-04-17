@@ -583,6 +583,8 @@ function AdminContent() {
                   <Button variant="outline" size="sm" onClick={() => {
                        translateSingle(profileData.roleId, 'en', (v) => setProfileData(p => ({...p, roleEn: v})));
                        translateSingle(profileData.aboutTextId, 'en', (v) => setProfileData(p => ({...p, aboutTextEn: v})));
+                       translateSingle(profileData.heroTitleId, 'en', (v) => setProfileData(p => ({...p, heroTitleEn: v})));
+                       translateSingle(profileData.heroSubtitleId, 'en', (v) => setProfileData(p => ({...p, heroSubtitleEn: v})));
                     }} disabled={isTranslating} className="rounded-xl gap-2 border-indigo-600/20 hover:bg-indigo-600/5">
                     {isTranslating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
                     Translate Bio
@@ -605,8 +607,30 @@ function AdminContent() {
                   <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Role Title (EN)</label>
                   <Input value={profileData.roleEn} onChange={e => setProfileData({...profileData, roleEn: e.target.value})} className="h-12 rounded-xl bg-background/50" />
                 </div>
-                
+
+                <div className="grid md:grid-cols-2 gap-8 border-t pt-8">
+                   <div className="space-y-3">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Hero Title (ID)</label>
+                    <Input value={profileData.heroTitleId} onChange={e => setProfileData({...profileData, heroTitleId: e.target.value})} className="h-12 rounded-xl bg-background/50 font-bold" />
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Hero Title (EN)</label>
+                    <Input value={profileData.heroTitleEn} onChange={e => setProfileData({...profileData, heroTitleEn: e.target.value})} className="h-12 rounded-xl bg-background/50 font-bold" />
+                  </div>
+                </div>
+
                 <div className="grid md:grid-cols-2 gap-8">
+                   <div className="space-y-3">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Hero Subtitle (ID)</label>
+                    <Textarea value={profileData.heroSubtitleId} onChange={e => setProfileData({...profileData, heroSubtitleId: e.target.value})} className="h-20 rounded-xl bg-background/50" />
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Hero Subtitle (EN)</label>
+                    <Textarea value={profileData.heroSubtitleEn} onChange={e => setProfileData({...profileData, heroSubtitleEn: e.target.value})} className="h-20 rounded-xl bg-background/50" />
+                  </div>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-8 border-t pt-8">
                   <div className="space-y-3">
                     <label className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">About Bio (ID)</label>
                     <Textarea value={profileData.aboutTextId} onChange={e => setProfileData({...profileData, aboutTextId: e.target.value})} className="min-h-[150px] rounded-2xl bg-background/50 leading-relaxed" />
