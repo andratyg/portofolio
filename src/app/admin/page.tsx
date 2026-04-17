@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useEffect, useState, useRef } from 'react';
@@ -15,7 +16,7 @@ import {
   Briefcase, LayoutDashboard, History, ShieldAlert, ShieldCheck, CheckCircle2, 
   Download, Upload, HelpCircle, Info, Wifi, WifiOff, AlertTriangle, 
   Mail, Instagram, Github, Linkedin, Video, Send, Wand2, Type, FileText,
-  UserPlus, Calendar, Zap, BarChart3, Terminal, Activity, Link as LinkIcon, FileUp
+  UserPlus, Calendar, Zap, BarChart3, Terminal, Activity, Link as LinkIcon, FileUp, FileType
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
@@ -158,47 +159,6 @@ function AdminContent() {
     }
   };
 
-  const handleGenerateCertDesc = async () => {
-    if (!certForm.titleId || !certForm.issuer) {
-      toast({ variant: "destructive", title: "Missing Data", description: "Title and Issuer are needed for AI." });
-      return;
-    }
-    setIsAIThinking('cert');
-    try {
-      const res = await generateCertificateDescription({
-        title: certForm.titleId,
-        issuer: certForm.issuer,
-        shortDescription: certForm.shortDescriptionId
-      });
-      setCertForm({ ...certForm, fullDescriptionId: res.descriptionSuggestion });
-    } catch (e) {
-      toast({ variant: "destructive", title: "AI Error", description: "Failed to generate description." });
-    } finally {
-      setIsAIThinking(null);
-    }
-  };
-
-  const handleGenerateProjectSuggestion = async () => {
-    if (!projectForm.titleId) {
-      toast({ variant: "destructive", title: "Missing Title", description: "Title is needed for AI suggestion." });
-      return;
-    }
-    setIsAIThinking('project');
-    try {
-      const res = await generatePortfolioDescriptionSuggestion({
-        title: projectForm.titleId,
-        projectType: projectForm.type,
-        technologiesUsed: projectForm.technologies.split(',').map(s => s.trim()),
-        problemSolved: projectForm.problemId
-      });
-      setProjectForm({ ...projectForm, shortDescriptionId: res.descriptionSuggestion });
-    } catch (e) {
-      toast({ variant: "destructive", title: "AI Error", description: "Failed to generate suggestion." });
-    } finally {
-      setIsAIThinking(null);
-    }
-  };
-
   const handleProfileSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateProfile(profileFormData);
@@ -210,8 +170,8 @@ function AdminContent() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 1024 * 1024) { // 1MB Limit for Base64 storage
-      toast({ variant: "destructive", title: "File Too Large", description: "Please use a file smaller than 1MB for local storage." });
+    if (file.size > 2 * 1024 * 1024) { // 2MB Limit
+      toast({ variant: "destructive", title: "File Too Large", description: "Maximum file size is 2MB." });
       return;
     }
 
@@ -219,7 +179,7 @@ function AdminContent() {
     reader.onload = (event) => {
       const base64 = event.target?.result as string;
       setter(base64);
-      toast({ title: "File Ready", description: "Document has been encoded for deployment." });
+      toast({ title: "File Ready", description: "Document has been synced." });
     };
     reader.readAsDataURL(file);
   };
@@ -524,20 +484,18 @@ function AdminContent() {
                         <Input required value={certForm.issuer} onChange={e => setCertForm({...certForm, issuer: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
                       </div>
                       <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Media URL</label>
-                        <Input value={certForm.imageUrl} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" />
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><ImageIcon className="h-3 w-3" /> Preview Image (JPG/PNG)</label>
+                        <Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none cursor-pointer file:hidden pt-5" />
                       </div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-8">
                        <div className="space-y-3">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><LinkIcon className="h-3 w-3" /> Credential/PDF URL</label>
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><LinkIcon className="h-3 w-3" /> Verification URL (e.g. Dicoding)</label>
                           <Input value={certForm.credentialUrl} onChange={e => setCertForm({...certForm, credentialUrl: e.target.value})} placeholder="https://..." className="h-16 rounded-2xl bg-muted/30 border-none" />
                        </div>
                        <div className="space-y-3">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><FileUp className="h-3 w-3" /> "Upload" PDF (Local Sync)</label>
-                          <div className="flex gap-2">
-                            <Input type="file" accept=".pdf" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, credentialUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none cursor-pointer file:hidden pt-5" />
-                          </div>
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex items-center gap-2"><FileUp className="h-3 w-3" /> Official Document (PDF)</label>
+                          <Input type="file" accept=".pdf" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, credentialUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none cursor-pointer file:hidden pt-5" />
                        </div>
                     </div>
                     <Button type="submit" className="w-full h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground shadow-xl shadow-primary/20">FINALIZE CREDENTIAL</Button>
@@ -550,8 +508,12 @@ function AdminContent() {
               <div className="grid gap-4">
                 {certificates.map(c => (
                   <Card key={c.id} className="p-5 flex gap-5 items-center group bg-card border-none hover:bg-muted/30 transition-all rounded-2xl shadow-sm overflow-hidden">
-                    <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden shrink-0 border border-border/50">
-                      <img src={c.imageUrl && c.imageUrl.startsWith('http') ? c.imageUrl : "https://placehold.co/100x100?text=Cert"} className="w-full h-full object-cover" />
+                    <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden shrink-0 border border-border/50 flex items-center justify-center">
+                      {c.imageUrl && c.imageUrl.startsWith('data:image') ? (
+                        <img src={c.imageUrl} className="w-full h-full object-cover" />
+                      ) : (
+                        <FileType className="h-8 w-8 text-muted-foreground" />
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-black truncate text-sm tracking-tight text-foreground">{c.titleId}</h4>

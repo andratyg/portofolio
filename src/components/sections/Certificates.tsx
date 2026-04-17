@@ -1,3 +1,4 @@
+
 "use client"
 
 import React from 'react';
@@ -6,7 +7,7 @@ import { useProjectStore } from '../ProjectStore';
 import { Card, CardContent } from '../ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import { Award, Calendar, ShieldCheck, Info, ExternalLink, FileText, CheckCircle2 } from 'lucide-react';
+import { Award, Calendar, ShieldCheck, Info, ExternalLink, FileText, CheckCircle2, FileType, Eye } from 'lucide-react';
 import Image from 'next/image';
 import { Certificate } from '@/lib/types';
 import { Badge } from '../ui/badge';
@@ -53,10 +54,10 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
   const { t, language } = useLanguage();
   const title = language === 'id' ? cert.titleId : (cert.titleEn || cert.titleId);
   const shortDesc = language === 'id' ? cert.shortDescriptionId : (cert.shortDescriptionEn || cert.shortDescriptionId);
-  const fullDesc = language === 'id' ? cert.fullDescriptionId : (cert.fullDescriptionEn || cert.fullDescriptionId);
   
-  // Safe URL Fallback
-  const safeImageUrl = cert.imageUrl && cert.imageUrl.startsWith('http') 
+  // Safe Image URL Logic
+  const hasImage = cert.imageUrl && (cert.imageUrl.startsWith('http') || cert.imageUrl.startsWith('data:image'));
+  const safeImageUrl = hasImage 
     ? cert.imageUrl 
     : `https://placehold.co/800x600?text=${encodeURIComponent(title || 'Certificate')}`;
 
@@ -65,14 +66,26 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
       <DialogTrigger asChild>
         <div className="cursor-pointer group h-full">
           <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-500 bg-card rounded-[2.5rem] group-hover:-translate-y-2">
-            <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-              <Image 
-                src={safeImageUrl} 
-                alt={title || "Certificate"} 
-                fill 
-                className="object-cover group-hover:scale-110 transition-transform duration-700"
-                sizes="(max-width: 768px) 100vw, 33vw"
-              />
+            <div className="relative aspect-[4/3] overflow-hidden bg-muted flex items-center justify-center">
+              {hasImage ? (
+                <Image 
+                  src={safeImageUrl} 
+                  alt={title || "Certificate"} 
+                  fill 
+                  className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              ) : (
+                <div className="flex flex-col items-center gap-4 text-muted-foreground">
+                   <FileType className="h-16 w-16 opacity-20" />
+                   <p className="text-[9px] font-black uppercase tracking-widest">Document Available</p>
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                 <div className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-full p-4 scale-75 group-hover:scale-100 transition-all duration-500">
+                    <Eye className="h-6 w-6 text-white" />
+                 </div>
+              </div>
             </div>
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold font-headline mb-3 group-hover:text-accent transition-colors line-clamp-2">{title}</h3>
@@ -86,68 +99,88 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
         </div>
       </DialogTrigger>
       
-      <DialogContent className="sm:max-w-[800px] h-[90vh] rounded-[3rem] overflow-hidden border-none p-0 shadow-2xl flex flex-col">
-        <div className="relative aspect-video w-full bg-muted shrink-0">
-          <Image src={safeImageUrl} alt={title || "Certificate"} fill className="object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-          <div className="absolute bottom-6 left-8 right-8 text-white flex justify-between items-end">
-             <div className="space-y-1">
-               <Badge className="bg-accent text-white mb-2">{cert.issuer}</Badge>
-               <DialogTitle className="text-3xl font-bold font-headline leading-tight">{title}</DialogTitle>
+      <DialogContent className="sm:max-w-[900px] h-[95vh] rounded-[3rem] overflow-hidden border-none p-0 shadow-2xl flex flex-col">
+        {/* Header Section */}
+        <div className="bg-card border-b p-8 shrink-0 flex items-center justify-between gap-6">
+           <div className="space-y-1">
+             <div className="flex items-center gap-2">
+                <Badge className="bg-primary text-primary-foreground text-[8px] font-black uppercase px-3">{cert.issuer}</Badge>
+                <div className="flex items-center gap-1 text-[8px] font-black text-green-500 bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/20">
+                   <CheckCircle2 className="h-3 w-3" /> VERIFIED
+                </div>
              </div>
-             {cert.credentialUrl && (
-               <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer" className="no-print">
-                 <Button className="rounded-2xl h-12 gap-2 bg-white text-black hover:bg-white/90 font-black uppercase text-[10px] tracking-widest shadow-2xl">
-                   <CheckCircle2 className="h-4 w-4" /> Verify Credential
-                 </Button>
-               </a>
-             )}
-          </div>
+             <DialogTitle className="text-2xl md:text-3xl font-black font-headline tracking-tighter">{title}</DialogTitle>
+           </div>
+           {cert.credentialUrl && (
+             <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer" className="no-print">
+               <Button className="rounded-2xl h-12 gap-2 bg-primary text-primary-foreground hover:scale-105 font-black uppercase text-[10px] tracking-widest shadow-xl transition-all">
+                 <ExternalLink className="h-4 w-4" /> Open Original
+               </Button>
+             </a>
+           )}
         </div>
         
-        <div className="flex-1 overflow-y-auto p-10 space-y-10 no-scrollbar">
-          <div className="grid grid-cols-3 gap-6">
-            <div className="space-y-1 p-5 bg-muted/40 rounded-3xl text-center">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-black mb-1">{t.certIssuer}</p>
-              <p className="font-bold text-base">{cert.issuer}</p>
-            </div>
-            <div className="space-y-1 p-5 bg-muted/40 rounded-3xl text-center">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-black mb-1">{t.certYear}</p>
-              <p className="font-bold text-base">{cert.year}</p>
-            </div>
-            <div className="space-y-1 p-5 bg-muted/40 rounded-3xl text-center">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-black mb-1">VALIDITY</p>
-              <p className="font-bold text-base">{cert.validUntil}</p>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <FileText className="h-5 w-5 text-primary" />
+        {/* Viewer Content */}
+        <div className="flex-1 overflow-y-auto p-0 flex flex-col no-scrollbar bg-muted/30">
+          <div className="p-8 space-y-10">
+             {/* PDF Viewer Embed if it's a PDF */}
+             {cert.credentialUrl && (cert.credentialUrl.startsWith('data:application/pdf') || cert.credentialUrl.includes('.pdf')) ? (
+               <div className="space-y-4">
+                  <div className="flex items-center gap-3 px-2">
+                     <FileText className="h-4 w-4 text-primary" />
+                     <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Document Viewer</h4>
+                  </div>
+                  <div className="w-full aspect-[4/3] md:aspect-[16/11] rounded-[2rem] overflow-hidden border shadow-2xl bg-white relative">
+                     <iframe 
+                        src={`${cert.credentialUrl}#toolbar=0&navpanes=0&scrollbar=0`} 
+                        className="w-full h-full border-none"
+                        title="Certificate PDF Viewer"
+                     />
+                     <div className="absolute top-4 right-4 no-print">
+                        <Badge variant="secondary" className="backdrop-blur-xl bg-white/50 border-white/50 text-[8px] font-black uppercase px-3 py-1">Secure Preview</Badge>
+                     </div>
+                  </div>
                </div>
-               <h4 className="text-xl font-bold font-headline uppercase tracking-tight">{t.certFullDesc}</h4>
-            </div>
-            <p className="text-muted-foreground leading-relaxed text-base bg-muted/20 p-8 rounded-[2rem] border border-border/50">
-              {fullDesc}
-            </p>
-          </div>
+             ) : cert.imageUrl && (cert.imageUrl.startsWith('http') || cert.imageUrl.startsWith('data:image')) ? (
+               <div className="w-full relative aspect-video rounded-[2rem] overflow-hidden border shadow-2xl">
+                  <Image src={cert.imageUrl} alt={title || "Certificate"} fill className="object-cover" />
+               </div>
+             ) : (
+               <div className="w-full aspect-video rounded-[2rem] bg-card border border-dashed flex flex-col items-center justify-center gap-4 text-muted-foreground">
+                  <Info className="h-12 w-12 opacity-20" />
+                  <p className="text-xs font-bold italic">Visual proof available via "Open Original" button.</p>
+               </div>
+             )}
 
-          {cert.credentialUrl && (
-            <div className="p-8 bg-accent/5 border border-accent/20 rounded-[2.5rem] flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="space-y-1 text-center md:text-left">
-                <p className="text-[10px] font-black text-accent uppercase tracking-widest">OFFICIAL AUTHENTICATION</p>
-                <p className="text-sm font-medium text-muted-foreground">This certificate has been verified by the issuing authority and is permanently logged in the official credential vault.</p>
-              </div>
-              <div className="flex gap-4">
-                <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" className="rounded-xl border-accent/20 hover:bg-accent/10 h-12 px-6 gap-2 text-xs font-bold">
-                    <ExternalLink className="h-4 w-4" /> View Verification Page
-                  </Button>
-                </a>
-              </div>
-            </div>
-          )}
+             {/* Meta & Stats */}
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-card p-6 rounded-3xl border shadow-sm text-center">
+                   <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-1">Year</p>
+                   <p className="text-sm font-black">{cert.year}</p>
+                </div>
+                <div className="bg-card p-6 rounded-3xl border shadow-sm text-center">
+                   <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-1">Validity</p>
+                   <p className="text-sm font-black">{cert.validUntil}</p>
+                </div>
+                <div className="bg-card p-6 rounded-3xl border shadow-sm text-center col-span-2">
+                   <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-1">Status</p>
+                   <p className="text-sm font-black text-primary">Active Industry Validation</p>
+                </div>
+             </div>
+
+             {/* Description */}
+             <div className="bg-card p-8 rounded-[2.5rem] border shadow-sm space-y-6">
+                <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Award className="h-5 w-5 text-primary" />
+                   </div>
+                   <h4 className="text-lg font-black font-headline uppercase tracking-tight">Full Validation Narrative</h4>
+                </div>
+                <p className="text-muted-foreground leading-relaxed text-base font-medium">
+                  {cert.fullDescriptionId || cert.fullDescriptionEn || t.certFullDesc}
+                </p>
+             </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
