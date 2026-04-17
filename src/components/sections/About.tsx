@@ -1,3 +1,4 @@
+
 "use client"
 
 import React from 'react';
@@ -12,6 +13,17 @@ export const About = () => {
   const role = language === 'id' ? profile.roleId : (profile.roleEn || profile.roleId);
   const aboutText = language === 'id' ? profile.aboutMeId : (profile.aboutMeEn || profile.aboutMeId);
 
+  // Robust URL validation for next/image to prevent 'Invalid URL' errors
+  const isValidUrl = (url: any) => {
+    if (!url || typeof url !== 'string') return false;
+    const trimmed = url.trim();
+    return trimmed.startsWith('http') || trimmed.startsWith('/') || trimmed.startsWith('data:');
+  };
+
+  const profileImage = isValidUrl(profile.profilePictureUrl) 
+    ? profile.profilePictureUrl 
+    : "https://picsum.photos/seed/karyapro-profile/600/800";
+
   return (
     <section id="about" className="py-20 bg-card overflow-hidden">
       <div className="container mx-auto px-6">
@@ -20,10 +32,12 @@ export const About = () => {
             <div className="absolute -inset-4 bg-gradient-to-tr from-primary to-accent rounded-[2.5rem] blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
             <div className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-background">
               <Image 
-                src={profile.profilePictureUrl || "https://picsum.photos/seed/karyapro-profile/600/800"} 
+                src={profileImage} 
                 alt={profile.name} 
                 fill 
                 className="object-cover group-hover:scale-105 transition-transform duration-1000"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority={false}
               />
             </div>
           </div>
