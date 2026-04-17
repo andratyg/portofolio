@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useEffect, useState } from 'react';
@@ -23,6 +24,11 @@ export const Hero = () => {
 
   const heroTitle = language === 'id' ? profile.heroTitleId : (profile.heroTitleEn || profile.heroTitleId);
   const heroSubtitle = language === 'id' ? profile.heroSubtitleId : (profile.heroSubtitleEn || profile.heroSubtitleId);
+
+  // Safe Image URL Check
+  const isValidImageUrl = (url: string) => {
+    return url && (url.startsWith('http') || url.startsWith('/'));
+  };
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden py-32 bg-background selection:bg-primary/30">
@@ -85,7 +91,7 @@ export const Hero = () => {
           <div className="relative group p-6">
             <div className="absolute -inset-4 bg-gradient-to-r from-primary via-accent to-primary rounded-[4rem] blur-3xl opacity-20 group-hover:opacity-40 transition duration-1000 animate-spin-slow"></div>
             <div className="relative glass-panel rounded-[3.5rem] overflow-hidden shadow-2xl aspect-[4/5] group-hover:-translate-y-4 transition-transform duration-700">
-              {heroProject ? (
+              {heroProject && isValidImageUrl(heroProject.imageUrl) ? (
                 <>
                   <Image 
                     src={heroProject.imageUrl} 
@@ -111,11 +117,11 @@ export const Hero = () => {
                   </div>
                 </>
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center gap-6 p-12 text-center">
+                <div className="w-full h-full flex flex-col items-center justify-center gap-6 p-12 text-center bg-muted/20">
                    <Globe2 className="h-20 w-20 text-primary animate-pulse" />
                    <div className="space-y-2">
-                     <p className="text-xs font-black uppercase tracking-[0.3em] text-primary">Awaiting Content</p>
-                     <p className="text-muted-foreground text-sm font-medium">Please populate projects via admin dashboard to activate visual nodes.</p>
+                     <p className="text-xs font-black uppercase tracking-[0.3em] text-primary">System Node Active</p>
+                     <p className="text-muted-foreground text-sm font-medium">Awaiting visual synchronization. Please verify project data in the command center.</p>
                    </div>
                 </div>
               )}

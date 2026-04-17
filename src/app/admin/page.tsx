@@ -326,7 +326,7 @@ function AdminContent() {
                   <div className="flex gap-3">
                     <Button type="button" variant="outline" onClick={() => handleAITranslate('profile', profileFormData, setProfileFormData, 'id-to-en')} disabled={isTranslating === 'profile'} className="rounded-2xl gap-3 h-12 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5">
                       {isTranslating === 'profile' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
-                      ID &rarr; EN
+                      AI Localize
                     </Button>
                   </div>
                 </CardHeader>
@@ -355,6 +355,28 @@ function AdminContent() {
                        <div className="space-y-2.5">
                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">Hero Title (EN)</label>
                           <Input value={profileFormData.heroTitleEn} onChange={e => setProfileFormData({...profileFormData, heroTitleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
+                       </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8">
+                       <div className="space-y-2.5">
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">Hero Subtitle (ID)</label>
+                          <Textarea value={profileFormData.heroSubtitleId} onChange={e => setProfileFormData({...profileFormData, heroSubtitleId: e.target.value})} className="h-24 rounded-2xl bg-background/50 border-border/50" />
+                       </div>
+                       <div className="space-y-2.5">
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">Hero Subtitle (EN)</label>
+                          <Textarea value={profileFormData.heroSubtitleEn} onChange={e => setProfileFormData({...profileFormData, heroSubtitleEn: e.target.value})} className="h-24 rounded-2xl bg-background/50 border-border/50" />
+                       </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8">
+                       <div className="space-y-2.5">
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">About Me (ID)</label>
+                          <Textarea value={profileFormData.aboutMeId} onChange={e => setProfileFormData({...profileFormData, aboutMeId: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
+                       </div>
+                       <div className="space-y-2.5">
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1">About Me (EN)</label>
+                          <Textarea value={profileFormData.aboutMeEn} onChange={e => setProfileFormData({...profileFormData, aboutMeEn: e.target.value})} className="h-32 rounded-3xl bg-background/50 border-border/50" />
                        </div>
                     </div>
 
@@ -704,7 +726,7 @@ function AdminContent() {
                              <Input required value={expForm.titleId} onChange={e => setExpForm({...expForm, titleId: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                           </div>
                           <div className="space-y-2.5">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (EN)</label>
+                             <label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground">Title (EN)</label>
                              <Input value={expForm.titleEn} onChange={e => setExpForm({...expForm, titleEn: e.target.value})} className="h-14 rounded-2xl bg-background/50 border-border/50" />
                           </div>
                        </div>
