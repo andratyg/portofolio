@@ -5,6 +5,7 @@ import { useLanguage } from '../LanguageContext';
 import { useProjectStore } from '../ProjectStore';
 import { Badge } from '../ui/badge';
 import { History, Briefcase, GraduationCap, Milestone } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export const Timeline = () => {
   const { t, language } = useLanguage();
@@ -37,17 +38,26 @@ export const Timeline = () => {
               {experiences.map((exp, index) => {
                 const title = language === 'id' ? exp.titleId : (exp.titleEn || exp.titleId);
                 const description = language === 'id' ? exp.descriptionId : (exp.descriptionEn || exp.descriptionId);
-                const Icon = getIcon();
                 
                 return (
-                  <div key={exp.id} className={`relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group animate-in slide-in-from-bottom duration-700 delay-${index * 100}`}>
+                  <div 
+                    key={exp.id} 
+                    className={cn(
+                      "relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group",
+                      "animate-in fade-in slide-in-from-bottom duration-700"
+                    )}
+                    style={{ 
+                      transitionDelay: `${index * 50}ms`,
+                      animationDelay: `${index * 50}ms`
+                    }}
+                  >
                     {/* Icon Circle */}
                     <div className="flex items-center justify-center w-10 h-10 rounded-full border bg-background shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 transition-transform group-hover:scale-110">
-                      <div className="w-3 h-3 rounded-full bg-primary animate-pulse"></div>
+                      <div className="w-3 h-3 rounded-full bg-primary"></div>
                     </div>
 
                     {/* Content */}
-                    <div className="w-[calc(100%-4rem)] md:w-[45%] p-6 rounded-[2.5rem] border bg-card shadow-sm hover:shadow-xl transition-all group-hover:border-primary/50">
+                    <div className="w-[calc(100%-4rem)] md:w-[45%] p-6 rounded-[2.5rem] border bg-card shadow-sm hover:shadow-xl transition-all group-hover:border-primary/50 will-change-transform">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1 rounded-full uppercase tracking-widest">{exp.year}</span>
                       </div>
