@@ -23,14 +23,11 @@ export const Navbar = () => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
-      // Show if scrolling up OR at the very top
       if (currentScrollY < 10) {
         setIsVisible(true);
       } else if (currentScrollY > lastScrollY) {
-        // Scrolling down
         setIsVisible(false);
       } else {
-        // Scrolling up
         setIsVisible(true);
       }
       
@@ -59,6 +56,21 @@ export const Navbar = () => {
     { label: t.navJourney, href: '#journey' },
     { label: t.navContact, href: '#contact' },
   ];
+
+  const getThemeColor = (tName: string) => {
+    switch(tName) {
+      case 'emerald': return 'bg-emerald-500';
+      case 'sunset': return 'bg-orange-500';
+      case 'royal': return 'bg-purple-600';
+      case 'cyber': return 'bg-cyan-400';
+      case 'amber': return 'bg-amber-500';
+      case 'ramadan': return 'bg-green-700';
+      case 'imlek': return 'bg-red-600';
+      case 'natal': return 'bg-red-500';
+      case 'dark': return 'bg-slate-900';
+      default: return 'bg-slate-200';
+    }
+  };
 
   return (
     <nav className={cn(
@@ -109,14 +121,17 @@ export const Navbar = () => {
                 <Palette className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="grid grid-cols-2 gap-1 w-48">
+            <DropdownMenuContent align="end" className="grid grid-cols-2 gap-1 w-56 p-2">
               {themes.map((tName) => (
                 <DropdownMenuItem 
                   key={tName} 
                   onClick={() => setTheme(tName)}
-                  className="capitalize"
+                  className={cn(
+                    "capitalize rounded-xl gap-2",
+                    theme === tName && "bg-primary/10 text-primary font-bold"
+                  )}
                 >
-                  <span className={`w-3 h-3 rounded-full mr-2 bg-primary`} />
+                  <div className={cn("w-4 h-4 rounded-full shadow-sm", getThemeColor(tName))} />
                   {tName}
                 </DropdownMenuItem>
               ))}

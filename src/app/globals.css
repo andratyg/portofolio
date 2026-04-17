@@ -35,48 +35,73 @@
     --border: 216 34% 20%;
   }
 
-  /* Seasonal Themes (Accent-Only Focus) */
-  [data-theme='ramadan'] {
-    --primary: 142 72% 29%;
-    --accent: 45 93% 47%;
-    --ring: 142 72% 29%;
-  }
-
-  [data-theme='imlek'] {
-    --primary: 0 100% 45%;
-    --accent: 45 93% 47%;
-    --ring: 0 100% 45%;
-  }
-
-  [data-theme='natal'] {
-    --primary: 350 100% 40%;
-    --accent: 142 76% 45%;
-    --ring: 350 100% 40%;
-  }
+  /* --- Advanced OP Themes --- */
 
   [data-theme='emerald'] {
-    --primary: 142 76% 45%;
-    --accent: 142 76% 45%;
+    --background: 160 50% 98%;
+    --foreground: 160 80% 10%;
+    --primary: 160 84% 39%;
+    --accent: 160 60% 50%;
+    --border: 160 30% 90%;
   }
 
   [data-theme='sunset'] {
+    --background: 20 40% 98%;
+    --foreground: 20 80% 10%;
     --primary: 15 90% 60%;
-    --accent: 15 90% 60%;
+    --accent: 350 80% 60%;
+    --border: 20 30% 90%;
   }
 
   [data-theme='royal'] {
+    --background: 270 40% 98%;
+    --foreground: 270 80% 10%;
     --primary: 262 83% 58%;
-    --accent: 262 83% 58%;
+    --accent: 280 70% 50%;
+    --border: 270 30% 90%;
   }
 
   [data-theme='cyber'] {
+    --background: 230 50% 3%;
+    --foreground: 180 100% 70%;
     --primary: 180 100% 50%;
-    --accent: 180 100% 50%;
+    --accent: 320 100% 60%;
+    --border: 230 40% 15%;
+    --card: 230 50% 6%;
   }
 
   [data-theme='amber'] {
+    --background: 45 40% 98%;
+    --foreground: 45 80% 10%;
     --primary: 45 93% 47%;
+    --accent: 35 90% 50%;
+    --border: 45 30% 90%;
+  }
+
+  [data-theme='ramadan'] {
+    --background: 140 40% 5%;
+    --foreground: 45 90% 70%;
+    --primary: 142 72% 35%;
     --accent: 45 93% 47%;
+    --card: 140 40% 8%;
+    --border: 142 50% 20%;
+  }
+
+  [data-theme='imlek'] {
+    --background: 0 40% 4%;
+    --foreground: 45 90% 75%;
+    --primary: 0 100% 50%;
+    --accent: 45 93% 55%;
+    --card: 0 40% 8%;
+    --border: 0 60% 20%;
+  }
+
+  [data-theme='natal'] {
+    --background: 120 20% 98%;
+    --foreground: 0 80% 20%;
+    --primary: 350 100% 40%;
+    --accent: 142 76% 45%;
+    --border: 120 30% 90%;
   }
 }
 
