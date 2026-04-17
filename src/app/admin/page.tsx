@@ -291,7 +291,7 @@ function AdminContent() {
                   <form onSubmit={handleProfileSubmit} className="space-y-20">
                     <div className="space-y-10">
                       <div className="flex items-center gap-4">
-                        <div className="h-10 w-1 h-1 bg-primary rounded-full"></div>
+                        <div className="h-10 w-1 bg-primary rounded-full"></div>
                         <h3 className="text-xs font-black uppercase tracking-[0.4em] text-primary">Core Identity</h3>
                       </div>
                       <div className="grid lg:grid-cols-3 gap-10">
@@ -312,7 +312,7 @@ function AdminContent() {
 
                     <div className="space-y-10 p-8 bg-muted/5 rounded-[2.5rem] border border-border/20">
                       <div className="flex items-center gap-4">
-                        <div className="h-10 w-1 h-1 bg-accent rounded-full"></div>
+                        <div className="h-10 w-1 bg-accent rounded-full"></div>
                         <h3 className="text-xs font-black uppercase tracking-[0.4em] text-accent">Strategic Metrics (OP Stats)</h3>
                       </div>
                       <div className="grid lg:grid-cols-4 gap-8">
@@ -337,7 +337,7 @@ function AdminContent() {
 
                     <div className="space-y-12">
                       <div className="flex items-center gap-4">
-                        <div className="h-10 w-1 h-1 bg-primary rounded-full"></div>
+                        <div className="h-10 w-1 bg-primary rounded-full"></div>
                         <h3 className="text-xs font-black uppercase tracking-[0.4em] text-primary">Visual Narrative</h3>
                       </div>
                       <div className="grid md:grid-cols-2 gap-10">
@@ -376,7 +376,7 @@ function AdminContent() {
 
                     <div className="space-y-10">
                       <div className="flex items-center gap-4">
-                        <div className="h-10 w-1 h-1 bg-accent rounded-full"></div>
+                        <div className="h-10 w-1 bg-accent rounded-full"></div>
                         <h3 className="text-xs font-black uppercase tracking-[0.4em] text-accent">Connectivity & Media</h3>
                       </div>
                       <div className="grid lg:grid-cols-3 gap-8">

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useLanguage } from './LanguageContext';
 import { useTheme, themes } from './ThemeContext';
 import { Button } from './ui/button';
-import { Globe, Palette, LogIn, Menu, X } from 'lucide-react';
+import { Globe, Palette, LogIn, Menu, X, ChevronDown } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -115,25 +115,27 @@ export const Navbar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Theme Switcher */}
+            {/* Theme Switcher - OP GRID EDITION */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-xl">
-                  <Palette className="h-5 w-5" />
+                <Button variant="ghost" className="rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest px-4">
+                  <Palette className="h-4 w-4" />
+                  <span className="hidden lg:inline">{theme}</span>
+                  <ChevronDown className="h-3 w-3 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="grid grid-cols-2 gap-2 w-64 p-3 rounded-[2rem] border-none shadow-2xl bg-card/90 backdrop-blur-xl">
+              <DropdownMenuContent align="end" className="grid grid-cols-2 gap-2 w-72 p-3 rounded-[2rem] border-none shadow-2xl bg-card/95 backdrop-blur-2xl">
                 {themes.map((tName) => (
                   <DropdownMenuItem 
                     key={tName} 
                     onClick={() => setTheme(tName)}
                     className={cn(
-                      "capitalize rounded-xl gap-3 p-3 transition-all",
+                      "capitalize rounded-2xl gap-3 p-3 transition-all",
                       theme === tName ? "bg-primary text-primary-foreground font-black" : "hover:bg-muted"
                     )}
                   >
-                    <div className={cn("w-5 h-5 rounded-full shadow-inner border border-white/20", getThemeColor(tName))} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">{tName}</span>
+                    <div className={cn("w-6 h-6 rounded-full shadow-inner border border-white/20 shrink-0", getThemeColor(tName))} />
+                    <span className="text-[10px] font-black uppercase tracking-widest truncate">{tName}</span>
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
