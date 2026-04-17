@@ -29,3 +29,14 @@ export interface Testimonial {
   content: string;
   avatarUrl: string;
 }
+
+export interface Certificate {
+  id: string;
+  title: string;
+  shortDescription: string;
+  fullDescription: string;
+  year: string;
+  issuer: string;
+  validUntil: string;
+  imageUrl: string;
+}

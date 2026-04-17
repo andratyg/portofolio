@@ -1,4 +1,3 @@
-
 export type Language = 'en' | 'id';
 
 export const translations = {
@@ -8,6 +7,7 @@ export const translations = {
     navJourney: 'Journey',
     navContact: 'Contact',
     navAdmin: 'Admin',
+    navCertificates: 'Certificates',
     heroTitle: 'Transforming Ideas Into Reality',
     heroSubtitle: 'Professional Full-Stack Developer creating modern web experiences.',
     viewProjects: 'View Projects',
@@ -39,6 +39,7 @@ export const translations = {
     footerCopyright: '© 2024 KaryaPro. All rights reserved.',
     adminTitle: 'Admin Dashboard',
     addProject: 'Add New Project',
+    addCertificate: 'Add New Certificate',
     aiDescription: 'AI Suggestions',
     generateAI: 'Generate Description',
     loading: 'Loading...',
@@ -46,7 +47,11 @@ export const translations = {
     certificates: 'Certificates',
     resultsImpact: 'Impact & Results',
     aboutMeTitle: 'About Me',
-    aboutMeText: 'I am a passionate Full-Stack Developer dedicated to building high-quality web applications. With a strong foundation in modern technologies and a keen eye for design, I strive to create digital solutions that are not only functional but also provide an exceptional user experience. My approach combines technical expertise with creative problem-solving to deliver projects that make a real impact.'
+    aboutMeText: 'I am a passionate Full-Stack Developer dedicated to building high-quality web applications. With a strong foundation in modern technologies and a keen eye for design, I strive to create digital solutions that are not only functional but also provide an exceptional user experience.',
+    certIssuer: 'Issued by',
+    certYear: 'Year',
+    certValidity: 'Valid Until',
+    certFullDesc: 'Full Description'
   },
   id: {
     navHome: 'Beranda',
@@ -54,6 +59,7 @@ export const translations = {
     navJourney: 'Perjalanan',
     navContact: 'Kontak',
     navAdmin: 'Admin',
+    navCertificates: 'Sertifikat',
     heroTitle: 'Mengubah Ide Menjadi Realitas',
     heroSubtitle: 'Pengembang Full-Stack Profesional menciptakan pengalaman web modern.',
     viewProjects: 'Lihat Proyek',
@@ -85,6 +91,7 @@ export const translations = {
     footerCopyright: '© 2024 KaryaPro. Hak cipta dilindungi undang-undang.',
     adminTitle: 'Dasbor Admin',
     addProject: 'Tambah Proyek Baru',
+    addCertificate: 'Tambah Sertifikat Baru',
     aiDescription: 'Saran AI',
     generateAI: 'Hasilkan Deskripsi',
     loading: 'Memuat...',
@@ -92,6 +99,10 @@ export const translations = {
     certificates: 'Sertifikat',
     resultsImpact: 'Dampak & Hasil',
     aboutMeTitle: 'Tentang Saya',
-    aboutMeText: 'Saya adalah Pengembang Full-Stack yang bersemangat dalam membangun aplikasi web berkualitas tinggi. Dengan dasar yang kuat dalam teknologi modern dan perhatian detail pada desain, saya berusaha menciptakan solusi digital yang tidak hanya fungsional tetapi juga memberikan pengalaman pengguna yang luar biasa. Pendekatan saya menggabungkan keahlian teknis dengan penyelesaian masalah yang kreatif untuk menghasilkan proyek yang memberikan dampak nyata.'
+    aboutMeText: 'Saya adalah Pengembang Full-Stack yang bersemangat dalam membangun aplikasi web berkualitas tinggi. Dengan dasar yang kuat dalam teknologi modern dan perhatian detail pada desain, saya berusaha menciptakan solusi digital yang fungsional dan luar biasa.',
+    certIssuer: 'Diterbitkan oleh',
+    certYear: 'Tahun',
+    certValidity: 'Berlaku Sampai',
+    certFullDesc: 'Deskripsi Lengkap'
   }
 };

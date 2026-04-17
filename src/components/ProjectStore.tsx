@@ -1,26 +1,35 @@
 "use client"
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Project } from '@/lib/types';
+import { Project, Certificate } from '@/lib/types';
 import { initialProjects } from '@/lib/data';
 
 interface ProjectStoreType {
   projects: Project[];
+  certificates: Certificate[];
   addProject: (project: Project) => void;
   deleteProject: (id: string) => void;
+  addCertificate: (cert: Certificate) => void;
+  deleteCertificate: (id: string) => void;
 }
 
 const ProjectStoreContext = createContext<ProjectStoreType | undefined>(undefined);
 
 export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [certificates, setCertificates] = useState<Certificate[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('karyapro-projects');
-    if (saved) {
-      setProjects(JSON.parse(saved));
+    const savedProjects = localStorage.getItem('karyapro-projects');
+    if (savedProjects) {
+      setProjects(JSON.parse(savedProjects));
     } else {
       setProjects(initialProjects);
+    }
+
+    const savedCerts = localStorage.getItem('karyapro-certificates');
+    if (savedCerts) {
+      setCertificates(JSON.parse(savedCerts));
     }
   }, []);
 
@@ -36,8 +45,27 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     localStorage.setItem('karyapro-projects', JSON.stringify(updated));
   };
 
+  const addCertificate = (cert: Certificate) => {
+    const updated = [cert, ...certificates];
+    setCertificates(updated);
+    localStorage.setItem('karyapro-certificates', JSON.stringify(updated));
+  };
+
+  const deleteCertificate = (id: string) => {
+    const updated = certificates.filter(c => c.id !== id);
+    setCertificates(updated);
+    localStorage.setItem('karyapro-certificates', JSON.stringify(updated));
+  };
+
   return (
-    <ProjectStoreContext.Provider value={{ projects, addProject, deleteProject }}>
+    <ProjectStoreContext.Provider value={{ 
+      projects, 
+      certificates, 
+      addProject, 
+      deleteProject, 
+      addCertificate, 
+      deleteCertificate 
+    }}>
       {children}
     </ProjectStoreContext.Provider>
   );

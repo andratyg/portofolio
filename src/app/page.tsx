@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Navbar } from '@/components/Navbar';
@@ -6,6 +5,7 @@ import { Hero } from '@/components/sections/Hero';
 import { About } from '@/components/sections/About';
 import { Stats } from '@/components/sections/Stats';
 import { Portfolio } from '@/components/sections/Portfolio';
+import { Certificates } from '@/components/sections/Certificates';
 import { Timeline } from '@/components/sections/Timeline';
 import { Testimonials } from '@/components/sections/Testimonials';
 import { Contact } from '@/components/sections/Contact';
@@ -23,6 +23,7 @@ export default function Home() {
         <About />
         <Stats />
         <Portfolio />
+        <Certificates />
         <Timeline />
         <Testimonials />
         <Contact />
