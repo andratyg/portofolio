@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { Button } from '../ui/button';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, Download } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useProjectStore } from '../ProjectStore';
@@ -23,11 +23,15 @@ export const Hero = () => {
   const heroTitle = language === 'id' ? profile.heroTitleId : (profile.heroTitleEn || profile.heroTitleId);
   const heroSubtitle = language === 'id' ? profile.heroSubtitleId : (profile.heroSubtitleEn || profile.heroSubtitleId);
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <section className="relative min-h-[95vh] flex flex-col justify-center overflow-hidden py-24 bg-background">
-      {/* Background Aura */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[160px] animate-pulse"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/20 rounded-full blur-[160px] animate-pulse delay-700"></div>
+      {/* Background Aura - With Fixed Class Names */}
+      <div className="blur-aura absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[160px] animate-pulse"></div>
+      <div className="blur-aura absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/20 rounded-full blur-[160px] animate-pulse delay-700"></div>
 
       <div className="container mx-auto px-4 grid lg:grid-cols-12 gap-12 items-center relative z-10">
         <div className={`lg:col-span-7 transition-all duration-1000 transform ${isVisible ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}>
@@ -48,18 +52,22 @@ export const Hero = () => {
             {heroSubtitle}
           </p>
 
-          <div className="flex flex-wrap gap-6">
+          <div className="flex flex-wrap gap-6 no-print">
             <Link href="#portfolio">
               <Button size="lg" className="h-16 px-10 rounded-2xl gap-3 group shadow-2xl shadow-primary/30 text-lg font-bold">
                 {t.viewProjects}
                 <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
               </Button>
             </Link>
-            <Link href="#contact">
-              <Button variant="outline" size="lg" className="h-16 px-10 rounded-2xl border-primary/20 hover:bg-primary/5 text-lg font-bold backdrop-blur-sm">
-                {t.navContact}
-              </Button>
-            </Link>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              onClick={handlePrint}
+              className="h-16 px-10 rounded-2xl border-primary/20 hover:bg-primary/5 text-lg font-bold backdrop-blur-sm gap-2"
+            >
+              <Download className="h-5 w-5" />
+              {language === 'id' ? 'Ekspor PDF' : 'Export PDF'}
+            </Button>
           </div>
         </div>
 
@@ -71,12 +79,14 @@ export const Hero = () => {
                 <>
                   <Image 
                     src={heroProject.imageUrl} 
-                    alt="Featured" 
+                    alt={language === 'id' ? heroProject.titleId : heroProject.titleEn} 
                     fill
+                    priority // LCP Optimization
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     className="object-cover group-hover:scale-110 transition-transform duration-1000"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-10 text-white">
-                    <Badge className="w-fit mb-4 bg-primary/20 backdrop-blur-md border-primary/30 text-primary-foreground uppercase text-[10px] font-black tracking-widest">{t.featuredProjects}</Badge>
+                    <div className="w-fit mb-4 bg-primary/20 backdrop-blur-md border-primary/30 text-primary-foreground uppercase text-[10px] font-black tracking-widest px-3 py-1 rounded-full">{t.featuredProjects}</div>
                     <h3 className="text-3xl font-bold mb-3 font-headline leading-tight">
                       {language === 'id' ? heroProject.titleId : heroProject.titleEn}
                     </h3>
@@ -95,9 +105,3 @@ export const Hero = () => {
     </section>
   );
 };
-
-const Badge = ({ children, className }: { children: React.ReactNode, className?: string }) => (
-  <div className={`px-3 py-1 rounded-full text-xs font-bold ${className}`}>
-    {children}
-  </div>
-);

@@ -7,7 +7,7 @@ import { useProjectStore } from '../ProjectStore';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
-import { Send, MessageSquare, Linkedin, ExternalLink, Github, Instagram, Video } from 'lucide-react';
+import { Send, MessageSquare, Linkedin, ExternalLink, Github, Instagram, Video, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export const Contact = () => {
@@ -18,6 +18,19 @@ export const Contact = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const email = (form.elements.namedItem('email') as HTMLInputElement).value;
+    
+    // Basic Client-Side Validation
+    if (!email.includes('@')) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
@@ -25,7 +38,7 @@ export const Contact = () => {
         title: "Message Sent!",
         description: "Thank you for reaching out. I will get back to you soon.",
       });
-      (e.target as HTMLFormElement).reset();
+      form.reset();
     }, 1500);
   };
 
@@ -79,7 +92,6 @@ export const Contact = () => {
 
   return (
     <section id="contact" className="py-24 bg-primary text-primary-foreground overflow-hidden relative">
-      {/* Background patterns */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-white/5 skew-x-12 translate-x-1/2"></div>
       
       <div className="container mx-auto px-4 relative z-10">
@@ -97,10 +109,11 @@ export const Contact = () => {
                   href={link.url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors border border-white/10 group"
+                  aria-label={`Contact me via ${link.label}`}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors border border-white/10 group no-print"
                 >
                   <div className={`p-3 ${link.color} rounded-xl shadow-lg`}>
-                    <link.icon className="h-6 w-6 text-white" />
+                    <link.icon className="h-6 w-6 text-white" aria-hidden="true" />
                   </div>
                   <div className="flex-1">
                     <p className="font-bold text-lg">{link.label}</p>
@@ -110,31 +123,37 @@ export const Contact = () => {
                 </a>
               ))}
               
-              {socialLinks.length === 0 && (
-                <p className="italic text-primary-foreground/50">No social links configured in admin.</p>
-              )}
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+                <div className="p-3 bg-white/10 rounded-xl">
+                  <Mail className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="font-bold text-lg">Email</p>
+                  <p className="text-sm text-primary-foreground/70">admin@karyapro.app</p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="bg-background rounded-3xl p-8 shadow-2xl text-foreground">
+          <div className="bg-background rounded-[3rem] p-10 shadow-2xl text-foreground no-print">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold">{t.contactName}</label>
-                  <Input required placeholder="Jane Doe" className="h-12 rounded-xl" />
+                  <label htmlFor="name" className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactName}</label>
+                  <Input id="name" required name="name" placeholder="Jane Doe" className="h-12 rounded-xl" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold">{t.contactEmail}</label>
-                  <Input required type="email" placeholder="jane@example.com" className="h-12 rounded-xl" />
+                  <label htmlFor="email" className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactEmail}</label>
+                  <Input id="email" required type="email" name="email" placeholder="jane@example.com" className="h-12 rounded-xl" />
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold">{t.contactMessage}</label>
-                <Textarea required placeholder="Tell me about your project..." className="min-h-[150px] rounded-xl" />
+                <label htmlFor="message" className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactMessage}</label>
+                <Textarea id="message" required name="message" placeholder="Tell me about your project..." className="min-h-[150px] rounded-xl" />
               </div>
               <Button 
                 type="submit" 
-                className="w-full h-14 rounded-xl text-lg font-bold gap-2"
+                className="w-full h-14 rounded-xl text-lg font-bold gap-2 bg-primary text-primary-foreground hover:scale-[0.98] transition-all"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? t.loading : (

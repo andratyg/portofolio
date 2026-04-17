@@ -1,7 +1,7 @@
 
 "use client"
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { Project, Certificate, PortfolioStats, ProfileData, Testimonial, Experience } from '@/lib/types';
 import { useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
@@ -18,6 +18,7 @@ interface ProjectStoreType {
   stats: PortfolioStats;
   profile: ProfileData;
   isLoading: boolean;
+  error: any;
   addProject: (project: Project) => void;
   deleteProject: (id: string) => void;
   addCertificate: (cert: Certificate) => void;
@@ -44,8 +45,8 @@ const defaultProfile: ProfileData = {
   aboutTextId: '',
   aboutTextEn: '',
   profileImageUrl: 'https://picsum.photos/seed/profile/600/800',
-  heroTitleId: 'Transforming Ideas',
-  heroTitleEn: 'Transforming Ideas',
+  heroTitleId: 'Transforming Ideas Into Reality',
+  heroTitleEn: 'Transforming Ideas Into Reality',
   heroSubtitleId: '',
   heroSubtitleEn: '',
   whatsapp: '',
@@ -68,18 +69,18 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const profileDocRef = useMemoFirebase(() => doc(firestore, 'portfolioOwner', 'profile'), [firestore]);
 
   // Real-time Data
-  const { data: projectsData, isLoading: loadingProjects } = useCollection<Project>(projectsQuery);
-  const { data: certsData, isLoading: loadingCerts } = useCollection<Certificate>(certsQuery);
-  const { data: testsData, isLoading: loadingTests } = useCollection<Testimonial>(testsQuery);
-  const { data: journeyData, isLoading: loadingJourney } = useCollection<Experience>(journeyQuery);
-  const { data: profileData, isLoading: loadingProfile } = useDoc<any>(profileDocRef);
+  const { data: projectsData, isLoading: loadingProjects, error: errorProjects } = useCollection<Project>(projectsQuery);
+  const { data: certsData, isLoading: loadingCerts, error: errorCerts } = useCollection<Certificate>(certsQuery);
+  const { data: testsData, isLoading: loadingTests, error: errorTests } = useCollection<Testimonial>(testsQuery);
+  const { data: journeyData, isLoading: loadingJourney, error: errorJourney } = useCollection<Experience>(journeyQuery);
+  const { data: profileData, isLoading: loadingProfile, error: errorProfile } = useDoc<any>(profileDocRef);
 
   const projects = projectsData || [];
   const certificates = certsData || [];
   const testimonials = testsData || [];
   const experiences = journeyData || [];
+  const error = errorProjects || errorCerts || errorTests || errorJourney || errorProfile;
   
-  // Stats and Profile are combined in PortfolioOwner in our backend schema
   const profile: ProfileData = profileData ? {
     name: profileData.name || defaultProfile.name,
     roleId: profileData.roleId || defaultProfile.roleId,
@@ -186,6 +187,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       stats,
       profile,
       isLoading,
+      error,
       addProject, 
       deleteProject, 
       addCertificate, 

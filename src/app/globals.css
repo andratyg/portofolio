@@ -47,27 +47,6 @@
     --input: 216 34% 20%;
     --ring: 216 34% 25%;
   }
-
-  [data-theme='cyber'] {
-    --background: 230 50% 3%;
-    --foreground: 180 100% 50%;
-    --primary: 320 100% 60%;
-    --primary-foreground: 230 50% 5%;
-    --accent: 180 100% 50%;
-    --accent-foreground: 230 50% 5%;
-    --card: 230 50% 6%;
-    --card-foreground: 180 100% 50%;
-    --muted: 230 50% 12%;
-    --border: 320 100% 40%;
-    --input: 320 100% 25%;
-    --popover: 230 50% 3%;
-    --popover-foreground: 180 100% 50%;
-  }
-
-  [data-theme='emerald'] { --primary: 160 84% 39%; --accent: 142 71% 45%; }
-  [data-theme='sunset'] { --primary: 15 80% 55%; --accent: 35 90% 65%; }
-  [data-theme='royal'] { --primary: 265 80% 60%; --accent: 280 85% 70%; }
-  [data-theme='rose'] { --primary: 346 84% 61%; --accent: 346 84% 75%; }
 }
 
 @layer base {
@@ -90,6 +69,14 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Optimize Blur for Mobile - Fix CSS Parsing Error */
+@media (max-width: 768px) {
+  .blur-aura {
+    filter: blur(40px) !important;
+    opacity: 0.5 !important;
+  }
 }
 
 @keyframes spin-slow {
@@ -120,4 +107,44 @@
 
 .glow-effect:hover::after {
   opacity: 1;
+}
+
+/* Print Styles for CV/Resume Export */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+  }
+  .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  section {
+    page-break-inside: avoid;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    background: white !important;
+  }
+  .bg-muted, .bg-card, .bg-primary {
+    background: white !important;
+    border: 1px solid #ddd !important;
+    color: black !important;
+  }
+  .text-primary, .text-accent {
+    color: #333 !important;
+  }
+  h1, h2, h3 {
+    color: black !important;
+    page-break-after: avoid;
+  }
+  img {
+    max-width: 200px !important;
+    height: auto !important;
+  }
 }

@@ -6,17 +6,19 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { Search, ExternalLink, Zap } from 'lucide-react';
+import { Search, ExternalLink, Zap, Share2, Loader2, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { useProjectStore } from '../ProjectStore';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 export const Portfolio = () => {
   const { t, language } = useLanguage();
-  const { projects } = useProjectStore();
+  const { projects, isLoading, error } = useProjectStore();
   const [filter, setFilter] = useState<'all' | 'web' | 'ui' | 'backend'>('all');
   const [search, setSearch] = useState('');
   const [isVisible, setIsVisible] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     setIsVisible(true);
@@ -31,10 +33,27 @@ export const Portfolio = () => {
     return matchesFilter && matchesSearch;
   });
 
+  const handleShare = (e: React.MouseEvent, project: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (navigator.share) {
+      navigator.share({
+        title: language === 'id' ? project.titleId : project.titleEn,
+        text: language === 'id' ? project.shortDescriptionId : project.shortDescriptionEn,
+        url: project.demoUrl || window.location.href,
+      }).catch(console.error);
+    } else {
+      navigator.clipboard.writeText(project.demoUrl || window.location.href);
+      toast({
+        title: "Link Copied!",
+        description: "Project link has been copied to clipboard.",
+      });
+    }
+  };
+
   return (
     <section id="portfolio" className="py-24 bg-background relative overflow-hidden">
       <div className="container mx-auto px-4">
-        {/* Header Section matching reference image */}
         <div className="mb-24">
           <Badge className="mb-10 bg-primary/10 text-primary border-primary/20 px-6 py-2 rounded-full font-black uppercase tracking-widest text-[11px]">
             {language === 'id' ? 'PROYEK WEBSITE' : 'WEBSITE PROJECTS'}
@@ -54,7 +73,7 @@ export const Portfolio = () => {
               </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto no-print">
               <div className="relative w-full sm:w-auto">
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input 
@@ -62,6 +81,7 @@ export const Portfolio = () => {
                   className="pl-14 w-full sm:w-80 rounded-[1.5rem] h-14 bg-card border-border shadow-xl shadow-black/5 focus:ring-2 focus:ring-primary/20 text-base font-medium"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                  aria-label={t.searchPlaceholder}
                 />
               </div>
               <div className="flex gap-2 w-full sm:w-auto overflow-x-auto no-scrollbar py-2">
@@ -83,9 +103,32 @@ export const Portfolio = () => {
           </div>
         </div>
 
-        {/* Projects Grid */}
+        {/* Status Handling */}
+        {isLoading && (
+          <div className="py-24 flex flex-col items-center gap-4">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <p className="font-bold text-muted-foreground uppercase tracking-widest text-xs">{t.loading}</p>
+          </div>
+        )}
+
+        {error && (
+          <div className="py-24 flex flex-col items-center gap-4 text-center">
+            <div className="p-4 rounded-full bg-destructive/10 text-destructive">
+              <AlertCircle className="h-12 w-12" />
+            </div>
+            <h3 className="text-2xl font-bold">Failed to load projects</h3>
+            <p className="text-muted-foreground">Please check your internet connection and try again.</p>
+          </div>
+        )}
+
+        {!isLoading && !error && filteredProjects.length === 0 && (
+          <div className="py-24 text-center">
+            <p className="text-xl text-muted-foreground">No projects found for your search.</p>
+          </div>
+        )}
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {filteredProjects.map((project, idx) => (
+          {!isLoading && !error && filteredProjects.map((project, idx) => (
             <a 
               key={project.id} 
               href={project.demoUrl || '#'} 
@@ -103,6 +146,8 @@ export const Portfolio = () => {
                     src={project.imageUrl || `https://picsum.photos/seed/${project.id}/800/600`} 
                     alt={language === 'id' ? project.titleId : project.titleEn} 
                     fill
+                    loading="lazy"
+                    sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -113,6 +158,14 @@ export const Portfolio = () => {
                   <div className="absolute top-6 left-6">
                     <Badge className="bg-background/95 backdrop-blur-md text-foreground uppercase text-[9px] tracking-widest font-black px-4 py-1.5 rounded-full border border-border shadow-lg">{project.type}</Badge>
                   </div>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute top-6 right-6 bg-background/50 backdrop-blur-md rounded-full text-foreground hover:bg-background/80 no-print"
+                    onClick={(e) => handleShare(e, project)}
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </Button>
                 </div>
                 <CardHeader className="pt-8 px-8">
                   <CardTitle className="text-2xl font-black font-headline group-hover:text-primary transition-colors leading-tight">
