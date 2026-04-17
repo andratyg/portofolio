@@ -23,7 +23,7 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
-    --radius: 1rem;
+    --radius: 1.5rem;
   }
 
   [data-theme='dark'] {
@@ -75,20 +75,34 @@
     --input: 0 30% 15%;
     --ring: 0 72% 51%;
   }
+
+  [data-theme='cyber'] {
+    --background: 230 50% 5%;
+    --foreground: 180 100% 50%;
+    --card: 230 50% 8%;
+    --card-foreground: 180 100% 50%;
+    --primary: 320 100% 50%;
+    --primary-foreground: 230 50% 5%;
+    --accent: 180 100% 50%;
+    --accent-foreground: 230 50% 5%;
+    --border: 320 100% 20%;
+    --input: 320 100% 20%;
+    --ring: 180 100% 50%;
+  }
 }
 
 @layer base {
   * {
-    @apply border-border outline-none transition-colors duration-300;
+    @apply border-border outline-none transition-all duration-300;
   }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/30;
+    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary-foreground;
   }
 }
 
 .font-headline {
   font-family: 'Space Grotesk', sans-serif;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.05em;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -106,20 +120,27 @@
 .skeleton-shimmer::after {
   content: '';
   @apply absolute inset-0 -translate-x-full;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  animation: shimmer 1.5s infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 2s infinite;
 }
 
 @keyframes shimmer {
   100% { transform: translateX(100%); }
 }
 
-/* Optimize Blur for Mobile */
-@media (max-width: 768px) {
-  .blur-aura {
-    filter: blur(40px) !important;
-    opacity: 0.5 !important;
-  }
+/* Kinetic Typography Hover */
+.kinetic-text {
+  @apply hover:italic hover:tracking-widest transition-all duration-500 cursor-default;
+}
+
+/* Glassmorphism 2.0 */
+.glass-panel {
+  @apply bg-card/60 backdrop-blur-2xl border border-white/10 shadow-2xl;
+}
+
+/* Aura Backgrounds */
+.aura-blob {
+  @apply absolute rounded-full blur-[120px] mix-blend-screen animate-pulse opacity-20 pointer-events-none;
 }
 
 @keyframes spin-slow {
@@ -128,70 +149,33 @@
 }
 
 .animate-spin-slow {
-  animation: spin-slow 15s linear infinite;
+  animation: spin-slow 20s linear infinite;
 }
 
-.glow-effect {
-  position: relative;
-  z-index: 1;
+.glow-on-hover {
+  @apply relative z-10 overflow-hidden;
 }
 
-.glow-effect::after {
+.glow-on-hover::before {
   content: '';
-  position: absolute;
-  inset: -1px;
-  background: linear-gradient(45deg, hsl(var(--primary)/0.5), hsl(var(--accent)/0.5));
-  filter: blur(20px);
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  border-radius: inherit;
+  @apply absolute inset-0 -z-10 bg-gradient-to-tr from-primary/20 via-accent/20 to-primary/20 opacity-0 transition-opacity duration-500 blur-2xl;
 }
 
-.glow-effect:hover::after {
-  opacity: 1;
+.glow-on-hover:hover::before {
+  @apply opacity-100;
 }
 
-/* Print Styles for CV/Resume Export */
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .aura-blob {
+    filter: blur(60px) !important;
+    opacity: 0.1 !important;
+  }
+}
+
+/* Print Overrides */
 @media print {
-  .no-print {
-    display: none !important;
-  }
-  body {
-    background: white !important;
-    color: black !important;
-    font-size: 11pt;
-  }
-  .container {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  section {
-    page-break-inside: avoid;
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
-    background: white !important;
-  }
-  .bg-muted, .bg-card, .bg-primary {
-    background: white !important;
-    border: 1px solid #ddd !important;
-    color: black !important;
-  }
-  .text-primary, .text-accent {
-    color: #333 !important;
-  }
-  h1, h2, h3 {
-    color: black !important;
-    page-break-after: avoid;
-    letter-spacing: normal !important;
-  }
-  img {
-    max-width: 150px !important;
-    height: auto !important;
-  }
-  .print-only {
-    display: block !important;
-  }
+  .no-print { display: none !important; }
+  body { background: white !important; color: black !important; }
+  .print-card { border: 1px solid #eee !important; page-break-inside: avoid; }
 }
