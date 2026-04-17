@@ -78,24 +78,24 @@ export const Portfolio = () => {
               </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-center gap-6 w-full lg:w-auto no-print">
-              <div className="relative w-full sm:w-auto group">
-                <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full lg:w-auto no-print">
+              <div className="relative group flex-1 sm:flex-none">
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors z-10" />
                 <Input 
                   placeholder={language === 'id' ? 'Cari unit...' : 'Search units...'} 
-                  className="pl-16 w-full sm:w-80 rounded-[2rem] h-16 bg-card border-border/50 shadow-2xl shadow-black/5 focus:ring-4 focus:ring-primary/10 text-base font-bold transition-all"
+                  className="pl-16 w-full sm:w-80 rounded-full h-16 bg-card border-border/50 shadow-2xl shadow-black/5 focus:ring-4 focus:ring-primary/10 text-base font-bold transition-all relative z-0"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
-              <div className="flex gap-3 w-full sm:w-auto overflow-x-auto no-scrollbar py-2">
+              <div className="flex gap-3 overflow-x-auto no-scrollbar py-2 sm:py-0">
                 {(['all', 'web', 'ui', 'backend'] as const).map((cat) => (
                   <Button 
                     key={cat}
                     variant={filter === cat ? 'default' : 'secondary'}
                     className={cn(
                       "rounded-full h-16 px-8 whitespace-nowrap font-black uppercase text-[10px] tracking-widest transition-all",
-                      filter === cat ? "shadow-2xl shadow-primary/20 scale-105" : "bg-muted/30 border-border/50 hover:bg-muted"
+                      filter === cat ? "shadow-2xl shadow-primary/30 scale-105" : "bg-muted/30 border-border/50 hover:bg-muted"
                     )}
                     onClick={() => setFilter(cat)}
                   >
