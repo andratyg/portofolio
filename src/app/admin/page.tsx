@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useEffect, useState, useRef } from 'react';
@@ -10,7 +11,6 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { 
   Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, 
@@ -173,7 +173,16 @@ function AdminContent() {
   const startEditProject = (p: Project) => {
     setEditingProjectId(p.id);
     setProjectForm({ ...p, technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : p.technologies } as any);
-    window.scrollTo({ top: 300, behavior: 'smooth' });
+  };
+
+  const startEditCert = (c: Certificate) => {
+    setEditingCertId(c.id);
+    setCertForm({ ...c });
+  };
+
+  const startEditJourney = (e: Experience) => {
+    setEditingJourneyId(e.id);
+    setJourneyForm({ ...e });
   };
 
   const cancelEdit = () => {
@@ -239,57 +248,6 @@ function AdminContent() {
             </TabsList>
           </div>
 
-          {/* MESSAGES TAB */}
-          <TabsContent value="messages" className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
-             <div className="flex items-center justify-between px-6">
-                <div>
-                  <h3 className="text-3xl font-black font-headline tracking-tighter uppercase">Incoming Transmissions</h3>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em]">Communication Node History</p>
-                </div>
-                <Badge className="bg-primary/10 text-primary border-primary/20 h-8 px-4 font-black rounded-xl">{messages.length} Records</Badge>
-             </div>
-             
-             {messages.length === 0 ? (
-               <div className="flex flex-col items-center justify-center py-32 space-y-4 opacity-30">
-                  <Mail className="h-16 w-16" />
-                  <p className="text-xs font-black uppercase tracking-widest">No communications received</p>
-               </div>
-             ) : (
-               <div className="grid gap-6">
-                 {messages.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(msg => (
-                    <Card key={msg.id} className="rounded-[2rem] border-none bg-card/50 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all group overflow-hidden">
-                       <CardContent className="p-8">
-                          <div className="flex flex-col md:flex-row justify-between items-start gap-6">
-                             <div className="flex gap-4 items-center">
-                                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                                   <User className="h-7 w-7" />
-                                </div>
-                                <div>
-                                   <h4 className="font-black text-lg">{msg.name}</h4>
-                                   <p className="text-xs font-bold text-primary tracking-widest uppercase">{msg.email}</p>
-                                </div>
-                             </div>
-                             <div className="flex items-center gap-4">
-                                <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest bg-muted px-3 py-1.5 rounded-lg">
-                                   {new Date(msg.createdAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
-                                </span>
-                                {isSuper && (
-                                   <Button variant="ghost" size="icon" onClick={() => deleteMessage(msg.id)} className="h-10 w-10 rounded-xl text-destructive hover:bg-destructive/10">
-                                      <Trash2 className="h-5 w-5" />
-                                   </Button>
-                                )}
-                             </div>
-                          </div>
-                          <div className="mt-8 p-6 rounded-2xl bg-muted/30 border border-border/50">
-                             <p className="text-sm leading-relaxed text-foreground font-medium whitespace-pre-wrap">{msg.message}</p>
-                          </div>
-                       </CardContent>
-                    </Card>
-                 ))}
-               </div>
-             )}
-          </TabsContent>
-
           {/* PROFILE TAB */}
           <TabsContent value="profile" className="animate-in fade-in slide-in-from-bottom-8 duration-500">
              <form onSubmit={handleProfileSubmit} className="space-y-20">
@@ -353,7 +311,10 @@ function AdminContent() {
                        <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Live URL</label><Input value={projectForm.demoUrl} onChange={e => setProjectForm({...projectForm, demoUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
                        <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Image Upload</label><Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setProjectForm({...projectForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none pt-5" /></div>
                     </div>
-                    <Button type="submit" className="w-full h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">COMMIT DEPLOYMENT</Button>
+                    <div className="flex gap-4">
+                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">COMMIT DEPLOYMENT</Button>
+                      {editingProjectId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> Cancel</Button>}
+                    </div>
                   </form>
                 </CardContent>
               </Card>
@@ -370,6 +331,157 @@ function AdminContent() {
                   ))}
                </div>
             </div>
+          </TabsContent>
+
+          {/* CERTIFICATES TAB */}
+          <TabsContent value="certificates" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
+            <div className="xl:col-span-8">
+               <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
+                <CardHeader className="p-0 pb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="space-y-1">
+                    <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingCertId ? 'Edit Credential' : 'Log Credential'}</CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Institutional Verification Log</CardDescription>
+                  </div>
+                  <Button type="button" size="sm" onClick={() => handleAITranslate('certificates', certForm, setCertForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase">AI SYNC LOCALES</Button>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    addCertificate({ ...certForm, id: editingCertId || Date.now().toString() } as any);
+                    setCertForm(initialCertState); setEditingCertId(null);
+                    toast({ title: "Credential Logged" });
+                  }} className="space-y-12">
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (ID)</label><Input required value={certForm.titleId} onChange={e => setCertForm({...certForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (EN)</label><Input value={certForm.titleEn} onChange={e => setCertForm({...certForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-8">
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Issuer</label><Input value={certForm.issuer} onChange={e => setCertForm({...certForm, issuer: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Year</label><Input value={certForm.year} onChange={e => setCertForm({...certForm, year: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Credential URL</label><Input value={certForm.credentialUrl} onChange={e => setCertForm({...certForm, credentialUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                    </div>
+                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Narrative Validation (ID)</label><Textarea value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Visual Asset</label><Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none pt-5" /></div>
+                    <div className="flex gap-4">
+                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">LOG CREDENTIAL</Button>
+                      {editingCertId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> Cancel</Button>}
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="xl:col-span-4 space-y-8">
+               <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 text-primary">CREDENTIAL HUB ({certificates.length})</h3>
+               <div className="grid gap-4">
+                  {certificates.map(c => (
+                    <Card key={c.id} className="p-5 flex gap-5 items-center group bg-card border-none hover:bg-muted/30 transition-all rounded-2xl shadow-sm overflow-hidden">
+                      <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden shrink-0"><img src={c.imageUrl} className="w-full h-full object-cover" /></div>
+                      <div className="flex-1 min-w-0"><h4 className="font-black truncate text-sm">{c.titleId}</h4><p className="text-[9px] font-bold text-muted-foreground uppercase">{c.issuer}</p></div>
+                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all"><Button variant="ghost" size="icon" onClick={() => startEditCert(c)} className="text-primary h-10 w-10 rounded-xl"><Edit3 className="h-4 w-4" /></Button>{isSuper && <Button variant="ghost" size="icon" onClick={() => deleteCertificate(c.id)} className="text-destructive h-10 w-10 rounded-xl"><Trash2 className="h-4 w-4" /></Button>}</div>
+                    </Card>
+                  ))}
+               </div>
+            </div>
+          </TabsContent>
+
+          {/* JOURNEY TAB */}
+          <TabsContent value="journey" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
+            <div className="xl:col-span-8">
+               <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
+                <CardHeader className="p-0 pb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="space-y-1">
+                    <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingJourneyId ? 'Edit Milestone' : 'Record Milestone'}</CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Historical Timeline Entries</CardDescription>
+                  </div>
+                  <Button type="button" size="sm" onClick={() => handleAITranslate('journey', journeyForm, setJourneyForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase">AI SYNC LOCALES</Button>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    addExperience({ ...journeyForm, id: editingJourneyId || Date.now().toString() } as any);
+                    setJourneyForm(initialJourneyState); setEditingJourneyId(null);
+                    toast({ title: "Journey Recorded" });
+                  }} className="space-y-12">
+                    <div className="grid md:grid-cols-3 gap-8">
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Year / Period</label><Input required value={journeyForm.year} onChange={e => setJourneyForm({...journeyForm, year: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Institution / Company</label><Input required value={journeyForm.company} onChange={e => setJourneyForm({...journeyForm, company: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (ID)</label><Input required value={journeyForm.titleId} onChange={e => setJourneyForm({...journeyForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (EN)</label><Input value={journeyForm.titleEn} onChange={e => setJourneyForm({...journeyForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                    </div>
+                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Impact Summary (ID)</label><Textarea value={journeyForm.descriptionId} onChange={e => setJourneyForm({...journeyForm, descriptionId: e.target.value})} className="h-32 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                    <div className="flex gap-4">
+                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">RECORD MILESTONE</Button>
+                      {editingJourneyId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> Cancel</Button>}
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="xl:col-span-4 space-y-8">
+               <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 text-primary">CHRONOLOGY ({experiences.length})</h3>
+               <div className="grid gap-4">
+                  {experiences.sort((a,b) => b.year.localeCompare(a.year)).map(exp => (
+                    <Card key={exp.id} className="p-5 flex gap-5 items-center group bg-card border-none hover:bg-muted/30 transition-all rounded-2xl shadow-sm overflow-hidden">
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0"><Milestone className="h-6 w-6" /></div>
+                      <div className="flex-1 min-w-0"><h4 className="font-black truncate text-sm">{exp.titleId}</h4><p className="text-[9px] font-bold text-muted-foreground uppercase">{exp.year} @ {exp.company}</p></div>
+                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all"><Button variant="ghost" size="icon" onClick={() => startEditJourney(exp)} className="text-primary h-10 w-10 rounded-xl"><Edit3 className="h-4 w-4" /></Button>{isSuper && <Button variant="ghost" size="icon" onClick={() => deleteExperience(exp.id)} className="text-destructive h-10 w-10 rounded-xl"><Trash2 className="h-4 w-4" /></Button>}</div>
+                    </Card>
+                  ))}
+               </div>
+            </div>
+          </TabsContent>
+
+          {/* MESSAGES TAB */}
+          <TabsContent value="messages" className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
+             <div className="flex items-center justify-between px-6">
+                <div>
+                  <h3 className="text-3xl font-black font-headline tracking-tighter uppercase">Incoming Transmissions</h3>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em]">Communication Node History</p>
+                </div>
+                <Badge className="bg-primary/10 text-primary border-primary/20 h-8 px-4 font-black rounded-xl">{messages.length} Records</Badge>
+             </div>
+             
+             {messages.length === 0 ? (
+               <div className="flex flex-col items-center justify-center py-32 space-y-4 opacity-30">
+                  <Mail className="h-16 w-16" />
+                  <p className="text-xs font-black uppercase tracking-widest">No communications received</p>
+               </div>
+             ) : (
+               <div className="grid gap-6">
+                 {messages.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(msg => (
+                    <Card key={msg.id} className="rounded-[2rem] border-none bg-card/50 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all group overflow-hidden">
+                       <CardContent className="p-8">
+                          <div className="flex flex-col md:flex-row justify-between items-start gap-6">
+                             <div className="flex gap-4 items-center">
+                                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                                   <User className="h-7 w-7" />
+                                </div>
+                                <div>
+                                   <h4 className="font-black text-lg">{msg.name}</h4>
+                                   <p className="text-xs font-bold text-primary tracking-widest uppercase">{msg.email}</p>
+                                </div>
+                             </div>
+                             <div className="flex items-center gap-4">
+                                <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest bg-muted px-3 py-1.5 rounded-lg">
+                                   {new Date(msg.createdAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
+                                </span>
+                                {isSuper && (
+                                   <Button variant="ghost" size="icon" onClick={() => deleteMessage(msg.id)} className="h-10 w-10 rounded-xl text-destructive hover:bg-destructive/10">
+                                      <Trash2 className="h-5 w-5" />
+                                   </Button>
+                                )}
+                             </div>
+                          </div>
+                          <div className="mt-8 p-6 rounded-2xl bg-muted/30 border border-border/50">
+                             <p className="text-sm leading-relaxed text-foreground font-medium whitespace-pre-wrap">{msg.message}</p>
+                          </div>
+                       </CardContent>
+                    </Card>
+                 ))}
+               </div>
+             )}
           </TabsContent>
 
           {/* SYSTEM TAB */}
