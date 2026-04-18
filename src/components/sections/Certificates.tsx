@@ -20,7 +20,7 @@ export const Certificates = () => {
 
   const plugin = React.useRef(
     Autoplay({ 
-      delay: 5000, 
+      delay: 6000, 
       stopOnInteraction: false, 
       stopOnMouseEnter: true,
       playOnInit: true
@@ -75,7 +75,7 @@ export const Certificates = () => {
               align: "start", 
               loop: true, 
               skipSnaps: false, 
-              duration: 120 // Membuat transisi lebih berat dan elegan
+              duration: 60 
             }} 
             plugins={[plugin.current]}
             className="w-full"
@@ -109,8 +109,13 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
 
   const handleOpenOriginal = (url: string) => {
     if (!url) return;
-    // Menggunakan window.open untuk memastikan dokumen terbuka di tab baru tanpa memuat ulang halaman
-    window.open(url, '_blank', 'noopener,noreferrer');
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (

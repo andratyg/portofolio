@@ -127,20 +127,37 @@ function AdminContent() {
       const updated = { ...data };
       const sourceSuffix = direction === 'id-to-en' ? 'Id' : 'En';
       const targetSuffix = direction === 'id-to-en' ? 'En' : 'Id';
-      const targetLang = direction === 'id-to-en' ? 'en' : 'id';
+      const targetLang = direction === 'id-to-en' ? 'en' : 'id' as 'en' | 'id';
       
       const fieldsToTranslate = Object.keys(data).filter(key => key.endsWith(sourceSuffix));
-      for (const sourceField of fieldsToTranslate) {
+      
+      // Perform translations in parallel for speed and better reliability
+      const translationPromises = fieldsToTranslate.map(async (sourceField) => {
         const targetField = sourceField.replace(sourceSuffix, targetSuffix);
-        if (data[sourceField] && typeof data[sourceField] === 'string') {
-          const res = await translateContent({ text: data[sourceField], targetLang });
-          updated[targetField] = res.translatedText;
+        if (data[sourceField] && typeof data[sourceField] === 'string' && data[sourceField].trim() !== '') {
+          try {
+            const res = await translateContent({ text: data[sourceField], targetLang });
+            return { field: targetField, text: res.translatedText };
+          } catch (err) {
+            console.error(`Gagal menerjemahkan kolom ${sourceField}:`, err);
+            return null;
+          }
         }
-      }
+        return null;
+      });
+
+      const results = await Promise.all(translationPromises);
+      results.forEach(result => {
+        if (result) {
+          updated[result.field] = result.text;
+        }
+      });
+
       setter(updated);
       toast({ title: "Sinkronisasi AI Berhasil", description: "Konten telah diterjemahkan secara otomatis." });
     } catch (e) {
-      toast({ variant: "destructive", title: "Gagal Sinkronisasi AI", description: "Pastikan koneksi stabil dan kuota API tersedia." });
+      console.error("AI Sync Error:", e);
+      toast({ variant: "destructive", title: "Gagal Sinkronisasi AI", description: "Terjadi kesalahan saat menghubungi layanan AI. Periksa koneksi Anda." });
     } finally {
       setIsTranslating(null);
     }
