@@ -146,9 +146,9 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
              <Badge className="bg-primary text-primary-foreground text-[8px] font-black uppercase px-3">{cert.issuer}</Badge>
              <DialogTitle className="text-2xl md:text-3xl font-black font-headline tracking-tighter">{title}</DialogTitle>
            </div>
-           {(cert.credentialUrl || hasImage) && (
+           {cert.credentialUrl && (
              <Button 
-               onClick={() => handleOpenOriginal(cert.credentialUrl || cert.imageUrl)}
+               onClick={() => handleOpenOriginal(cert.credentialUrl)}
                className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all bg-primary text-primary-foreground"
              >
                Buka Dokumen Asli <ExternalLink className="h-3 w-3" />
