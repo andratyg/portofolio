@@ -49,16 +49,7 @@ export const Certificates = () => {
   }
 
   if (!certificates || certificates.length === 0) {
-    return (
-      <section id="certificates" className="py-24 bg-muted/30">
-        <div className="container mx-auto px-4 text-center space-y-4">
-          <Award className="h-12 w-12 text-muted-foreground/30 mx-auto" />
-          <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-            {language === 'id' ? 'Belum ada sertifikat yang terdaftar.' : 'No certificates registered yet.'}
-          </p>
-        </div>
-      </section>
-    );
+    return null; // Don't render the section if there are no certificates
   }
 
   return (
@@ -100,12 +91,11 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
   const title = language === 'id' ? cert.titleId : cert.titleEn;
   const shortDesc = language === 'id' ? cert.shortDescriptionId : cert.shortDescriptionEn;
 
-  const isValidUrl = (url: string | null | undefined): url is string => {
-    return !!url && typeof url === 'string' && (url.startsWith('http') || url.startsWith('/') || url.startsWith('data:'));
-  };
+  // A more robust check for a valid, non-empty image URL
+  const hasImage = typeof cert.imageUrl === 'string' && cert.imageUrl.trim().startsWith('http');
 
-  const handleOpenOriginal = (url: string) => {
-    if (url) {
+  const handleOpenOriginal = (url: string | null | undefined) => {
+    if (typeof url === 'string' && url.trim().startsWith('http')) {
       window.open(url, '_blank');
     }
   };
@@ -116,9 +106,9 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
         <div className="cursor-pointer group h-full py-4">
           <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-700 bg-card rounded-[2.5rem] group-hover:-translate-y-3 flex flex-col">
             <div className="relative aspect-[4/3] bg-muted overflow-hidden">
-              {isValidUrl(cert.imageUrl) ? (
+              {hasImage ? (
                 <Image 
-                  src={cert.imageUrl} 
+                  src={cert.imageUrl!}
                   alt={title}
                   fill 
                   className="object-cover group-hover:scale-110 transition-transform duration-1000" 
@@ -156,9 +146,9 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
              <Badge className="bg-primary text-primary-foreground text-[8px] font-black uppercase px-3">{cert.issuer}</Badge>
              <DialogTitle className="text-2xl md:text-3xl font-black font-headline tracking-tighter">{title}</DialogTitle>
            </div>
-           {(cert.credentialUrl || cert.imageUrl) && (
+           {(cert.credentialUrl || hasImage) && (
              <Button 
-               onClick={() => handleOpenOriginal(cert.credentialUrl || cert.imageUrl || '')}
+               onClick={() => handleOpenOriginal(cert.credentialUrl || cert.imageUrl)}
                className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all bg-primary text-primary-foreground"
              >
                Buka Dokumen Asli <ExternalLink className="h-3 w-3" />
@@ -166,10 +156,10 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
            )}
         </div>
         <div className="flex-1 overflow-y-auto p-10 space-y-10 no-scrollbar">
-           {isValidUrl(cert.imageUrl) ? (
+           {hasImage ? (
               <div className="relative aspect-video rounded-[2rem] overflow-hidden border shadow-2xl bg-muted">
                  <Image 
-                  src={cert.imageUrl} 
+                  src={cert.imageUrl!}
                   alt={title} 
                   fill 
                   className="object-contain" 

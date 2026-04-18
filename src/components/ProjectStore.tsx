@@ -1,15 +1,14 @@
+
 "use client"
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext } from 'react';
 import { Project, Certificate, PortfolioStats, ProfileData, Testimonial, Experience, ContactMessage } from '@/lib/types';
 import { useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
 import { collection, doc, writeBatch } from 'firebase/firestore';
-import { 
-  setDocumentNonBlocking, 
-  deleteDocumentNonBlocking 
-} from '@/firebase/non-blocking-updates';
+import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
 
+// ... (interfaces and default data remain the same)
 interface ProjectStoreType {
   projects: Project[];
   certificates: Certificate[];
@@ -60,6 +59,7 @@ const defaultProfile: ProfileData = {
   tiktok: ''
 };
 
+
 const ProjectStoreContext = createContext<ProjectStoreType | undefined>(undefined);
 
 export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -81,11 +81,26 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const { data: profileData, isLoading: loadingProfile, error: errorProfile } = useDoc<any>(profileDocRef);
 
   const projects = projectsData || [];
-  const certificates = certsData || [];
   const testimonials = testsData || [];
   const experiences = journeyData || [];
   const messages = messagesData || [];
-  
+
+  // THE FIX IS HERE: Manual mapping for certificates to ensure data integrity
+  const certificates: Certificate[] = (certsData || []).map((c: any) => ({
+    id: c.id,
+    titleId: c.titleId || '',
+    titleEn: c.titleEn || '',
+    shortDescriptionId: c.shortDescriptionId || '',
+    shortDescriptionEn: c.shortDescriptionEn || '',
+    fullDescriptionId: c.fullDescriptionId || '',
+    fullDescriptionEn: c.fullDescriptionEn || '',
+    year: c.year || '',
+    issuer: c.issuer || '',
+    validUntil: c.validUntil || 'N/A',
+    imageUrl: c.imageUrl || c.url || '', // This is the crucial fix
+    credentialUrl: c.credentialUrl || '',
+  }));
+
   const profile: ProfileData = profileData ? {
     name: profileData.name || defaultProfile.name,
     roleId: profileData.roleId || defaultProfile.roleId,
@@ -115,6 +130,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const isLoading = loadingProjects || loadingCerts || loadingTests || loadingJourney || loadingProfile || loadingMessages;
   const error = errorProjects || errorCerts || errorTests || errorJourney || errorProfile || errorMessages;
 
+  // ... (rest of the functions: backupData, restoreData, addProject, etc. remain the same)
   const backupData = () => {
     const data = {
       projects,
