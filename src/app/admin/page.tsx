@@ -164,6 +164,7 @@ function AdminContent() {
       const url = event.target?.result as string;
       setter(url);
       
+      // Otomatisasi pengisian URL kredensial jika berkas adalah PDF
       if (isCert && (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
         setCertForm(prev => ({ ...prev, credentialUrl: url, imageUrl: url }));
         toast({ title: "PDF Terdeteksi", description: "Tautan verifikasi telah diisi otomatis." });

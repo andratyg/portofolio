@@ -18,8 +18,9 @@ export const Certificates = () => {
   const { t, language } = useLanguage();
   const { certificates, isLoading, error } = useProjectStore();
 
+  // Konfigurasi Autoplay: Delay lebih lama (6 detik) agar tidak terlalu cepat
   const plugin = React.useRef(
-    Autoplay({ delay: 4000, stopOnInteraction: true })
+    Autoplay({ delay: 6000, stopOnInteraction: true })
   );
 
   if (isLoading) {
@@ -66,7 +67,8 @@ export const Certificates = () => {
         </div>
         <div className="max-w-6xl mx-auto px-12">
           <Carousel 
-            opts={{ align: "start", loop: true, skipSnaps: false, duration: 40 }} 
+            // Duration ditingkatkan (80) agar transisi lebih lambat dan halus
+            opts={{ align: "start", loop: true, skipSnaps: false, duration: 80 }} 
             plugins={[plugin.current]}
             className="w-full"
           >
@@ -99,33 +101,29 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
 
   const handleOpenOriginal = (url: string) => {
     if (!url) return;
-    if (url.startsWith('data:application/pdf;base64,')) {
-      const base64Data = url.split(',')[1];
-      const binary = atob(base64Data);
-      const array = [];
-      for (let i = 0; i < binary.length; i++) {
-        array.push(binary.charCodeAt(i));
-      }
-      const blob = new Blob([new Uint8Array(array)], { type: 'application/pdf' });
-      const blobUrl = URL.createObjectURL(blob);
-      window.open(blobUrl, '_blank');
-    } else {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
+    
+    // Membuka tautan di tab baru secara langsung untuk performa instan
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <div className="cursor-pointer group h-full">
-          <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-300 bg-card rounded-[2.5rem] group-hover:-translate-y-2 flex flex-col will-change-transform">
+          <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-500 bg-card rounded-[2.5rem] group-hover:-translate-y-2 flex flex-col">
             <div className="relative aspect-[4/3] bg-muted">
               {isValidUrl(cert.imageUrl) && !isPdf ? (
                 <Image 
                   src={cert.imageUrl} 
                   alt={title} 
                   fill 
-                  className="object-cover group-hover:scale-110 transition-transform duration-500" 
+                  className="object-cover group-hover:scale-110 transition-transform duration-1000" 
                 />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex flex-col items-center justify-center gap-3">
@@ -161,9 +159,9 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
              <Badge className="bg-primary text-primary-foreground text-[8px] font-black uppercase px-3">{cert.issuer}</Badge>
              <DialogTitle className="text-2xl md:text-3xl font-black font-headline tracking-tighter">{title}</DialogTitle>
            </div>
-           {cert.credentialUrl && (
+           {(cert.credentialUrl || cert.imageUrl) && (
              <Button 
-               onClick={() => handleOpenOriginal(cert.credentialUrl || '')}
+               onClick={() => handleOpenOriginal(cert.credentialUrl || cert.imageUrl || '')}
                className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl"
              >
                Buka Dokumen Asli <ExternalLink className="h-3 w-3" />
@@ -173,7 +171,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
         <div className="flex-1 overflow-y-auto p-10 space-y-10 no-scrollbar">
            {isValidUrl(cert.imageUrl) ? (
              isPdf ? (
-               <div className="w-full h-full min-h-[500px] rounded-[2rem] overflow-hidden border shadow-2xl bg-muted">
+               <div className="w-full h-[500px] rounded-[2rem] overflow-hidden border shadow-2xl bg-muted">
                  <iframe src={cert.imageUrl} className="w-full h-full border-none" title={title}></iframe>
                </div>
              ) : (
