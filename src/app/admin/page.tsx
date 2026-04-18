@@ -21,9 +21,10 @@ import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
 import { ProfileData, Project, Certificate, Experience, PortfolioStats } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase, storage } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { doc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 function AdminContent() {
   const { 
@@ -43,6 +44,7 @@ function AdminContent() {
   const auth = useAuth();
   const db = useFirestore();
   
+  const [isUploading, setIsUploading] = useState<string | null>(null);
   const [isTranslating, setIsTranslating] = useState<string | null>(null);
   const [isOnline, setIsOnline] = useState(true);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
@@ -131,7 +133,6 @@ function AdminContent() {
       
       const fieldsToTranslate = Object.keys(data).filter(key => key.endsWith(sourceSuffix));
       
-      // Proses sinkronisasi AI secara paralel agar lebih stabil
       const translationResults = await Promise.all(
         fieldsToTranslate.map(async (sourceField) => {
           const targetField = sourceField.replace(sourceSuffix, targetSuffix);
@@ -167,27 +168,36 @@ function AdminContent() {
     toast({ title: "Profil Berhasil Diperbarui" });
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void, isCert: boolean = false) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: string, setter: Function) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     if (file.size > 20 * 1024 * 1024) {
       toast({ variant: "destructive", title: "Berkas Terlalu Besar", description: "Maksimal ukuran berkas adalah 20MB." });
       return;
     }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const url = event.target?.result as string;
-      setter(url);
+    
+    setIsUploading(fieldName);
+    try {
+      const storageRef = ref(storage, `uploads/${Date.now()}-${file.name}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
       
-      // Otomatisasi pengisian URL jika berkas adalah PDF
-      if (isCert && (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
-        setCertForm(prev => ({ ...prev, credentialUrl: url, imageUrl: url }));
-        toast({ title: "Berkas PDF Terdeteksi", description: "Tautan verifikasi otomatis diisi sesuai data dokumen." });
+      setter((prev: any) => ({ ...prev, [fieldName]: downloadURL }));
+
+      // Special handling for certificate PDFs
+      if (fieldName === 'imageUrl' && (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+          setter((prev: any) => ({ ...prev, credentialUrl: downloadURL }));
+          toast({ title: "Berkas PDF Terdeteksi", description: "Tautan verifikasi otomatis diisi sesuai data dokumen." });
       }
-    };
-    reader.readAsDataURL(file);
+
+      toast({ title: "Unggah Berhasil", description: `File ${file.name} telah tersimpan.` });
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast({ variant: "destructive", title: "Unggah Gagal", description: "Terjadi kesalahan saat menyimpan file." });
+    } finally {
+      setIsUploading(null);
+    }
   };
 
   const startEditProject = (p: Project) => {
@@ -280,15 +290,16 @@ function AdminContent() {
                 <div className="grid lg:grid-cols-12 gap-10">
                    <div className="lg:col-span-4 space-y-6">
                       <div className="relative group aspect-[3/4] rounded-[2.5rem] overflow-hidden bg-muted border-4 border-background shadow-2xl">
+                         {isUploading === 'profilePictureUrl' && <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10"><Loader2 className="h-10 w-10 animate-spin text-white"/></div>}
                          {profileFormData.profilePictureUrl ? (
                             <img src={profileFormData.profilePictureUrl} className="w-full h-full object-cover" alt="Pratinjau Profil" />
                          ) : (
                             <div className="w-full h-full flex items-center justify-center text-muted-foreground/30"><UserCircle className="h-32 w-32" /></div>
                          )}
                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <Button type="button" variant="outline" className="bg-white/20 backdrop-blur-xl text-white rounded-2xl h-14" onClick={() => profileImageInputRef.current?.click()}><Camera className="h-5 w-5 mr-2" /> GANTI FOTO</Button>
+                            <Button type="button" variant="outline" className="bg-white/20 backdrop-blur-xl text-white rounded-2xl h-14" onClick={() => profileImageInputRef.current?.click()} disabled={isUploading === 'profilePictureUrl'}><Camera className="h-5 w-5 mr-2" /> GANTI FOTO</Button>
                          </div>
-                         <input type="file" ref={profileImageInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setProfileFormData({...profileFormData, profilePictureUrl: url}))} />
+                         <input type="file" ref={profileImageInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'profilePictureUrl', setProfileFormData)} />
                       </div>
 
                       <Card className="rounded-[2.5rem] border-none bg-muted/30 p-8 space-y-6">
@@ -408,10 +419,13 @@ function AdminContent() {
                     </div>
                     <div className="grid md:grid-cols-2 gap-8">
                        <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Live Demo</label><Input value={projectForm.demoUrl} onChange={e => setProjectForm({...projectForm, demoUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
-                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Gambar Utama (Cover)</label><Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setProjectForm({...projectForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none pt-5 px-6" /></div>
+                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Gambar Utama (Cover)</label><Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'imageUrl', setProjectForm)} className="h-16 rounded-2xl bg-muted/30 border-none pt-5 px-6" disabled={isUploading === 'imageUrl'} /></div>
                     </div>
                     <div className="flex gap-4">
-                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">SIMPAN PROYEK</Button>
+                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl" disabled={!!isUploading}>
+                        {isUploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                        SIMPAN PROYEK
+                      </Button>
                       {editingProjectId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> BATAL</Button>}
                     </div>
                   </form>
@@ -449,7 +463,7 @@ function AdminContent() {
                     <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingCertId ? 'Mutakhirkan Kredensial' : 'Daftarkan Sertifikat'}</CardTitle>
                     <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Validasi Akreditasi & Kompetensi Industri</CardDescription>
                   </div>
-                  <Button type="button" size="sm" onClick={() => handleAITranslate('certificates', certForm, setProjectForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase" disabled={isTranslating === 'certificates'}>
+                   <Button type="button" size="sm" onClick={() => handleAITranslate('certificates', certForm, setCertForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase" disabled={isTranslating === 'certificates'}>
                     {isTranslating === 'certificates' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} SINKRONISASI AI
                   </Button>
                 </CardHeader>
@@ -470,9 +484,12 @@ function AdminContent() {
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Link Verifikasi (URL)</label><Input value={certForm.credentialUrl} onChange={e => setCertForm({...certForm, credentialUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" placeholder="Terisi otomatis jika upload PDF" /></div>
                     </div>
                     <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Deskripsi Validasi (ID)</label><Textarea value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
-                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Unggah Berkas (Gambar / PDF)</label><Input type="file" accept="image/*,application/pdf" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, imageUrl: url}), true)} className="h-16 rounded-2xl bg-muted/30 border-none pt-5 px-6" /></div>
+                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Unggah Berkas (Gambar / PDF)</label><Input type="file" accept="image/*,application/pdf" onChange={(e) => handleFileUpload(e, 'imageUrl', setCertForm)} className="h-16 rounded-2xl bg-muted/30 border-none pt-5 px-6" disabled={isUploading === 'imageUrl'} /></div>
                     <div className="flex gap-4">
-                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">SIMPAN KREDENSIAL</Button>
+                       <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl" disabled={!!isUploading}>
+                        {isUploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                        SIMPAN KREDENSIAL
+                      </Button>
                       {editingCertId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> BATAL</Button>}
                     </div>
                   </form>
