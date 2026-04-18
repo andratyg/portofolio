@@ -155,8 +155,8 @@ function AdminContent() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ variant: "destructive", title: "File Terlalu Besar (Maks 5MB)" });
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ variant: "destructive", title: "Berkas Terlalu Besar (Maks 10MB)" });
       return;
     }
     const reader = new FileReader();
@@ -166,17 +166,23 @@ function AdminContent() {
 
   const startEditProject = (p: Project) => {
     setEditingProjectId(p.id);
-    setProjectForm({ ...p, technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : p.technologies } as any);
+    setProjectForm({ 
+      ...p, 
+      technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : (p.technologies || '') 
+    } as any);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const startEditCert = (c: Certificate) => {
     setEditingCertId(c.id);
     setCertForm({ ...c });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const startEditJourney = (e: Experience) => {
     setEditingJourneyId(e.id);
     setJourneyForm({ ...e });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const cancelEdit = () => {
