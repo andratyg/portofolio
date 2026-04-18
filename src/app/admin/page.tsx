@@ -14,7 +14,7 @@ import {
   Plus, Trash2, LogOut, ArrowLeft, Laptop, Award, Settings, 
   UserCircle, Loader2, Camera, Briefcase, History, ShieldAlert, 
   Download, Upload, WifiOff, Edit3, X, Mail, User, CheckCircle2, AlertCircle, 
-  Terminal, Image as ImageIcon, Globe, Share2, BarChart3, Zap, FileText, ExternalLink
+  Terminal, Image as ImageIcon, Globe, Share2, BarChart3, Zap, FileText, ExternalLink, Star
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
@@ -26,7 +26,7 @@ import { doc } from 'firebase/firestore';
 
 function AdminContent() {
   const { 
-    projects, addProject, deleteProject, 
+    projects, addProject, deleteProject, setFeaturedProject, 
     certificates, addCertificate, deleteCertificate,
     experiences, addExperience, deleteExperience,
     messages, deleteMessage,
@@ -410,7 +410,7 @@ function AdminContent() {
                     </div>
                     <div className="grid md:grid-cols-2 gap-8">
                        <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Live Protocol</label><Input value={projectForm.demoUrl} onChange={e => setProjectForm({...projectForm, demoUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
-                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Visual Utama (Cover)</label><Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setProjectForm({...projectForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none pt-5 px-6" /></div>
+                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Visual Utama (Cover)</label><Input value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                     </div>
                     <div className="flex gap-4">
                       <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">PUBLIKASIKAN PROYEK</Button>
@@ -445,7 +445,8 @@ function AdminContent() {
                           )}
                           <p className="text-[9px] font-bold text-muted-foreground uppercase">{p.type}</p>
                         </div>
-                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                          <Button variant="ghost" size="icon" onClick={() => setFeaturedProject(p.id)} className={cn("h-10 w-10 rounded-xl", p.featured ? "text-primary" : "text-muted-foreground")}><Star className={cn("h-4 w-4", p.featured && "fill-current")} /></Button>
                           <Button variant="ghost" size="icon" onClick={() => startEditProject(p)} className="text-primary h-10 w-10 rounded-xl"><Edit3 className="h-4 w-4" /></Button>
                           {isSuper && <Button variant="ghost" size="icon" onClick={() => deleteProject(p.id)} className="text-destructive h-10 w-10 rounded-xl"><Trash2 className="h-4 w-4" /></Button>}
                         </div>

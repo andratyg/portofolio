@@ -8,7 +8,6 @@ import { collection, doc, writeBatch } from 'firebase/firestore';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
 
-// ... (interfaces and default data remain the same)
 interface ProjectStoreType {
   projects: Project[];
   certificates: Certificate[];
@@ -21,6 +20,7 @@ interface ProjectStoreType {
   error: any;
   addProject: (project: Project) => void;
   deleteProject: (id: string) => void;
+  setFeaturedProject: (id: string) => void;
   addCertificate: (cert: Certificate) => void;
   deleteCertificate: (id: string) => void;
   addTestimonial: (test: Testimonial) => void;
@@ -84,8 +84,6 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const testimonials = testsData || [];
   const experiences = journeyData || [];
   const messages = messagesData || [];
-
-  // THE FIX IS HERE: Manual mapping for certificates to ensure data integrity
   const certificates: Certificate[] = (certsData || []).map((c: any) => ({
     id: c.id,
     titleId: c.titleId || '',
@@ -97,7 +95,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     year: c.year || '',
     issuer: c.issuer || '',
     validUntil: c.validUntil || 'N/A',
-    imageUrl: c.imageUrl || c.url || '', // This is the crucial fix
+    imageUrl: c.imageUrl || c.url || '',
     credentialUrl: c.credentialUrl || '',
   }));
 
@@ -130,7 +128,6 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const isLoading = loadingProjects || loadingCerts || loadingTests || loadingJourney || loadingProfile || loadingMessages;
   const error = errorProjects || errorCerts || errorTests || errorJourney || errorProfile || errorMessages;
 
-  // ... (rest of the functions: backupData, restoreData, addProject, etc. remain the same)
   const backupData = () => {
     const data = {
       projects,
@@ -170,6 +167,30 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const addProject = (project: Project) => {
     const docRef = doc(firestore, 'projects', project.id);
     setDocumentNonBlocking(docRef, { ...project, updatedAt: new Date().toISOString() }, { merge: true });
+  };
+  
+  const setFeaturedProject = async (projectId: string) => {
+    if (!firestore || projects.length === 0) return;
+    const batch = writeBatch(firestore);
+    projects.forEach(p => {
+        const projectRef = doc(firestore, 'projects', p.id);
+        const isTarget = p.id === projectId;
+        batch.update(projectRef, { featured: isTarget });
+    });
+    try {
+        await batch.commit();
+        toast({
+            title: "Proyek Unggulan Diperbarui",
+            description: "Proyek pilihan Anda kini akan tampil di halaman utama.",
+        });
+    } catch (e) {
+        console.error("Gagal mengatur proyek unggulan:", e);
+        toast({
+            variant: "destructive",
+            title: "Gagal Memperbarui",
+            description: "Terjadi kesalahan saat memilih proyek unggulan.",
+        });
+    }
   };
 
   const deleteProject = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'projects', id));
@@ -211,7 +232,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   return (
     <ProjectStoreContext.Provider value={{ 
       projects, certificates, testimonials, experiences, messages, stats, profile, isLoading, error,
-      addProject, deleteProject, addCertificate, deleteCertificate,
+      addProject, deleteProject, setFeaturedProject, addCertificate, deleteCertificate,
       addTestimonial, deleteTestimonial, addExperience, deleteExperience,
       deleteMessage, updateProfileAndStats, backupData, restoreData
     }}>

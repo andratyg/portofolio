@@ -19,8 +19,7 @@ export const Hero = () => {
     setIsVisible(true);
   }, []);
 
-  const featured = projects.filter(p => p.featured);
-  const heroProject = featured.length > 0 ? featured[0] : projects[0];
+  const featuredProject = projects.find(p => p.featured);
 
   const heroTitle = language === 'id' ? profile.heroTitleId : (profile.heroTitleEn || profile.heroTitleId);
   const heroSubtitle = language === 'id' ? profile.heroSubtitleId : (profile.heroSubtitleEn || profile.heroSubtitleId);
@@ -31,31 +30,26 @@ export const Hero = () => {
 
   return (
     <section className="relative min-h-[90vh] flex flex-col justify-center overflow-hidden py-24 bg-background selection:bg-primary/30">
-      {/* Advanced Aura blobs */}
-      <div className="aura-blob top-[-10%] left-[-10%] <Changes OMITTED />" />
-      <div className="aura-blob bottom-[-10%] right-[-10%] <Changes OMITTED />" />
-      <div className="aura-blob top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 <Changes OMITTED />" />
-
       <div className="container mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center relative z-10">
         <div className={cn(
           "lg:col-span-7 transition-all duration-1000 transform",
           isVisible ? "translate-x-0 opacity-100" : "-translate-x-20 opacity-0"
         )}>
-          <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[9px] font-black uppercase tracking-[0.3em] mb-8 shadow-xl shadow-primary/5 animate-bounce">
+          <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[9px] font-black uppercase tracking-[0.3em] mb-8 shadow-xl shadow-primary/5">
             <Zap className="h-3.5 w-3.5 fill-primary" />
             <span>{language === 'id' ? 'Sistem Aktif & Siap Berkolaborasi' : 'System Online & Ready for Deployment'}</span>
           </div>
           
           <div className="mb-6">
             <span className="text-2xl md:text-3xl font-black font-headline text-foreground/80 tracking-tight block">
-              {profile.name || "Nara Andra Tyaga"}
+              {profile.name || "Portfolio Owner"}
             </span>
           </div>
 
           <h1 className="text-5xl md:text-6xl lg:text-[7.5rem] font-black font-headline leading-[0.9] mb-10 tracking-tighter">
             {heroTitle.split(' ').map((word, i) => (
               <span key={i} className={cn(
-                "inline-block mr-3 transition-colors duration-700",
+                "inline-block mr-3",
                 i % 2 !== 0 ? 'text-primary' : 'text-foreground'
               )}>
                 {word}
@@ -96,23 +90,23 @@ export const Hero = () => {
           <div className="relative group p-4">
             <div className="absolute -inset-4 bg-gradient-to-r from-primary via-accent to-primary rounded-[3rem] blur-2xl opacity-20 group-hover:opacity-40 transition duration-1000 animate-spin-slow"></div>
             <div className="relative glass-panel rounded-[2.5rem] overflow-hidden shadow-2xl aspect-[4/5] group-hover:-translate-y-3 transition-transform duration-700 border-primary/10">
-              {heroProject && isValidImageUrl(heroProject.imageUrl) ? (
+              {featuredProject && isValidImageUrl(featuredProject.imageUrl) ? (
                 <>
                   <Image 
-                    src={heroProject.imageUrl} 
-                    alt={language === 'id' ? heroProject.titleId : heroProject.titleEn} 
+                    src={featuredProject.imageUrl} 
+                    alt={language === 'id' ? featuredProject.titleId : featuredProject.titleEn} 
                     fill
                     priority
                     sizes="(max-width: 768px) 100vw, 50vw"
                     className="object-cover group-hover:scale-110 transition-transform duration-1000"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-8 text-white">
-                    <div className="w-fit mb-4 bg-primary/20 backdrop-blur-xl border border-primary/30 text-primary-foreground uppercase text-[8px] font-black tracking-[0.3em] px-4 py-1.5 rounded-full">{t.featuredProjects}</div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-8 text-white">
+                    <div className="w-fit mb-4 bg-primary/20 backdrop-blur-xl border border-primary/30 text-primary-foreground uppercase text-[8px] font-black tracking-[0.3em] px-4 py-1.5 rounded-full">PROYEK UNGGULAN</div>
                     <h3 className="text-3xl font-black mb-3 font-headline tracking-tighter leading-tight">
-                      {language === 'id' ? heroProject.titleId : heroProject.titleEn}
+                      {language === 'id' ? featuredProject.titleId : featuredProject.titleEn}
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {heroProject.technologies.slice(0, 3).map(tech => (
+                      {featuredProject.technologies.slice(0, 3).map(tech => (
                         <div key={tech} className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest bg-white/10 backdrop-blur-xl px-3 py-1.5 rounded-lg border border-white/10">
                            <Code2 className="h-3 w-3 text-primary" />
                            {tech}
@@ -125,7 +119,7 @@ export const Hero = () => {
                 <div className="w-full h-full flex flex-col items-center justify-center gap-4 p-8 text-center bg-muted/20">
                    <Globe2 className="h-16 w-16 text-primary animate-pulse" />
                    <div className="space-y-1">
-                     <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary">System Node Active</p>
+                     <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary">SYSTEM NODE ACTIVE</p>
                      <p className="text-muted-foreground text-xs font-medium">Awaiting visual synchronization.</p>
                    </div>
                 </div>
