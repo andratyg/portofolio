@@ -226,7 +226,7 @@ function AdminContent() {
         <Card className="w-full max-w-lg rounded-[2.5rem] p-10 text-center space-y-8 shadow-2xl border-destructive/20">
           <ShieldAlert className="h-16 w-16 text-destructive mx-auto" />
           <h2 className="text-3xl font-black font-headline uppercase">Akses Ditolak</h2>
-          <p className="text-muted-foreground text-sm font-medium">Akun Anda tidak memiliki otoritas untuk mengakses infrastruktur admin.</p>
+          <p className="text-muted-foreground text-sm font-medium">Akun Anda (UID: {user.uid}) tidak memiliki otoritas untuk mengakses infrastruktur admin. Silakan daftarkan UID Anda di Firebase Console.</p>
           <Button onClick={() => signOut(auth)} variant="destructive" className="w-full h-14 rounded-2xl font-black uppercase">Keluar Sesi</Button>
         </Card>
       </div>
@@ -338,7 +338,7 @@ function AdminContent() {
                         </h3>
                         <div className="grid md:grid-cols-2 gap-6">
                            <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Judul Utama Hero (ID)</label><Input value={profileFormData.heroTitleId} onChange={e => setProfileFormData({...profileFormData, heroTitleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
-                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Judul Utama Hero (EN)</label><Input value={profileFormData.heroTitleEn} onChange={e => setProfileFormData({...profileFormData, heroTitleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Judul Utama Hero (EN)</label><Input value={profileFormData.heroTitleEn} onChange={e => setProjectForm ? setProfileFormData({...profileFormData, heroTitleEn: e.target.value}) : null} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                         </div>
                         <div className="grid md:grid-cols-2 gap-6">
                            <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Sub-Judul Hero (ID)</label><Textarea value={profileFormData.heroSubtitleId} onChange={e => setProfileFormData({...profileFormData, heroSubtitleId: e.target.value})} className="h-24 rounded-2xl bg-muted/30 border-none p-6" /></div>
@@ -531,7 +531,7 @@ function AdminContent() {
                     </div>
                     <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Uraian Tanggung Jawab (ID)</label><Textarea value={journeyForm.descriptionId} onChange={e => setJourneyForm({...journeyForm, descriptionId: e.target.value})} className="h-32 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
                     <div className="flex gap-4">
-                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">CATAT MILESTONE</Button>
+                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">SIMPAN KRONOLOGI</Button>
                       {editingJourneyId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> BATAL</Button>}
                     </div>
                   </form>

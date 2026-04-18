@@ -20,7 +20,7 @@ export const Certificates = () => {
 
   const plugin = React.useRef(
     Autoplay({ 
-      delay: 5000, 
+      delay: 4000, 
       stopOnInteraction: false, 
       stopOnMouseEnter: true,
       playOnInit: true
@@ -75,11 +75,11 @@ export const Certificates = () => {
               align: "start", 
               loop: true, 
               skipSnaps: false, 
-              duration: 80,
+              duration: 100,
               watchDrag: true
             }} 
             plugins={[plugin.current]}
-            className="w-full"
+            className="w-full cursor-grab active:cursor-grabbing"
           >
             <CarouselContent className="-ml-6">
               {certificates.map((cert) => (
@@ -114,7 +114,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
     if (url.startsWith('data:')) {
       try {
         const parts = url.split(';base64,');
-        const contentType = parts[0].split(':')[1];
+        const contentType = parts[0].split(':')[1] || 'application/pdf';
         const raw = window.atob(parts[1]);
         const rawLength = raw.length;
         const uInt8Array = new Uint8Array(rawLength);
