@@ -1,3 +1,4 @@
+
 "use client"
 
 import React from 'react';
@@ -6,7 +7,7 @@ import { useProjectStore } from '../ProjectStore';
 import { Card, CardContent } from '../ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
-import { Award, Calendar, ShieldCheck, Info, ExternalLink, FileText, CheckCircle2, FileType, Eye } from 'lucide-react';
+import { Award, Calendar, ShieldCheck, Info, ExternalLink, FileText, CheckCircle2, FileType, Eye, Landmark } from 'lucide-react';
 import Image from 'next/image';
 import { Certificate } from '@/lib/types';
 import { Badge } from '../ui/badge';
@@ -54,10 +55,10 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
   const title = language === 'id' ? cert.titleId : (cert.titleEn || cert.titleId);
   const shortDesc = language === 'id' ? cert.shortDescriptionId : (cert.shortDescriptionEn || cert.shortDescriptionId);
   
-  const hasImage = cert.imageUrl && (cert.imageUrl.startsWith('http') || cert.imageUrl.startsWith('data:image'));
+  const hasImage = !!cert.imageUrl && (cert.imageUrl.startsWith('http') || cert.imageUrl.startsWith('data:image'));
   const safeImageUrl = hasImage 
     ? cert.imageUrl 
-    : `https://placehold.co/800x600?text=${encodeURIComponent(title || 'Certificate')}`;
+    : `https://picsum.photos/seed/${cert.id}/800/600`;
 
   return (
     <Dialog>
@@ -65,28 +66,28 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
         <div className="cursor-pointer group h-full">
           <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-500 bg-card rounded-[2.5rem] group-hover:-translate-y-2 flex flex-col">
             <div className="relative aspect-[4/3] overflow-hidden bg-muted flex items-center justify-center">
-              {hasImage ? (
-                <Image 
-                  src={safeImageUrl} 
-                  alt={title || "Certificate"} 
-                  fill 
-                  className="object-cover group-hover:scale-110 transition-transform duration-700"
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                />
-              ) : (
-                <div className="flex flex-col items-center gap-4 text-muted-foreground">
-                   <FileType className="h-16 w-16 opacity-20" />
-                   <p className="text-[9px] font-black uppercase tracking-widest">Document Available</p>
-                </div>
-              )}
+              <Image 
+                src={safeImageUrl} 
+                alt={title || "Certificate"} 
+                fill 
+                className="object-cover group-hover:scale-110 transition-transform duration-700"
+                sizes="(max-width: 768px) 100vw, 33vw"
+                data-ai-hint="certificate credential"
+              />
               <div className="absolute top-4 left-4 z-10">
-                 <Badge className="bg-white/80 backdrop-blur-md text-primary font-black text-[8px] uppercase px-3 py-1 rounded-full">{cert.year}</Badge>
+                 <Badge className="bg-white/90 backdrop-blur-md text-primary font-black text-[8px] uppercase px-3 py-1 rounded-full border border-primary/20">{cert.year}</Badge>
               </div>
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                 <div className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-full p-4 scale-75 group-hover:scale-100 transition-all duration-500">
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                 <div className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-full p-4 scale-75 group-hover:scale-100 transition-all duration-500 shadow-2xl">
                     <Eye className="h-6 w-6 text-white" />
                  </div>
               </div>
+              {!hasImage && (
+                <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white p-6 text-center">
+                   <Landmark className="h-10 w-10 mb-3 opacity-50" />
+                   <p className="text-[10px] font-black uppercase tracking-[0.2em]">{cert.issuer}</p>
+                </div>
+              )}
             </div>
             <CardContent className="p-8 flex-1 flex flex-col">
               <div className="flex items-center gap-2 mb-3">
@@ -147,9 +148,9 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                      </div>
                   </div>
                </div>
-             ) : cert.imageUrl && (cert.imageUrl.startsWith('http') || cert.imageUrl.startsWith('data:image')) ? (
+             ) : hasImage ? (
                <div className="w-full relative aspect-video rounded-[2rem] overflow-hidden border shadow-2xl">
-                  <Image src={cert.imageUrl} alt={title || "Certificate"} fill className="object-cover" />
+                  <Image src={cert.imageUrl!} alt={title || "Certificate"} fill className="object-cover" />
                </div>
              ) : (
                <div className="w-full aspect-video rounded-[2rem] bg-card border border-dashed flex flex-col items-center justify-center gap-4 text-muted-foreground">
