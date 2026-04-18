@@ -1,0 +1,34 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSameUser(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      // Check if the user is authenticated and exists in the 'admins' collection in Firestore.
+      // Note: This requires the security rules for Firestore to allow this read.
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Allow public read access for profile images and certificates
+    match /profile/{allPaths=**} {
+      allow read: if true;
+    }
+
+    match /certificates/{allPaths=**} {
+      allow read: if true;
+    }
+    
+    // Allow admin write access to all paths
+    match /{allPaths=**} {
+      allow write: if isAdmin();
+    }
+  }
+}

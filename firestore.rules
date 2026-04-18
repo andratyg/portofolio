@@ -7,33 +7,37 @@ service cloud.firestore {
     }
 
     function isAdmin() {
+      // Check if the user is in the admins collection
       return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
     function isSuperAdmin() {
+      // Check if the user is a super admin
       return isAdmin() && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'super';
     }
 
+    // Admins can be managed only by super admins
     match /admins/{adminId} {
       allow get: if isSignedIn() && request.auth.uid == adminId;
       allow list, create, update, delete: if isSuperAdmin();
     }
 
-    match /portfolioOwner/profile {
+    // Portfolio owner profile can be updated by admins
+    match /portfolioOwner/{docId} {
       allow get, list: if true;
-      allow create, update: if isAdmin();
-      allow delete: if isSuperAdmin();
+      allow create, update, delete: if isAdmin();
     }
 
+    // Messages can be created by anyone, but only managed by admins
     match /messages/{messageId} {
       allow create: if true;
-      allow read, delete: if isAdmin();
+      allow read, list, update, delete: if isAdmin();
     }
 
+    // All other collections (projects, certificates, etc.) can be managed by admins
     match /{collection}/{docId} {
       allow get, list: if true;
-      allow create, update: if isAdmin() && (collection != 'admins');
-      allow delete: if isSuperAdmin();
+      allow create, update, delete: if isAdmin() && (collection != 'admins' && collection != 'portfolioOwner' && collection != 'messages');
     }
   }
 }

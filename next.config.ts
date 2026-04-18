@@ -36,12 +36,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '**.vercel.app',
+        hostname: '*.vercel.app',
         port: '',
         pathname: '/**',
       },
     ],
-  },
+  }
 };
 
 export default nextConfig;

@@ -29,8 +29,7 @@ interface ProjectStoreType {
   addExperience: (exp: Experience) => void;
   deleteExperience: (id: string) => void;
   deleteMessage: (id: string) => void;
-  updateStats: (newStats: PortfolioStats) => void;
-  updateProfile: (newProfile: ProfileData) => void;
+  updateProfileAndStats: (newProfile: ProfileData, newStats: PortfolioStats) => void;
   backupData: () => void;
   restoreData: (json: string) => Promise<void>;
 }
@@ -158,7 +157,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const deleteProject = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'projects', id));
-  const addCertificate = (cert: Certificate) => setDocumentNonBlocking(doc(firestore, 'certificates', cert.id), cert, { merge: true });
+  const addCertificate = (cert: Certificate) => setDocumentNonBlocking(doc(firestore, 'certificates', cert.id), { ...cert, updatedAt: new Date().toISOString() }, { merge: true });
   const deleteCertificate = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'certificates', id));
   const addTestimonial = (test: Testimonial) => setDocumentNonBlocking(doc(firestore, 'testimonials', test.id), test, { merge: true });
   const deleteTestimonial = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'testimonials', id));
@@ -166,17 +165,8 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const deleteExperience = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'careerTimelineEntries', id));
   const deleteMessage = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'messages', id));
 
-  const updateStats = (newStats: PortfolioStats) => {
-    setDocumentNonBlocking(profileDocRef, {
-      totalProjectsCompleted: parseInt(newStats.completedProjects) || 0,
-      codingExperienceYears: parseInt(newStats.yearsExperience) || 0,
-      totalTechnologiesMastered: parseInt(newStats.techMastered) || 0,
-      clientSatisfaction: newStats.clientSatisfaction
-    }, { merge: true });
-  };
-
-  const updateProfile = (newProfile: ProfileData) => {
-    setDocumentNonBlocking(profileDocRef, {
+  const updateProfileAndStats = (newProfile: ProfileData, newStats: PortfolioStats) => {
+    const dataToUpdate = {
       name: newProfile.name,
       roleId: newProfile.roleId,
       roleEn: newProfile.roleEn,
@@ -192,8 +182,14 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       linkedInProfileUrl: newProfile.linkedin,
       instagram: newProfile.instagram,
       githubProfileUrl: newProfile.github,
-      tiktok: newProfile.tiktok
-    }, { merge: true });
+      tiktok: newProfile.tiktok,
+      totalProjectsCompleted: parseInt(newStats.completedProjects) || 0,
+      codingExperienceYears: parseInt(newStats.yearsExperience) || 0,
+      totalTechnologiesMastered: parseInt(newStats.techMastered) || 0,
+      clientSatisfaction: newStats.clientSatisfaction,
+      updatedAt: new Date().toISOString()
+    };
+    setDocumentNonBlocking(profileDocRef, dataToUpdate, { merge: true });
   };
 
   return (
@@ -201,7 +197,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       projects, certificates, testimonials, experiences, messages, stats, profile, isLoading, error,
       addProject, deleteProject, addCertificate, deleteCertificate,
       addTestimonial, deleteTestimonial, addExperience, deleteExperience,
-      deleteMessage, updateStats, updateProfile, backupData, restoreData
+      deleteMessage, updateProfileAndStats, backupData, restoreData
     }}>
       {children}
     </ProjectStoreContext.Provider>

@@ -30,8 +30,8 @@ function AdminContent() {
     certificates, addCertificate, deleteCertificate,
     experiences, addExperience, deleteExperience,
     messages, deleteMessage,
-    profile, updateProfile,
-    stats, updateStats,
+    profile, updateProfileAndStats,
+    stats,
     backupData, restoreData,
     isLoading: storeLoading
   } = useProjectStore();
@@ -47,7 +47,6 @@ function AdminContent() {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const profileImageInputRef = useRef<HTMLInputElement>(null);
 
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editingCertId, setEditingCertId] = useState<string | null>(null);
@@ -162,17 +161,20 @@ function AdminContent() {
 
   const handleProfileSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateProfile(profileFormData);
-    updateStats(statsFormData);
+    updateProfileAndStats(profileFormData, statsFormData);
     toast({ title: "Profil Berhasil Diperbarui" });
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void, isCert: boolean = false) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
     const file = e.target.files?.[0];
     if (!file) return;
     
-    if (file.size > 20 * 1024 * 1024) {
-      toast({ variant: "destructive", title: "Berkas Terlalu Besar", description: "Maksimal ukuran berkas adalah 20MB." });
+    if (file.size > 1 * 1024 * 1024) { // 1MB size limit
+      toast({ 
+        variant: "destructive", 
+        title: "Berkas Terlalu Besar", 
+        description: "Ukuran maksimal berkas adalah 1MB. Harap kompres gambar Anda."
+      });
       return;
     }
 
@@ -180,11 +182,6 @@ function AdminContent() {
     reader.onload = (event) => {
       const url = event.target?.result as string;
       setter(url);
-      
-      if (isCert && (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
-        setCertForm(prev => ({ ...prev, credentialUrl: url, imageUrl: url }));
-        toast({ title: "Berkas PDF Terdeteksi", description: "Tautan verifikasi otomatis diisi sesuai data dokumen." });
-      }
     };
     reader.readAsDataURL(file);
   };
@@ -200,7 +197,7 @@ function AdminContent() {
 
   const startEditCert = (c: Certificate) => {
     setEditingCertId(c.id);
-    setCertForm({ ...c });
+    setCertForm({ ...c, credentialUrl: c.credentialUrl || '' });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -284,10 +281,16 @@ function AdminContent() {
                          ) : (
                             <div className="w-full h-full flex items-center justify-center text-muted-foreground/30"><UserCircle className="h-32 w-32" /></div>
                          )}
-                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <Button type="button" variant="outline" className="bg-white/20 backdrop-blur-xl text-white rounded-2xl h-14" onClick={() => profileImageInputRef.current?.click()}><Camera className="h-5 w-5 mr-2" /> GANTI FOTO</Button>
-                         </div>
-                         <input type="file" ref={profileImageInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setProfileFormData({...profileFormData, profilePictureUrl: url}))} />
+                      </div>
+
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">URL Gambar Profil</label>
+                        <Input 
+                          value={profileFormData.profilePictureUrl || ''} 
+                          onChange={e => setProfileFormData({...profileFormData, profilePictureUrl: e.target.value})} 
+                          className="h-14 rounded-2xl bg-muted/30 border-none px-6" 
+                          placeholder="https://example.com/gambar.jpg" 
+                        />
                       </div>
 
                       <Card className="rounded-[2.5rem] border-none bg-muted/30 p-8 space-y-6">
@@ -466,10 +469,10 @@ function AdminContent() {
                     <div className="grid md:grid-cols-3 gap-8">
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Lembaga Penerbit</label><Input value={certForm.issuer} onChange={e => setCertForm({...certForm, issuer: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tahun Rilis</label><Input value={certForm.year} onChange={e => setCertForm({...certForm, year: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Verifikasi Kredensial</label><Input value={certForm.credentialUrl} onChange={e => setCertForm({...certForm, credentialUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" placeholder="Terisi otomatis jika upload PDF" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Verifikasi</label><Input value={certForm.credentialUrl} onChange={e => setCertForm({...certForm, credentialUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                     </div>
                     <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Narasi Validasi (ID)</label><Textarea value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
-                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Berkas Digital (Gambar / PDF)</label><Input type="file" accept="image/*,application/pdf" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, imageUrl: url}), true)} className="h-16 rounded-2xl bg-muted/30 border-none pt-5 px-6" /></div>
+                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Gambar Sertifikat</label><Input value={certForm.imageUrl || ''} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" placeholder="https://example.com/sertifikat.jpg" /></div>
                     <div className="flex gap-4">
                       <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">SIMPAN KREDENSIAL</Button>
                       {editingCertId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> BATAL</Button>}

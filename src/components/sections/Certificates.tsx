@@ -74,7 +74,7 @@ export const Certificates = () => {
               align: "start", 
               loop: true, 
               skipSnaps: false, 
-              duration: 50 // Memberikan rasa "berat" dan mewah pada transisi
+              duration: 50
             }} 
             plugins={[plugin.current]}
             className="w-full"
@@ -100,34 +100,12 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
   const title = language === 'id' ? cert.titleId : cert.titleEn;
   const shortDesc = language === 'id' ? cert.shortDescriptionId : cert.shortDescriptionEn;
 
-  const isValidUrl = (url: string) => {
-    return url && typeof url === 'string' && (url.startsWith('http') || url.startsWith('/') || url.startsWith('data:'));
+  const isValidUrl = (url: string | null | undefined): url is string => {
+    return !!url && typeof url === 'string' && (url.startsWith('http') || url.startsWith('/') || url.startsWith('data:'));
   };
 
-  const isPdf = cert.imageUrl && (cert.imageUrl.includes('application/pdf') || cert.imageUrl.toLowerCase().endsWith('.pdf'));
-
   const handleOpenOriginal = (url: string) => {
-    if (!url) return;
-    
-    // Jika formatnya data URI, konversi ke Blob URL agar bisa dibuka instan tanpa refresh
-    if (url.startsWith('data:')) {
-      try {
-        const parts = url.split(';base64,');
-        const contentType = parts[0].split(':')[1];
-        const raw = window.atob(parts[1]);
-        const rawLength = raw.length;
-        const uInt8Array = new Uint8Array(rawLength);
-        for (let i = 0; i < rawLength; ++i) {
-          uInt8Array[i] = raw.charCodeAt(i);
-        }
-        const blob = new Blob([uInt8Array], { type: contentType });
-        const blobUrl = URL.createObjectURL(blob);
-        window.open(blobUrl, '_blank');
-      } catch (e) {
-        console.error("Gagal memproses dokumen:", e);
-        window.open(url, '_blank');
-      }
-    } else {
+    if (url) {
       window.open(url, '_blank');
     }
   };
@@ -138,17 +116,16 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
         <div className="cursor-pointer group h-full py-4">
           <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-700 bg-card rounded-[2.5rem] group-hover:-translate-y-3 flex flex-col">
             <div className="relative aspect-[4/3] bg-muted overflow-hidden">
-              {isValidUrl(cert.imageUrl) && !isPdf ? (
+              {isValidUrl(cert.imageUrl) ? (
                 <Image 
                   src={cert.imageUrl} 
-                  alt={title} 
+                  alt={title}
                   fill 
                   className="object-cover group-hover:scale-110 transition-transform duration-1000" 
                 />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex flex-col items-center justify-center gap-3">
-                  {isPdf ? <FileText className="h-16 w-16 text-primary animate-pulse" /> : <Landmark className="h-12 w-12 text-primary/30" />}
-                  {isPdf && <p className="text-[10px] font-black uppercase text-primary tracking-widest">Dokumen PDF Terverifikasi</p>}
+                  <Landmark className="h-12 w-12 text-primary/30" />
                 </div>
               )}
               <div className="absolute top-4 left-4 z-10">
@@ -190,25 +167,18 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
         </div>
         <div className="flex-1 overflow-y-auto p-10 space-y-10 no-scrollbar">
            {isValidUrl(cert.imageUrl) ? (
-             isPdf ? (
-               <div className="w-full h-[500px] rounded-[2rem] overflow-hidden border shadow-2xl bg-muted relative">
-                 <iframe src={cert.imageUrl} className="w-full h-full border-none" title={title}></iframe>
-               </div>
-             ) : (
-               <div className="relative aspect-video rounded-[2rem] overflow-hidden border shadow-2xl bg-muted">
+              <div className="relative aspect-video rounded-[2rem] overflow-hidden border shadow-2xl bg-muted">
                  <Image 
                   src={cert.imageUrl} 
                   alt={title} 
                   fill 
                   className="object-contain" 
-                  unoptimized={cert.imageUrl.startsWith('data:')}
                  />
-               </div>
-             )
+              </div>
            ) : (
              <div className="aspect-video rounded-[2rem] bg-muted/20 border-dashed border flex flex-col items-center justify-center text-muted-foreground">
                <Info className="h-12 w-12 opacity-20" />
-               <p className="text-xs font-bold italic mt-4">Visual dokumen tersedia melalui tautan eksternal.</p>
+               <p className="text-xs font-bold italic mt-4">Visual dokumen tidak tersedia.</p>
              </div>
            )}
            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
