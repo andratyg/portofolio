@@ -15,7 +15,7 @@ import {
   Plus, Trash2, LogOut, ArrowLeft, Laptop, Award, Settings, 
   UserCircle, Loader2, Camera, Briefcase, History, ShieldAlert, 
   Download, Upload, WifiOff, Edit3, X, Mail, User, CheckCircle2, AlertCircle, 
-  Terminal, Image as ImageIcon, Globe, Share2, BarChart3
+  Terminal, Image as ImageIcon, Globe, Share2, BarChart3, Zap
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
@@ -155,8 +155,8 @@ function AdminContent() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      toast({ variant: "destructive", title: "File Terlalu Besar (Maks 2MB)" });
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ variant: "destructive", title: "File Terlalu Besar (Maks 5MB)" });
       return;
     }
     const reader = new FileReader();
@@ -243,7 +243,6 @@ function AdminContent() {
             </TabsList>
           </div>
 
-          {/* TAB PROFIL */}
           <TabsContent value="profile" className="animate-in fade-in slide-in-from-bottom-8 duration-500">
              <form onSubmit={handleProfileSubmit} className="space-y-20">
                 <div className="grid lg:grid-cols-12 gap-10">
@@ -260,7 +259,6 @@ function AdminContent() {
                          <input type="file" ref={profileImageInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setProfileFormData({...profileFormData, profilePictureUrl: url}))} />
                       </div>
 
-                      {/* STATS SECTION */}
                       <Card className="rounded-[2.5rem] border-none bg-muted/30 p-8 space-y-6">
                          <div className="flex items-center gap-3 mb-2">
                             <BarChart3 className="h-5 w-5 text-primary" />
@@ -288,7 +286,6 @@ function AdminContent() {
                    </div>
 
                    <div className="lg:col-span-8 space-y-10">
-                      {/* IDENTITY SECTION */}
                       <div className="space-y-6">
                         <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
                            <UserCircle className="h-6 w-6 text-primary" /> Identitas Dasar
@@ -303,7 +300,6 @@ function AdminContent() {
                         </div>
                       </div>
 
-                      {/* HERO SECTION TEXT */}
                       <div className="space-y-6">
                         <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
                            <Zap className="h-6 w-6 text-primary" /> Konten Hero (Halaman Utama)
@@ -318,7 +314,6 @@ function AdminContent() {
                         </div>
                       </div>
 
-                      {/* ABOUT ME SECTION */}
                       <div className="space-y-6">
                         <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
                            <ImageIcon className="h-6 w-6 text-primary" /> Narasi Tentang Saya
@@ -329,7 +324,6 @@ function AdminContent() {
                         </div>
                       </div>
 
-                      {/* SOCIAL LINKS SECTION */}
                       <div className="space-y-6">
                         <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
                            <Share2 className="h-6 w-6 text-primary" /> Jalur Komunikasi & Sosial
@@ -348,7 +342,6 @@ function AdminContent() {
              </form>
           </TabsContent>
 
-          {/* TAB PROYEK */}
           <TabsContent value="projects" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
             <div className="xl:col-span-8">
                <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
@@ -416,7 +409,6 @@ function AdminContent() {
             </div>
           </TabsContent>
 
-          {/* TAB SERTIFIKAT */}
           <TabsContent value="certificates" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
             <div className="xl:col-span-8">
                <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
@@ -444,7 +436,7 @@ function AdminContent() {
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Link Verifikasi (URL)</label><Input value={certForm.credentialUrl} onChange={e => setCertForm({...certForm, credentialUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                     </div>
                     <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Narasi Validasi (ID)</label><Textarea value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
-                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Berkas Visual (Scan)</label><Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none pt-5 px-6" /></div>
+                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Berkas Visual (Scan/PDF)</label><Input type="file" accept="image/*,application/pdf" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none pt-5 px-6" /></div>
                     <div className="flex gap-4">
                       <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">CATAT KREDENSIAL</Button>
                       {editingCertId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> BATAL</Button>}
@@ -459,7 +451,7 @@ function AdminContent() {
                   {certificates.map(c => (
                     <Card key={c.id} className="p-5 flex gap-5 items-center group bg-card border-none hover:bg-muted/30 transition-all rounded-2xl shadow-sm overflow-hidden">
                       <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden shrink-0 flex items-center justify-center">
-                        {c.imageUrl ? (
+                        {c.imageUrl && !c.imageUrl.includes('application/pdf') ? (
                           <img src={c.imageUrl} className="w-full h-full object-cover" alt={c.titleId} />
                         ) : (
                           <Award className="h-6 w-6 text-muted-foreground/30" />
@@ -476,7 +468,6 @@ function AdminContent() {
             </div>
           </TabsContent>
 
-          {/* TAB PERJALANAN */}
           <TabsContent value="journey" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
             <div className="xl:col-span-8">
                <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
@@ -528,7 +519,6 @@ function AdminContent() {
             </div>
           </TabsContent>
 
-          {/* TAB PESAN */}
           <TabsContent value="messages" className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
              <div className="flex items-center justify-between px-6">
                 <div>
@@ -579,7 +569,6 @@ function AdminContent() {
              )}
           </TabsContent>
 
-          {/* TAB SISTEM */}
           <TabsContent value="system" className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
              <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
                 <CardHeader className="p-0 pb-10"><CardTitle className="text-3xl font-black font-headline tracking-tighter uppercase">Pemeliharaan Infrastruktur</CardTitle></CardHeader>

@@ -1,6 +1,7 @@
+
 User-agent: *
 Allow: /
 Disallow: /admin
-Disallow: /admin/login
+Disallow: /admin/*
 
 Sitemap: https://nara-andra-tyaga.vercel.app/sitemap.xml
