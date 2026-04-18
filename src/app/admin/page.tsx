@@ -423,22 +423,35 @@ function AdminContent() {
             <div className="xl:col-span-4 space-y-8">
                <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 text-primary">REPOSITORI AKTIF ({projects.length})</h3>
                <div className="grid gap-4">
-                  {projects.map(p => (
-                    <Card key={p.id} className="p-5 flex gap-5 items-center group bg-card border-none hover:bg-muted/30 transition-all rounded-2xl shadow-sm overflow-hidden">
-                      <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden shrink-0 flex items-center justify-center">
-                        {p.imageUrl ? (
-                          <img src={p.imageUrl} className="w-full h-full object-cover" alt={p.titleId} />
-                        ) : (
-                          <Laptop className="h-6 w-6 text-muted-foreground/30" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0"><h4 className="font-black truncate text-sm">{p.titleId}</h4><p className="text-[9px] font-bold text-muted-foreground uppercase">{p.type}</p></div>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                        <Button variant="ghost" size="icon" onClick={() => startEditProject(p)} className="text-primary h-10 w-10 rounded-xl"><Edit3 className="h-4 w-4" /></Button>
-                        {isSuper && <Button variant="ghost" size="icon" onClick={() => deleteProject(p.id)} className="text-destructive h-10 w-10 rounded-xl"><Trash2 className="h-4 w-4" /></Button>}
-                      </div>
-                    </Card>
-                  ))}
+                  {projects.map(p => {
+                    const hasDemo = p.demoUrl && p.demoUrl.startsWith('http');
+                    return (
+                      <Card key={p.id} className="p-5 flex gap-5 items-center group bg-card border-none hover:bg-muted/30 transition-all rounded-2xl shadow-sm overflow-hidden">
+                        <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden shrink-0 flex items-center justify-center">
+                          {p.imageUrl ? (
+                            <img src={p.imageUrl} className="w-full h-full object-cover" alt={p.titleId} />
+                          ) : (
+                            <Laptop className="h-6 w-6 text-muted-foreground/30" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          {hasDemo ? (
+                            <a href={p.demoUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 group/link hover:text-primary transition-colors">
+                              <h4 className="font-black truncate text-sm group-hover/link:underline">{p.titleId}</h4>
+                              <ExternalLink className="h-3 w-3 text-muted-foreground group-hover/link:text-primary transition-all shrink-0" />
+                            </a>
+                          ) : (
+                            <h4 className="font-black truncate text-sm">{p.titleId}</h4>
+                          )}
+                          <p className="text-[9px] font-bold text-muted-foreground uppercase">{p.type}</p>
+                        </div>
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                          <Button variant="ghost" size="icon" onClick={() => startEditProject(p)} className="text-primary h-10 w-10 rounded-xl"><Edit3 className="h-4 w-4" /></Button>
+                          {isSuper && <Button variant="ghost" size="icon" onClick={() => deleteProject(p.id)} className="text-destructive h-10 w-10 rounded-xl"><Trash2 className="h-4 w-4" /></Button>}
+                        </div>
+                      </Card>
+                    )
+                  })}
                </div>
             </div>
           </TabsContent>
