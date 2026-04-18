@@ -7,7 +7,7 @@ import { useProjectStore } from '../ProjectStore';
 import { Card, CardContent } from '../ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
-import { Award, Eye, Landmark, Info, Loader2, AlertCircle } from 'lucide-react';
+import { Award, Eye, Landmark, Info, Loader2, AlertCircle, FileText } from 'lucide-react';
 import Image from 'next/image';
 import { Certificate } from '@/lib/types';
 import { Badge } from '../ui/badge';
@@ -86,13 +86,15 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
     return url && (url.startsWith('http') || url.startsWith('/') || url.startsWith('data:'));
   };
 
+  const isPdf = cert.imageUrl && (cert.imageUrl.includes('application/pdf') || cert.imageUrl.endsWith('.pdf'));
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <div className="cursor-pointer group h-full">
           <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-500 bg-card rounded-[2.5rem] group-hover:-translate-y-2 flex flex-col">
             <div className="relative aspect-[4/3] bg-muted">
-              {isValidUrl(cert.imageUrl) ? (
+              {isValidUrl(cert.imageUrl) && !isPdf ? (
                 <Image 
                   src={cert.imageUrl} 
                   alt={title} 
@@ -100,8 +102,9 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                   className="object-cover group-hover:scale-110 transition-transform duration-700" 
                 />
               ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
-                  <Landmark className="h-12 w-12 text-primary/30" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex flex-col items-center justify-center gap-3">
+                  {isPdf ? <FileText className="h-16 w-16 text-primary" /> : <Landmark className="h-12 w-12 text-primary/30" />}
+                  {isPdf && <p className="text-[10px] font-black uppercase text-primary tracking-widest">Dokumen PDF</p>}
                 </div>
               )}
               <div className="absolute top-4 left-4">
@@ -135,45 +138,51 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
            {cert.credentialUrl && (
              <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer">
                <Button className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl">
-                 Open Original
+                 Buka Dokumen Asli
                </Button>
              </a>
            )}
         </div>
         <div className="flex-1 overflow-y-auto p-10 space-y-10 no-scrollbar">
            {isValidUrl(cert.imageUrl) ? (
-             <div className="relative aspect-video rounded-[2rem] overflow-hidden border shadow-2xl bg-muted">
-               <Image 
-                src={cert.imageUrl} 
-                alt={title} 
-                fill 
-                className="object-contain" 
-                unoptimized={cert.imageUrl.startsWith('data:')}
-               />
-             </div>
+             isPdf ? (
+               <div className="w-full h-full min-h-[500px] rounded-[2rem] overflow-hidden border shadow-2xl bg-muted">
+                 <iframe src={cert.imageUrl} className="w-full h-full border-none" title={title}></iframe>
+               </div>
+             ) : (
+               <div className="relative aspect-video rounded-[2rem] overflow-hidden border shadow-2xl bg-muted">
+                 <Image 
+                  src={cert.imageUrl} 
+                  alt={title} 
+                  fill 
+                  className="object-contain" 
+                  unoptimized={cert.imageUrl.startsWith('data:')}
+                 />
+               </div>
+             )
            ) : (
              <div className="aspect-video rounded-[2rem] bg-muted/20 border-dashed border flex flex-col items-center justify-center text-muted-foreground">
                <Info className="h-12 w-12 opacity-20" />
-               <p className="text-xs font-bold italic mt-4">Visual document available via external link.</p>
+               <p className="text-xs font-bold italic mt-4">Visual dokumen tersedia melalui tautan eksternal.</p>
              </div>
            )}
            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-card p-6 rounded-3xl border shadow-sm text-center">
-                <p className="text-[8px] font-black text-muted-foreground uppercase mb-1">Year</p>
+                <p className="text-[8px] font-black text-muted-foreground uppercase mb-1">Tahun</p>
                 <p className="text-sm font-black">{cert.year}</p>
               </div>
               <div className="bg-card p-6 rounded-3xl border shadow-sm text-center">
-                <p className="text-[8px] font-black text-muted-foreground uppercase mb-1">Validity</p>
+                <p className="text-[8px] font-black text-muted-foreground uppercase mb-1">Validitas</p>
                 <p className="text-sm font-black">{cert.validUntil}</p>
               </div>
               <div className="bg-card p-6 rounded-3xl border shadow-sm text-center col-span-2">
                 <p className="text-[8px] font-black text-muted-foreground uppercase mb-1">Status</p>
-                <p className="text-sm font-black text-primary">Active Industry Validation</p>
+                <p className="text-sm font-black text-primary">Validasi Industri Aktif</p>
               </div>
            </div>
            <section className="bg-card p-8 rounded-[2.5rem] border shadow-sm space-y-6">
               <h4 className="text-lg font-black font-headline uppercase tracking-tight flex items-center gap-3">
-                <Award className="h-5 w-5 text-primary" /> Full Validation Narrative
+                <Award className="h-5 w-5 text-primary" /> Narasi Validasi Lengkap
               </h4>
               <DialogDescription className="text-muted-foreground leading-relaxed text-base font-medium whitespace-pre-wrap">
                 {cert.fullDescriptionId || cert.fullDescriptionEn}

@@ -15,7 +15,7 @@ import {
   Plus, Trash2, LogOut, ArrowLeft, Laptop, Award, Settings, 
   UserCircle, Loader2, Camera, Briefcase, History, ShieldAlert, 
   Download, Upload, WifiOff, Edit3, X, Mail, User, CheckCircle2, AlertCircle, 
-  Terminal, Image as ImageIcon, Globe, Share2, BarChart3, Zap
+  Terminal, Image as ImageIcon, Globe, Share2, BarChart3, Zap, FileText
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
