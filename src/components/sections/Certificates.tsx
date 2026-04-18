@@ -55,9 +55,8 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
   const shortDesc = language === 'id' ? cert.shortDescriptionId : (cert.shortDescriptionEn || cert.shortDescriptionId);
   
   const hasImage = !!cert.imageUrl && (cert.imageUrl.startsWith('http') || cert.imageUrl.startsWith('data:image'));
-  const safeImageUrl = hasImage 
-    ? cert.imageUrl 
-    : `https://picsum.photos/seed/${cert.id}/800/600`;
+  // Removed random picsum fallback to ensure only uploaded images are shown.
+  // Using a neutral background if no image is provided.
 
   return (
     <Dialog>
@@ -65,13 +64,20 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
         <div className="cursor-pointer group h-full">
           <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-500 bg-card rounded-[2.5rem] group-hover:-translate-y-2 flex flex-col">
             <div className="relative aspect-[4/3] overflow-hidden bg-muted flex items-center justify-center">
-              <Image 
-                src={safeImageUrl} 
-                alt={title || "Certificate"} 
-                fill 
-                className="object-cover group-hover:scale-110 transition-transform duration-700"
-                sizes="(max-width: 768px) 100vw, 33vw"
-              />
+              {hasImage ? (
+                <Image 
+                  src={cert.imageUrl} 
+                  alt={title || "Certificate"} 
+                  fill 
+                  className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex flex-col items-center justify-center text-center p-8">
+                   <Landmark className="h-12 w-12 mb-4 text-primary opacity-30" />
+                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">{cert.issuer}</p>
+                </div>
+              )}
               <div className="absolute top-4 left-4 z-10">
                  <Badge className="bg-white/90 backdrop-blur-md text-primary font-black text-[8px] uppercase px-3 py-1 rounded-full border border-primary/20">{cert.year}</Badge>
               </div>
@@ -80,12 +86,6 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                     <Eye className="h-6 w-6 text-white" />
                  </div>
               </div>
-              {!hasImage && (
-                <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white p-6 text-center">
-                   <Landmark className="h-10 w-10 mb-3 opacity-50" />
-                   <p className="text-[10px] font-black uppercase tracking-[0.2em]">{cert.issuer}</p>
-                </div>
-              )}
             </div>
             <CardContent className="p-8 flex-1 flex flex-col">
               <div className="flex items-center gap-2 mb-3">
@@ -107,6 +107,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
         </div>
       </DialogTrigger>
       
+      {/* Dialog Size set to 700px (Medium) */}
       <DialogContent className="sm:max-w-[700px] h-[85vh] rounded-[3rem] overflow-hidden border-none p-0 shadow-2xl flex flex-col">
         <div className="bg-card border-b p-8 shrink-0 flex items-center justify-between gap-6">
            <div className="space-y-1">

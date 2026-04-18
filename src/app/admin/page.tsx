@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useEffect, useState, useRef } from 'react';
@@ -189,7 +188,7 @@ function AdminContent() {
     setEditingProjectId(p.id);
     setProjectForm({
       ...p,
-      technologies: p.technologies?.join(', ') || ''
+      technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : p.technologies
     } as any);
     window.scrollTo({ top: 300, behavior: 'smooth' });
   };

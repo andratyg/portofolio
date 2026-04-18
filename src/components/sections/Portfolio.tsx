@@ -216,6 +216,7 @@ const ProjectCard = ({ project, index, isVisible, handleShare }: { project: Proj
           </div>
         </DialogTrigger>
 
+        {/* Dialog Size set to 800px (Medium) */}
         <DialogContent className="sm:max-w-[800px] h-[85vh] p-0 rounded-[3rem] overflow-hidden border-none shadow-2xl bg-card flex flex-col">
           <div className="flex-1 flex flex-col h-full bg-background overflow-hidden">
             <div className="relative h-[40%] shrink-0 bg-muted">
