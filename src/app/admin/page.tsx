@@ -14,7 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { 
   Plus, Trash2, LogOut, ArrowLeft, Laptop, Award, Settings, 
   UserCircle, Loader2, Camera, Briefcase, History, ShieldAlert, 
-  Download, Upload, WifiOff, Edit3, X, Mail, User, CheckCircle2, AlertCircle, Terminal, Image as ImageIcon
+  Download, Upload, WifiOff, Edit3, X, Mail, User, CheckCircle2, AlertCircle, 
+  Terminal, Image as ImageIcon, Globe, Share2, BarChart3
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
@@ -258,20 +259,92 @@ function AdminContent() {
                          </div>
                          <input type="file" ref={profileImageInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setProfileFormData({...profileFormData, profilePictureUrl: url}))} />
                       </div>
+
+                      {/* STATS SECTION */}
+                      <Card className="rounded-[2.5rem] border-none bg-muted/30 p-8 space-y-6">
+                         <div className="flex items-center gap-3 mb-2">
+                            <BarChart3 className="h-5 w-5 text-primary" />
+                            <h3 className="font-black text-xs uppercase tracking-widest">Statistik Portofolio</h3>
+                         </div>
+                         <div className="grid gap-4">
+                            <div className="space-y-1">
+                               <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Proyek Selesai</label>
+                               <Input value={statsFormData.completedProjects} onChange={e => setStatsFormData({...statsFormData, completedProjects: e.target.value})} className="rounded-xl border-none bg-background/50 h-12" />
+                            </div>
+                            <div className="space-y-1">
+                               <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Tahun Pengalaman</label>
+                               <Input value={statsFormData.yearsExperience} onChange={e => setStatsFormData({...statsFormData, yearsExperience: e.target.value})} className="rounded-xl border-none bg-background/50 h-12" />
+                            </div>
+                            <div className="space-y-1">
+                               <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Teknologi Dikuasai</label>
+                               <Input value={statsFormData.techMastered} onChange={e => setStatsFormData({...statsFormData, techMastered: e.target.value})} className="rounded-xl border-none bg-background/50 h-12" />
+                            </div>
+                            <div className="space-y-1">
+                               <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Kepuasan Klien (%)</label>
+                               <Input value={statsFormData.clientSatisfaction} onChange={e => setStatsFormData({...statsFormData, clientSatisfaction: e.target.value})} className="rounded-xl border-none bg-background/50 h-12" />
+                            </div>
+                         </div>
+                      </Card>
                    </div>
-                   <div className="lg:col-span-8 space-y-8">
-                      <div className="grid md:grid-cols-2 gap-6">
-                         <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Nama Lengkap</label><Input value={profileFormData.name} onChange={e => setProfileFormData({...profileFormData, name: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
-                         <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Email Kontak</label><Input value={profileFormData.email} onChange={e => setProfileFormData({...profileFormData, email: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
+
+                   <div className="lg:col-span-8 space-y-10">
+                      {/* IDENTITY SECTION */}
+                      <div className="space-y-6">
+                        <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
+                           <UserCircle className="h-6 w-6 text-primary" /> Identitas Dasar
+                        </h3>
+                        <div className="grid md:grid-cols-2 gap-6">
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Nama Lengkap</label><Input value={profileFormData.name} onChange={e => setProfileFormData({...profileFormData, name: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Email Kontak</label><Input value={profileFormData.email} onChange={e => setProfileFormData({...profileFormData, email: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-6">
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Jabatan Inti (ID)</label><Input value={profileFormData.roleId} onChange={e => setProfileFormData({...profileFormData, roleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Jabatan Inti (EN)</label><Input value={profileFormData.roleEn} onChange={e => setProfileFormData({...profileFormData, roleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                        </div>
                       </div>
-                      <div className="grid md:grid-cols-2 gap-6">
-                         <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Jabatan (ID)</label><Input value={profileFormData.roleId} onChange={e => setProfileFormData({...profileFormData, roleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
-                         <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Jabatan (EN)</label><Input value={profileFormData.roleEn} onChange={e => setProfileFormData({...profileFormData, roleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
+
+                      {/* HERO SECTION TEXT */}
+                      <div className="space-y-6">
+                        <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
+                           <Zap className="h-6 w-6 text-primary" /> Konten Hero (Halaman Utama)
+                        </h3>
+                        <div className="grid md:grid-cols-2 gap-6">
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Judul Utama Hero (ID)</label><Input value={profileFormData.heroTitleId} onChange={e => setProfileFormData({...profileFormData, heroTitleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Judul Utama Hero (EN)</label><Input value={profileFormData.heroTitleEn} onChange={e => setProfileFormData({...profileFormData, heroTitleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-6">
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Sub-judul Hero (ID)</label><Textarea value={profileFormData.heroSubtitleId} onChange={e => setProfileFormData({...profileFormData, heroSubtitleId: e.target.value})} className="h-24 rounded-2xl bg-muted/30 border-none p-6" /></div>
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Sub-judul Hero (EN)</label><Textarea value={profileFormData.heroSubtitleEn} onChange={e => setProfileFormData({...profileFormData, heroSubtitleEn: e.target.value})} className="h-24 rounded-2xl bg-muted/30 border-none p-6" /></div>
+                        </div>
                       </div>
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Deskripsi Tentang Saya (ID)</label><Textarea value={profileFormData.aboutMeId} onChange={e => setProfileFormData({...profileFormData, aboutMeId: e.target.value})} className="h-32 rounded-2xl bg-muted/30 border-none p-6" /></div>
+
+                      {/* ABOUT ME SECTION */}
+                      <div className="space-y-6">
+                        <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
+                           <ImageIcon className="h-6 w-6 text-primary" /> Narasi Tentang Saya
+                        </h3>
+                        <div className="grid md:grid-cols-2 gap-6">
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Tentang Saya (ID)</label><Textarea value={profileFormData.aboutMeId} onChange={e => setProfileFormData({...profileFormData, aboutMeId: e.target.value})} className="h-32 rounded-2xl bg-muted/30 border-none p-6" /></div>
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Tentang Saya (EN)</label><Textarea value={profileFormData.aboutMeEn} onChange={e => setProfileFormData({...profileFormData, aboutMeEn: e.target.value})} className="h-32 rounded-2xl bg-muted/30 border-none p-6" /></div>
+                        </div>
+                      </div>
+
+                      {/* SOCIAL LINKS SECTION */}
+                      <div className="space-y-6">
+                        <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
+                           <Share2 className="h-6 w-6 text-primary" /> Jalur Komunikasi & Sosial
+                        </h3>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">WhatsApp (62xxx)</label><Input value={profileFormData.whatsapp} onChange={e => setProfileFormData({...profileFormData, whatsapp: e.target.value})} className="h-14 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">LinkedIn URL</label><Input value={profileFormData.linkedin} onChange={e => setProfileFormData({...profileFormData, linkedin: e.target.value})} className="h-14 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">GitHub URL</label><Input value={profileFormData.github} onChange={e => setProfileFormData({...profileFormData, github: e.target.value})} className="h-14 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Instagram URL</label><Input value={profileFormData.instagram} onChange={e => setProfileFormData({...profileFormData, instagram: e.target.value})} className="h-14 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">TikTok URL</label><Input value={profileFormData.tiktok} onChange={e => setProfileFormData({...profileFormData, tiktok: e.target.value})} className="h-14 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                        </div>
+                      </div>
                    </div>
                 </div>
-                <Button type="submit" className="w-full h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-2xl">SIMPAN PERUBAHAN IDENTITAS</Button>
+                <Button type="submit" className="w-full h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-2xl hover:scale-[1.01] transition-all">SIMPAN PERUBAHAN INFRASTRUKTUR PROFIL</Button>
              </form>
           </TabsContent>
 
