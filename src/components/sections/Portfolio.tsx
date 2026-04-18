@@ -75,7 +75,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
                 </div>
               </div>
               <CardContent className="pt-6 px-5 sm:px-7 pb-4 flex-1">
-                <h4 className="text-xl font-black font-headline mb-3 group-hover:text-primary transition-colors">{title}</h4>
+                <h4 className="text-xl font-black font-headline mb-3 text-foreground group-hover:text-primary transition-colors">{title}</h4>
                 <p className="text-muted-foreground line-clamp-2 text-sm font-medium">{description}</p>
               </CardContent>
               <CardFooter className="px-7 pb-7 flex justify-between items-center pt-4 border-t border-border/10">
