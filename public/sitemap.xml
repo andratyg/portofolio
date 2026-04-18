@@ -13,13 +13,13 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nara-andra-tyaga.vercel.app/certificates</loc>
+    <loc>https://nara-andra-tyaga.vercel.app/about</loc>
     <lastmod>2024-03-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://nara-andra-tyaga.vercel.app/about</loc>
+    <loc>https://nara-andra-tyaga.vercel.app/certificates</loc>
     <lastmod>2024-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
