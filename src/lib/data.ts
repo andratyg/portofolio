@@ -43,7 +43,8 @@ export const initialCertificates: Certificate[] = [
     year: '2023',
     issuer: 'Google Cloud',
     validUntil: '2025',
-    imageUrl: 'https://picsum.photos/seed/cloud-cert/800/600'
+    imageUrl: 'https://picsum.photos/seed/cloud-cert/800/600',
+    credentialUrl: 'https://pdflink.to/sertificate3/'
   }
 ];
 

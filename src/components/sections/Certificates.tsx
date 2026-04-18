@@ -26,32 +26,7 @@ export const Certificates = () => {
     })
   );
 
-  if (isLoading) {
-    return (
-      <section id="certificates" className="py-24 bg-muted/30">
-        <div className="container mx-auto px-4 flex flex-col items-center justify-center space-y-4">
-          <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Menyingkronkan Kredensial...</p>
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section id="certificates" className="py-24 bg-muted/30">
-        <div className="container mx-auto px-4 text-center">
-          <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-          <p className="text-sm font-bold text-muted-foreground uppercase">Gagal memuat validasi kredensial.</p>
-        </div>
-      </section>
-    );
-  }
-
-  if (!certificates || certificates.length === 0) {
-    return null; // Don't render the section if there are no certificates
-  }
-
+  // Always render the section container, but show different content based on state
   return (
     <section id="certificates" className="py-24 bg-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
@@ -59,28 +34,41 @@ export const Certificates = () => {
           <Badge className="bg-accent/10 text-accent border-accent/20 px-4 py-1.5 rounded-full font-bold uppercase tracking-wider">Kredensial</Badge>
           <h2 className="text-4xl md:text-5xl font-bold font-headline">{t.navCertificates}</h2>
         </div>
-        <div className="max-w-6xl mx-auto px-12 relative">
-          <Carousel 
-            opts={{ 
-              align: "start", 
-              loop: true, 
-              skipSnaps: false, 
-              duration: 50
-            }} 
-            plugins={[plugin.current]}
-            className="w-full"
-          >
-            <CarouselContent className="-ml-6">
-              {certificates.map((cert) => (
-                <CarouselItem key={cert.id} className="pl-6 md:basis-1/2 lg:basis-1/3">
-                  <CertificateCard cert={cert} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="-left-16 h-12 w-12 hidden md:flex hover:bg-primary hover:text-white border-none shadow-xl transition-all" />
-            <CarouselNext className="-right-16 h-12 w-12 hidden md:flex hover:bg-primary hover:text-white border-none shadow-xl transition-all" />
-          </Carousel>
-        </div>
+
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center space-y-4 min-h-[300px]">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Menyingkronkan Kredensial...</p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center space-y-4 min-h-[300px]">
+            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+            <p className="text-sm font-bold text-muted-foreground uppercase">Gagal memuat validasi kredensial.</p>
+          </div>
+        ) : !certificates || certificates.length === 0 ? (
+            <div className="flex flex-col items-center justify-center space-y-4 min-h-[300px]">
+                <Info className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+                <p className="text-sm font-bold text-muted-foreground uppercase">Tidak ada kredensial untuk ditampilkan.</p>
+          </div>
+        ) : (
+          <div className="max-w-6xl mx-auto px-12 relative">
+            <Carousel 
+              opts={{ align: "start", loop: true, skipSnaps: false, duration: 50 }}
+              plugins={[plugin.current]}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-6">
+                {certificates.map((cert) => (
+                  <CarouselItem key={cert.id} className="pl-6 md:basis-1/2 lg:basis-1/3">
+                    <CertificateCard cert={cert} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="-left-16 h-12 w-12 hidden md:flex hover:bg-primary hover:text-white border-none shadow-xl transition-all" />
+              <CarouselNext className="-right-16 h-12 w-12 hidden md:flex hover:bg-primary hover:text-white border-none shadow-xl transition-all" />
+            </Carousel>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -91,14 +79,9 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
   const title = language === 'id' ? cert.titleId : cert.titleEn;
   const shortDesc = language === 'id' ? cert.shortDescriptionId : cert.shortDescriptionEn;
 
-  // A more robust check for a valid, non-empty image URL
   const hasImage = typeof cert.imageUrl === 'string' && cert.imageUrl.trim().startsWith('http');
-
-  const handleOpenOriginal = (url: string | null | undefined) => {
-    if (typeof url === 'string' && url.trim().startsWith('http')) {
-      window.open(url, '_blank');
-    }
-  };
+  // Check for a valid, non-empty, and real URL
+  const hasCredentialUrl = typeof cert.credentialUrl === 'string' && cert.credentialUrl.trim().length > 5 && cert.credentialUrl.trim().startsWith('http');
 
   return (
     <Dialog>
@@ -146,9 +129,9 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
              <Badge className="bg-primary text-primary-foreground text-[8px] font-black uppercase px-3">{cert.issuer}</Badge>
              <DialogTitle className="text-2xl md:text-3xl font-black font-headline tracking-tighter">{title}</DialogTitle>
            </div>
-           {cert.credentialUrl && (
+           {hasCredentialUrl && (
              <Button 
-               onClick={() => handleOpenOriginal(cert.credentialUrl)}
+               onClick={() => window.open(cert.credentialUrl, '_blank', 'noopener,noreferrer')}
                className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all bg-primary text-primary-foreground"
              >
                Buka Dokumen Asli <ExternalLink className="h-3 w-3" />

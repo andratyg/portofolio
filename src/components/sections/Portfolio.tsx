@@ -56,6 +56,8 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
   const { language } = useLanguage();
   const title = language === 'id' ? project.titleId : project.titleEn;
   const description = language === 'id' ? project.shortDescriptionId : project.shortDescriptionEn;
+  
+  const hasDemoUrl = typeof project.demoUrl === 'string' && project.demoUrl.trim().length > 5 && project.demoUrl.trim().startsWith('http');
 
   return (
     <div className={cn("group transition-all duration-1000", isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16")} style={{ transitionDelay: `${index * 100}ms` }}>
@@ -63,7 +65,9 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
         <DialogTrigger asChild>
           <div className="cursor-pointer group h-full">
             <Card className="overflow-hidden h-full border-border/50 bg-card/60 backdrop-blur-xl rounded-[2.5rem] flex flex-col group-hover:-translate-y-2 transition-all duration-500">
-              <div className="relative aspect-[16/10] bg-muted"><Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title} fill className="object-cover transition-transform duration-1000 group-hover:scale-110" /></div>
+              <div className="relative aspect-[16/10] bg-muted">
+                <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title} fill className="object-cover transition-transform duration-1000 group-hover:scale-110" />
+              </div>
               <CardContent className="pt-6 px-7 pb-4 flex-1">
                 <h4 className="text-xl font-black font-headline mb-3 group-hover:text-primary transition-colors">{title}</h4>
                 <p className="text-muted-foreground line-clamp-2 text-sm font-medium">{description}</p>
@@ -76,28 +80,44 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
           </div>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[800px] h-[85vh] p-0 rounded-[3rem] overflow-hidden border-none shadow-2xl bg-background flex flex-col">
-           <div className="relative h-[40%] shrink-0 bg-muted">
-              <Image src={project.imageUrl} alt={title} fill className="object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-              <div className="absolute bottom-8 left-10 right-10 flex flex-col justify-end gap-3">
-                 <div className="flex gap-2"><Badge className="bg-primary text-primary-foreground px-4 py-1.5 rounded-full">{project.type}</Badge></div>
-                 <DialogTitle className="text-3xl md:text-4xl font-black font-headline text-white tracking-tighter leading-tight">{title}</DialogTitle>
+          <div className="relative h-[40%] shrink-0 bg-muted">
+            <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title} fill className="object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+            <div className="absolute bottom-8 left-10 right-10">
+              <div className="flex items-end justify-between gap-4">
+                <div className='space-y-2'>
+                  <Badge className="bg-primary text-primary-foreground px-4 py-1.5 rounded-full">{project.type}</Badge>
+                  <DialogTitle className="text-3xl md:text-4xl font-black font-headline text-white tracking-tighter leading-tight">{title}</DialogTitle>
+                </div>
+                {hasDemoUrl && (
+                  <Button 
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      window.open(project.demoUrl, '_blank', 'noopener,noreferrer');
+                    }}
+                    variant="secondary"
+                    className="rounded-full h-14 w-14 p-0 shrink-0 gap-2 text-xs font-bold uppercase tracking-wider shadow-xl hover:scale-110 active:scale-95 transition-all bg-white text-black flex items-center justify-center"
+                  >
+                    <Globe className="h-6 w-6" />
+                  </Button>
+                )}
               </div>
-           </div>
-           <div className="flex-1 overflow-y-auto p-10 space-y-12 no-scrollbar">
-              <section className="space-y-4">
-                 <h3 className="text-xl font-black font-headline uppercase flex items-center gap-3"><AlertCircle className="h-5 w-5 text-destructive" /> Technical Challenge</h3>
-                 <DialogDescription className="text-muted-foreground text-base leading-relaxed font-medium">{project.problemId || project.problemEn}</DialogDescription>
-              </section>
-              <section className="space-y-4">
-                 <h3 className="text-xl font-black font-headline uppercase flex items-center gap-3"><CheckCircle2 className="h-5 w-5 text-primary" /> Strategic Solution</h3>
-                 <p className="text-muted-foreground text-base leading-relaxed font-medium">{project.solutionId || project.solutionEn}</p>
-              </section>
-              <section className="space-y-4">
-                 <h3 className="text-lg font-black font-headline uppercase flex items-center gap-2"><Terminal className="h-4 w-4 text-primary" /> System Stack</h3>
-                 <div className="flex flex-wrap gap-2">{(project.technologies || []).map(t => <Badge key={t} variant="outline" className="px-3 py-1.5 rounded-xl border-primary/20 text-[10px] font-black uppercase">{t}</Badge>)}</div>
-              </section>
-           </div>
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto p-10 space-y-12 no-scrollbar">
+            <section className="space-y-4">
+              <h3 className="text-xl font-black font-headline uppercase flex items-center gap-3"><AlertCircle className="h-5 w-5 text-destructive" /> Technical Challenge</h3>
+              <DialogDescription className="text-muted-foreground text-base leading-relaxed font-medium">{project.problemId || project.problemEn}</DialogDescription>
+            </section>
+            <section className="space-y-4">
+              <h3 className="text-xl font-black font-headline uppercase flex items-center gap-3"><CheckCircle2 className="h-5 w-5 text-primary" /> Strategic Solution</h3>
+              <p className="text-muted-foreground text-base leading-relaxed font-medium">{project.solutionId || project.solutionEn}</p>
+            </section>
+            <section className="space-y-4">
+              <h3 className="text-lg font-black font-headline uppercase flex items-center gap-2"><Terminal className="h-4 w-4 text-primary" /> System Stack</h3>
+              <div className="flex flex-wrap gap-2">{(project.technologies || []).map(t => <Badge key={t} variant="outline" className="px-3 py-1.5 rounded-xl border-primary/20 text-[10px] font-black uppercase">{t}</Badge>)}</div>
+            </section>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
