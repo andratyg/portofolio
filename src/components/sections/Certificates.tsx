@@ -20,7 +20,7 @@ export const Certificates = () => {
 
   const plugin = React.useRef(
     Autoplay({ 
-      delay: 6000, 
+      delay: 8000, 
       stopOnInteraction: false, 
       stopOnMouseEnter: true,
       playOnInit: true
@@ -75,7 +75,7 @@ export const Certificates = () => {
               align: "start", 
               loop: true, 
               skipSnaps: false, 
-              duration: 60 
+              duration: 100 
             }} 
             plugins={[plugin.current]}
             className="w-full"
@@ -109,13 +109,27 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
 
   const handleOpenOriginal = (url: string) => {
     if (!url) return;
-    const link = document.createElement('a');
-    link.href = url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    
+    // Jika formatnya data URI PDF, konversi ke Blob URL agar lebih lancar
+    if (url.startsWith('data:application/pdf')) {
+      try {
+        const base64Canvas = url.split(';base64,')[1];
+        const bin = atob(base64Canvas);
+        const len = bin.length;
+        const buffer = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          buffer[i] = bin.charCodeAt(i);
+        }
+        const blob = new Blob([buffer], { type: 'application/pdf' });
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, '_blank');
+      } catch (e) {
+        console.error("Gagal memproses PDF:", e);
+        window.open(url, '_blank');
+      }
+    } else {
+      window.open(url, '_blank');
+    }
   };
 
   return (

@@ -131,7 +131,6 @@ function AdminContent() {
       
       const fieldsToTranslate = Object.keys(data).filter(key => key.endsWith(sourceSuffix));
       
-      // Perform translations in parallel for speed and better reliability
       const translationPromises = fieldsToTranslate.map(async (sourceField) => {
         const targetField = sourceField.replace(sourceSuffix, targetSuffix);
         if (data[sourceField] && typeof data[sourceField] === 'string' && data[sourceField].trim() !== '') {
@@ -157,7 +156,7 @@ function AdminContent() {
       toast({ title: "Sinkronisasi AI Berhasil", description: "Konten telah diterjemahkan secara otomatis." });
     } catch (e) {
       console.error("AI Sync Error:", e);
-      toast({ variant: "destructive", title: "Gagal Sinkronisasi AI", description: "Terjadi kesalahan saat menghubungi layanan AI. Periksa koneksi Anda." });
+      toast({ variant: "destructive", title: "Gagal Sinkronisasi AI", description: "Terjadi kesalahan saat menghubungi layanan AI." });
     } finally {
       setIsTranslating(null);
     }
