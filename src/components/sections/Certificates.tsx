@@ -12,10 +12,15 @@ import Image from 'next/image';
 import { Certificate } from '@/lib/types';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import Autoplay from "embla-carousel-autoplay";
 
 export const Certificates = () => {
   const { t, language } = useLanguage();
   const { certificates, isLoading, error } = useProjectStore();
+
+  const plugin = React.useRef(
+    Autoplay({ delay: 3000, stopOnInteraction: true })
+  );
 
   if (isLoading) {
     return (
@@ -60,7 +65,11 @@ export const Certificates = () => {
           <h2 className="text-4xl md:text-5xl font-bold font-headline">{t.navCertificates}</h2>
         </div>
         <div className="max-w-6xl mx-auto px-12">
-          <Carousel opts={{ align: "start", loop: true }} className="w-full">
+          <Carousel 
+            opts={{ align: "start", loop: true }} 
+            plugins={[plugin.current]}
+            className="w-full"
+          >
             <CarouselContent className="-ml-6">
               {certificates.map((cert) => (
                 <CarouselItem key={cert.id} className="pl-6 md:basis-1/2 lg:basis-1/3">
@@ -92,14 +101,14 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
     <Dialog>
       <DialogTrigger asChild>
         <div className="cursor-pointer group h-full">
-          <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-500 bg-card rounded-[2.5rem] group-hover:-translate-y-2 flex flex-col">
+          <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-300 bg-card rounded-[2.5rem] group-hover:-translate-y-2 flex flex-col will-change-transform">
             <div className="relative aspect-[4/3] bg-muted">
               {isValidUrl(cert.imageUrl) && !isPdf ? (
                 <Image 
                   src={cert.imageUrl} 
                   alt={title} 
                   fill 
-                  className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                  className="object-cover group-hover:scale-110 transition-transform duration-500" 
                 />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex flex-col items-center justify-center gap-3">
