@@ -115,7 +115,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                 <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse"></div>
                 <span className="text-[9px] font-black text-accent uppercase tracking-widest">{cert.issuer}</span>
               </div>
-              <h3 className="text-xl font-bold font-headline mb-3 line-clamp-2 leading-tight group-hover:text-primary transition-colors">{title}</h3>
+              <h3 className="text-xl font-bold font-headline mb-3 text-foreground group-hover:text-primary transition-colors">{title}</h3>
               <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed mb-6 font-medium">{shortDesc}</p>
             </CardContent>
           </Card>
