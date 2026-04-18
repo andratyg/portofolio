@@ -152,7 +152,7 @@ function AdminContent() {
     toast({ title: "Profil Berhasil Diperbarui" });
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void, isCert: boolean = false) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 15 * 1024 * 1024) {
@@ -160,7 +160,16 @@ function AdminContent() {
       return;
     }
     const reader = new FileReader();
-    reader.onload = (event) => setter(event.target?.result as string);
+    reader.onload = (event) => {
+      const url = event.target?.result as string;
+      setter(url);
+      
+      // Otomatisasi untuk sertifikat PDF: isi kolom Credential URL
+      if (isCert && file.type === 'application/pdf') {
+        setCertForm(prev => ({ ...prev, credentialUrl: url }));
+        toast({ title: "PDF Terdeteksi", description: "Link verifikasi telah diisi otomatis dengan berkas Anda." });
+      }
+    };
     reader.readAsDataURL(file);
   };
 
@@ -439,10 +448,10 @@ function AdminContent() {
                     <div className="grid md:grid-cols-3 gap-8">
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Otoritas Penerbit</label><Input value={certForm.issuer} onChange={e => setCertForm({...certForm, issuer: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tahun Terbit</label><Input value={certForm.year} onChange={e => setCertForm({...certForm, year: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Link Verifikasi (URL)</label><Input value={certForm.credentialUrl} onChange={e => setCertForm({...certForm, credentialUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Link Verifikasi (URL)</label><Input value={certForm.credentialUrl} onChange={e => setCertForm({...certForm, credentialUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" placeholder="Terisi otomatis jika upload PDF" /></div>
                     </div>
                     <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Narasi Validasi (ID)</label><Textarea value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
-                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Berkas Visual (Scan/PDF)</label><Input type="file" accept="image/*,application/pdf" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none pt-5 px-6" /></div>
+                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Berkas Visual (Gambar/PDF)</label><Input type="file" accept="image/*,application/pdf" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, imageUrl: url}), true)} className="h-16 rounded-2xl bg-muted/30 border-none pt-5 px-6" /></div>
                     <div className="flex gap-4">
                       <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">CATAT KREDENSIAL</Button>
                       {editingCertId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> BATAL</Button>}

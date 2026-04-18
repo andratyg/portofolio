@@ -7,7 +7,7 @@ import { useProjectStore } from '../ProjectStore';
 import { Card, CardContent } from '../ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
-import { Award, Eye, Landmark, Info, Loader2, AlertCircle, FileText } from 'lucide-react';
+import { Award, Eye, Landmark, Info, Loader2, AlertCircle, FileText, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import { Certificate } from '@/lib/types';
 import { Badge } from '../ui/badge';
@@ -22,7 +22,7 @@ export const Certificates = () => {
       <section id="certificates" className="py-24 bg-muted/30">
         <div className="container mx-auto px-4 flex flex-col items-center justify-center space-y-4">
           <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Synchronizing Credentials...</p>
+          <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Menyingkronkan Kredensial...</p>
         </div>
       </section>
     );
@@ -33,7 +33,7 @@ export const Certificates = () => {
       <section id="certificates" className="py-24 bg-muted/30">
         <div className="container mx-auto px-4 text-center">
           <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-          <p className="text-sm font-bold text-muted-foreground uppercase">Failed to fetch validation nodes.</p>
+          <p className="text-sm font-bold text-muted-foreground uppercase">Gagal memuat validasi kredensial.</p>
         </div>
       </section>
     );
@@ -56,7 +56,7 @@ export const Certificates = () => {
     <section id="certificates" className="py-24 bg-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 space-y-4">
-          <Badge className="bg-accent/10 text-accent border-accent/20 px-4 py-1.5 rounded-full font-bold uppercase tracking-wider">Credentials</Badge>
+          <Badge className="bg-accent/10 text-accent border-accent/20 px-4 py-1.5 rounded-full font-bold uppercase tracking-wider">Kredensial</Badge>
           <h2 className="text-4xl md:text-5xl font-bold font-headline">{t.navCertificates}</h2>
         </div>
         <div className="max-w-6xl mx-auto px-12">
@@ -138,7 +138,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
            {cert.credentialUrl && (
              <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer">
                <Button className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl">
-                 Buka Dokumen Asli
+                 Buka Dokumen Asli <ExternalLink className="h-3 w-3" />
                </Button>
              </a>
            )}
@@ -185,7 +185,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                 <Award className="h-5 w-5 text-primary" /> Narasi Validasi Lengkap
               </h4>
               <DialogDescription className="text-muted-foreground leading-relaxed text-base font-medium whitespace-pre-wrap">
-                {cert.fullDescriptionId || cert.fullDescriptionEn}
+                {language === 'id' ? cert.fullDescriptionId : (cert.fullDescriptionEn || cert.fullDescriptionId)}
               </DialogDescription>
            </section>
         </div>
