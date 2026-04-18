@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A GenAI tool to translate portfolio content between Indonesian and English.
@@ -27,7 +28,9 @@ const prompt = ai.definePrompt({
   output: {schema: TranslateContentOutputSchema},
   prompt: `You are a professional translator fluent in Indonesian and English.
 Translate the following text into {{targetLang}} (id = Indonesian, en = English).
-Ensure the tone remains professional and natural.
+
+Context: This is for a professional portfolio of a Software Developer.
+Ensure the tone remains professional, confident, and natural for a technical audience.
 
 Text to translate:
 {{{text}}}`,

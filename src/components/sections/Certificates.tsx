@@ -18,7 +18,6 @@ export const Certificates = () => {
   const { t, language } = useLanguage();
   const { certificates, isLoading, error } = useProjectStore();
 
-  // Konfigurasi Autoplay: Delay lebih lama (6 detik) agar tidak terlalu cepat
   const plugin = React.useRef(
     Autoplay({ delay: 6000, stopOnInteraction: true })
   );
@@ -67,7 +66,6 @@ export const Certificates = () => {
         </div>
         <div className="max-w-6xl mx-auto px-12">
           <Carousel 
-            // Duration ditingkatkan (80) agar transisi lebih lambat dan halus
             opts={{ align: "start", loop: true, skipSnaps: false, duration: 80 }} 
             plugins={[plugin.current]}
             className="w-full"
@@ -101,8 +99,6 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
 
   const handleOpenOriginal = (url: string) => {
     if (!url) return;
-    
-    // Membuka tautan di tab baru secara langsung untuk performa instan
     const link = document.createElement('a');
     link.href = url;
     link.target = '_blank';
