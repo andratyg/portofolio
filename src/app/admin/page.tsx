@@ -155,8 +155,8 @@ function AdminContent() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 10 * 1024 * 1024) {
-      toast({ variant: "destructive", title: "Berkas Terlalu Besar (Maks 10MB)" });
+    if (file.size > 15 * 1024 * 1024) {
+      toast({ variant: "destructive", title: "Berkas Terlalu Besar (Maks 15MB)" });
       return;
     }
     const reader = new FileReader();
@@ -460,7 +460,7 @@ function AdminContent() {
                         {c.imageUrl && !c.imageUrl.includes('application/pdf') ? (
                           <img src={c.imageUrl} className="w-full h-full object-cover" alt={c.titleId} />
                         ) : (
-                          <Award className="h-6 w-6 text-muted-foreground/30" />
+                          <FileText className="h-6 w-6 text-primary" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0"><h4 className="font-black truncate text-sm">{c.titleId}</h4><p className="text-[9px] font-bold text-muted-foreground uppercase">{c.issuer}</p></div>
