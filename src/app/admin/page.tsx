@@ -164,10 +164,9 @@ function AdminContent() {
       const url = event.target?.result as string;
       setter(url);
       
-      // Otomatisasi untuk sertifikat PDF: isi kolom Credential URL
-      if (isCert && file.type === 'application/pdf') {
-        setCertForm(prev => ({ ...prev, credentialUrl: url }));
-        toast({ title: "PDF Terdeteksi", description: "Link verifikasi telah diisi otomatis dengan berkas Anda." });
+      if (isCert && (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+        setCertForm(prev => ({ ...prev, credentialUrl: url, imageUrl: url }));
+        toast({ title: "PDF Terdeteksi", description: "Tautan verifikasi telah diisi otomatis." });
       }
     };
     reader.readAsDataURL(file);

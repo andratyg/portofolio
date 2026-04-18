@@ -19,7 +19,7 @@ export const Certificates = () => {
   const { certificates, isLoading, error } = useProjectStore();
 
   const plugin = React.useRef(
-    Autoplay({ delay: 3000, stopOnInteraction: true })
+    Autoplay({ delay: 4000, stopOnInteraction: true })
   );
 
   if (isLoading) {
@@ -66,7 +66,7 @@ export const Certificates = () => {
         </div>
         <div className="max-w-6xl mx-auto px-12">
           <Carousel 
-            opts={{ align: "start", loop: true }} 
+            opts={{ align: "start", loop: true, skipSnaps: false, duration: 40 }} 
             plugins={[plugin.current]}
             className="w-full"
           >
@@ -77,8 +77,8 @@ export const Certificates = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="-left-16 h-12 w-12" />
-            <CarouselNext className="-right-16 h-12 w-12" />
+            <CarouselPrevious className="-left-16 h-12 w-12 hidden md:flex" />
+            <CarouselNext className="-right-16 h-12 w-12 hidden md:flex" />
           </Carousel>
         </div>
       </div>
@@ -95,7 +95,24 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
     return url && (url.startsWith('http') || url.startsWith('/') || url.startsWith('data:'));
   };
 
-  const isPdf = cert.imageUrl && (cert.imageUrl.includes('application/pdf') || cert.imageUrl.endsWith('.pdf'));
+  const isPdf = cert.imageUrl && (cert.imageUrl.includes('application/pdf') || cert.imageUrl.toLowerCase().endsWith('.pdf'));
+
+  const handleOpenOriginal = (url: string) => {
+    if (!url) return;
+    if (url.startsWith('data:application/pdf;base64,')) {
+      const base64Data = url.split(',')[1];
+      const binary = atob(base64Data);
+      const array = [];
+      for (let i = 0; i < binary.length; i++) {
+        array.push(binary.charCodeAt(i));
+      }
+      const blob = new Blob([new Uint8Array(array)], { type: 'application/pdf' });
+      const blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, '_blank');
+    } else {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
 
   return (
     <Dialog>
@@ -145,11 +162,12 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
              <DialogTitle className="text-2xl md:text-3xl font-black font-headline tracking-tighter">{title}</DialogTitle>
            </div>
            {cert.credentialUrl && (
-             <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer">
-               <Button className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl">
-                 Buka Dokumen Asli <ExternalLink className="h-3 w-3" />
-               </Button>
-             </a>
+             <Button 
+               onClick={() => handleOpenOriginal(cert.credentialUrl || '')}
+               className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl"
+             >
+               Buka Dokumen Asli <ExternalLink className="h-3 w-3" />
+             </Button>
            )}
         </div>
         <div className="flex-1 overflow-y-auto p-10 space-y-10 no-scrollbar">
