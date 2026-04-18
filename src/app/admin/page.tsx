@@ -131,6 +131,7 @@ function AdminContent() {
       
       const fieldsToTranslate = Object.keys(data).filter(key => key.endsWith(sourceSuffix));
       
+      // Proses sinkronisasi AI secara paralel agar lebih stabil
       const translationResults = await Promise.all(
         fieldsToTranslate.map(async (sourceField) => {
           const targetField = sourceField.replace(sourceSuffix, targetSuffix);
@@ -139,7 +140,6 @@ function AdminContent() {
               const res = await translateContent({ text: data[sourceField], targetLang });
               return { field: targetField, text: res.translatedText };
             } catch (err) {
-              console.error(`Gagal menerjemahkan kolom ${sourceField}:`, err);
               return null;
             }
           }
@@ -154,7 +154,6 @@ function AdminContent() {
       setter(updated);
       toast({ title: "Sinkronisasi AI Berhasil", description: "Seluruh konten telah diterjemahkan secara paralel." });
     } catch (e) {
-      console.error("AI Sync Error:", e);
       toast({ variant: "destructive", title: "Gagal Sinkronisasi AI", description: "Terjadi kesalahan pada layanan kecerdasan buatan." });
     } finally {
       setIsTranslating(null);
@@ -182,6 +181,7 @@ function AdminContent() {
       const url = event.target?.result as string;
       setter(url);
       
+      // Otomatisasi pengisian URL jika berkas adalah PDF
       if (isCert && (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
         setCertForm(prev => ({ ...prev, credentialUrl: url, imageUrl: url }));
         toast({ title: "Berkas PDF Terdeteksi", description: "Tautan verifikasi otomatis diisi sesuai data dokumen." });
@@ -449,7 +449,7 @@ function AdminContent() {
                     <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingCertId ? 'Mutakhirkan Kredensial' : 'Daftarkan Sertifikat'}</CardTitle>
                     <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Validasi Akreditasi & Kompetensi Industri</CardDescription>
                   </div>
-                  <Button type="button" size="sm" onClick={() => handleAITranslate('certificates', certForm, setCertForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase" disabled={isTranslating === 'certificates'}>
+                  <Button type="button" size="sm" onClick={() => handleAITranslate('certificates', certForm, setProjectForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase" disabled={isTranslating === 'certificates'}>
                     {isTranslating === 'certificates' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} SINKRONISASI AI
                   </Button>
                 </CardHeader>

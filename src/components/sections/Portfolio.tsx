@@ -21,7 +21,6 @@ export const Portfolio = () => {
   const [filter, setFilter] = useState<'all' | 'web' | 'ui' | 'backend'>('all');
   const [search, setSearch] = useState('');
   const [isVisible, setIsVisible] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => { setIsVisible(true); }, []);
 
@@ -40,7 +39,12 @@ export const Portfolio = () => {
           <div className={cn("inline-flex items-center gap-3 px-5 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[9px] font-black uppercase tracking-[0.3em] mb-10 shadow-xl transition-all duration-1000", isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}><div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div><span>INFRASTRUKTUR TERPILIH</span></div>
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-12">
             <h2 className="text-5xl md:text-6xl lg:text-[6.5rem] font-black font-headline tracking-tighter leading-[0.9] text-foreground">Engineering<br />Digital Impact</h2>
-            <div className="flex gap-2 w-full lg:w-auto overflow-x-auto no-scrollbar py-1"><div className="relative group flex-1 sm:flex-none"><Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors z-10" /><Input placeholder="Scan units..." className="pl-12 w-full sm:w-72 rounded-full h-14 bg-card" value={search} onChange={(e) => setSearch(e.target.value)} /></div></div>
+            <div className="flex gap-2 w-full lg:w-auto overflow-x-auto no-scrollbar py-1">
+              <div className="relative group flex-1 sm:flex-none">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors z-10" />
+                <Input placeholder="Scan units..." className="pl-12 w-full sm:w-72 rounded-full h-14 bg-card" value={search} onChange={(e) => setSearch(e.target.value)} />
+              </div>
+            </div>
           </div>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -100,6 +104,16 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
                 </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+              <div className="absolute top-8 right-10 flex gap-2">
+                 {project.demoUrl && (
+                   <Button 
+                    onClick={() => window.open(project.demoUrl, '_blank')}
+                    className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all bg-primary text-primary-foreground border-none"
+                   >
+                     Live Demo <ExternalLink className="h-3 w-3" />
+                   </Button>
+                 )}
+              </div>
               <div className="absolute bottom-8 left-10 right-10 flex flex-col justify-end gap-3">
                  <div className="flex gap-2"><Badge className="bg-primary text-primary-foreground px-4 py-1.5 rounded-full">{project.type}</Badge></div>
                  <DialogTitle className="text-3xl md:text-4xl font-black font-headline text-white tracking-tighter leading-tight">{title}</DialogTitle>
@@ -108,11 +122,11 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
            <div className="flex-1 overflow-y-auto p-10 space-y-12 no-scrollbar">
               <section className="space-y-4">
                  <h3 className="text-xl font-black font-headline uppercase flex items-center gap-3"><AlertCircle className="h-5 w-5 text-destructive" /> Tantangan Teknis</h3>
-                 <DialogDescription className="text-muted-foreground text-base leading-relaxed font-medium">{project.problemId || project.problemEn}</DialogDescription>
+                 <DialogDescription className="text-muted-foreground text-base leading-relaxed font-medium whitespace-pre-wrap">{project.problemId || project.problemEn}</DialogDescription>
               </section>
               <section className="space-y-4">
                  <h3 className="text-xl font-black font-headline uppercase flex items-center gap-3"><CheckCircle2 className="h-5 w-5 text-primary" /> Solusi Strategis</h3>
-                 <p className="text-muted-foreground text-base leading-relaxed font-medium">{project.solutionId || project.solutionEn}</p>
+                 <p className="text-muted-foreground text-base leading-relaxed font-medium whitespace-pre-wrap">{project.solutionId || project.solutionEn}</p>
               </section>
               <section className="space-y-4">
                  <h3 className="text-lg font-black font-headline uppercase flex items-center gap-2"><Terminal className="h-4 w-4 text-primary" /> Stack Sistem</h3>

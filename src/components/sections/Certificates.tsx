@@ -20,7 +20,7 @@ export const Certificates = () => {
 
   const plugin = React.useRef(
     Autoplay({ 
-      delay: 5000, 
+      delay: 6000, 
       stopOnInteraction: false, 
       stopOnMouseEnter: true,
       playOnInit: true
@@ -75,8 +75,8 @@ export const Certificates = () => {
               align: "start", 
               loop: true, 
               skipSnaps: false, 
-              duration: 80,
-              watchDrag: true
+              duration: 100, // Kecepatan transisi lebih lambat dan halus
+              watchDrag: true // Bisa digeser kursor
             }} 
             plugins={[plugin.current]}
             className="w-full cursor-grab active:cursor-grabbing"
@@ -127,7 +127,6 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
         const blobUrl = URL.createObjectURL(blob);
         window.open(blobUrl, '_blank');
       } catch (e) {
-        console.error("Gagal memproses dokumen:", e);
         window.open(url, '_blank');
       }
     } else {
@@ -151,7 +150,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex flex-col items-center justify-center gap-3">
                   {isPdf ? <FileText className="h-16 w-16 text-primary animate-pulse" /> : <Landmark className="h-12 w-12 text-primary/30" />}
-                  {isPdf && <p className="text-[10px] font-black uppercase text-primary tracking-widest">Dokumen PDF Terverifikasi</p>}
+                  {isPdf && <p className="text-[10px] font-black uppercase text-primary tracking-widest text-center px-4">Dokumen PDF Terverifikasi</p>}
                 </div>
               )}
               <div className="absolute top-4 left-4 z-10">
