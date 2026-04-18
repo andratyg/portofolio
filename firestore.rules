@@ -1,23 +1,9 @@
-/**
- * KaryaPro Enterprise Security Rules (v2.5.0)
- * 
- * Access Model:
- * - Public: Read-only access to all content (projects, certs, etc.)
- * - Editor: Create and Update access.
- * - Super Admin: Full CRUD access including Delete and Global State changes.
- */
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // --- Core Helper Functions ---
     function isSignedIn() {
       return request.auth != null;
-    }
-
-    function getAdminData() {
-      return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data;
     }
 
     function isAdmin() {
@@ -25,38 +11,28 @@ service cloud.firestore {
     }
 
     function isSuperAdmin() {
-      return isAdmin() && getAdminData().role == 'super';
+      return isAdmin() && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'super';
     }
 
-    // --- Content Validation Helpers ---
-    function isValidProject() {
-      return request.resource.data.titleId is string && 
-             request.resource.data.titleId.size() > 0;
-    }
-
-    // --- Rules ---
-
-    // Administrative access configuration
     match /admins/{adminId} {
       allow get: if isSignedIn() && request.auth.uid == adminId;
       allow list, create, update, delete: if isSuperAdmin();
     }
 
-    // Public Profile Configuration
     match /portfolioOwner/profile {
       allow get, list: if true;
       allow create, update: if isAdmin();
       allow delete: if isSuperAdmin();
     }
 
-    // Global Content Collections (Projects, Certificates, Testimonials, Journey)
+    match /messages/{messageId} {
+      allow create: if true;
+      allow read, delete: if isAdmin();
+    }
+
     match /{collection}/{docId} {
       allow get, list: if true;
-      
-      // Standard writes restricted to authorized admins
       allow create, update: if isAdmin() && (collection != 'admins');
-      
-      // Destructive operations restricted to Super Admins
       allow delete: if isSuperAdmin();
     }
   }

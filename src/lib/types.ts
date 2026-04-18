@@ -12,7 +12,7 @@ export interface Project {
   solutionEn?: string;
   resultId?: string;
   resultEn?: string;
-  impactStats?: string; // e.g. "99.9% Uptime", "10k+ Users"
+  impactStats?: string;
   type: 'web' | 'ui' | 'backend';
   technologies: string[];
   imageUrl: string;
@@ -54,6 +54,14 @@ export interface Certificate {
   validUntil: string;
   imageUrl: string;
   credentialUrl?: string;
+}
+
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  createdAt: string;
 }
 
 export interface PortfolioStats {

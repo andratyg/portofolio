@@ -4,7 +4,6 @@ import { ThemeProvider } from '@/components/ThemeContext';
 import { LanguageProvider } from '@/components/LanguageContext';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
-import Script from 'next/script';
 import { SecurityProvider } from '@/components/SecurityProvider';
 
 export const viewport: Viewport = {
@@ -26,60 +25,24 @@ export const metadata: Metadata = {
     description: 'Portofolio Nara Andra Tyaga, siswa PPLG SMK Wikrama Bogor. Fokus pada pengembangan aplikasi web dan logika sistem yang efisien.',
     url: 'https://nara-andra-tyaga.vercel.app',
     siteName: 'Nara Andra Tyaga Portfolio',
-    images: [
-      {
-        url: 'https://picsum.photos/seed/nat-og/1200/630',
-        width: 1200,
-        height: 630,
-        alt: 'Nara Andra Tyaga Portfolio Preview',
-      },
-    ],
+    images: [{ url: 'https://picsum.photos/seed/nat-og/1200/630', width: 1200, height: 630 }],
     locale: 'id_ID',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Nara Andra Tyaga | PPLG SMK Wikrama Bogor',
-    description: 'Portofolio Nara Andra Tyaga, siswa PPLG SMK Wikrama Bogor. Fokus pada pengembangan aplikasi web dan logika sistem yang efisien.',
     images: ['https://picsum.photos/seed/nat-og/1200/630'],
-  },
-  robots: {
-    index: true,
-    follow: true,
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Nara Andra Tyaga",
-    "jobTitle": "Full-Stack Developer",
-    "url": "https://nara-andra-tyaga.vercel.app",
-    "affiliation": {
-      "@type": "EducationalOrganization",
-      "name": "SMK Wikrama Bogor"
-    },
-    "sameAs": [
-      "https://github.com",
-      "https://linkedin.com"
-    ]
-  };
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
         <meta name="google-site-verification" content="cu0oN6kGs748IQbeUkW1eFLhaKDJwYpJ6Gn9daxm9tk" />
       </head>
       <body className="font-body antialiased transition-colors duration-500 overflow-x-hidden">
@@ -87,12 +50,8 @@ export default function RootLayout({
           <LanguageProvider>
             <ThemeProvider>
               <SecurityProvider>
-                <div className="print:hidden">
-                  {children}
-                </div>
-                <div className="hidden print:block print:p-8">
-                  {children}
-                </div>
+                <div className="print:hidden">{children}</div>
+                <div className="hidden print:block print:p-8">{children}</div>
                 <Toaster />
               </SecurityProvider>
             </ThemeProvider>
