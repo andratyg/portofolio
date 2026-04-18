@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -34,15 +35,15 @@ export default function AdminLogin() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast({
-        title: "Welcome Back",
-        description: "Authenticated as administrator.",
+        title: "Selamat Datang Kembali",
+        description: "Otentikasi administrator berhasil.",
       });
       router.push('/admin');
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Access Denied",
-        description: error.message || "Invalid credentials.",
+        title: "Akses Ditolak",
+        description: "Email atau kata sandi tidak valid.",
       });
     } finally {
       setIsLoggingIn(false);
@@ -55,7 +56,7 @@ export default function AdminLogin() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/10 rounded-full blur-[120px]"></div>
 
       <Link href="/" className="absolute top-8 left-8 flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors z-20">
-        <ArrowLeft className="h-4 w-4" /> Back to Site
+        <ArrowLeft className="h-4 w-4" /> Kembali ke Situs
       </Link>
       
       <Card className="w-full max-w-md shadow-2xl rounded-[2.5rem] overflow-hidden border border-border bg-card/50 backdrop-blur-xl relative z-10">
@@ -63,16 +64,16 @@ export default function AdminLogin() {
           <div className="mx-auto w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
              <LogIn className="h-6 w-6" />
           </div>
-          <CardTitle className="text-2xl font-headline font-bold">NAT Portal</CardTitle>
-          <p className="text-primary-foreground/70 text-xs mt-1">Authenticate to manage infrastructure</p>
+          <CardTitle className="text-2xl font-headline font-bold">PORTAL ADMIN</CardTitle>
+          <p className="text-primary-foreground/70 text-xs mt-1">Masuk untuk mengelola infrastruktur portofolio</p>
         </CardHeader>
         <CardContent className="pt-8 px-8">
           <form id="login-form" onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Email</label>
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Email Administrator</label>
               <Input 
                 type="email" 
-                placeholder="admin@nat.app" 
+                placeholder="admin@nara-andra.app" 
                 className="h-12 rounded-xl bg-background/50"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -80,7 +81,7 @@ export default function AdminLogin() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Password</label>
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Kata Sandi</label>
               <Input 
                 type="password" 
                 placeholder="••••••••" 
@@ -97,7 +98,7 @@ export default function AdminLogin() {
             className="w-full h-12 rounded-xl text-sm font-black uppercase tracking-widest shadow-xl shadow-primary/20"
             disabled={isLoggingIn}
           >
-            {isLoggingIn ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Authenticate'}
+            {isLoggingIn ? <Loader2 className="h-4 w-4 animate-spin" /> : 'MASUK KE SISTEM'}
           </Button>
         </CardFooter>
       </Card>

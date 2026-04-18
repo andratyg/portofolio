@@ -11,19 +11,14 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 import { 
-  Plus, Trash2, Sparkles, LogOut, ArrowLeft, Laptop, Award, Settings, 
-  UserCircle, Loader2, Image as ImageIcon, Quote, 
-  Briefcase, History, ShieldAlert, ShieldCheck, 
-  Download, Upload, WifiOff, Edit3, Save, X,
-  Activity, Terminal, Link as LinkIcon, FileUp, FileType, Zap, AlertCircle, 
-  Instagram, Github, Linkedin, MessageSquare, Video, Globe2, Camera,
-  GraduationCap, Milestone, Calendar, CheckCircle2, Mail, User
+  Plus, Trash2, LogOut, ArrowLeft, Laptop, Award, Settings, 
+  UserCircle, Loader2, Camera, Briefcase, History, ShieldAlert, 
+  Download, Upload, WifiOff, Edit3, X, Mail, User, CheckCircle2, AlertCircle, Terminal
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
-import { ProfileData, Project, Certificate, Testimonial, Experience, PortfolioStats, ContactMessage } from '@/lib/types';
+import { ProfileData, Project, Certificate, Experience, PortfolioStats } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -33,7 +28,6 @@ function AdminContent() {
   const { 
     projects, addProject, deleteProject, 
     certificates, addCertificate, deleteCertificate,
-    testimonials, addTestimonial, deleteTestimonial,
     experiences, addExperience, deleteExperience,
     messages, deleteMessage,
     profile, updateProfile,
@@ -54,7 +48,6 @@ function AdminContent() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const profileImageInputRef = useRef<HTMLInputElement>(null);
-  const projectImageInputRef = useRef<HTMLInputElement>(null);
 
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editingCertId, setEditingCertId] = useState<string | null>(null);
@@ -143,9 +136,9 @@ function AdminContent() {
         }
       }
       setter(updated);
-      toast({ title: "AI Sync Successful" });
+      toast({ title: "Sinkronisasi AI Berhasil" });
     } catch (e) {
-      toast({ variant: "destructive", title: "AI Error" });
+      toast({ variant: "destructive", title: "Gagal Sinkronisasi AI" });
     } finally {
       setIsTranslating(null);
     }
@@ -155,14 +148,14 @@ function AdminContent() {
     e.preventDefault();
     updateProfile(profileFormData);
     updateStats(statsFormData);
-    toast({ title: "Profile Updated" });
+    toast({ title: "Profil Diperbarui" });
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) {
-      toast({ variant: "destructive", title: "File Too Large (2MB Max)" });
+      toast({ variant: "destructive", title: "File Terlalu Besar (Maks 2MB)" });
       return;
     }
     const reader = new FileReader();
@@ -199,8 +192,9 @@ function AdminContent() {
       <div className="min-h-screen flex items-center justify-center bg-background p-6">
         <Card className="w-full max-w-lg rounded-[2.5rem] p-10 text-center space-y-8 shadow-2xl border-destructive/20">
           <ShieldAlert className="h-16 w-16 text-destructive mx-auto" />
-          <h2 className="text-3xl font-black font-headline uppercase">Access Restricted</h2>
-          <Button onClick={() => signOut(auth)} variant="destructive" className="w-full h-14 rounded-2xl font-black uppercase">Logout</Button>
+          <h2 className="text-3xl font-black font-headline uppercase">Akses Dibatasi</h2>
+          <p className="text-muted-foreground">Email Anda belum terdaftar sebagai administrator sistem.</p>
+          <Button onClick={() => signOut(auth)} variant="destructive" className="w-full h-14 rounded-2xl font-black uppercase">Keluar Sesi</Button>
         </Card>
       </div>
     );
@@ -210,7 +204,7 @@ function AdminContent() {
     <div className="min-h-screen bg-background pb-24 relative selection:bg-primary/30">
       {!isOnline && (
         <div className="bg-destructive text-destructive-foreground py-2 px-6 flex items-center justify-center gap-2 sticky top-0 z-[60]">
-          <WifiOff className="h-4 w-4" /><span className="text-[10px] font-black uppercase tracking-widest">Offline Mode Active</span>
+          <WifiOff className="h-4 w-4" /><span className="text-[10px] font-black uppercase tracking-widest">Mode Offline Aktif</span>
         </div>
       )}
 
@@ -222,13 +216,13 @@ function AdminContent() {
           <Button variant="ghost" size="icon" onClick={() => router.push('/')} className="rounded-xl h-10 w-10"><ArrowLeft className="h-5 w-5" /></Button>
           <div>
             <h1 className="text-xs font-black font-headline uppercase tracking-widest flex items-center gap-2">
-              NAT CONTROL PANEL <Badge className="h-5 text-[8px] bg-primary text-primary-foreground font-black px-2">{userRole.toUpperCase()}</Badge>
+              PANEL KONTROL NAT <Badge className="h-5 text-[8px] bg-primary text-primary-foreground font-black px-2">{userRole === 'super' ? 'SUPER ADMIN' : 'EDITOR'}</Badge>
             </h1>
             <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em]">{user?.email}</p>
           </div>
         </div>
         <Button variant="ghost" onClick={() => signOut(auth)} className="text-foreground hover:bg-muted rounded-xl h-10 px-4 text-[10px] font-black uppercase tracking-widest gap-2">
-          <LogOut className="h-4 w-4" /> EXIT
+          <LogOut className="h-4 w-4" /> KELUAR
         </Button>
       </header>
 
@@ -236,19 +230,19 @@ function AdminContent() {
         <Tabs defaultValue="profile" className="space-y-12">
           <div className={cn("flex justify-center sticky z-40 transition-all duration-500", isHeaderVisible ? "top-24" : "top-4")}>
             <TabsList className="h-20 bg-card border border-border shadow-2xl p-2 rounded-[2.5rem] w-full max-w-5xl overflow-x-auto no-scrollbar flex justify-between gap-1">
-              <TabsTrigger value="profile" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><UserCircle className="h-4 w-4" /> PROFILE</TabsTrigger>
-              <TabsTrigger value="projects" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><Laptop className="h-4 w-4" /> PROJECTS</TabsTrigger>
-              <TabsTrigger value="certificates" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><Award className="h-4 w-4" /> CERTS</TabsTrigger>
-              <TabsTrigger value="journey" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><History className="h-4 w-4" /> JOURNEY</TabsTrigger>
+              <TabsTrigger value="profile" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><UserCircle className="h-4 w-4" /> PROFIL</TabsTrigger>
+              <TabsTrigger value="projects" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><Laptop className="h-4 w-4" /> PROYEK</TabsTrigger>
+              <TabsTrigger value="certificates" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><Award className="h-4 w-4" /> SERTIFIKAT</TabsTrigger>
+              <TabsTrigger value="journey" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><History className="h-4 w-4" /> PERJALANAN</TabsTrigger>
               <TabsTrigger value="messages" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all relative">
-                <Mail className="h-4 w-4" /> MESSAGES
+                <Mail className="h-4 w-4" /> PESAN
                 {messages.length > 0 && <span className="absolute top-4 right-4 w-2 h-2 bg-accent rounded-full animate-pulse" />}
               </TabsTrigger>
-              <TabsTrigger value="system" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><Settings className="h-4 w-4" /> SYSTEM</TabsTrigger>
+              <TabsTrigger value="system" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><Settings className="h-4 w-4" /> SISTEM</TabsTrigger>
             </TabsList>
           </div>
 
-          {/* PROFILE TAB */}
+          {/* TAB PROFIL */}
           <TabsContent value="profile" className="animate-in fade-in slide-in-from-bottom-8 duration-500">
              <form onSubmit={handleProfileSubmit} className="space-y-20">
                 <div className="grid lg:grid-cols-12 gap-10">
@@ -256,197 +250,209 @@ function AdminContent() {
                       <div className="relative group aspect-[3/4] rounded-[2.5rem] overflow-hidden bg-muted border-4 border-background shadow-2xl">
                          <img src={profileFormData.profilePictureUrl} className="w-full h-full object-cover" />
                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <Button type="button" variant="outline" className="bg-white/20 backdrop-blur-xl text-white rounded-2xl h-14" onClick={() => profileImageInputRef.current?.click()}><Camera className="h-5 w-5 mr-2" /> PHOTO</Button>
+                            <Button type="button" variant="outline" className="bg-white/20 backdrop-blur-xl text-white rounded-2xl h-14" onClick={() => profileImageInputRef.current?.click()}><Camera className="h-5 w-5 mr-2" /> UBAH FOTO</Button>
                          </div>
                          <input type="file" ref={profileImageInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setProfileFormData({...profileFormData, profilePictureUrl: url}))} />
                       </div>
                    </div>
                    <div className="lg:col-span-8 space-y-8">
                       <div className="grid md:grid-cols-2 gap-6">
-                         <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Full Name</label><Input value={profileFormData.name} onChange={e => setProfileFormData({...profileFormData, name: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
-                         <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Email</label><Input value={profileFormData.email} onChange={e => setProfileFormData({...profileFormData, email: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                         <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Nama Lengkap</label><Input value={profileFormData.name} onChange={e => setProfileFormData({...profileFormData, name: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                         <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Email Publik</label><Input value={profileFormData.email} onChange={e => setProfileFormData({...profileFormData, email: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
                       </div>
                       <div className="grid md:grid-cols-2 gap-6">
-                         <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Role (ID)</label><Input value={profileFormData.roleId} onChange={e => setProfileFormData({...profileFormData, roleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
-                         <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Role (EN)</label><Input value={profileFormData.roleEn} onChange={e => setProfileFormData({...profileFormData, roleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                         <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Pekerjaan (ID)</label><Input value={profileFormData.roleId} onChange={e => setProfileFormData({...profileFormData, roleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                         <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Pekerjaan (EN)</label><Input value={profileFormData.roleEn} onChange={e => setProfileFormData({...profileFormData, roleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
                       </div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Tentang Saya (ID)</label><Textarea value={profileFormData.aboutMeId} onChange={e => setProfileFormData({...profileFormData, aboutMeId: e.target.value})} className="h-32 rounded-2xl bg-muted/30 border-none" /></div>
                    </div>
                 </div>
-                <Button type="submit" className="w-full h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground">SYNC IDENTITY</Button>
+                <Button type="submit" className="w-full h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground">SIMPAN PERUBAHAN IDENTITAS</Button>
              </form>
           </TabsContent>
 
-          {/* PROJECTS TAB */}
+          {/* TAB PROYEK */}
           <TabsContent value="projects" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
             <div className="xl:col-span-8">
                <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
                 <CardHeader className="p-0 pb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="space-y-1">
-                    <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingProjectId ? 'Edit Case Study' : 'Deploy Case Study'}</CardTitle>
-                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Archive Technical Infrastructure</CardDescription>
+                    <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingProjectId ? 'Ubah Studi Kasus' : 'Deploy Proyek Baru'}</CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Arsip Infrastruktur Teknis</CardDescription>
                   </div>
-                  <Button type="button" size="sm" onClick={() => handleAITranslate('projects', projectForm, setProjectForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase">AI SYNC LOCALES</Button>
+                  <Button type="button" size="sm" onClick={() => handleAITranslate('projects', projectForm, setProjectForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase" disabled={isTranslating === 'projects'}>
+                    {isTranslating === 'projects' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} TERJEMAHKAN OTOMATIS (AI)
+                  </Button>
                 </CardHeader>
                 <CardContent className="p-0">
                   <form onSubmit={(e) => {
                     e.preventDefault();
                     addProject({ ...projectForm, id: editingProjectId || Date.now().toString(), technologies: typeof projectForm.technologies === 'string' ? projectForm.technologies.split(',').map(s => s.trim()) : projectForm.technologies } as any);
                     setProjectForm(initialProjectState); setEditingProjectId(null);
-                    toast({ title: "Deployment Synced" });
+                    toast({ title: "Proyek Berhasil Disimpan" });
                   }} className="space-y-12">
                     <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (ID)</label><Input required value={projectForm.titleId} onChange={e => setProjectForm({...projectForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (EN)</label><Input value={projectForm.titleEn} onChange={e => setProjectForm({...projectForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Judul Proyek (ID)</label><Input required value={projectForm.titleId} onChange={e => setProjectForm({...projectForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Judul Proyek (EN)</label><Input value={projectForm.titleEn} onChange={e => setProjectForm({...projectForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
                     </div>
                     <div className="grid md:grid-cols-3 gap-8">
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Domain</label><Select value={projectForm.type} onValueChange={(val: any) => setProjectForm({...projectForm, type: val})}><SelectTrigger className="h-16 rounded-2xl bg-muted/30 border-none"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="web">Web System</SelectItem><SelectItem value="ui">UI Architecture</SelectItem><SelectItem value="backend">Backend Service</SelectItem></SelectContent></Select></div>
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Impact Stats</label><Input value={projectForm.impactStats} onChange={e => setProjectForm({...projectForm, impactStats: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tech Stack (comma)</label><Input value={projectForm.technologies} onChange={e => setProjectForm({...projectForm, technologies: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Bidang</label><Select value={projectForm.type} onValueChange={(val: any) => setProjectForm({...projectForm, type: val})}><SelectTrigger className="h-16 rounded-2xl bg-muted/30 border-none"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="web">Sistem Web</SelectItem><SelectItem value="ui">Arsitektur UI</SelectItem><SelectItem value="backend">Layanan Backend</SelectItem></SelectContent></Select></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Statistik Dampak</label><Input placeholder="Contoh: +25% Speed" value={projectForm.impactStats} onChange={e => setProjectForm({...projectForm, impactStats: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Teknologi (pisahkan koma)</label><Input placeholder="Next.js, Tailwind, Firebase" value={projectForm.technologies} onChange={e => setProjectForm({...projectForm, technologies: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><AlertCircle className="h-3 w-3" /> Technical Challenge (ID)</label><Textarea value={projectForm.problemId} onChange={e => setProjectForm({...projectForm, problemId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Strategic Solution (ID)</label><Textarea value={projectForm.solutionId} onChange={e => setProjectForm({...projectForm, solutionId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><AlertCircle className="h-3 w-3" /> Tantangan Teknis (ID)</label><Textarea value={projectForm.problemId} onChange={e => setProjectForm({...projectForm, problemId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Solusi Strategis (ID)</label><Textarea value={projectForm.solutionId} onChange={e => setProjectForm({...projectForm, solutionId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-8">
-                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Live URL</label><Input value={projectForm.demoUrl} onChange={e => setProjectForm({...projectForm, demoUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
-                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Image Upload</label><Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setProjectForm({...projectForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none pt-5" /></div>
+                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Live / Demo</label><Input value={projectForm.demoUrl} onChange={e => setProjectForm({...projectForm, demoUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Unggah Gambar</label><Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setProjectForm({...projectForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none pt-5" /></div>
                     </div>
                     <div className="flex gap-4">
-                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">COMMIT DEPLOYMENT</Button>
-                      {editingProjectId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> Cancel</Button>}
+                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">SIMPAN PROYEK</Button>
+                      {editingProjectId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> Batalkan</Button>}
                     </div>
                   </form>
                 </CardContent>
               </Card>
             </div>
             <div className="xl:col-span-4 space-y-8">
-               <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 text-primary">LIVE CLUSTER ({projects.length})</h3>
+               <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 text-primary">KLUSTER AKTIF ({projects.length})</h3>
                <div className="grid gap-4">
                   {projects.map(p => (
                     <Card key={p.id} className="p-5 flex gap-5 items-center group bg-card border-none hover:bg-muted/30 transition-all rounded-2xl shadow-sm overflow-hidden">
                       <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden shrink-0"><img src={p.imageUrl} className="w-full h-full object-cover" /></div>
                       <div className="flex-1 min-w-0"><h4 className="font-black truncate text-sm">{p.titleId}</h4><p className="text-[9px] font-bold text-muted-foreground uppercase">{p.type}</p></div>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all"><Button variant="ghost" size="icon" onClick={() => startEditProject(p)} className="text-primary h-10 w-10 rounded-xl"><Edit3 className="h-4 w-4" /></Button>{isSuper && <Button variant="ghost" size="icon" onClick={() => deleteProject(p.id)} className="text-destructive h-10 w-10 rounded-xl"><Trash2 className="h-4 w-4" /></Button>}</div>
+                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                        <Button variant="ghost" size="icon" onClick={() => startEditProject(p)} className="text-primary h-10 w-10 rounded-xl"><Edit3 className="h-4 w-4" /></Button>
+                        {isSuper && <Button variant="ghost" size="icon" onClick={() => deleteProject(p.id)} className="text-destructive h-10 w-10 rounded-xl"><Trash2 className="h-4 w-4" /></Button>}
+                      </div>
                     </Card>
                   ))}
                </div>
             </div>
           </TabsContent>
 
-          {/* CERTIFICATES TAB */}
+          {/* TAB SERTIFIKAT */}
           <TabsContent value="certificates" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
             <div className="xl:col-span-8">
                <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
                 <CardHeader className="p-0 pb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="space-y-1">
-                    <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingCertId ? 'Edit Credential' : 'Log Credential'}</CardTitle>
-                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Institutional Verification Log</CardDescription>
+                    <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingCertId ? 'Ubah Kredensial' : 'Catat Kredensial Baru'}</CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Log Verifikasi Institusional</CardDescription>
                   </div>
-                  <Button type="button" size="sm" onClick={() => handleAITranslate('certificates', certForm, setCertForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase">AI SYNC LOCALES</Button>
+                  <Button type="button" size="sm" onClick={() => handleAITranslate('certificates', certForm, setCertForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase">SINKRONISASI AI</Button>
                 </CardHeader>
                 <CardContent className="p-0">
                   <form onSubmit={(e) => {
                     e.preventDefault();
                     addCertificate({ ...certForm, id: editingCertId || Date.now().toString() } as any);
                     setCertForm(initialCertState); setEditingCertId(null);
-                    toast({ title: "Credential Logged" });
+                    toast({ title: "Kredensial Berhasil Dicatat" });
                   }} className="space-y-12">
                     <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (ID)</label><Input required value={certForm.titleId} onChange={e => setCertForm({...certForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (EN)</label><Input value={certForm.titleEn} onChange={e => setCertForm({...certForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nama Sertifikat (ID)</label><Input required value={certForm.titleId} onChange={e => setCertForm({...certForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nama Sertifikat (EN)</label><Input value={certForm.titleEn} onChange={e => setCertForm({...certForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
                     </div>
                     <div className="grid md:grid-cols-3 gap-8">
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Issuer</label><Input value={certForm.issuer} onChange={e => setCertForm({...certForm, issuer: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Year</label><Input value={certForm.year} onChange={e => setCertForm({...certForm, year: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Credential URL</label><Input value={certForm.credentialUrl} onChange={e => setCertForm({...certForm, credentialUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Lembaga Penerbit</label><Input value={certForm.issuer} onChange={e => setCertForm({...certForm, issuer: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tahun</label><Input value={certForm.year} onChange={e => setCertForm({...certForm, year: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Link Verifikasi (URL)</label><Input value={certForm.credentialUrl} onChange={e => setCertForm({...certForm, credentialUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
                     </div>
-                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Narrative Validation (ID)</label><Textarea value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
-                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Visual Asset</label><Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none pt-5" /></div>
+                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Narasi Validasi (ID)</label><Textarea value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Aset Visual (Foto)</label><Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, (url) => setCertForm({...certForm, imageUrl: url}))} className="h-16 rounded-2xl bg-muted/30 border-none pt-5" /></div>
                     <div className="flex gap-4">
-                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">LOG CREDENTIAL</Button>
-                      {editingCertId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> Cancel</Button>}
+                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">CATAT KREDENSIAL</Button>
+                      {editingCertId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> Batal</Button>}
                     </div>
                   </form>
                 </CardContent>
               </Card>
             </div>
             <div className="xl:col-span-4 space-y-8">
-               <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 text-primary">CREDENTIAL HUB ({certificates.length})</h3>
+               <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 text-primary">PUSAT KREDENSIAL ({certificates.length})</h3>
                <div className="grid gap-4">
                   {certificates.map(c => (
                     <Card key={c.id} className="p-5 flex gap-5 items-center group bg-card border-none hover:bg-muted/30 transition-all rounded-2xl shadow-sm overflow-hidden">
                       <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden shrink-0"><img src={c.imageUrl} className="w-full h-full object-cover" /></div>
                       <div className="flex-1 min-w-0"><h4 className="font-black truncate text-sm">{c.titleId}</h4><p className="text-[9px] font-bold text-muted-foreground uppercase">{c.issuer}</p></div>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all"><Button variant="ghost" size="icon" onClick={() => startEditCert(c)} className="text-primary h-10 w-10 rounded-xl"><Edit3 className="h-4 w-4" /></Button>{isSuper && <Button variant="ghost" size="icon" onClick={() => deleteCertificate(c.id)} className="text-destructive h-10 w-10 rounded-xl"><Trash2 className="h-4 w-4" /></Button>}</div>
+                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                        <Button variant="ghost" size="icon" onClick={() => startEditCert(c)} className="text-primary h-10 w-10 rounded-xl"><Edit3 className="h-4 w-4" /></Button>
+                        {isSuper && <Button variant="ghost" size="icon" onClick={() => deleteCertificate(c.id)} className="text-destructive h-10 w-10 rounded-xl"><Trash2 className="h-4 w-4" /></Button>}
+                      </div>
                     </Card>
                   ))}
                </div>
             </div>
           </TabsContent>
 
-          {/* JOURNEY TAB */}
+          {/* TAB PERJALANAN */}
           <TabsContent value="journey" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
             <div className="xl:col-span-8">
                <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
                 <CardHeader className="p-0 pb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="space-y-1">
-                    <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingJourneyId ? 'Edit Milestone' : 'Record Milestone'}</CardTitle>
-                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Historical Timeline Entries</CardDescription>
+                    <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingJourneyId ? 'Ubah Milestone' : 'Catat Milestone Baru'}</CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Entri Garis Waktu Riwayat</CardDescription>
                   </div>
-                  <Button type="button" size="sm" onClick={() => handleAITranslate('journey', journeyForm, setJourneyForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase">AI SYNC LOCALES</Button>
+                  <Button type="button" size="sm" onClick={() => handleAITranslate('journey', journeyForm, setJourneyForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase">SINKRONISASI AI</Button>
                 </CardHeader>
                 <CardContent className="p-0">
                   <form onSubmit={(e) => {
                     e.preventDefault();
                     addExperience({ ...journeyForm, id: editingJourneyId || Date.now().toString() } as any);
                     setJourneyForm(initialJourneyState); setEditingJourneyId(null);
-                    toast({ title: "Journey Recorded" });
+                    toast({ title: "Milestone Berhasil Dicatat" });
                   }} className="space-y-12">
                     <div className="grid md:grid-cols-3 gap-8">
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Year / Period</label><Input required value={journeyForm.year} onChange={e => setJourneyForm({...journeyForm, year: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Institution / Company</label><Input required value={journeyForm.company} onChange={e => setJourneyForm({...journeyForm, company: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tahun / Periode</label><Input required value={journeyForm.year} onChange={e => setJourneyForm({...journeyForm, year: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Lembaga / Perusahaan</label><Input required value={journeyForm.company} onChange={e => setJourneyForm({...journeyForm, company: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (ID)</label><Input required value={journeyForm.titleId} onChange={e => setJourneyForm({...journeyForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title (EN)</label><Input value={journeyForm.titleEn} onChange={e => setJourneyForm({...journeyForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Jabatan (ID)</label><Input required value={journeyForm.titleId} onChange={e => setJourneyForm({...journeyForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Jabatan (EN)</label><Input value={journeyForm.titleEn} onChange={e => setJourneyForm({...journeyForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none" /></div>
                     </div>
-                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Impact Summary (ID)</label><Textarea value={journeyForm.descriptionId} onChange={e => setJourneyForm({...journeyForm, descriptionId: e.target.value})} className="h-32 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Ringkasan Dampak (ID)</label><Textarea value={journeyForm.descriptionId} onChange={e => setJourneyForm({...journeyForm, descriptionId: e.target.value})} className="h-32 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
                     <div className="flex gap-4">
-                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">RECORD MILESTONE</Button>
-                      {editingJourneyId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> Cancel</Button>}
+                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">CATAT MILESTONE</Button>
+                      {editingJourneyId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> Batal</Button>}
                     </div>
                   </form>
                 </CardContent>
               </Card>
             </div>
             <div className="xl:col-span-4 space-y-8">
-               <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 text-primary">CHRONOLOGY ({experiences.length})</h3>
+               <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 text-primary">KRONOLOGI ({experiences.length})</h3>
                <div className="grid gap-4">
                   {experiences.sort((a,b) => b.year.localeCompare(a.year)).map(exp => (
                     <Card key={exp.id} className="p-5 flex gap-5 items-center group bg-card border-none hover:bg-muted/30 transition-all rounded-2xl shadow-sm overflow-hidden">
-                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0"><Milestone className="h-6 w-6" /></div>
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0"><History className="h-6 w-6" /></div>
                       <div className="flex-1 min-w-0"><h4 className="font-black truncate text-sm">{exp.titleId}</h4><p className="text-[9px] font-bold text-muted-foreground uppercase">{exp.year} @ {exp.company}</p></div>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all"><Button variant="ghost" size="icon" onClick={() => startEditJourney(exp)} className="text-primary h-10 w-10 rounded-xl"><Edit3 className="h-4 w-4" /></Button>{isSuper && <Button variant="ghost" size="icon" onClick={() => deleteExperience(exp.id)} className="text-destructive h-10 w-10 rounded-xl"><Trash2 className="h-4 w-4" /></Button>}</div>
+                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                        <Button variant="ghost" size="icon" onClick={() => startEditJourney(exp)} className="text-primary h-10 w-10 rounded-xl"><Edit3 className="h-4 w-4" /></Button>
+                        {isSuper && <Button variant="ghost" size="icon" onClick={() => deleteExperience(exp.id)} className="text-destructive h-10 w-10 rounded-xl"><Trash2 className="h-4 w-4" /></Button>}
+                      </div>
                     </Card>
                   ))}
                </div>
             </div>
           </TabsContent>
 
-          {/* MESSAGES TAB */}
+          {/* TAB PESAN */}
           <TabsContent value="messages" className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
              <div className="flex items-center justify-between px-6">
                 <div>
-                  <h3 className="text-3xl font-black font-headline tracking-tighter uppercase">Incoming Transmissions</h3>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em]">Communication Node History</p>
+                  <h3 className="text-3xl font-black font-headline tracking-tighter uppercase">Pesan Masuk</h3>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em]">Riwayat Komunikasi Pengunjung</p>
                 </div>
-                <Badge className="bg-primary/10 text-primary border-primary/20 h-8 px-4 font-black rounded-xl">{messages.length} Records</Badge>
+                <Badge className="bg-primary/10 text-primary border-primary/20 h-8 px-4 font-black rounded-xl">{messages.length} Rekaman</Badge>
              </div>
              
              {messages.length === 0 ? (
                <div className="flex flex-col items-center justify-center py-32 space-y-4 opacity-30">
                   <Mail className="h-16 w-16" />
-                  <p className="text-xs font-black uppercase tracking-widest">No communications received</p>
+                  <p className="text-xs font-black uppercase tracking-widest">Belum ada pesan yang masuk</p>
                </div>
              ) : (
                <div className="grid gap-6">
@@ -484,13 +490,26 @@ function AdminContent() {
              )}
           </TabsContent>
 
-          {/* SYSTEM TAB */}
+          {/* TAB SISTEM */}
           <TabsContent value="system" className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
              <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
-                <CardHeader className="p-0 pb-10"><CardTitle className="text-3xl font-black font-headline tracking-tighter uppercase">Maintenance</CardTitle></CardHeader>
+                <CardHeader className="p-0 pb-10"><CardTitle className="text-3xl font-black font-headline tracking-tighter uppercase">Pemeliharaan Sistem</CardTitle></CardHeader>
                 <CardContent className="p-0 flex gap-6">
-                  <Button variant="outline" onClick={backupData} className="flex-1 h-40 flex-col gap-5 rounded-[2.5rem] bg-card"><Download className="h-8 w-8 text-primary" /><span className="text-[10px] font-black uppercase">Export JSON</span></Button>
-                  <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="flex-1 h-40 flex-col gap-5 rounded-[2.5rem] bg-card"><Upload className="h-8 w-8 text-accent" /><span className="text-[10px] font-black uppercase">Restore State</span><input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={(e) => { const f = e.target.files?.[0]; if(f) { const r = new FileReader(); r.onload = (ev) => restoreData(ev.target?.result as string); r.readAsText(f); } }} /></Button>
+                  <Button variant="outline" onClick={backupData} className="flex-1 h-40 flex-col gap-5 rounded-[2.5rem] bg-card border-none hover:bg-muted/30">
+                    <Download className="h-8 w-8 text-primary" />
+                    <div className="text-center">
+                      <span className="text-[10px] font-black uppercase block">Ekspor Data (JSON)</span>
+                      <p className="text-[8px] text-muted-foreground mt-1">Unduh semua data portofolio</p>
+                    </div>
+                  </Button>
+                  <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="flex-1 h-40 flex-col gap-5 rounded-[2.5rem] bg-card border-none hover:bg-muted/30">
+                    <Upload className="h-8 w-8 text-accent" />
+                    <div className="text-center">
+                      <span className="text-[10px] font-black uppercase block">Pulihkan Data</span>
+                      <p className="text-[8px] text-muted-foreground mt-1">Impor data dari file cadangan</p>
+                    </div>
+                    <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={(e) => { const f = e.target.files?.[0]; if(f) { const r = new FileReader(); r.onload = (ev) => restoreData(ev.target?.result as string); r.readAsText(f); } }} />
+                  </Button>
                 </CardContent>
              </Card>
           </TabsContent>
