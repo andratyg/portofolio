@@ -110,7 +110,7 @@ export const Navbar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Theme Switcher - OP GRID EDITION */}
+            {/* Theme Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest px-4 hover:bg-primary/10">
@@ -175,6 +175,35 @@ export const Navbar = () => {
                <Button variant="ghost" size="icon" onClick={() => setLanguage(language === 'id' ? 'en' : 'id')} className="rounded-xl h-14 w-14 bg-muted/50">
                   <Globe className="h-6 w-6" />
                </Button>
+
+               <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-xl h-14 w-14 bg-muted/50">
+                    <Palette className="h-6 w-6" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="grid grid-cols-2 gap-1 w-80 p-4 rounded-[2.5rem] border-none shadow-2xl bg-[#0a0b0e]/95 backdrop-blur-2xl">
+                  {themes.map((tName) => (
+                    <DropdownMenuItem 
+                      key={tName} 
+                      onClick={() => {
+                        setTheme(tName);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={cn(
+                        "capitalize rounded-[1.5rem] gap-4 p-3.5 transition-all cursor-pointer",
+                        theme === tName 
+                          ? "bg-[#3b82f6] text-white font-black shadow-lg shadow-blue-500/20" 
+                          : "hover:bg-white/5 text-muted-foreground hover:text-white"
+                      )}
+                    >
+                      <div className={cn("w-7 h-7 rounded-full shadow-inner border border-white/10 shrink-0", getThemeColor(tName))} />
+                      <span className="text-[11px] font-black uppercase tracking-[0.15em] truncate">{tName}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
                <Link href="/admin/login" onClick={() => setIsMobileMenuOpen(false)} className="flex-1">
                 <Button className="w-full h-14 rounded-2xl gap-3 font-black uppercase tracking-widest">
                   <LogIn className="h-5 w-5" />

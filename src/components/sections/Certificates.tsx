@@ -26,7 +26,6 @@ export const Certificates = () => {
     })
   );
 
-  // Always render the section container, but show different content based on state
   return (
     <section id="certificates" className="py-24 bg-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
@@ -80,7 +79,6 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
   const shortDesc = language === 'id' ? cert.shortDescriptionId : cert.shortDescriptionEn;
 
   const hasImage = typeof cert.imageUrl === 'string' && cert.imageUrl.trim().startsWith('http');
-  // Check for a valid, non-empty, and real URL
   const hasCredentialUrl = typeof cert.credentialUrl === 'string' && cert.credentialUrl.trim().length > 5 && cert.credentialUrl.trim().startsWith('http');
 
   return (
@@ -112,7 +110,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                 </div>
               </div>
             </div>
-            <CardContent className="p-8 flex-1 flex flex-col">
+            <CardContent className="p-6 md:p-8 flex-1 flex flex-col">
               <div className="flex items-center gap-2 mb-3">
                 <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse"></div>
                 <span className="text-[9px] font-black text-accent uppercase tracking-widest">{cert.issuer}</span>
