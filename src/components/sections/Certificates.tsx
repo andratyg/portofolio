@@ -19,7 +19,12 @@ export const Certificates = () => {
   const { certificates, isLoading, error } = useProjectStore();
 
   const plugin = React.useRef(
-    Autoplay({ delay: 6000, stopOnInteraction: true })
+    Autoplay({ 
+      delay: 5000, 
+      stopOnInteraction: false, 
+      stopOnMouseEnter: true,
+      playOnInit: true
+    })
   );
 
   if (isLoading) {
@@ -58,15 +63,20 @@ export const Certificates = () => {
   }
 
   return (
-    <section id="certificates" className="py-24 bg-muted/30">
+    <section id="certificates" className="py-24 bg-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 space-y-4">
           <Badge className="bg-accent/10 text-accent border-accent/20 px-4 py-1.5 rounded-full font-bold uppercase tracking-wider">Kredensial</Badge>
           <h2 className="text-4xl md:text-5xl font-bold font-headline">{t.navCertificates}</h2>
         </div>
-        <div className="max-w-6xl mx-auto px-12">
+        <div className="max-w-6xl mx-auto px-12 relative">
           <Carousel 
-            opts={{ align: "start", loop: true, skipSnaps: false, duration: 80 }} 
+            opts={{ 
+              align: "start", 
+              loop: true, 
+              skipSnaps: false, 
+              duration: 120 // Membuat transisi lebih berat dan elegan
+            }} 
             plugins={[plugin.current]}
             className="w-full"
           >
@@ -77,8 +87,8 @@ export const Certificates = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="-left-16 h-12 w-12 hidden md:flex" />
-            <CarouselNext className="-right-16 h-12 w-12 hidden md:flex" />
+            <CarouselPrevious className="-left-16 h-12 w-12 hidden md:flex hover:bg-primary hover:text-white border-none shadow-xl" />
+            <CarouselNext className="-right-16 h-12 w-12 hidden md:flex hover:bg-primary hover:text-white border-none shadow-xl" />
           </Carousel>
         </div>
       </div>
@@ -92,28 +102,23 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
   const shortDesc = language === 'id' ? cert.shortDescriptionId : cert.shortDescriptionEn;
 
   const isValidUrl = (url: string) => {
-    return url && (url.startsWith('http') || url.startsWith('/') || url.startsWith('data:'));
+    return url && typeof url === 'string' && (url.startsWith('http') || url.startsWith('/') || url.startsWith('data:'));
   };
 
   const isPdf = cert.imageUrl && (cert.imageUrl.includes('application/pdf') || cert.imageUrl.toLowerCase().endsWith('.pdf'));
 
   const handleOpenOriginal = (url: string) => {
     if (!url) return;
-    const link = document.createElement('a');
-    link.href = url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Menggunakan window.open untuk memastikan dokumen terbuka di tab baru tanpa memuat ulang halaman
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="cursor-pointer group h-full">
-          <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-500 bg-card rounded-[2.5rem] group-hover:-translate-y-2 flex flex-col">
-            <div className="relative aspect-[4/3] bg-muted">
+        <div className="cursor-pointer group h-full py-4">
+          <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-700 bg-card rounded-[2.5rem] group-hover:-translate-y-3 flex flex-col">
+            <div className="relative aspect-[4/3] bg-muted overflow-hidden">
               {isValidUrl(cert.imageUrl) && !isPdf ? (
                 <Image 
                   src={cert.imageUrl} 
@@ -123,17 +128,17 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                 />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex flex-col items-center justify-center gap-3">
-                  {isPdf ? <FileText className="h-16 w-16 text-primary" /> : <Landmark className="h-12 w-12 text-primary/30" />}
+                  {isPdf ? <FileText className="h-16 w-16 text-primary animate-pulse" /> : <Landmark className="h-12 w-12 text-primary/30" />}
                   {isPdf && <p className="text-[10px] font-black uppercase text-primary tracking-widest">Dokumen PDF</p>}
                 </div>
               )}
-              <div className="absolute top-4 left-4">
-                <Badge className="bg-white/90 backdrop-blur-md text-primary font-black text-[8px] uppercase px-3 py-1 rounded-full">
+              <div className="absolute top-4 left-4 z-10">
+                <Badge className="bg-white/90 backdrop-blur-md text-primary font-black text-[8px] uppercase px-3 py-1 rounded-full shadow-sm">
                   {cert.year}
                 </Badge>
               </div>
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <div className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-full p-4">
+                <div className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-full p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                   <Eye className="h-6 w-6 text-white" />
                 </div>
               </div>
@@ -143,14 +148,14 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                 <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse"></div>
                 <span className="text-[9px] font-black text-accent uppercase tracking-widest">{cert.issuer}</span>
               </div>
-              <h3 className="text-xl font-bold font-headline mb-3 line-clamp-2 leading-tight">{title}</h3>
+              <h3 className="text-xl font-bold font-headline mb-3 line-clamp-2 leading-tight group-hover:text-primary transition-colors">{title}</h3>
               <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed mb-6 font-medium">{shortDesc}</p>
             </CardContent>
           </Card>
         </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[700px] h-[85vh] rounded-[3rem] overflow-hidden border-none p-0 shadow-2xl flex flex-col bg-background">
-        <div className="bg-card border-b p-8 shrink-0 flex items-center justify-between gap-6">
+        <div className="bg-card border-b p-8 shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-6">
            <div className="space-y-1">
              <Badge className="bg-primary text-primary-foreground text-[8px] font-black uppercase px-3">{cert.issuer}</Badge>
              <DialogTitle className="text-2xl md:text-3xl font-black font-headline tracking-tighter">{title}</DialogTitle>
@@ -158,7 +163,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
            {(cert.credentialUrl || cert.imageUrl) && (
              <Button 
                onClick={() => handleOpenOriginal(cert.credentialUrl || cert.imageUrl || '')}
-               className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl"
+               className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all"
              >
                Buka Dokumen Asli <ExternalLink className="h-3 w-3" />
              </Button>

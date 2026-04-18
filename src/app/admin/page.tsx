@@ -15,7 +15,7 @@ import {
   Plus, Trash2, LogOut, ArrowLeft, Laptop, Award, Settings, 
   UserCircle, Loader2, Camera, Briefcase, History, ShieldAlert, 
   Download, Upload, WifiOff, Edit3, X, Mail, User, CheckCircle2, AlertCircle, 
-  Terminal, Image as ImageIcon, Globe, Share2, BarChart3, Zap, FileText
+  Terminal, Image as ImageIcon, Globe, Share2, BarChart3, Zap, FileText, ExternalLink
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
@@ -128,18 +128,19 @@ function AdminContent() {
       const sourceSuffix = direction === 'id-to-en' ? 'Id' : 'En';
       const targetSuffix = direction === 'id-to-en' ? 'En' : 'Id';
       const targetLang = direction === 'id-to-en' ? 'en' : 'id';
+      
       const fieldsToTranslate = Object.keys(data).filter(key => key.endsWith(sourceSuffix));
       for (const sourceField of fieldsToTranslate) {
         const targetField = sourceField.replace(sourceSuffix, targetSuffix);
-        if (data[sourceField]) {
+        if (data[sourceField] && typeof data[sourceField] === 'string') {
           const res = await translateContent({ text: data[sourceField], targetLang });
           updated[targetField] = res.translatedText;
         }
       }
       setter(updated);
-      toast({ title: "Sinkronisasi AI Berhasil" });
+      toast({ title: "Sinkronisasi AI Berhasil", description: "Konten telah diterjemahkan secara otomatis." });
     } catch (e) {
-      toast({ variant: "destructive", title: "Gagal Sinkronisasi AI" });
+      toast({ variant: "destructive", title: "Gagal Sinkronisasi AI", description: "Pastikan koneksi stabil dan kuota API tersedia." });
     } finally {
       setIsTranslating(null);
     }
@@ -156,7 +157,7 @@ function AdminContent() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 15 * 1024 * 1024) {
-      toast({ variant: "destructive", title: "Berkas Terlalu Besar (Maks 15MB)" });
+      toast({ variant: "destructive", title: "Berkas Terlalu Besar", description: "Maksimal ukuran berkas adalah 15MB." });
       return;
     }
     const reader = new FileReader();
@@ -431,7 +432,9 @@ function AdminContent() {
                     <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingCertId ? 'Ubah Kredensial' : 'Catat Kredensial Baru'}</CardTitle>
                     <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Log Verifikasi Validitas Institusional</CardDescription>
                   </div>
-                  <Button type="button" size="sm" onClick={() => handleAITranslate('certificates', certForm, setCertForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase">SINKRONISASI AI</Button>
+                  <Button type="button" size="sm" onClick={() => handleAITranslate('certificates', certForm, setCertForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase" disabled={isTranslating === 'certificates'}>
+                    {isTranslating === 'certificates' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} SINKRONISASI AI
+                  </Button>
                 </CardHeader>
                 <CardContent className="p-0">
                   <form onSubmit={(e) => {
@@ -490,7 +493,9 @@ function AdminContent() {
                     <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingJourneyId ? 'Ubah Milestone' : 'Catat Milestone Baru'}</CardTitle>
                     <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Entri Garis Waktu Riwayat Profesional</CardDescription>
                   </div>
-                  <Button type="button" size="sm" onClick={() => handleAITranslate('journey', journeyForm, setJourneyForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase">SINKRONISASI AI</Button>
+                  <Button type="button" size="sm" onClick={() => handleAITranslate('journey', journeyForm, setJourneyForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase" disabled={isTranslating === 'journey'}>
+                    {isTranslating === 'journey' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} SINKRONISASI AI
+                  </Button>
                 </CardHeader>
                 <CardContent className="p-0">
                   <form onSubmit={(e) => {
