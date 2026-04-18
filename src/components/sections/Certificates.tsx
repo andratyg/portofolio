@@ -1,4 +1,3 @@
-
 "use client"
 
 import React from 'react';
@@ -7,7 +6,7 @@ import { useProjectStore } from '../ProjectStore';
 import { Card, CardContent } from '../ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
-import { Award, Calendar, ShieldCheck, Info, ExternalLink, FileText, CheckCircle2, FileType, Eye, Landmark } from 'lucide-react';
+import { Award, ShieldCheck, ExternalLink, FileText, CheckCircle2, Eye, Landmark, Info } from 'lucide-react';
 import Image from 'next/image';
 import { Certificate } from '@/lib/types';
 import { Badge } from '../ui/badge';
@@ -72,7 +71,6 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                 fill 
                 className="object-cover group-hover:scale-110 transition-transform duration-700"
                 sizes="(max-width: 768px) 100vw, 33vw"
-                data-ai-hint="certificate credential"
               />
               <div className="absolute top-4 left-4 z-10">
                  <Badge className="bg-white/90 backdrop-blur-md text-primary font-black text-[8px] uppercase px-3 py-1 rounded-full border border-primary/20">{cert.year}</Badge>
