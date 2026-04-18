@@ -1,3 +1,4 @@
+
 "use client"
 
 import React from 'react';
@@ -19,7 +20,7 @@ export const Certificates = () => {
 
   const plugin = React.useRef(
     Autoplay({ 
-      delay: 6000, 
+      delay: 5000, 
       stopOnInteraction: false, 
       stopOnMouseEnter: true,
       playOnInit: true
@@ -68,13 +69,14 @@ export const Certificates = () => {
           <Badge className="bg-accent/10 text-accent border-accent/20 px-4 py-1.5 rounded-full font-bold uppercase tracking-wider">Kredensial</Badge>
           <h2 className="text-4xl md:text-5xl font-bold font-headline">{t.navCertificates}</h2>
         </div>
-        <div className="max-w-6xl mx-auto px-12 relative">
+        <div className="max-w-6xl mx-auto px-6 md:px-12 relative">
           <Carousel 
             opts={{ 
               align: "start", 
               loop: true, 
               skipSnaps: false, 
-              duration: 50 // Memberikan rasa "berat" dan mewah pada transisi
+              duration: 80,
+              watchDrag: true
             }} 
             plugins={[plugin.current]}
             className="w-full"
@@ -86,8 +88,8 @@ export const Certificates = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="-left-16 h-12 w-12 hidden md:flex hover:bg-primary hover:text-white border-none shadow-xl transition-all" />
-            <CarouselNext className="-right-16 h-12 w-12 hidden md:flex hover:bg-primary hover:text-white border-none shadow-xl transition-all" />
+            <CarouselPrevious className="-left-12 h-12 w-12 hidden lg:flex hover:bg-primary hover:text-white border-none shadow-xl transition-all" />
+            <CarouselNext className="-right-12 h-12 w-12 hidden lg:flex hover:bg-primary hover:text-white border-none shadow-xl transition-all" />
           </Carousel>
         </div>
       </div>
@@ -109,7 +111,6 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
   const handleOpenOriginal = (url: string) => {
     if (!url) return;
     
-    // Jika formatnya data URI, konversi ke Blob URL agar bisa dibuka instan tanpa refresh
     if (url.startsWith('data:')) {
       try {
         const parts = url.split(';base64,');
@@ -135,15 +136,15 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="cursor-pointer group h-full py-4">
-          <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-700 bg-card rounded-[2.5rem] group-hover:-translate-y-3 flex flex-col">
+        <div className="cursor-pointer group h-full py-4 select-none">
+          <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-700 bg-card rounded-[2.5rem] group-hover:-translate-y-3 flex flex-col active:scale-95">
             <div className="relative aspect-[4/3] bg-muted overflow-hidden">
               {isValidUrl(cert.imageUrl) && !isPdf ? (
                 <Image 
                   src={cert.imageUrl} 
                   alt={title} 
                   fill 
-                  className="object-cover group-hover:scale-110 transition-transform duration-1000" 
+                  className="object-cover group-hover:scale-110 transition-transform duration-1000 pointer-events-none" 
                 />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex flex-col items-center justify-center gap-3">
