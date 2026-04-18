@@ -1,4 +1,3 @@
-
 "use client"
 
 import React from 'react';
@@ -20,7 +19,7 @@ export const Certificates = () => {
 
   const plugin = React.useRef(
     Autoplay({ 
-      delay: 8000, 
+      delay: 6000, 
       stopOnInteraction: false, 
       stopOnMouseEnter: true,
       playOnInit: true
@@ -75,7 +74,7 @@ export const Certificates = () => {
               align: "start", 
               loop: true, 
               skipSnaps: false, 
-              duration: 100 
+              duration: 50 // Memberikan rasa "berat" dan mewah pada transisi
             }} 
             plugins={[plugin.current]}
             className="w-full"
@@ -87,8 +86,8 @@ export const Certificates = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="-left-16 h-12 w-12 hidden md:flex hover:bg-primary hover:text-white border-none shadow-xl" />
-            <CarouselNext className="-right-16 h-12 w-12 hidden md:flex hover:bg-primary hover:text-white border-none shadow-xl" />
+            <CarouselPrevious className="-left-16 h-12 w-12 hidden md:flex hover:bg-primary hover:text-white border-none shadow-xl transition-all" />
+            <CarouselNext className="-right-16 h-12 w-12 hidden md:flex hover:bg-primary hover:text-white border-none shadow-xl transition-all" />
           </Carousel>
         </div>
       </div>
@@ -110,21 +109,22 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
   const handleOpenOriginal = (url: string) => {
     if (!url) return;
     
-    // Jika formatnya data URI PDF, konversi ke Blob URL agar lebih lancar
-    if (url.startsWith('data:application/pdf')) {
+    // Jika formatnya data URI, konversi ke Blob URL agar bisa dibuka instan tanpa refresh
+    if (url.startsWith('data:')) {
       try {
-        const base64Canvas = url.split(';base64,')[1];
-        const bin = atob(base64Canvas);
-        const len = bin.length;
-        const buffer = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-          buffer[i] = bin.charCodeAt(i);
+        const parts = url.split(';base64,');
+        const contentType = parts[0].split(':')[1];
+        const raw = window.atob(parts[1]);
+        const rawLength = raw.length;
+        const uInt8Array = new Uint8Array(rawLength);
+        for (let i = 0; i < rawLength; ++i) {
+          uInt8Array[i] = raw.charCodeAt(i);
         }
-        const blob = new Blob([buffer], { type: 'application/pdf' });
+        const blob = new Blob([uInt8Array], { type: contentType });
         const blobUrl = URL.createObjectURL(blob);
         window.open(blobUrl, '_blank');
       } catch (e) {
-        console.error("Gagal memproses PDF:", e);
+        console.error("Gagal memproses dokumen:", e);
         window.open(url, '_blank');
       }
     } else {
@@ -148,7 +148,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex flex-col items-center justify-center gap-3">
                   {isPdf ? <FileText className="h-16 w-16 text-primary animate-pulse" /> : <Landmark className="h-12 w-12 text-primary/30" />}
-                  {isPdf && <p className="text-[10px] font-black uppercase text-primary tracking-widest">Dokumen PDF</p>}
+                  {isPdf && <p className="text-[10px] font-black uppercase text-primary tracking-widest">Dokumen PDF Terverifikasi</p>}
                 </div>
               )}
               <div className="absolute top-4 left-4 z-10">
@@ -182,7 +182,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
            {(cert.credentialUrl || cert.imageUrl) && (
              <Button 
                onClick={() => handleOpenOriginal(cert.credentialUrl || cert.imageUrl || '')}
-               className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all"
+               className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all bg-primary text-primary-foreground"
              >
                Buka Dokumen Asli <ExternalLink className="h-3 w-3" />
              </Button>
@@ -191,7 +191,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
         <div className="flex-1 overflow-y-auto p-10 space-y-10 no-scrollbar">
            {isValidUrl(cert.imageUrl) ? (
              isPdf ? (
-               <div className="w-full h-[500px] rounded-[2rem] overflow-hidden border shadow-2xl bg-muted">
+               <div className="w-full h-[500px] rounded-[2rem] overflow-hidden border shadow-2xl bg-muted relative">
                  <iframe src={cert.imageUrl} className="w-full h-full border-none" title={title}></iframe>
                </div>
              ) : (
@@ -213,21 +213,21 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
            )}
            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-card p-6 rounded-3xl border shadow-sm text-center">
-                <p className="text-[8px] font-black text-muted-foreground uppercase mb-1">Tahun</p>
+                <p className="text-[8px] font-black text-muted-foreground uppercase mb-1">Tahun Terbit</p>
                 <p className="text-sm font-black">{cert.year}</p>
               </div>
               <div className="bg-card p-6 rounded-3xl border shadow-sm text-center">
-                <p className="text-[8px] font-black text-muted-foreground uppercase mb-1">Validitas</p>
-                <p className="text-sm font-black">{cert.validUntil}</p>
+                <p className="text-[8px] font-black text-muted-foreground uppercase mb-1">Masa Berlaku</p>
+                <p className="text-sm font-black">{cert.validUntil || 'Seumur Hidup'}</p>
               </div>
               <div className="bg-card p-6 rounded-3xl border shadow-sm text-center col-span-2">
-                <p className="text-[8px] font-black text-muted-foreground uppercase mb-1">Status</p>
-                <p className="text-sm font-black text-primary">Validasi Industri Aktif</p>
+                <p className="text-[8px] font-black text-muted-foreground uppercase mb-1">Status Verifikasi</p>
+                <p className="text-sm font-black text-primary">Validasi Industri Terkonfirmasi</p>
               </div>
            </div>
            <section className="bg-card p-8 rounded-[2.5rem] border shadow-sm space-y-6">
               <h4 className="text-lg font-black font-headline uppercase tracking-tight flex items-center gap-3">
-                <Award className="h-5 w-5 text-primary" /> Narasi Validasi Lengkap
+                <Award className="h-5 w-5 text-primary" /> Narasi Validasi Kredensial
               </h4>
               <DialogDescription className="text-muted-foreground leading-relaxed text-base font-medium whitespace-pre-wrap">
                 {language === 'id' ? cert.fullDescriptionId : (cert.fullDescriptionEn || cert.fullDescriptionId)}
