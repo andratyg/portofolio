@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -12,7 +11,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import Image from 'next/image';
 import { useProjectStore } from '../ProjectStore';
 import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast';
 import { Project } from '@/lib/types';
 
 export const Portfolio = () => {
@@ -42,7 +40,7 @@ export const Portfolio = () => {
             <div className="flex gap-2 w-full lg:w-auto overflow-x-auto no-scrollbar py-1">
               <div className="relative group flex-1 sm:flex-none">
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors z-10" />
-                <Input placeholder="Scan units..." className="pl-12 w-full sm:w-72 rounded-full h-14 bg-card" value={search} onChange={(e) => setSearch(e.target.value)} />
+                <Input placeholder="Pindai Unit..." className="pl-12 w-full sm:w-72 rounded-full h-14 bg-card" value={search} onChange={(e) => setSearch(e.target.value)} />
               </div>
             </div>
           </div>
@@ -105,7 +103,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
               <div className="absolute top-8 right-10 flex gap-2">
-                 {project.demoUrl && (
+                 {isValidUrl(project.demoUrl) && (
                    <Button 
                     onClick={() => window.open(project.demoUrl, '_blank')}
                     className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all bg-primary text-primary-foreground border-none"
@@ -132,6 +130,16 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
                  <h3 className="text-lg font-black font-headline uppercase flex items-center gap-2"><Terminal className="h-4 w-4 text-primary" /> Stack Sistem</h3>
                  <div className="flex flex-wrap gap-2">{(project.technologies || []).map(t => <Badge key={t} variant="outline" className="px-3 py-1.5 rounded-xl border-primary/20 text-[10px] font-black uppercase">{t}</Badge>)}</div>
               </section>
+              {isValidUrl(project.demoUrl) && (
+                <div className="pt-4 border-t border-border/10">
+                   <Button 
+                    onClick={() => window.open(project.demoUrl, '_blank')}
+                    className="w-full h-16 rounded-2xl gap-3 font-black uppercase tracking-widest bg-primary text-primary-foreground shadow-2xl hover:scale-[1.01] transition-all"
+                   >
+                     AKSES PROTOKOL LIVE <ExternalLink className="h-5 w-5" />
+                   </Button>
+                </div>
+              )}
            </div>
         </DialogContent>
       </Dialog>

@@ -1,4 +1,3 @@
-
 "use client"
 
 import React from 'react';
@@ -20,7 +19,7 @@ export const Certificates = () => {
 
   const plugin = React.useRef(
     Autoplay({ 
-      delay: 6000, 
+      delay: 5000, 
       stopOnInteraction: false, 
       stopOnMouseEnter: true,
       playOnInit: true
@@ -75,8 +74,8 @@ export const Certificates = () => {
               align: "start", 
               loop: true, 
               skipSnaps: false, 
-              duration: 100, // Kecepatan transisi lebih lambat dan halus
-              watchDrag: true // Bisa digeser kursor
+              duration: 80,
+              watchDrag: true
             }} 
             plugins={[plugin.current]}
             className="w-full cursor-grab active:cursor-grabbing"
@@ -181,7 +180,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
              <Badge className="bg-primary text-primary-foreground text-[8px] font-black uppercase px-3">{cert.issuer}</Badge>
              <DialogTitle className="text-2xl md:text-3xl font-black font-headline tracking-tighter">{title}</DialogTitle>
            </div>
-           {(cert.credentialUrl || cert.imageUrl) && (
+           {(isValidUrl(cert.credentialUrl) || isValidUrl(cert.imageUrl)) && (
              <Button 
                onClick={() => handleOpenOriginal(cert.credentialUrl || cert.imageUrl || '')}
                className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all bg-primary text-primary-foreground"

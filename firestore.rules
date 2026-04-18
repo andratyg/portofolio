@@ -2,34 +2,41 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Fungsi dasar untuk pengecekan login
     function isSignedIn() {
       return request.auth != null;
     }
 
+    // Fungsi untuk mengecek apakah pengguna terdaftar sebagai admin
     function isAdmin() {
       return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    // Fungsi untuk mengecek akses super admin (Full CRUD)
     function isSuperAdmin() {
       return isAdmin() && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'super';
     }
 
+    // Aturan untuk koleksi Admin
     match /admins/{adminId} {
       allow get: if isSignedIn() && request.auth.uid == adminId;
       allow list, create, update, delete: if isSuperAdmin();
     }
 
+    // Aturan untuk Profil Pemilik Portofolio
     match /portfolioOwner/profile {
       allow get, list: if true;
       allow create, update: if isAdmin();
       allow delete: if isSuperAdmin();
     }
 
+    // Aturan untuk Pesan Kontak (Hanya kirim, baca hanya oleh admin)
     match /messages/{messageId} {
       allow create: if true;
       allow read, delete: if isAdmin();
     }
 
+    // Aturan umum untuk koleksi lainnya (Proyek, Sertifikat, Journey)
     match /{collection}/{docId} {
       allow get, list: if true;
       allow create, update: if isAdmin() && (collection != 'admins');
