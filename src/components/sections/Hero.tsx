@@ -26,15 +26,15 @@ export const Hero = () => {
   const heroSubtitle = language === 'id' ? profile.heroSubtitleId : (profile.heroSubtitleEn || profile.heroSubtitleId);
 
   const isValidImageUrl = (url: string) => {
-    return url && (url.startsWith('http') || url.startsWith('/'));
+    return url && (url.startsWith('http') || url.startsWith('/') || url.startsWith('data:'));
   };
 
   return (
     <section className="relative min-h-[90vh] flex flex-col justify-center overflow-hidden py-24 bg-background selection:bg-primary/30">
       {/* Advanced Aura blobs */}
-      <div className="aura-blob top-[-10%] left-[-10%] <Changes OMITTED />" />
-      <div className="aura-blob bottom-[-10%] right-[-10%] <Changes OMITTED />" />
-      <div className="aura-blob top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 <Changes OMITTED />" />
+      <div className="aura-blob top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] animate-pulse"></div>
+      <div className="aura-blob bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/20 blur-[120px] animate-pulse delay-700"></div>
+      <div className="aura-blob top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30%] h-[30%] bg-primary/10 blur-[100px] animate-spin-slow"></div>
 
       <div className="container mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center relative z-10">
         <div className={cn(
