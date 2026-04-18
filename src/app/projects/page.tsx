@@ -5,6 +5,8 @@ import { Portfolio } from '@/components/sections/Portfolio';
 import { Contact } from '@/components/sections/Contact';
 import { ProjectStoreProvider } from '@/components/ProjectStore';
 import { useLanguage } from '@/components/LanguageContext';
+import { Stats } from '@/components/sections/Stats';
+import { Timeline } from '@/components/sections/Timeline';
 
 export default function ProjectsPage() {
   const { t } = useLanguage();
@@ -15,6 +17,8 @@ export default function ProjectsPage() {
         <Navbar />
         <div className="pt-20">
           <Portfolio />
+          <Stats />
+          <Timeline />
           <Contact />
         </div>
         <footer className="py-16 border-t bg-muted/20">

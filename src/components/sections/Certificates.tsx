@@ -20,7 +20,7 @@ export const Certificates = () => {
 
   const plugin = React.useRef(
     Autoplay({ 
-      delay: 4000, 
+      delay: 5000, 
       stopOnInteraction: false, 
       stopOnMouseEnter: true,
       playOnInit: true
@@ -75,7 +75,7 @@ export const Certificates = () => {
               align: "start", 
               loop: true, 
               skipSnaps: false, 
-              duration: 100,
+              duration: 80,
               watchDrag: true
             }} 
             plugins={[plugin.current]}
@@ -102,8 +102,10 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
   const title = language === 'id' ? cert.titleId : cert.titleEn;
   const shortDesc = language === 'id' ? cert.shortDescriptionId : cert.shortDescriptionEn;
 
-  const isValidUrl = (url: string) => {
-    return url && typeof url === 'string' && (url.startsWith('http') || url.startsWith('/') || url.startsWith('data:'));
+  const isValidUrl = (url: any) => {
+    if (!url || typeof url !== 'string') return false;
+    const trimmed = url.trim();
+    return trimmed.startsWith('http') || trimmed.startsWith('/') || trimmed.startsWith('data:');
   };
 
   const isPdf = cert.imageUrl && (cert.imageUrl.includes('application/pdf') || cert.imageUrl.toLowerCase().endsWith('.pdf'));

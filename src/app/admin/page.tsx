@@ -338,7 +338,7 @@ function AdminContent() {
                         </h3>
                         <div className="grid md:grid-cols-2 gap-6">
                            <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Judul Utama Hero (ID)</label><Input value={profileFormData.heroTitleId} onChange={e => setProfileFormData({...profileFormData, heroTitleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
-                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Judul Utama Hero (EN)</label><Input value={profileFormData.heroTitleEn} onChange={e => setProjectForm ? setProfileFormData({...profileFormData, heroTitleEn: e.target.value}) : null} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                           <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Judul Utama Hero (EN)</label><Input value={profileFormData.heroTitleEn} onChange={e => setProfileFormData({...profileFormData, heroTitleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                         </div>
                         <div className="grid md:grid-cols-2 gap-6">
                            <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Sub-Judul Hero (ID)</label><Textarea value={profileFormData.heroSubtitleId} onChange={e => setProfileFormData({...profileFormData, heroSubtitleId: e.target.value})} className="h-24 rounded-2xl bg-muted/30 border-none p-6" /></div>
