@@ -1,188 +1,202 @@
+/* 
+  These are the foundational directives for Tailwind CSS.
+  Your IDE might show a warning "Unknown at rule @tailwind", but this is expected and correct.
+  Do not remove them.
+*/
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+  /* =============================================
+   * == THEME DEFINITIONS
+   * ============================================= */
+
+  /* --- Default Light Theme --- */
+  :root, [data-theme='light'] {
+    --background: 210 17% 98%;
+    --foreground: 210 10% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 210 10% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 47% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 192 82% 61%;
-    --accent-foreground: 222 47% 11.2%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 2rem;
+    --popover-foreground: 210 10% 15%;
+    --primary: 211 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 16% 93%;
+    --secondary-foreground: 210 10% 15%;
+    --muted: 210 16% 93%;
+    --muted-foreground: 210 8% 45%;
+    --accent: 211 100% 55%; 
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 14% 89%;
+    --input: 210 14% 89%;
+    --ring: 211 100% 50%;
+    --radius: 0.75rem;
+
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass-blur: 10px;
   }
 
+  /* --- Dark Theme (Revamped) --- */
   [data-theme='dark'] {
-    --background: 222 47% 4%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 6%;
-    --card-foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 210 40% 98%;
-    --accent: 217 91% 60%;
-    --border: 217 32% 14%;
-    --muted: 217 32% 10%;
-    --muted-foreground: 215 20% 65%;
+    --background: 216 21% 5%;
+    --foreground: 0 0% 88%;
+    --card: 216 21% 8%;
+    --card-foreground: 0 0% 88%;
+    --popover: 216 21% 5%;
+    --popover-foreground: 0 0% 88%;
+    --primary: 180 100% 50%; /* Neon Cyan */
+    --primary-foreground: 216 21% 5%;
+    --secondary: 216 21% 12%;
+    --secondary-foreground: 0 0% 88%;
+    --muted: 216 21% 12%;
+    --muted-foreground: 210 10% 60%;
+    --accent: 277 76% 53%; /* Dark Purple */
+    --accent-foreground: 0 0% 88%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 15% 20%;
+    --input: 210 15% 20%;
+    --ring: 180 100% 50%;
+
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-blur: 10px;
   }
 
+  /* --- Ramadan Theme (Revamped) --- */
   [data-theme='ramadan'] {
-    --background: 140 40% 4%;
-    --foreground: 45 90% 85%;
-    --primary: 142 72% 35%;
-    --accent: 45 93% 55%;
-    --card: 140 40% 7%;
-    --card-foreground: 45 90% 90%;
-    --border: 142 50% 15%;
-  }
+    --background: 158 98% 10%;
+    --foreground: 56 100% 91%;
+    --card: 158 80% 13%;
+    --card-foreground: 56 100% 91%;
+    --popover: 158 98% 10%;
+    --popover-foreground: 56 100% 91%;
+    --primary: 52 100% 50%; /* Bright Gold */
+    --primary-foreground: 158 98% 10%;
+    --secondary: 158 80% 16%;
+    --secondary-foreground: 56 100% 91%;
+    --muted: 158 80% 16%;
+    --muted-foreground: 56 30% 80%;
+    --accent: 52 100% 60%; /* Brighter Gold for hover */
+    --accent-foreground: 158 98% 10%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 52 100% 30%;
+    --input: 52 100% 30%;
+    --ring: 52 100% 50%;
 
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 253, 208, 0.05);
+    --glass-border: rgba(255, 223, 0, 0.2);
+    --glass-blur: 10px;
+  }
+  
+  /* --- Imlek Theme (Revamped) --- */
   [data-theme='imlek'] {
-    --background: 0 40% 4%;
-    --foreground: 45 90% 85%;
-    --primary: 0 100% 45%;
-    --accent: 45 93% 60%;
-    --card: 0 40% 7%;
-    --card-foreground: 45 90% 90%;
-    --border: 0 60% 15%;
+    --background: 0 100% 25%;
+    --foreground: 60 100% 97%;
+    --card: 0 100% 28%;
+    --card-foreground: 60 100% 97%;
+    --popover: 0 100% 25%;
+    --popover-foreground: 60 100% 97%;
+    --primary: 51 100% 50%; /* Bright Gold */
+    --primary-foreground: 0 100% 15%;
+    --secondary: 0 100% 32%;
+    --secondary-foreground: 60 100% 97%;
+    --muted: 0 100% 32%;
+    --muted-foreground: 51 30% 85%;
+    --accent: 51 100% 60%; /* Brighter Gold for hover */
+    --accent-foreground: 0 100% 15%;
+    --destructive: 10 89% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 51 100% 30%;
+    --input: 51 100% 30%;
+    --ring: 51 100% 50%;
+
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 0, 0, 0.1);
+    --glass-border: rgba(255, 215, 0, 0.3);
+    --glass-blur: 10px;
   }
 
+  /* --- Natal Theme (New) --- */
   [data-theme='natal'] {
-    --background: 120 20% 4%;
-    --foreground: 0 80% 95%;
-    --primary: 350 100% 45%;
-    --accent: 142 76% 50%;
-    --card: 120 20% 7%;
-    --card-foreground: 0 80% 90%;
-    --border: 120 30% 15%;
+    --background: 210 100% 12%;
+    --foreground: 0 0% 100%;
+    --card: 210 100% 15%;
+    --card-foreground: 0 0% 100%;
+    --popover: 210 100% 12%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 0 64% 51%; /* Christmas Red */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 100% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 100% 20%;
+    --muted-foreground: 210 15% 80%;
+    --accent: 0 0% 75%; /* Silver White */
+    --accent-foreground: 210 100% 12%;
+    --destructive: 0 64% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 50% 30%;
+    --input: 210 50% 30%;
+    --ring: 0 0% 75%;
+
+    /* Glassmorphism */
+    --glass-bg: rgba(173, 216, 230, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-blur: 10px;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+  
+  /* Add warm glow to ramadan theme */
+  body[data-theme='ramadan'] {
+    background-image: radial-gradient(ellipse at bottom, hsl(var(--primary) / 0.15), transparent 70%);
+    background-attachment: fixed;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border outline-none transition-all duration-300;
-  }
-  
-  html {
-    font-size: 15px;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  
-  html::-webkit-scrollbar, body::-webkit-scrollbar {
-    display: none;
-  }
-
-  body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary-foreground;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3%3Ffilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    background-size: 200px 200px;
-    background-repeat: repeat;
-    background-blend-mode: overlay;
-    
-    /* Hardware acceleration for scroll */
-    -webkit-overflow-scrolling: touch;
-  }
-
-  input, textarea, [contenteditable="true"] {
-    user-select: auto !important;
-    -webkit-user-select: auto !important;
-  }
+/* =============================================
+ * == CUSTOM ADDITIONS
+ * ============================================= */
+.theme-transition {
+  transition: background-color 0.8s ease, color 0.8s ease;
 }
 
 .font-headline {
   font-family: 'Space Grotesk', sans-serif;
-  letter-spacing: -0.05em;
 }
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-.skeleton-shimmer {
-  @apply relative overflow-hidden bg-muted/50;
-}
-.skeleton-shimmer::after {
-  content: '';
-  @apply absolute inset-0 -z-0 -translate-x-full;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-  100% { transform: translateX(100%); }
-}
-
-.glass-panel {
-  @apply bg-card/60 border border-white/10 shadow-2xl;
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-}
-
-@media (max-width: 768px) {
-  .glass-panel {
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-  }
-}
-
-.aura-blob {
-  @apply absolute rounded-full mix-blend-screen opacity-20 pointer-events-none;
-  filter: blur(120px);
-  -webkit-filter: blur(120px);
-  will-change: transform, opacity;
-}
-
-@media (max-width: 768px) {
-  .aura-blob {
-    filter: blur(60px);
-    -webkit-filter: blur(60px);
-    opacity: 0.15;
-  }
-}
-
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.animate-spin-slow {
-  animation: spin-slow 25s linear infinite;
-}
-
-.glow-on-hover {
-  @apply relative z-10 overflow-hidden;
-}
-
-.glow-on-hover::before {
-  content: '';
-  @apply absolute inset-0 -z-10 bg-gradient-to-tr from-primary/20 via-accent/20 to-primary/20 opacity-0 transition-opacity duration-500 blur-3xl;
-}
-
-.glow-on-hover:hover::before {
-  @apply opacity-100;
-}
-
-/* Optimization for mobile swiping */
-.embla__container {
-  will-change: transform;
+/* Glassmorphism utility class (Now using standard CSS) */
+.glass-card {
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 1.5rem; /* Replaces rounded-3xl */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
 }
