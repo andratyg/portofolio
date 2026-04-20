@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState } from 'react';
@@ -6,7 +7,8 @@ import { useProjectStore } from '../ProjectStore';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
-import { Send, MessageSquare, Linkedin, ExternalLink, Github, Instagram, Video, Mail, Loader2 } from 'lucide-react';
+import { Send, Linkedin, ExternalLink, Github, Instagram, Video, Mail, Loader2 } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa'; // Import WhatsApp icon
 import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
 import { collection, addDoc } from 'firebase/firestore';
@@ -48,7 +50,7 @@ export const Contact = () => {
   };
 
   const socialLinks = [
-    { id: 'wa', label: t.waLink, value: profile.whatsapp, url: `https://wa.me/${profile.whatsapp}`, icon: MessageSquare, color: 'bg-green-500', active: !!profile.whatsapp },
+    { id: 'wa', label: t.waLink, value: profile.whatsapp, url: `https://wa.me/${profile.whatsapp}`, icon: FaWhatsapp, color: 'bg-green-500', active: !!profile.whatsapp },
     { id: 'li', label: t.liLink, value: profile.linkedin?.replace('https://', ''), url: profile.linkedin, icon: Linkedin, color: 'bg-blue-600', active: !!profile.linkedin },
     { id: 'ig', label: 'Instagram', value: profile.instagram?.split('/').pop() || 'Instagram', url: profile.instagram, icon: Instagram, color: 'bg-pink-600', active: !!profile.instagram },
     { id: 'gh', label: 'GitHub', value: profile.github?.split('/').pop() || 'GitHub', url: profile.github, icon: Github, color: 'bg-slate-800', active: !!profile.github },
@@ -71,10 +73,11 @@ export const Contact = () => {
                   <ExternalLink className="h-5 w-5 opacity-0 group-hover:opacity-100" />
                 </a>
               ))}
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+              <a href={`mailto:${profile.email || 'admin@karyapro.app'}`} className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-white/20 transition-all border border-white/10 group">
                 <div className="p-3 bg-white/10 rounded-xl"><Mail className="h-6 w-6 text-white" /></div>
-                <div><p className="font-bold text-lg">Email Node</p><p className="text-sm text-primary-foreground/70">{profile.email || 'admin@karyapro.app'}</p></div>
-              </div>
+                <div className="flex-1"><p className="font-bold text-lg">Email Node</p><p className="text-sm text-primary-foreground/70">{profile.email || 'admin@karyapro.app'}</p></div>
+                <ExternalLink className="h-5 w-5 opacity-0 group-hover:opacity-100" />
+              </a>
             </div>
           </div>
           <div className="bg-background rounded-[3rem] p-10 shadow-2xl text-foreground no-print">

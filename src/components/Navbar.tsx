@@ -1,7 +1,9 @@
+
 "use client"
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { useLanguage } from './LanguageContext';
 import { useTheme, themes } from './ThemeContext';
 import { Button } from './ui/button';
@@ -9,6 +11,8 @@ import { Globe, Palette, LogIn, Menu, X, ChevronDown } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+
+const MotionLink = motion(Link);
 
 export const Navbar = () => {
   const { t, language, setLanguage } = useLanguage();
@@ -74,13 +78,16 @@ export const Navbar = () => {
     )}>
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
         <div className="flex items-center gap-12">
-          <Link 
+          <MotionLink 
             href="/" 
             onClick={handleLogoClick}
-            className="text-3xl font-black font-headline text-primary hover:scale-110 transition-transform cursor-pointer tracking-tighter"
+            className="text-3xl font-black font-headline text-primary cursor-pointer tracking-tighter"
+            whileHover={{ scale: 1.1, rotate: -5 }}
+            whileTap={{ scale: 0.95, rotate: 10, y: -5 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
             NAT
-          </Link>
+          </MotionLink>
           
           <div className="hidden md:flex gap-8">
             {navItems.map((item) => (
