@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -13,6 +14,7 @@ import { useProjectStore } from '../ProjectStore';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Project } from '@/lib/types';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
 
 export const Portfolio = () => {
   const { t, language } = useLanguage();
@@ -42,11 +44,23 @@ export const Portfolio = () => {
             <div className="flex gap-2 w-full lg:w-auto overflow-x-auto no-scrollbar py-1"><div className="relative group flex-1 sm:flex-none"><Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors z-10" /><Input placeholder="Scan units..." className="pl-12 w-full sm:w-72 rounded-full h-14 bg-card" value={search} onChange={(e) => setSearch(e.target.value)} /></div></div>
           </div>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {filteredProjects.map((project, idx) => (
-            <ProjectCard key={project.id} project={project} index={idx} isVisible={isVisible} />
-          ))}
-        </div>
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full"
+        >
+          <CarouselContent className="-ml-4">
+            {filteredProjects.map((project, idx) => (
+              <CarouselItem key={project.id} className="md:basis-1/2 lg:basis-1/3 pl-4">
+                  <ProjectCard project={project} index={idx} isVisible={isVisible} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="-left-4 h-12 w-12 rounded-full" />
+          <CarouselNext className="-right-4 h-12 w-12 rounded-full" />
+        </Carousel>
       </div>
     </section>
   );
@@ -60,7 +74,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
   const hasDemoUrl = typeof project.demoUrl === 'string' && project.demoUrl.trim().length > 5 && project.demoUrl.trim().startsWith('http');
 
   return (
-    <div className={cn("group transition-all duration-1000", isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16")} style={{ transitionDelay: `${index * 100}ms` }}>
+    <div className={cn("group transition-all duration-1000 h-full", isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16")} style={{ transitionDelay: `${index * 100}ms` }}>
       <Dialog>
         <DialogTrigger asChild>
           <div className="cursor-pointer group h-full">
