@@ -1,4 +1,3 @@
-
 "use client";
 
 import { create } from 'zustand';
@@ -24,14 +23,14 @@ interface ContentState extends EditableContent {
 
 // Get the initial default values from the translations file.
 const defaultState: EditableContent = {
-  portfolioTitleEn: translations.en.portfolioTitle || '',
-  portfolioTitleId: translations.id.portfolioTitle || '',
+  portfolioTitleEn: translations.en.navPortfolio || 'Portfolio',
+  portfolioTitleId: translations.id.navPortfolio || 'Portofolio',
   portfolioSubtitleEn: translations.en.portfolioSubtitle || '',
   portfolioSubtitleId: translations.id.portfolioSubtitle || '',
-  certificatesTitleEn: translations.en.certificatesTitle || '',
-  certificatesTitleId: translations.id.certificatesTitle || '',
-  certificatesSubtitleEn: translations.en.certificatesSubtitle || '',
-  certificatesSubtitleId: translations.id.certificatesSubtitle || '',
+  certificatesTitleEn: translations.en.navCertificates || 'Certificates',
+  certificatesTitleId: translations.id.navCertificates || 'Sertifikat',
+  certificatesSubtitleEn: 'My professional certifications and accreditations.',
+  certificatesSubtitleId: 'Sertifikasi dan akreditasi profesional saya.',
 };
 
 // Create the store with persistence.

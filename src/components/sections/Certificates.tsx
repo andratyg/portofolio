@@ -1,73 +1,181 @@
 "use client"
 
-import React from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { useProjectStore } from '../ProjectStore';
 import { Card, CardContent } from '../ui/card';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
-import { Award, Eye, Landmark, Info, Loader2, AlertCircle, FileText, ExternalLink } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
+import { Award, Eye, Landmark, Info, Loader2, AlertCircle, FileText, ExternalLink, Search, ChevronDown, Check } from 'lucide-react';
 import Image from 'next/image';
 import { Certificate } from '@/lib/types';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import Autoplay from "embla-carousel-autoplay";
+import { Input } from '../ui/input';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '../ui/dropdown-menu';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useEditableContent } from '../ContentStore';
+import { cn } from '@/lib/utils';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+import Autoplay from "embla-carousel-autoplay"
 
 export const Certificates = () => {
   const { t, language } = useLanguage();
   const { certificates, isLoading, error } = useProjectStore();
   const { certificatesTitle, certificatesSubtitle } = useEditableContent(language);
+  
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedIssuers, setSelectedIssuers] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState('newest');
 
-  const plugin = React.useRef(
-    Autoplay({ 
-      delay: 6000, 
-      stopOnInteraction: false, 
-      stopOnMouseEnter: true,
-      playOnInit: true
-    })
+  const issuers = useMemo(() => 
+    Array.from(new Set(certificates.map(c => c.issuer))), 
+    [certificates]
+  );
+
+  const filteredCertificates = useMemo(() => {
+    let filtered = certificates;
+
+    if (searchTerm) {
+      filtered = filtered.filter(cert => 
+        (cert.titleId?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (cert.titleEn?.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }
+
+    if (selectedIssuers.length > 0) {
+      filtered = filtered.filter(cert => selectedIssuers.includes(cert.issuer));
+    }
+
+    return filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'oldest':
+          return parseInt(a.year) - parseInt(b.year);
+        case 'asc':
+          return (language === 'id' ? a.titleId : a.titleEn).localeCompare(language === 'id' ? b.titleId : b.titleEn);
+        case 'desc':
+          return (language === 'id' ? b.titleId : b.titleEn).localeCompare(language === 'id' ? a.titleId : a.titleEn);
+        case 'newest':
+        default:
+          return parseInt(b.year) - parseInt(a.year);
+      }
+    });
+  }, [certificates, searchTerm, selectedIssuers, sortBy, language]);
+
+  const certificatePages = useMemo(() => {
+    const pageSize = 6; // 2x3 grid
+    const pages = [];
+    for (let i = 0; i < filteredCertificates.length; i += pageSize) {
+        pages.push(filteredCertificates.slice(i, i + pageSize));
+    }
+    return pages;
+  }, [filteredCertificates]);
+
+  const handleIssuerToggle = (issuer: string) => {
+    setSelectedIssuers(prev => 
+      prev.includes(issuer) ? prev.filter(i => i !== issuer) : [...prev, issuer]
+    );
+  };
+
+  if (isLoading) return (
+    <div className="flex flex-col items-center justify-center space-y-4 min-h-[400px]">
+      <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Menyingkronkan Kredensial...</p>
+    </div>
+  );
+
+  if (error) return (
+    <div className="flex flex-col items-center justify-center space-y-4 min-h-[400px]">
+      <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+      <p className="text-sm font-bold text-muted-foreground uppercase">Gagal memuat validasi kredensial.</p>
+    </div>
   );
 
   return (
-    <section id="certificates" className="py-24 bg-muted/30 overflow-hidden">
+    <section id="certificates" className="py-24 bg-muted/30">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 space-y-4">
+        <div className="text-center mb-12 space-y-4">
           <Badge className="bg-accent/10 text-accent border-accent/20 px-4 py-1.5 rounded-full font-bold uppercase tracking-wider">{certificatesTitle}</Badge>
           <h2 className="text-4xl md:text-5xl font-bold font-headline">{certificatesSubtitle}</h2>
         </div>
 
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center space-y-4 min-h-[300px]">
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Menyingkronkan Kredensial...</p>
+        <div className="max-w-6xl mx-auto bg-card/50 backdrop-blur-lg border p-4 rounded-[2rem] shadow-lg mb-12 flex flex-col md:flex-row gap-4 items-center">
+          <div className="relative w-full md:flex-1">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input 
+              placeholder={t.searchCertificates}
+              className="h-14 rounded-2xl pl-12 bg-background/50 border-none w-full text-base"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
           </div>
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center space-y-4 min-h-[300px]">
-            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <p className="text-sm font-bold text-muted-foreground uppercase">Gagal memuat validasi kredensial.</p>
-          </div>
-        ) : !certificates || certificates.length === 0 ? (
-            <div className="flex flex-col items-center justify-center space-y-4 min-h-[300px]">
-                <Info className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                <p className="text-sm font-bold text-muted-foreground uppercase">Tidak ada kredensial untuk ditampilkan.</p>
-          </div>
-        ) : (
-          <div className="max-w-6xl mx-auto px-12 relative">
-            <Carousel 
-              opts={{ align: "start", loop: true, skipSnaps: false, duration: 50 }}
-              plugins={[plugin.current]}
-              className="w-full"
-            >
-              <CarouselContent className="-ml-6">
-                {certificates.map((cert) => (
-                  <CarouselItem key={cert.id} className="pl-6 md:basis-1/2 lg:basis-1/3">
-                    <CertificateCard cert={cert} />
-                  </CarouselItem>
+          <div className="flex gap-4 w-full md:w-auto">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="h-14 rounded-2xl px-6 flex-1 md:flex-none justify-between gap-2 border-dashed bg-transparent">
+                  <span className="text-muted-foreground font-bold text-xs uppercase">{t.filterByIssuer} ({selectedIssuers.length})</span>
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Lembaga Penerbit</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {issuers.map(issuer => (
+                  <DropdownMenuCheckboxItem
+                    key={issuer}
+                    checked={selectedIssuers.includes(issuer)}
+                    onSelect={(e) => e.preventDefault()} // prevent menu from closing
+                    onClick={() => handleIssuerToggle(issuer)}
+                  >
+                    {issuer}
+                  </DropdownMenuCheckboxItem>
                 ))}
-              </CarouselContent>
-              <CarouselPrevious className="-left-16 h-12 w-12 hidden md:flex hover:bg-primary hover:text-white border-none shadow-xl transition-all" />
-              <CarouselNext className="-right-16 h-12 w-12 hidden md:flex hover:bg-primary hover:text-white border-none shadow-xl transition-all" />
-            </Carousel>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="h-14 rounded-2xl px-6 flex-1 md:w-[180px] bg-transparent border-dashed">
+                <SelectValue placeholder={t.sortBy} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">{t.sortOptions.newest}</SelectItem>
+                <SelectItem value="oldest">{t.sortOptions.oldest}</SelectItem>
+                <SelectItem value="asc">{t.sortOptions.asc}</SelectItem>
+                <SelectItem value="desc">{t.sortOptions.desc}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {filteredCertificates.length > 0 ? (
+          <Carousel
+            plugins={[Autoplay({ delay: 5000, stopOnInteraction: true })]}
+            opts={{ loop: true }}
+            className="max-w-6xl mx-auto"
+          >
+            <CarouselContent>
+              {certificatePages.map((page, index) => (
+                <CarouselItem key={index}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {page.map((cert) => (
+                      <CertificateCard key={cert.id} cert={cert} />
+                    ))}
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="absolute left-[-50px] top-1/2 -translate-y-1/2" />
+            <CarouselNext className="absolute right-[-50px] top-1/2 -translate-y-1/2" />
+          </Carousel>
+        ) : (
+          <div className="text-center py-20">
+            <Info className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+            <h3 className="text-xl font-bold font-headline">{t.noCertificatesFound}</h3>
+            <p className="text-muted-foreground mt-2">{t.noCertificatesFoundHint}</p>
           </div>
         )}
       </div>

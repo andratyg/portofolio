@@ -69,6 +69,10 @@ export const translations = {
       asc: "Title (A-Z)",
       desc: "Title (Z-A)"
     },
+    filterByIssuer: "Filter by issuer",
+    searchCertificates: "Search certificates...",
+    noCertificatesFound: "No Certificates Found",
+    noCertificatesFoundHint: "Try adjusting your search filters.",
   },
   id: {
     navHome: 'Beranda',
@@ -138,5 +142,9 @@ export const translations = {
       asc: "Judul (A-Z)",
       desc: "Judul (Z-A)"
     },
+    filterByIssuer: "Filter berdasarkan penerbit",
+    searchCertificates: "Cari sertifikat...",
+    noCertificatesFound: "Sertifikat Tidak Ditemukan",
+    noCertificatesFoundHint: "Coba sesuaikan filter pencarian Anda.",
   }
 };
