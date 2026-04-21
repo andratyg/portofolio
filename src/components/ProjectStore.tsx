@@ -34,29 +34,29 @@ interface ProjectStoreType {
 }
 
 const defaultStats: PortfolioStats = {
-  completedProjects: '0',
-  yearsExperience: '0',
-  techMastered: '0',
-  clientSatisfaction: '0%'
+  completedProjects: '12',
+  yearsExperience: '5',
+  techMastered: '20',
+  clientSatisfaction: '100%'
 };
 
 const defaultProfile: ProfileData = {
   name: 'Nara Andra Tyaga',
-  roleId: 'Full-Stack Developer',
+  roleId: 'Pengembang Full-Stack',
   roleEn: 'Full-Stack Developer',
-  aboutMeId: '',
-  aboutMeEn: '',
-  profilePictureUrl: 'https://picsum.photos/seed/profile/600/800',
-  heroTitleId: 'Transforming Ideas Into Reality',
-  heroTitleEn: 'Transforming Ideas Into Reality',
-  heroSubtitleId: '',
-  heroSubtitleEn: '',
+  aboutMeId: 'Saya seorang pengembang full-stack dengan hasrat untuk membangun aplikasi web yang indah dan fungsional.',
+  aboutMeEn: 'I am a full-stack developer with a passion for building beautiful and functional web applications.',
+  profilePictureUrl: 'https://firebasestorage.googleapis.com/v0/b/personalsite-ad939.appspot.com/o/profile%2Fphoto.jpg?alt=media&token=c1a3258a-e555-4428-a63b-31d167c61f25',
+  heroTitleId: 'Rekayasa Dampak Digital',
+  heroTitleEn: 'Engineering Digital Impact',
+  heroSubtitleId: 'Saya merancang dan mengembangkan solusi perangkat lunak yang andal, dapat diskalakan, dan berpusat pada pengguna, mengubah ide-ide kompleks menjadi kenyataan digital.',
+  heroSubtitleEn: 'I design and develop robust, scalable, and user-centric software solutions, turning complex ideas into digital realities.',
   email: 'admin@karyapro.app',
-  whatsapp: '',
-  linkedin: '',
-  instagram: '',
-  github: '',
-  tiktok: ''
+  whatsapp: '6281234567890',
+  linkedin: 'https://www.linkedin.com/in/nara-andra-tyaga/',
+  instagram: 'https://www.instagram.com/nara.dev/',
+  github: 'https://github.com/naradev',
+  tiktok: 'https://www.tiktok.com/@naradev'
 };
 
 

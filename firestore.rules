@@ -24,8 +24,8 @@ service cloud.firestore {
 
     // Portfolio owner profile can be updated by admins
     match /portfolioOwner/{docId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow read: if true;
+      allow get, list, create, update, delete: if isAdmin();
     }
 
     // Messages can be created by anyone, but only managed by admins
@@ -36,8 +36,8 @@ service cloud.firestore {
 
     // All other collections (projects, certificates, etc.) can be managed by admins
     match /{collection}/{docId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin() && (collection != 'admins' && collection != 'portfolioOwner' && collection != 'messages');
+      allow read: if true;
+      allow get, list, create, update, delete: if isAdmin() && (collection != 'admins' && collection != 'portfolioOwner' && collection != 'messages');
     }
   }
 }

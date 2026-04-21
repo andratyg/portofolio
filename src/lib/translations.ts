@@ -51,7 +51,24 @@ export const translations = {
     certIssuer: 'Issuing Authority',
     certYear: 'Timestamp',
     certValidity: 'Valid State',
-    certFullDesc: 'Full Validation Narrative'
+    certFullDesc: 'Full Validation Narrative',
+    portfolioSubtitle: "A curated collection of my work, showcasing my skills in creating robust and impactful digital solutions.",
+    projectCategories: { all: 'All', web: 'Web', ui: 'UI/UX', backend: 'Backend' },
+    portfolioSearchPlaceholder: "Search by name or technology...",
+    noProjectsFound: "No Projects Found",
+    noProjectsFoundHint: "Try adjusting your filters or search query.",
+    loadMore: "Load More",
+    viewSpecs: "View Specs",
+    technicalChallenge: "Technical Challenge",
+    strategicSolution: "Strategic Solution",
+    systemStack: "System Stack & Technologies",
+    sortBy: "Sort by",
+    sortOptions: {
+      newest: "Newest",
+      oldest: "Oldest",
+      asc: "Title (A-Z)",
+      desc: "Title (Z-A)"
+    },
   },
   id: {
     navHome: 'Beranda',
@@ -103,6 +120,23 @@ export const translations = {
     certIssuer: 'Otoritas Penerbit',
     certYear: 'Timestamp',
     certValidity: 'Status Valid',
-    certFullDesc: 'Narasi Validasi Lengkap'
+    certFullDesc: 'Narasi Validasi Lengkap',
+    portfolioSubtitle: "Koleksi karya pilihan saya, menampilkan keahlian saya dalam menciptakan solusi digital yang kuat dan berdampak.",
+    projectCategories: { all: 'Semua', web: 'Web', ui: 'UI/UX', backend: 'Backend' },
+    portfolioSearchPlaceholder: "Cari berdasarkan nama atau teknologi...",
+    noProjectsFound: "Proyek Tidak Ditemukan",
+    noProjectsFoundHint: "Coba sesuaikan filter atau kueri pencarian Anda.",
+    loadMore: "Muat Lebih Banyak",
+    viewSpecs: "Lihat Spesifikasi",
+    technicalChallenge: "Tantangan Teknis",
+    strategicSolution: "Solusi Strategis",
+    systemStack: "Stok Sistem & Teknologi",
+    sortBy: "Urutkan berdasarkan",
+    sortOptions: {
+      newest: "Terbaru",
+      oldest: "Terlama",
+      asc: "Judul (A-Z)",
+      desc: "Judul (Z-A)"
+    },
   }
 };

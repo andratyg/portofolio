@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProjectStore, ProjectStoreProvider } from '@/components/ProjectStore';
+import { useContentStore } from '@/components/ContentStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,7 +15,7 @@ import {
   Plus, Trash2, LogOut, ArrowLeft, Laptop, Award, Settings, 
   UserCircle, Loader2, Camera, Briefcase, History, ShieldAlert, 
   Download, Upload, WifiOff, Edit3, X, Mail, User, CheckCircle2, AlertCircle, 
-  Terminal, Image as ImageIcon, Globe, Share2, BarChart3, Zap, FileText, ExternalLink, Star
+  Terminal, Image as ImageIcon, Globe, Share2, BarChart3, Zap, FileText, ExternalLink, Star, Edit
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
@@ -115,9 +116,32 @@ function AdminContent() {
   const [journeyForm, setJourneyForm] = useState(initialJourneyState);
   const [profileFormData, setProfileFormData] = useState<ProfileData>(profile);
   const [statsFormData, setStatsFormData] = useState<PortfolioStats>(stats);
+  const contentStore = useContentStore();
+  const [contentFormData, setContentFormData] = useState({
+    portfolioTitleId: contentStore.portfolioTitleId,
+    portfolioTitleEn: contentStore.portfolioTitleEn,
+    portfolioSubtitleId: contentStore.portfolioSubtitleId,
+    portfolioSubtitleEn: contentStore.portfolioSubtitleEn,
+    certificatesTitleId: contentStore.certificatesTitleId,
+    certificatesTitleEn: contentStore.certificatesTitleEn,
+    certificatesSubtitleId: contentStore.certificatesSubtitleId,
+    certificatesSubtitleEn: contentStore.certificatesSubtitleEn
+  });
 
   useEffect(() => { if (profile) setProfileFormData(profile); }, [profile]);
   useEffect(() => { if (stats) setStatsFormData(stats); }, [stats]);
+  useEffect(() => {
+    setContentFormData({
+      portfolioTitleId: contentStore.portfolioTitleId,
+      portfolioTitleEn: contentStore.portfolioTitleEn,
+      portfolioSubtitleId: contentStore.portfolioSubtitleId,
+      portfolioSubtitleEn: contentStore.portfolioSubtitleEn,
+      certificatesTitleId: contentStore.certificatesTitleId,
+      certificatesTitleEn: contentStore.certificatesTitleEn,
+      certificatesSubtitleId: contentStore.certificatesSubtitleId,
+      certificatesSubtitleEn: contentStore.certificatesSubtitleEn
+    });
+  }, [contentStore]);
 
   const handleAITranslate = async (formType: string, data: any, setter: Function, direction: 'id-to-en' | 'en-to-id' = 'id-to-en') => {
     setIsTranslating(formType);
@@ -163,6 +187,12 @@ function AdminContent() {
     e.preventDefault();
     updateProfileAndStats(profileFormData, statsFormData);
     toast({ title: "Profil Berhasil Diperbarui" });
+  };
+  
+  const handleContentSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    contentStore.setContent(contentFormData);
+    toast({ title: "Konten Berhasil Diperbarui" });
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
@@ -260,6 +290,7 @@ function AdminContent() {
           <div className={cn("flex justify-center sticky z-40 transition-all duration-500", isHeaderVisible ? "top-24" : "top-4")}>
             <TabsList className="h-20 bg-card border border-border shadow-2xl p-2 rounded-[2.5rem] w-full max-w-5xl overflow-x-auto no-scrollbar flex justify-between gap-1">
               <TabsTrigger value="profile" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><UserCircle className="h-4 w-4" /> IDENTITAS</TabsTrigger>
+              <TabsTrigger value="content" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><Edit className="h-4 w-4" /> KONTEN</TabsTrigger>
               <TabsTrigger value="projects" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><Briefcase className="h-4 w-4" /> PROYEK</TabsTrigger>
               <TabsTrigger value="certificates" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><Award className="h-4 w-4" /> SERTIFIKAT</TabsTrigger>
               <TabsTrigger value="journey" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><History className="h-4 w-4" /> JOURNEY</TabsTrigger>
@@ -374,6 +405,70 @@ function AdminContent() {
                 </div>
                 <Button type="submit" className="w-full h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-2xl hover:scale-[1.01] transition-all">MUTAKHIRKAN SELURUH IDENTITAS DIGITAL</Button>
              </form>
+          </TabsContent>
+          
+          <TabsContent value="content" className="animate-in fade-in slide-in-from-bottom-8 duration-500">
+            <form onSubmit={handleContentSubmit} className="max-w-4xl mx-auto space-y-12">
+              <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
+                <CardHeader className="p-0 pb-10">
+                  <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">Manajemen Konten Halaman</CardTitle>
+                  <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Sunting teks di berbagai bagian situs.</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0 space-y-10">
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
+                      <Briefcase className="h-6 w-6 text-primary" /> Bagian Portofolio
+                    </h3>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Judul Portofolio (ID)</label>
+                        <Input value={contentFormData.portfolioTitleId} onChange={e => setContentFormData({...contentFormData, portfolioTitleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Judul Portofolio (EN)</label>
+                        <Input value={contentFormData.portfolioTitleEn} onChange={e => setContentFormData({...contentFormData, portfolioTitleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" />
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Subjudul Portofolio (ID)</label>
+                        <Textarea value={contentFormData.portfolioSubtitleId} onChange={e => setContentFormData({...contentFormData, portfolioSubtitleId: e.target.value})} className="h-24 rounded-2xl bg-muted/30 border-none p-6" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Subjudul Portofolio (EN)</label>
+                        <Textarea value={contentFormData.portfolioSubtitleEn} onChange={e => setContentFormData({...contentFormData, portfolioSubtitleEn: e.target.value})} className="h-24 rounded-2xl bg-muted/30 border-none p-6" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
+                      <Award className="h-6 w-6 text-primary" /> Bagian Sertifikat
+                    </h3>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Judul Sertifikat (ID)</label>
+                        <Input value={contentFormData.certificatesTitleId} onChange={e => setContentFormData({...contentFormData, certificatesTitleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Judul Sertifikat (EN)</label>
+                        <Input value={contentFormData.certificatesTitleEn} onChange={e => setContentFormData({...contentFormData, certificatesTitleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" />
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Subjudul Sertifikat (ID)</label>
+                        <Textarea value={contentFormData.certificatesSubtitleId} onChange={e => setContentFormData({...contentFormData, certificatesSubtitleId: e.target.value})} className="h-24 rounded-2xl bg-muted/30 border-none p-6" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Subjudul Sertifikat (EN)</label>
+                        <Textarea value={contentFormData.certificatesSubtitleEn} onChange={e => setContentFormData({...contentFormData, certificatesSubtitleEn: e.target.value})} className="h-24 rounded-2xl bg-muted/30 border-none p-6" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Button type="submit" className="w-full h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-2xl hover:scale-[1.01] transition-all">SIMPAN PERUBAHAN KONTEN</Button>
+            </form>
           </TabsContent>
 
           <TabsContent value="projects" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">

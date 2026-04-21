@@ -21,8 +21,8 @@ export const Hero = () => {
 
   const featuredProject = projects.find(p => p.featured);
 
-  const heroTitle = language === 'id' ? profile.heroTitleId : (profile.heroTitleEn || profile.heroTitleId);
-  const heroSubtitle = language === 'id' ? profile.heroSubtitleId : (profile.heroSubtitleEn || profile.heroSubtitleId);
+  const heroTitle = language === 'id' ? profile.heroTitleId : (profile.heroTitleEn || profile.heroTitleId) ?? '';
+  const heroSubtitle = language === 'id' ? profile.heroSubtitleId : (profile.heroSubtitleEn || profile.heroSubtitleId) ?? '';
 
   const isValidImageUrl = (url: string) => {
     return url && (url.startsWith('http') || url.startsWith('/'));

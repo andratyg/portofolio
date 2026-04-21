@@ -12,10 +12,12 @@ import { Certificate } from '@/lib/types';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import Autoplay from "embla-carousel-autoplay";
+import { useEditableContent } from '../ContentStore';
 
 export const Certificates = () => {
   const { t, language } = useLanguage();
   const { certificates, isLoading, error } = useProjectStore();
+  const { certificatesTitle, certificatesSubtitle } = useEditableContent(language);
 
   const plugin = React.useRef(
     Autoplay({ 
@@ -30,8 +32,8 @@ export const Certificates = () => {
     <section id="certificates" className="py-24 bg-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 space-y-4">
-          <Badge className="bg-accent/10 text-accent border-accent/20 px-4 py-1.5 rounded-full font-bold uppercase tracking-wider">Kredensial</Badge>
-          <h2 className="text-4xl md:text-5xl font-bold font-headline">{t.navCertificates}</h2>
+          <Badge className="bg-accent/10 text-accent border-accent/20 px-4 py-1.5 rounded-full font-bold uppercase tracking-wider">{certificatesTitle}</Badge>
+          <h2 className="text-4xl md:text-5xl font-bold font-headline">{certificatesSubtitle}</h2>
         </div>
 
         {isLoading ? (
