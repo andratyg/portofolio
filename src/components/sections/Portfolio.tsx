@@ -15,10 +15,10 @@ import { useProjectStore } from '../ProjectStore';
 import { cn } from '@/lib/utils';
 import { Project } from '@/lib/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
 
 const CATEGORIES = ['all', 'web', 'ui', 'backend'] as const;
 const SORT_OPTIONS = ['newest', 'oldest', 'asc', 'desc'] as const;
-const PROJECTS_PER_PAGE = 6;
 
 export const Portfolio = () => {
   const { t, language } = useLanguage();
@@ -28,7 +28,6 @@ export const Portfolio = () => {
   const [filter, setFilter] = useState<(typeof CATEGORIES)[number]>('all');
   const [sortBy, setSortBy] = useState<(typeof SORT_OPTIONS)[number]>('newest');
   const [search, setSearch] = useState('');
-  const [visibleCount, setVisibleCount] = useState(PROJECTS_PER_PAGE);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => { setIsVisible(true); }, []);
@@ -65,19 +64,6 @@ export const Portfolio = () => {
     return sorted;
   }, [projects, language, search, filter, sortBy]);
 
-  const visibleProjects = useMemo(() => {
-    return processedProjects.slice(0, visibleCount);
-  }, [processedProjects, visibleCount]);
-
-  const handleFilterChange = (newFilter: (typeof CATEGORIES)[number]) => {
-    setFilter(newFilter);
-    setVisibleCount(PROJECTS_PER_PAGE);
-  };
-
-  const handleLoadMore = () => {
-    setVisibleCount(prevCount => prevCount + PROJECTS_PER_PAGE);
-  };
-
   return (
     <section id="portfolio" className="py-24 bg-background relative overflow-hidden">
       <div className="container mx-auto px-6">
@@ -95,7 +81,7 @@ export const Portfolio = () => {
               <Button
                 key={category}
                 variant={filter === category ? 'default' : 'ghost'}
-                onClick={() => handleFilterChange(category)}
+                onClick={() => setFilter(category)}
                 className="capitalize rounded-full px-6 py-2 text-sm font-bold transition-all duration-300"
               >
                 {t.projectCategories[category]}
@@ -131,33 +117,31 @@ export const Portfolio = () => {
           </div>
         </div>
 
-        {/* --- Projects Grid --- */}
+        {/* --- Projects Carousel --- */}
         {isLoading ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">{
             [...Array(6)].map((_, i) => <div key={i} className="h-96 bg-card/80 rounded-3xl animate-pulse"></div>)
           }</div>
         ) : error ? (
            <div className="text-center py-16"><p className='text-destructive'>{error}</p></div>
-        ) : visibleProjects.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-            {visibleProjects.map((project, idx) => (
-              <ProjectCard key={project.id} project={project} index={idx} isVisible={isVisible} />
-            ))}
-          </div>
+        ) : processedProjects.length > 0 ? (
+          <Carousel opts={{ align: "start", loop: true }} className="w-full">
+            <CarouselContent className="-ml-4">
+              {processedProjects.map((project, idx) => (
+                <CarouselItem key={project.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                  <div className="h-full p-1">
+                    <ProjectCard project={project} index={idx} isVisible={isVisible} />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="-left-4 md:-left-8 h-12 w-12 bg-card/80 backdrop-blur-sm border-border/20 hover:bg-primary hover:text-primary-foreground" />
+            <CarouselNext className="-right-4 md:-right-8 h-12 w-12 bg-card/80 backdrop-blur-sm border-border/20 hover:bg-primary hover:text-primary-foreground" />
+          </Carousel>
         ) : (
           <div className="text-center py-16">
             <h3 className="text-2xl font-bold mb-2">{t.noProjectsFound}</h3>
             <p className="text-muted-foreground">{t.noProjectsFoundHint}</p>
-          </div>
-        )}
-
-        {/* --- Load More Button --- */}
-        {visibleCount < processedProjects.length && (
-          <div className="mt-16 text-center">
-            <Button onClick={handleLoadMore} size="lg" className="rounded-full font-bold text-lg px-10 py-7 group">
-              {t.loadMore}
-              <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
           </div>
         )}
       </div>
