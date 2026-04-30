@@ -19,20 +19,32 @@ export const ScrollProgressButton = () => {
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
 
       if (docHeight > 0) {
-        const scrollProgress = Math.min(scrollTop / docHeight, 1);
+        // This calculation ensures the progress is linear from 0 to 1
+        const scrollProgress = scrollTop / docHeight;
         setProgress(scrollProgress);
       }
       
       setIsVisible(scrollTop > 300);
     };
 
+    // We add a listener for load and resize to handle dynamic content
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll); // Recalculate on resize
+    window.addEventListener('load', handleScroll); // Recalculate when page is fully loaded
+
+    // Initial calculation
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+      window.removeEventListener('load', handleScroll);
+    };
   }, []);
 
   const isAtBottom = progress >= 1;
-  const circumference = 2 * Math.PI * 20; // 2 * pi * radius (22-2)
-  const strokeDashoffset = circumference * (1 - progress);
+  const circumference = 2 * Math.PI * 20;
+  const strokeDashoffset = circumference * (1 - Math.min(progress, 1)); // Cap progress at 1 for the SVG
 
   return (
     <button
@@ -43,20 +55,18 @@ export const ScrollProgressButton = () => {
         'hover:scale-110 active:scale-95',
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none',
         {
-          'bg-primary': isAtBottom, // Blue background when at bottom
-          'bg-card/80 backdrop-blur-sm border': !isAtBottom, // Default card background
+          'bg-primary': isAtBottom,
+          'bg-card/80 backdrop-blur-sm border': !isAtBottom,
         }
       )}
     >
       <div className="relative w-full h-full flex items-center justify-center">
-        {/* SVG Container - Always present */}
         <svg
           className="absolute inset-0 transform -rotate-90"
           width="64" 
           height="64"
           viewBox="0 0 44 44"
         >
-          {/* Background Circle - Hidden when at bottom */}
           <circle
             cx="22" cy="22" r="20"
             strokeWidth="3"
@@ -64,11 +74,11 @@ export const ScrollProgressButton = () => {
             style={{ opacity: isAtBottom ? 0 : 1 }}
             fill="none"
           />
-          {/* Foreground (Progress) Circle - Always Blue, with a smoother transition */}
+          {/* The ring now updates without CSS transition for direct mapping */}
           <circle
             cx="22" cy="22" r="20"
             strokeWidth="3"
-            className="stroke-primary transition-stroke-dashoffset duration-500 ease-linear"
+            className="stroke-primary"
             fill="none"
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
@@ -76,13 +86,12 @@ export const ScrollProgressButton = () => {
           />
         </svg>
 
-        {/* Arrow Icon - Always Visible, color changes */}
         <ArrowUp 
           className={cn(
             'h-8 w-8 transition-colors duration-300',
             {
-              'text-white': isAtBottom,   // White when at bottom
-              'text-primary': !isAtBottom, // Blue when scrolling
+              'text-white': isAtBottom,
+              'text-primary': !isAtBottom,
             }
           )} 
         />
