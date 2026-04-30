@@ -171,6 +171,18 @@
 /* =============================================
  * == CUSTOM ADDITIONS
  * ============================================= */
+
+/* Force hide scrollbar across all browsers */
+body::-webkit-scrollbar, 
+html::-webkit-scrollbar {
+  display: none;
+}
+
+body, html {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
 .theme-transition {
   transition: background-color 0.8s ease, color 0.8s ease;
 }

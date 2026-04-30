@@ -6,7 +6,7 @@ import { LanguageProvider } from '@/components/LanguageContext';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
 import { SecurityProvider } from '@/components/SecurityProvider';
-import { ScrollProgressButton } from '@/components/ScrollProgressButton'; // Impor komponen baru
+import { ScrollProgressButton } from '@/components/ScrollProgressButton';
 
 // Font Optimization
 const inter = Inter({
@@ -58,12 +58,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta name="google-site-verification" content="cu0oN6kGs748IQbeUkW1eFLhaKDJwYpJ6Gn9daxm9tk" />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-body antialiased theme-transition overflow-x-hidden`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-body antialiased theme-transition`}>
         <FirebaseClientProvider>
           <LanguageProvider>
             <ThemeProvider>
               <SecurityProvider>
-                <div className="print:hidden">{children}</div>
+                <div className="print:hidden overflow-x-hidden">{children}</div>
                 <div className="hidden print:block print:p-8">{children}</div>
                 <Toaster />
                 <ScrollProgressButton />
