@@ -6,6 +6,7 @@ import { LanguageProvider } from '@/components/LanguageContext';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
 import { SecurityProvider } from '@/components/SecurityProvider';
+import { ScrollProgressButton } from '@/components/ScrollProgressButton'; // Impor komponen baru
 
 // Font Optimization
 const inter = Inter({
@@ -53,7 +54,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning style={{ scrollBehavior: 'smooth' }}>
       <head>
         <meta name="google-site-verification" content="cu0oN6kGs748IQbeUkW1eFLhaKDJwYpJ6Gn9daxm9tk" />
       </head>
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div className="print:hidden">{children}</div>
                 <div className="hidden print:block print:p-8">{children}</div>
                 <Toaster />
+                <ScrollProgressButton />
               </SecurityProvider>
             </ThemeProvider>
           </LanguageProvider>

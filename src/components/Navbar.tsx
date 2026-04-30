@@ -54,6 +54,19 @@ export const Navbar = () => {
     }
   };
 
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      const elementId = href.substring(1);
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      // Close mobile menu on click
+      if(isMobileMenuOpen) setIsMobileMenuOpen(false);
+    }
+  };
+
   const navItems = [
     { label: t.navHome, href: '/' },
     { label: t.navPortfolio, href: '#portfolio' },
@@ -94,6 +107,7 @@ export const Navbar = () => {
               <Link 
                 key={item.label} 
                 href={item.href}
+                onClick={(e) => handleSmoothScroll(e, item.href)}
                 className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-colors"
               >
                 {item.label}
@@ -172,7 +186,7 @@ export const Navbar = () => {
               <Link 
                 key={item.label} 
                 href={item.href}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={(e) => handleSmoothScroll(e, item.href)}
                 className="text-2xl font-black font-headline uppercase tracking-tight p-2 hover:text-primary"
               >
                 {item.label}
