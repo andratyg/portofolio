@@ -92,14 +92,16 @@ export const Hero = () => {
             <div className="relative glass-panel rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl aspect-[4/5] group-hover:-translate-y-3 transition-transform duration-700 border-primary/10">
               {featuredProject && isValidImageUrl(featuredProject.imageUrl) ? (
                 <>
-                  <Image 
-                    src={featuredProject.imageUrl} 
-                    alt={language === 'id' ? featuredProject.titleId : featuredProject.titleEn} 
-                    fill
-                    priority
-                    sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 40vw"
-                    className="object-cover group-hover:scale-110 transition-transform duration-1000"
-                  />
+                  <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-1000">
+                    <Image 
+                      src={featuredProject.imageUrl} 
+                      alt={language === 'id' ? featuredProject.titleId : featuredProject.titleEn} 
+                      fill
+                      priority
+                      sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 40vw"
+                      className="object-cover"
+                    />
+                  </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-5 sm:p-8 text-white">
                     <div className="w-fit mb-3 bg-primary backdrop-blur-xl border border-primary text-primary-foreground text-xs font-semibold px-3 sm:px-4 py-1 sm:py-1.5 rounded-full">Proyek Unggulan</div>
                     <h2 className="text-xl sm:text-3xl font-black mb-2 sm:mb-3 tracking-normal leading-tight">

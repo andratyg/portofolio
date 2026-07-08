@@ -189,45 +189,47 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
             </Card>
           </div>
         </DialogTrigger>
-        <DialogContent className="w-[95vw] sm:max-w-[800px] max-h-[95dvh] sm:h-[85vh] p-0 rounded-[2rem] sm:rounded-[3rem] border-none shadow-2xl bg-background flex flex-col">
-          <div className="relative h-[40%] shrink-0 bg-muted">
-            <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
-            <div className="absolute bottom-4 sm:bottom-8 left-5 sm:left-10 right-5 sm:right-10">
-              <div className="flex items-end justify-between gap-3 sm:gap-4">
-                <div className='space-y-1 sm:space-y-2'>
-                  <Badge className="bg-primary text-primary-foreground px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs font-bold">{t.projectCategories[project.type as keyof typeof t.projectCategories]}</Badge>
-                  <DialogTitle className="text-xl sm:text-3xl md:text-4xl font-black  text-white tracking-normal leading-tight">{title}</DialogTitle>
+        <DialogContent className="w-[95vw] sm:max-w-[800px] max-h-[95dvh] sm:h-[85vh] p-0 border-none shadow-2xl bg-background flex flex-col" style={{ clipPath: 'inset(0 round 2.5rem)' }}>
+          <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
+            <div className="relative h-64 sm:h-96 shrink-0 bg-muted">
+              <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+              <div className="absolute bottom-4 sm:bottom-8 left-5 sm:left-10 right-5 sm:right-10">
+                <div className="flex items-end justify-between gap-3 sm:gap-4">
+                  <div className='space-y-1 sm:space-y-2'>
+                    <Badge className="bg-primary text-primary-foreground px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs font-bold">{t.projectCategories[project.type as keyof typeof t.projectCategories]}</Badge>
+                    <DialogTitle className="text-xl sm:text-3xl md:text-4xl font-black  text-white tracking-normal leading-tight">{title}</DialogTitle>
+                  </div>
+                  {hasDemoUrl && (
+                    <Button 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        window.open(project.demoUrl, '_blank', 'noopener,noreferrer');
+                      }}
+                      variant="secondary"
+                      className="rounded-full h-16 w-16 p-0 shrink-0 gap-2 text-xs font-bold uppercase tracking-wider shadow-xl hover:scale-110 hover:bg-primary hover:text-primary-foreground active:scale-95 transition-all bg-white text-black flex items-center justify-center"
+                    >
+                      <Globe className="h-7 w-7" />
+                    </Button>
+                  )}
                 </div>
-                {hasDemoUrl && (
-                  <Button 
-                    onClick={(e) => { 
-                      e.stopPropagation(); 
-                      window.open(project.demoUrl, '_blank', 'noopener,noreferrer');
-                    }}
-                    variant="secondary"
-                    className="rounded-full h-16 w-16 p-0 shrink-0 gap-2 text-xs font-bold uppercase tracking-wider shadow-xl hover:scale-110 hover:bg-primary hover:text-primary-foreground active:scale-95 transition-all bg-white text-black flex items-center justify-center"
-                  >
-                    <Globe className="h-7 w-7" />
-                  </Button>
-                )}
               </div>
             </div>
-          </div>
-          <div className="flex-1 overflow-y-auto p-5 sm:p-10 space-y-6 sm:space-y-12 no-scrollbar bg-muted/20">
-            <div className="grid md:grid-cols-2 gap-8">
-                <div className="p-8 rounded-[2rem] bg-card border border-border/5 shadow-sm">
-                  <h3 className="text-lg font-black  uppercase flex items-center gap-3 mb-4"><AlertCircle className="h-5 w-5 text-destructive" /> {t.technicalChallenge}</h3>
-                  <DialogDescription className="text-muted-foreground text-base leading-relaxed font-medium">{problem}</DialogDescription>
-                </div>
-                <div className="p-8 rounded-[2rem] bg-card border border-border/5 shadow-sm">
-                  <h3 className="text-lg font-black  uppercase flex items-center gap-3 mb-4"><CheckCircle2 className="h-5 w-5 text-primary" /> {t.strategicSolution}</h3>
-                  <p className="text-muted-foreground text-base leading-relaxed font-medium">{solution}</p>
-                </div>
-            </div>
-            <div className="p-8 rounded-[2rem] bg-card border border-border/5 shadow-sm">
-              <h3 className="text-lg font-black  uppercase flex items-center gap-3 mb-6"><Terminal className="h-5 w-5 text-primary" /> {t.systemStack}</h3>
-              <div className="flex flex-wrap gap-3">{(project.technologies || []).map(t => <Badge key={t} variant="outline" className="px-4 py-2 rounded-xl border-primary/20 text-sm font-semibold bg-primary/5">{t}</Badge>)}</div>
+            <div className="p-5 sm:p-10 space-y-6 sm:space-y-12 bg-muted/20 min-h-[50vh]">
+              <div className="grid md:grid-cols-2 gap-8">
+                  <div className="p-8 rounded-[2rem] bg-card border border-border/5 shadow-sm">
+                    <h3 className="text-lg font-black  uppercase flex items-center gap-3 mb-4"><AlertCircle className="h-5 w-5 text-destructive" /> {t.technicalChallenge}</h3>
+                    <DialogDescription className="text-muted-foreground text-base leading-relaxed font-medium">{problem}</DialogDescription>
+                  </div>
+                  <div className="p-8 rounded-[2rem] bg-card border border-border/5 shadow-sm">
+                    <h3 className="text-lg font-black  uppercase flex items-center gap-3 mb-4"><CheckCircle2 className="h-5 w-5 text-primary" /> {t.strategicSolution}</h3>
+                    <p className="text-muted-foreground text-base leading-relaxed font-medium">{solution}</p>
+                  </div>
+              </div>
+              <div className="p-8 rounded-[2rem] bg-card border border-border/5 shadow-sm">
+                <h3 className="text-lg font-black  uppercase flex items-center gap-3 mb-6"><Terminal className="h-5 w-5 text-primary" /> {t.systemStack}</h3>
+                <div className="flex flex-wrap gap-3">{(project.technologies || []).map(t => <Badge key={t} variant="outline" className="px-4 py-2 rounded-xl border-primary/20 text-sm font-semibold bg-primary/5">{t}</Badge>)}</div>
+              </div>
             </div>
           </div>
         </DialogContent>

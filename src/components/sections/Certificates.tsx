@@ -235,7 +235,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
           </Card>
         </div>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] sm:max-w-[700px] max-h-[95dvh] sm:h-[85vh] rounded-[2rem] sm:rounded-[3rem] border-none p-0 shadow-2xl flex flex-col bg-background">
+      <DialogContent className="w-[95vw] sm:max-w-[700px] max-h-[95dvh] sm:h-[85vh] p-0 border-none shadow-2xl flex flex-col bg-background" style={{ clipPath: 'inset(0 round 2.5rem)' }}>
         <div className="bg-card border-b p-5 sm:p-8 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
            <div className="space-y-1">
              <Badge className="bg-primary text-primary-foreground text-xs font-black px-3 capitalize">{cert.issuer.toLowerCase()}</Badge>
@@ -250,7 +250,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
              </Button>
            )}
         </div>
-        <div className="flex-1 overflow-y-auto p-5 sm:p-10 space-y-6 sm:space-y-10 no-scrollbar">
+        <div className="flex-1 min-h-0 overflow-y-auto p-5 sm:p-10 space-y-6 sm:space-y-10 no-scrollbar">
            {hasImage ? (
               <div className="relative aspect-video rounded-[2rem] overflow-hidden border shadow-2xl bg-muted">
                  <Image 

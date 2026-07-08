@@ -30,15 +30,17 @@ export const About = () => {
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <div className="relative group max-w-sm mx-auto lg:max-w-none w-full">
             <div className="absolute -inset-4 bg-gradient-to-tr from-primary to-accent rounded-[2.5rem] blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
-            <div className="relative aspect-[3/4] rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-background">
-              <Image 
-                src={profileImage} 
-                alt={profile.name} 
-                fill 
-                className="object-cover group-hover:scale-105 transition-transform duration-1000"
-                sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 45vw"
-                priority={false}
-              />
+            <div className="relative aspect-[3/4] border-4 border-background" style={{ clipPath: 'inset(0 round 2.5rem)' }}>
+              <div className="absolute inset-0 group-hover:scale-105 transition-transform duration-1000">
+                <Image 
+                  src={profileImage} 
+                  alt={profile.name} 
+                  fill 
+                  className="object-cover"
+                  sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 45vw"
+                  priority={false}
+                />
+              </div>
             </div>
           </div>
           <div className="space-y-4 sm:space-y-6">
