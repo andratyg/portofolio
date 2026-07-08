@@ -65,7 +65,7 @@ export const Portfolio = () => {
   }, [projects, language, search, filter, sortBy]);
 
   return (
-    <section id="portfolio" className="py-16 md:py-24 bg-background relative overflow-hidden">
+    <section id="portfolio" className="py-16 md:py-24 bg-background relative">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="mb-10 md:mb-16 text-center">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black  tracking-normal leading-tight text-foreground mb-4">{portfolioTitle}</h2>
@@ -166,9 +166,9 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
       <Dialog>
         <DialogTrigger asChild>
           <div className="cursor-pointer group h-full">
-            <Card className="overflow-hidden h-full border-border/20 bg-card/60 backdrop-blur-xl rounded-[2.5rem] flex flex-col group-hover:-translate-y-3 group-hover:shadow-2xl group-hover:shadow-primary/10 transition-all duration-500 ease-in-out">
+            <Card className="h-full border-border/20 bg-card/60 backdrop-blur-xl flex flex-col group-hover:-translate-y-3 group-hover:shadow-2xl group-hover:shadow-primary/10 transition-all duration-500 ease-in-out" style={{ clipPath: 'inset(0 round 2.5rem)' }}>
               <div className="relative aspect-[16/10] bg-muted">
-                <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-1000 ease-in-out overflow-hidden rounded-t-[2.5rem]">
+                <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-1000 ease-in-out" style={{ clipPath: 'inset(0 round 2.5rem 2.5rem 0 0)' }}>
                   <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover" />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-300 rounded-t-[2.5rem]"></div>
@@ -183,20 +183,20 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
                 <p className="text-muted-foreground line-clamp-2 text-sm font-medium">{description}</p>
               </CardContent>
               <CardFooter className="px-7 pb-7 flex justify-between items-center pt-4 border-t border-border/10">
-                <span className="text-[9px] font-black text-primary tracking-widest flex items-center gap-1.5 capitalize">{t.viewSpecs.toLowerCase()} <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" /></span>
-                {project.impactStats && <div className="text-[8px] font-black px-3 py-1 bg-primary/10 text-primary rounded-full capitalize">{project.impactStats.toLowerCase()}</div>}
+                <span className="text-xs font-black text-primary tracking-widest flex items-center gap-1.5 capitalize">{t.viewSpecs.toLowerCase()} <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" /></span>
+                {project.impactStats && <div className="text-xs font-black px-3 py-1 bg-primary/10 text-primary rounded-full capitalize">{project.impactStats.toLowerCase()}</div>}
               </CardFooter>
             </Card>
           </div>
         </DialogTrigger>
-        <DialogContent className="w-[95vw] sm:max-w-[800px] max-h-[95dvh] sm:h-[85vh] p-0 rounded-[2rem] sm:rounded-[3rem] overflow-hidden border-none shadow-2xl bg-background flex flex-col">
+        <DialogContent className="w-[95vw] sm:max-w-[800px] max-h-[95dvh] sm:h-[85vh] p-0 rounded-[2rem] sm:rounded-[3rem] border-none shadow-2xl bg-background flex flex-col">
           <div className="relative h-[40%] shrink-0 bg-muted">
             <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
             <div className="absolute bottom-4 sm:bottom-8 left-5 sm:left-10 right-5 sm:right-10">
               <div className="flex items-end justify-between gap-3 sm:gap-4">
                 <div className='space-y-1 sm:space-y-2'>
-                  <Badge className="bg-primary text-primary-foreground px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold">{t.projectCategories[project.type as keyof typeof t.projectCategories]}</Badge>
+                  <Badge className="bg-primary text-primary-foreground px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs font-bold">{t.projectCategories[project.type as keyof typeof t.projectCategories]}</Badge>
                   <DialogTitle className="text-xl sm:text-3xl md:text-4xl font-black  text-white tracking-normal leading-tight">{title}</DialogTitle>
                 </div>
                 {hasDemoUrl && (

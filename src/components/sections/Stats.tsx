@@ -4,6 +4,7 @@ import React from 'react';
 import { useLanguage } from '../LanguageContext';
 import { useProjectStore } from '../ProjectStore';
 import { Card, CardContent } from '../ui/card';
+import { motion } from 'framer-motion';
 import { Briefcase, ShieldCheck, Activity, BarChart3, Terminal } from 'lucide-react';
 
 export const Stats = () => {
@@ -46,13 +47,23 @@ export const Stats = () => {
   ];
 
   return (
-    <section className="py-12 md:py-20 bg-muted/30 border-y border-border/50 relative overflow-hidden">
+    <section className="py-12 md:py-20 bg-muted/30 relative overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <ul className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 list-none m-0 p-0">
           {statsData.map((stat, i) => (
-            <div key={i} className="group relative">
-               <div className="absolute -inset-2 bg-primary/5 rounded-[2rem] sm:rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-all duration-500 blur-lg"></div>
-               <div className="relative h-full border border-border/50 bg-card/50 backdrop-blur-xl rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden shadow-xl hover:border-primary/50 transition-all duration-500">
+            <motion.li 
+               key={i} 
+               className="group relative block"
+               initial={{ opacity: 0, y: 30 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true, margin: "-50px" }}
+               transition={{ duration: 0.6, delay: i * 0.1, ease: "easeOut" }}
+            >
+               {/* Hover Glow */}
+               <div className="absolute -inset-2 bg-primary/10 rounded-[2rem] sm:rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
+               
+               {/* Main Card */}
+               <div className="relative h-full ring-1 ring-border/20 bg-background/50 backdrop-blur-xl rounded-[1.5rem] sm:rounded-[2.5rem] hover:ring-primary/40 transition-all duration-500">
                   <div className="absolute top-0 right-0 p-3 sm:p-4 opacity-10 group-hover:opacity-30 transition-opacity">
                     <BarChart3 className={stat.color + " h-8 w-8 sm:h-12 sm:w-12"} />
                   </div>
@@ -61,18 +72,18 @@ export const Stats = () => {
                       <stat.icon className="h-4 w-4 sm:h-6 sm:w-6" />
                     </div>
                     <div className="space-y-1">
-                       <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-muted-foreground">{stat.tag}</p>
+                       <p className="text-[11px] sm:text-xs font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-muted-foreground">{stat.tag}</p>
                        <div className="text-2xl sm:text-4xl font-black  tracking-normal flex items-end gap-1 text-foreground">
                           {stat.value}
                           {stat.label.includes('Satisfaction') && <span className="text-base sm:text-xl text-primary">%</span>}
                        </div>
-                       <p className="text-[10px] sm:text-xs font-bold text-muted-foreground pt-1 sm:pt-3">{stat.label}</p>
+                       <p className="text-[11px] sm:text-xs font-bold text-muted-foreground pt-1 sm:pt-3">{stat.label}</p>
                     </div>
                   </div>
                </div>
-            </div>
+            </motion.li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

@@ -221,10 +221,7 @@ html, body {
   max-width: 100%;
 }
 
-/* Prevent overflow on containers */
-.container {
-  overflow-x: hidden;
-}
+
 
 /* Improve tap targets on mobile (min 44x44px per WCAG) */
 /* Applied only to nav links and form buttons, not icon buttons */

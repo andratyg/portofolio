@@ -197,10 +197,10 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
     <Dialog>
       <DialogTrigger asChild>
         <div className="cursor-pointer group h-full py-4">
-          <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-700 bg-card rounded-[2.5rem] group-hover:-translate-y-3 flex flex-col">
+          <Card className="h-full border-none shadow-xl hover:shadow-2xl transition-all duration-700 bg-card flex flex-col group-hover:-translate-y-3" style={{ clipPath: 'inset(0 round 2.5rem)' }}>
             <div className="relative aspect-[4/3] bg-muted">
               {hasImage ? (
-                <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-1000 overflow-hidden rounded-t-[2.5rem]">
+                <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-1000" style={{ clipPath: 'inset(0 round 2.5rem 2.5rem 0 0)' }}>
                   <Image 
                     src={cert.imageUrl!}
                     alt={title}
@@ -214,11 +214,11 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                 </div>
               )}
               <div className="absolute top-4 left-4 z-10">
-                <Badge className="bg-white/90 backdrop-blur-md text-primary font-black text-[8px] uppercase px-3 py-1 rounded-full shadow-sm">
+                <Badge className="bg-white/90 backdrop-blur-md text-primary font-black text-[10px] uppercase px-3 py-1 rounded-full shadow-sm">
                   {cert.year}
                 </Badge>
               </div>
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 rounded-t-[2.5rem]">
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                 <div className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-full p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                   <Eye className="h-6 w-6 text-white" />
                 </div>
@@ -227,7 +227,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
             <CardContent className="p-6 md:p-8 flex-1 flex flex-col">
               <div className="flex items-center gap-2 mb-3">
                 <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse"></div>
-                <span className="text-[9px] font-black text-accent tracking-widest capitalize">{cert.issuer.toLowerCase()}</span>
+                <span className="text-xs font-black text-accent tracking-widest capitalize">{cert.issuer.toLowerCase()}</span>
               </div>
               <h3 className="text-xl font-bold  mb-3 text-foreground group-hover:text-primary transition-colors">{title}</h3>
               <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed mb-6 font-medium">{shortDesc}</p>
@@ -235,10 +235,10 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
           </Card>
         </div>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] sm:max-w-[700px] max-h-[95dvh] sm:h-[85vh] rounded-[2rem] sm:rounded-[3rem] overflow-hidden border-none p-0 shadow-2xl flex flex-col bg-background">
+      <DialogContent className="w-[95vw] sm:max-w-[700px] max-h-[95dvh] sm:h-[85vh] rounded-[2rem] sm:rounded-[3rem] border-none p-0 shadow-2xl flex flex-col bg-background">
         <div className="bg-card border-b p-5 sm:p-8 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
            <div className="space-y-1">
-             <Badge className="bg-primary text-primary-foreground text-[8px] font-black px-3 capitalize">{cert.issuer.toLowerCase()}</Badge>
+             <Badge className="bg-primary text-primary-foreground text-xs font-black px-3 capitalize">{cert.issuer.toLowerCase()}</Badge>
              <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-black  tracking-normal">{title}</DialogTitle>
            </div>
            {hasCredentialUrl && (
@@ -276,7 +276,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                 <p className="text-sm font-black">{cert.validUntil || 'Seumur Hidup'}</p>
               </div>
               <div className="bg-card p-6 rounded-3xl border shadow-sm text-center col-span-2">
-                <p className="text-[8px] font-black text-muted-foreground uppercase mb-1">Status Verifikasi</p>
+                <p className="text-xs font-black text-muted-foreground uppercase mb-1">Status Verifikasi</p>
                 <p className="text-sm font-black text-primary">Validasi Industri Terkonfirmasi</p>
               </div>
            </div>
