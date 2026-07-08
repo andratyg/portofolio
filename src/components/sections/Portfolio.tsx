@@ -65,41 +65,41 @@ export const Portfolio = () => {
   }, [projects, language, search, filter, sortBy]);
 
   return (
-    <section id="portfolio" className="py-24 bg-background relative overflow-hidden">
-      <div className="container mx-auto px-6">
-        <div className="mb-16 text-center">
-          <h2 className="text-5xl md:text-6xl lg:text-7xl font-black font-headline tracking-tighter leading-tight text-foreground mb-4">{portfolioTitle}</h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+    <section id="portfolio" className="py-16 md:py-24 bg-background relative overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="mb-10 md:mb-16 text-center">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black font-headline tracking-tighter leading-tight text-foreground mb-4">{portfolioTitle}</h2>
+          <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto">
             {portfolioSubtitle}
           </p>
         </div>
 
         {/* --- Filter & Search --- */}
-        <div className="flex flex-col lg:flex-row gap-4 justify-between items-center mb-12">
-          <div className="flex items-center justify-center flex-wrap gap-2 bg-card/50 p-2 rounded-full border border-border/20 backdrop-blur-sm">
+        <div className="flex flex-col gap-4 mb-8 md:mb-12">
+          <div className="flex items-center justify-center flex-wrap gap-1.5 sm:gap-2 bg-card/50 p-1.5 sm:p-2 rounded-full border border-border/20 backdrop-blur-sm overflow-x-auto no-scrollbar">
             {CATEGORIES.map(category => (
               <Button
                 key={category}
                 variant={filter === category ? 'default' : 'ghost'}
                 onClick={() => setFilter(category)}
-                className="capitalize rounded-full px-6 py-2 text-sm font-bold transition-all duration-300"
+                className="capitalize rounded-full px-3 sm:px-6 py-2 text-xs sm:text-sm font-bold transition-all duration-300 shrink-0"
               >
                 {t.projectCategories[category]}
               </Button>
             ))}
           </div>
-          <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full">
             <div className="relative group flex-1">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors z-10" />
+              <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors z-10" />
               <Input 
                 placeholder={t.portfolioSearchPlaceholder}
-                className="pl-14 w-full min-w-[300px] rounded-full h-14 bg-card/50 border-border/20 focus:ring-primary/50 backdrop-blur-sm" 
+                className="pl-11 sm:pl-14 w-full rounded-full h-12 sm:h-14 bg-card/50 border-border/20 focus:ring-primary/50 backdrop-blur-sm" 
                 value={search} 
                 onChange={(e) => setSearch(e.target.value)} 
               />
             </div>
             <Select value={sortBy} onValueChange={(value) => setSortBy(value as (typeof SORT_OPTIONS)[number])}>
-              <SelectTrigger className="w-full sm:w-auto h-14 rounded-full bg-card/50 border-border/20 backdrop-blur-sm px-5 font-bold text-sm text-left">
+              <SelectTrigger className="w-full sm:w-auto h-12 sm:h-14 rounded-full bg-card/50 border-border/20 backdrop-blur-sm px-4 sm:px-5 font-bold text-sm text-left">
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground whitespace-nowrap">{t.sortBy}:</span>
                   <SelectValue />
@@ -125,19 +125,21 @@ export const Portfolio = () => {
         ) : error ? (
            <div className="text-center py-16"><p className='text-destructive'>{error}</p></div>
         ) : processedProjects.length > 0 ? (
-          <Carousel opts={{ align: "start", loop: true }} className="w-full">
-            <CarouselContent className="-ml-4">
-              {processedProjects.map((project, idx) => (
-                <CarouselItem key={project.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                  <div className="h-full p-1">
-                    <ProjectCard project={project} index={idx} isVisible={isVisible} />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="-left-4 md:-left-8 h-12 w-12 bg-card/80 backdrop-blur-sm border-border/20 hover:bg-primary hover:text-primary-foreground" />
-            <CarouselNext className="-right-4 md:-right-8 h-12 w-12 bg-card/80 backdrop-blur-sm border-border/20 hover:bg-primary hover:text-primary-foreground" />
-          </Carousel>
+          <div className="relative">
+            <Carousel opts={{ align: "start", loop: true }} className="w-full">
+              <CarouselContent className="-ml-3 sm:-ml-4">
+                {processedProjects.map((project, idx) => (
+                  <CarouselItem key={project.id} className="pl-3 sm:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
+                    <div className="h-full">
+                      <ProjectCard project={project} index={idx} isVisible={isVisible} />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden sm:flex -left-4 md:-left-6 h-10 w-10 sm:h-12 sm:w-12 bg-card/80 backdrop-blur-sm border-border/20 hover:bg-primary hover:text-primary-foreground" />
+              <CarouselNext className="hidden sm:flex -right-4 md:-right-6 h-10 w-10 sm:h-12 sm:w-12 bg-card/80 backdrop-blur-sm border-border/20 hover:bg-primary hover:text-primary-foreground" />
+            </Carousel>
+          </div>
         ) : (
           <div className="text-center py-16">
             <h3 className="text-2xl font-bold mb-2">{t.noProjectsFound}</h3>
@@ -185,15 +187,15 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
             </Card>
           </div>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[800px] h-[85vh] p-0 rounded-[3rem] overflow-hidden border-none shadow-2xl bg-background flex flex-col">
+        <DialogContent className="w-[95vw] sm:max-w-[800px] max-h-[95dvh] sm:h-[85vh] p-0 rounded-[2rem] sm:rounded-[3rem] overflow-hidden border-none shadow-2xl bg-background flex flex-col">
           <div className="relative h-[40%] shrink-0 bg-muted">
             <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
-            <div className="absolute bottom-8 left-10 right-10">
-              <div className="flex items-end justify-between gap-4">
-                <div className='space-y-2'>
-                  <Badge className="bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-xs font-bold">{t.projectCategories[project.type as keyof typeof t.projectCategories]}</Badge>
-                  <DialogTitle className="text-3xl md:text-4xl font-black font-headline text-white tracking-tighter leading-tight">{title}</DialogTitle>
+            <div className="absolute bottom-4 sm:bottom-8 left-5 sm:left-10 right-5 sm:right-10">
+              <div className="flex items-end justify-between gap-3 sm:gap-4">
+                <div className='space-y-1 sm:space-y-2'>
+                  <Badge className="bg-primary text-primary-foreground px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold">{t.projectCategories[project.type as keyof typeof t.projectCategories]}</Badge>
+                  <DialogTitle className="text-xl sm:text-3xl md:text-4xl font-black font-headline text-white tracking-tighter leading-tight">{title}</DialogTitle>
                 </div>
                 {hasDemoUrl && (
                   <Button 
@@ -210,7 +212,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
               </div>
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto p-10 space-y-12 no-scrollbar bg-muted/20">
+          <div className="flex-1 overflow-y-auto p-5 sm:p-10 space-y-6 sm:space-y-12 no-scrollbar bg-muted/20">
             <div className="grid md:grid-cols-2 gap-8">
                 <Card className="p-8 rounded-[2rem] bg-card border-none shadow-sm">
                   <h3 className="text-lg font-black font-headline uppercase flex items-center gap-3 mb-4"><AlertCircle className="h-5 w-5 text-destructive" /> {t.technicalChallenge}</h3>

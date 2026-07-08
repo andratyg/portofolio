@@ -208,3 +208,71 @@ body, html {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
 }
+
+/* =============================================
+ * == MOBILE RESPONSIVE IMPROVEMENTS
+ * ============================================= */
+
+/* Prevent horizontal overflow on all elements */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Prevent overflow on containers */
+.container {
+  overflow-x: hidden;
+}
+
+/* Improve tap targets on mobile (min 44x44px per WCAG) */
+/* Applied only to nav links and form buttons, not icon buttons */
+@media (max-width: 768px) {
+  main a:not([class*="rounded-full"]):not([class*="rounded-xl"]):not([class*="p-"]) {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+/* Remove tap highlight on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Improve text rendering on mobile */
+body {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Dynamic viewport height for mobile browsers */
+.min-h-screen {
+  min-height: 100dvh;
+}
+
+/* Better focus visible ring for accessibility (Impeccable) */
+:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Touch-friendly scrolling */
+.overflow-y-auto, .overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent text from being too small on mobile */
+@media (max-width: 640px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+  .container {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}

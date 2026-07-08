@@ -97,29 +97,29 @@ export const Certificates = () => {
   );
 
   return (
-    <section id="certificates" className="py-24 bg-muted/30">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12 space-y-4">
+    <section id="certificates" className="py-16 md:py-24 bg-muted/30">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="text-center mb-8 md:mb-12 space-y-4">
           <Badge className="bg-accent/10 text-accent border-accent/20 px-4 py-1.5 rounded-full font-bold uppercase tracking-wider">{certificatesTitle}</Badge>
-          <h2 className="text-4xl md:text-5xl font-bold font-headline">{certificatesSubtitle}</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-headline">{certificatesSubtitle}</h2>
         </div>
 
-        <div className="max-w-6xl mx-auto bg-card/50 backdrop-blur-lg border p-4 rounded-[2rem] shadow-lg mb-12 flex flex-col md:flex-row gap-4 items-center">
-          <div className="relative w-full md:flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <div className="max-w-6xl mx-auto bg-card/50 backdrop-blur-lg border p-3 sm:p-4 rounded-[1.5rem] sm:rounded-[2rem] shadow-lg mb-8 sm:mb-12 flex flex-col gap-3 sm:gap-4">
+          <div className="relative w-full">
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
             <Input 
               placeholder={t.searchCertificates}
-              className="h-14 rounded-2xl pl-12 bg-background/50 border-none w-full text-base"
+              className="h-12 sm:h-14 rounded-xl sm:rounded-2xl pl-10 sm:pl-12 bg-background/50 border-none w-full text-sm sm:text-base"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="flex gap-4 w-full md:w-auto">
+          <div className="flex gap-2 sm:gap-4 w-full">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="h-14 rounded-2xl px-6 flex-1 md:flex-none justify-between gap-2 border-dashed bg-transparent">
-                  <span className="text-muted-foreground font-bold text-xs uppercase">{t.filterByIssuer} ({selectedIssuers.length})</span>
-                  <ChevronDown className="h-4 w-4" />
+                <Button variant="outline" className="h-11 sm:h-14 rounded-xl sm:rounded-2xl px-3 sm:px-6 flex-1 justify-between gap-1 sm:gap-2 border-dashed bg-transparent">
+                  <span className="text-muted-foreground font-bold text-[10px] sm:text-xs uppercase truncate">{t.filterByIssuer} ({selectedIssuers.length})</span>
+                  <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56">
@@ -129,7 +129,7 @@ export const Certificates = () => {
                   <DropdownMenuCheckboxItem
                     key={issuer}
                     checked={selectedIssuers.includes(issuer)}
-                    onSelect={(e) => e.preventDefault()} // prevent menu from closing
+                    onSelect={(e) => e.preventDefault()}
                     onClick={() => handleIssuerToggle(issuer)}
                   >
                     {issuer}
@@ -138,7 +138,7 @@ export const Certificates = () => {
               </DropdownMenuContent>
             </DropdownMenu>
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="h-14 rounded-2xl px-6 flex-1 md:w-[180px] bg-transparent border-dashed">
+              <SelectTrigger className="h-11 sm:h-14 rounded-xl sm:rounded-2xl px-3 sm:px-6 flex-1 sm:w-[180px] bg-transparent border-dashed">
                 <SelectValue placeholder={t.sortBy} />
               </SelectTrigger>
               <SelectContent>
@@ -152,25 +152,27 @@ export const Certificates = () => {
         </div>
 
         {filteredCertificates.length > 0 ? (
-          <Carousel
-            plugins={[Autoplay({ delay: 5000, stopOnInteraction: true })]}
-            opts={{ loop: true }}
-            className="max-w-6xl mx-auto"
-          >
-            <CarouselContent>
-              {certificatePages.map((page, index) => (
-                <CarouselItem key={index}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {page.map((cert) => (
-                      <CertificateCard key={cert.id} cert={cert} />
-                    ))}
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="absolute left-[-50px] top-1/2 -translate-y-1/2" />
-            <CarouselNext className="absolute right-[-50px] top-1/2 -translate-y-1/2" />
-          </Carousel>
+          <div className="relative px-0 sm:px-10">
+            <Carousel
+              plugins={[Autoplay({ delay: 5000, stopOnInteraction: true })]}
+              opts={{ loop: true }}
+              className="max-w-6xl mx-auto"
+            >
+              <CarouselContent>
+                {certificatePages.map((page, index) => (
+                  <CarouselItem key={index}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                      {page.map((cert) => (
+                        <CertificateCard key={cert.id} cert={cert} />
+                      ))}
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden sm:flex -left-2 sm:-left-10 top-1/2 -translate-y-1/2" />
+              <CarouselNext className="hidden sm:flex -right-2 sm:-right-10 top-1/2 -translate-y-1/2" />
+            </Carousel>
+          </div>
         ) : (
           <div className="text-center py-20">
             <Info className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
@@ -231,11 +233,11 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
           </Card>
         </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[700px] h-[85vh] rounded-[3rem] overflow-hidden border-none p-0 shadow-2xl flex flex-col bg-background">
-        <div className="bg-card border-b p-8 shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <DialogContent className="w-[95vw] sm:max-w-[700px] max-h-[95dvh] sm:h-[85vh] rounded-[2rem] sm:rounded-[3rem] overflow-hidden border-none p-0 shadow-2xl flex flex-col bg-background">
+        <div className="bg-card border-b p-5 sm:p-8 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
            <div className="space-y-1">
              <Badge className="bg-primary text-primary-foreground text-[8px] font-black uppercase px-3">{cert.issuer}</Badge>
-             <DialogTitle className="text-2xl md:text-3xl font-black font-headline tracking-tighter">{title}</DialogTitle>
+             <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tighter">{title}</DialogTitle>
            </div>
            {hasCredentialUrl && (
              <Button 
@@ -246,7 +248,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
              </Button>
            )}
         </div>
-        <div className="flex-1 overflow-y-auto p-10 space-y-10 no-scrollbar">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-10 space-y-6 sm:space-y-10 no-scrollbar">
            {hasImage ? (
               <div className="relative aspect-video rounded-[2rem] overflow-hidden border shadow-2xl bg-muted">
                  <Image 

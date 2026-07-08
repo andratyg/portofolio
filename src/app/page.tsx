@@ -46,7 +46,7 @@ export default function Home() {
 
   return (
     <ProjectStoreProvider>
-      <main className="min-h-screen selection:bg-primary selection:text-primary-foreground">
+      <main className="min-h-screen selection:bg-primary selection:text-primary-foreground pt-16 sm:pt-20">
         {/* --- Above the fold (loaded immediately) --- */}
         <Navbar />
         <Hero />
@@ -76,9 +76,9 @@ export default function Home() {
           <Contact />
         </AnimateOnScroll>
         
-        <footer className="py-16 border-t bg-muted/20">
+        <footer className="py-10 md:py-16 border-t bg-muted/20">
           <div className="container mx-auto px-4 text-center">
-            <p className="text-sm font-medium text-muted-foreground">
+            <p className="text-xs sm:text-sm font-medium text-muted-foreground">
               {t.footerCopyright}
             </p>
           </div>

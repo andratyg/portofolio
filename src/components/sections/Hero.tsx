@@ -29,27 +29,27 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex flex-col justify-center overflow-hidden py-24 bg-background selection:bg-primary/30">
-      <div className="container mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center relative z-10">
+    <section className="relative min-h-[90vh] flex flex-col justify-center overflow-hidden py-16 md:py-24 bg-background selection:bg-primary/30">
+      <div className="container mx-auto px-4 sm:px-6 grid lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
         <div className={cn(
           "lg:col-span-7 transition-all duration-1000 transform",
           isVisible ? "translate-x-0 opacity-100" : "-translate-x-20 opacity-0"
         )}>
-          <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[9px] font-black uppercase tracking-[0.3em] mb-8 shadow-xl shadow-primary/5">
-            <Zap className="h-3.5 w-3.5 fill-primary" />
-            <span>{language === 'id' ? 'Sistem Aktif & Siap Berkolaborasi' : 'System Online & Ready for Deployment'}</span>
+          <div className="inline-flex items-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-6 sm:mb-8 shadow-xl shadow-primary/5 max-w-full overflow-hidden">
+            <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 fill-primary shrink-0" />
+            <span className="truncate">{language === 'id' ? 'Sistem Aktif & Siap Berkolaborasi' : 'System Online & Ready for Deployment'}</span>
           </div>
           
-          <div className="mb-6">
-            <span className="text-2xl md:text-3xl font-black font-headline text-foreground/80 tracking-tight block">
+          <div className="mb-4 sm:mb-6">
+            <span className="text-xl sm:text-2xl md:text-3xl font-black font-headline text-foreground/80 tracking-tight block">
               {profile.name || "Portfolio Owner"}
             </span>
           </div>
 
-          <h1 className="text-5xl md:text-6xl lg:text-[7.5rem] font-black font-headline leading-[0.9] mb-10 tracking-tighter">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[7rem] xl:text-[7.5rem] font-black font-headline leading-[0.9] mb-6 sm:mb-10 tracking-tighter">
             {heroTitle.split(' ').map((word, i) => (
               <span key={i} className={cn(
-                "inline-block mr-3",
+                "inline-block mr-2 sm:mr-3",
                 i % 2 !== 0 ? 'text-primary' : 'text-foreground'
               )}>
                 {word}
@@ -57,39 +57,39 @@ export const Hero = () => {
             ))}
           </h1>
           
-          <div className="flex items-center gap-5 mb-12">
-            <div className="w-12 h-px bg-border"></div>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-lg leading-relaxed font-medium">
+          <div className="flex items-start gap-4 sm:gap-5 mb-8 sm:mb-12">
+            <div className="w-8 sm:w-12 h-px bg-border mt-3 shrink-0"></div>
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-lg leading-relaxed font-medium">
               {heroSubtitle}
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-6 no-print">
-            <Link href="#portfolio">
-              <Button size="lg" className="h-16 px-10 rounded-2xl gap-3 group shadow-2xl shadow-primary/20 text-lg font-black uppercase tracking-widest bg-primary hover:scale-[1.02] active:scale-95 transition-all">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-6 no-print">
+            <Link href="#portfolio" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full sm:w-auto h-14 sm:h-16 px-6 sm:px-10 rounded-2xl gap-3 group shadow-2xl shadow-primary/20 text-sm sm:text-lg font-black uppercase tracking-widest bg-primary hover:scale-[1.02] active:scale-95 transition-all">
                 {t.viewProjects}
-                <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
+                <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-2 transition-transform" />
               </Button>
             </Link>
             <Button 
               variant="outline" 
               size="lg" 
               onClick={() => window.print()}
-              className="h-16 px-10 rounded-2xl border-primary/20 hover:bg-primary/5 text-lg font-black uppercase tracking-widest backdrop-blur-md gap-3 hover:scale-[1.02] active:scale-95 transition-all"
+              className="w-full sm:w-auto h-14 sm:h-16 px-6 sm:px-10 rounded-2xl border-primary/20 hover:bg-primary/5 text-sm sm:text-lg font-black uppercase tracking-widest backdrop-blur-md gap-3 hover:scale-[1.02] active:scale-95 transition-all"
             >
-              <Download className="h-5 w-5" />
+              <Download className="h-4 w-4 sm:h-5 sm:w-5" />
               {language === 'id' ? 'Ekspor PDF' : 'Export PDF'}
             </Button>
           </div>
         </div>
 
         <div className={cn(
-          "lg:col-span-5 transition-all duration-1000 delay-300 transform",
+          "lg:col-span-5 transition-all duration-1000 delay-300 transform order-first lg:order-last",
           isVisible ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"
         )}>
-          <div className="relative group p-4">
+          <div className="relative group p-2 sm:p-4 max-w-xs sm:max-w-sm mx-auto lg:max-w-none">
             <div className="absolute -inset-4 bg-gradient-to-r from-primary via-accent to-primary rounded-[3rem] blur-2xl opacity-20 group-hover:opacity-40 transition duration-1000 animate-spin-slow"></div>
-            <div className="relative glass-panel rounded-[2.5rem] overflow-hidden shadow-2xl aspect-[4/5] group-hover:-translate-y-3 transition-transform duration-700 border-primary/10">
+            <div className="relative glass-panel rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl aspect-[4/5] group-hover:-translate-y-3 transition-transform duration-700 border-primary/10">
               {featuredProject && isValidImageUrl(featuredProject.imageUrl) ? (
                 <>
                   <Image 
@@ -97,18 +97,18 @@ export const Hero = () => {
                     alt={language === 'id' ? featuredProject.titleId : featuredProject.titleEn} 
                     fill
                     priority
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 40vw"
                     className="object-cover group-hover:scale-110 transition-transform duration-1000"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-8 text-white">
-                    <div className="w-fit mb-4 bg-primary/20 backdrop-blur-xl border border-primary/30 text-primary-foreground uppercase text-[8px] font-black tracking-[0.3em] px-4 py-1.5 rounded-full">PROYEK UNGGULAN</div>
-                    <h3 className="text-3xl font-black mb-3 font-headline tracking-tighter leading-tight">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-5 sm:p-8 text-white">
+                    <div className="w-fit mb-3 bg-primary/20 backdrop-blur-xl border border-primary/30 text-primary-foreground uppercase text-[7px] sm:text-[8px] font-black tracking-[0.3em] px-3 sm:px-4 py-1 sm:py-1.5 rounded-full">PROYEK UNGGULAN</div>
+                    <h3 className="text-xl sm:text-3xl font-black mb-2 sm:mb-3 font-headline tracking-tighter leading-tight">
                       {language === 'id' ? featuredProject.titleId : featuredProject.titleEn}
                     </h3>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {featuredProject.technologies.slice(0, 3).map(tech => (
-                        <div key={tech} className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest bg-white/10 backdrop-blur-xl px-3 py-1.5 rounded-lg border border-white/10">
-                           <Code2 className="h-3 w-3 text-primary" />
+                        <div key={tech} className="flex items-center gap-1.5 text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-white/10 backdrop-blur-xl px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-white/10">
+                           <Code2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary" />
                            {tech}
                         </div>
                       ))}
@@ -117,7 +117,7 @@ export const Hero = () => {
                 </>
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center gap-4 p-8 text-center bg-muted/20">
-                   <Globe2 className="h-16 w-16 text-primary animate-pulse" />
+                   <Globe2 className="h-12 w-12 sm:h-16 sm:w-16 text-primary animate-pulse" />
                    <div className="space-y-1">
                      <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary">SYSTEM NODE ACTIVE</p>
                      <p className="text-muted-foreground text-xs font-medium">Awaiting visual synchronization.</p>

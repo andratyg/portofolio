@@ -58,36 +58,36 @@ export const Contact = () => {
   ].filter(link => link.active);
 
   return (
-    <section id="contact" className="py-24 bg-primary text-primary-foreground overflow-hidden relative">
+    <section id="contact" className="py-16 md:py-24 bg-primary text-primary-foreground overflow-hidden relative">
       <div className="absolute top-0 right-0 w-1/2 h-full bg-white/5 skew-x-12 translate-x-1/2"></div>
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
           <div>
-            <h2 className="text-4xl md:text-5xl font-bold font-headline mb-6">{t.contactMe}</h2>
-            <p className="text-xl text-primary-foreground/80 mb-12 max-w-md">Initialize a new communication node. Let's build future-ready architecture together.</p>
-            <div className="space-y-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-headline mb-4 sm:mb-6">{t.contactMe}</h2>
+            <p className="text-base sm:text-xl text-primary-foreground/80 mb-8 sm:mb-12 max-w-md">Initialize a new communication node. Let's build future-ready architecture together.</p>
+            <div className="space-y-3 sm:space-y-6">
               {socialLinks.map((link) => (
-                <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-white/10 hover:bg-white/20 transition-all border border-white/10 group no-print">
-                  <div className={`p-3 ${link.color} rounded-xl shadow-lg`}><link.icon className="h-6 w-6 text-white" /></div>
-                  <div className="flex-1"><p className="font-bold text-lg">{link.label}</p><p className="text-sm text-primary-foreground/70 truncate">{link.value}</p></div>
-                  <ExternalLink className="h-5 w-5 opacity-0 group-hover:opacity-100" />
+                <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-white/10 hover:bg-white/20 transition-all border border-white/10 group no-print">
+                  <div className={`p-2 sm:p-3 ${link.color} rounded-xl shadow-lg shrink-0`}><link.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" /></div>
+                  <div className="flex-1 min-w-0"><p className="font-bold text-sm sm:text-lg">{link.label}</p><p className="text-xs sm:text-sm text-primary-foreground/70 truncate">{link.value}</p></div>
+                  <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 opacity-0 group-hover:opacity-100 shrink-0" />
                 </a>
               ))}
-              <a href={`mailto:${profile.email || 'admin@karyapro.app'}`} className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-white/20 transition-all border border-white/10 group">
-                <div className="p-3 bg-white/10 rounded-xl"><Mail className="h-6 w-6 text-white" /></div>
-                <div className="flex-1"><p className="font-bold text-lg">Email Node</p><p className="text-sm text-primary-foreground/70">{profile.email || 'admin@karyapro.app'}</p></div>
-                <ExternalLink className="h-5 w-5 opacity-0 group-hover:opacity-100" />
+              <a href={`mailto:${profile.email || 'admin@karyapro.app'}`} className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-white/5 hover:bg-white/20 transition-all border border-white/10 group">
+                <div className="p-2 sm:p-3 bg-white/10 rounded-xl shrink-0"><Mail className="h-5 w-5 sm:h-6 sm:w-6 text-white" /></div>
+                <div className="flex-1 min-w-0"><p className="font-bold text-sm sm:text-lg">Email Node</p><p className="text-xs sm:text-sm text-primary-foreground/70 truncate">{profile.email || 'admin@karyapro.app'}</p></div>
+                <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 opacity-0 group-hover:opacity-100 shrink-0" />
               </a>
             </div>
           </div>
-          <div className="bg-background rounded-[3rem] p-10 shadow-2xl text-foreground no-print">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2"><label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactName}</label><Input id="name" required name="name" placeholder="User Alpha" className="h-12 rounded-xl" /></div>
-                <div className="space-y-2"><label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactEmail}</label><Input id="email" required type="email" name="email" placeholder="alpha@network.com" className="h-12 rounded-xl" /></div>
+          <div className="bg-background rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl text-foreground no-print">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+              <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                <div className="space-y-2"><label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactName}</label><Input id="name" required name="name" placeholder="User Alpha" className="h-11 sm:h-12 rounded-xl" /></div>
+                <div className="space-y-2"><label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactEmail}</label><Input id="email" required type="email" name="email" placeholder="alpha@network.com" className="h-11 sm:h-12 rounded-xl" /></div>
               </div>
-              <div className="space-y-2"><label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactMessage}</label><Textarea id="message" required name="message" placeholder="Input payload..." className="min-h-[150px] rounded-xl" /></div>
-              <Button type="submit" className="w-full h-14 rounded-xl text-lg font-bold gap-2 bg-primary text-primary-foreground" disabled={isSubmitting}>
+              <div className="space-y-2"><label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactMessage}</label><Textarea id="message" required name="message" placeholder="Input payload..." className="min-h-[120px] sm:min-h-[150px] rounded-xl" /></div>
+              <Button type="submit" className="w-full h-12 sm:h-14 rounded-xl text-base sm:text-lg font-bold gap-2 bg-primary text-primary-foreground" disabled={isSubmitting}>
                 {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <>{t.sendMessage}<Send className="h-5 w-5" /></>}
               </Button>
             </form>

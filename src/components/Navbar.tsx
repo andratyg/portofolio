@@ -89,7 +89,7 @@ export const Navbar = () => {
       "fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-3xl border-b transition-transform duration-700 ease-in-out",
       isVisible ? "translate-y-0" : "-translate-y-full"
     )}>
-      <div className="container mx-auto px-6 h-20 flex items-center justify-between">
+      <div className="container mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
         <div className="flex items-center gap-12">
           <MotionLink 
             href="/" 
@@ -116,7 +116,7 @@ export const Navbar = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <div className="hidden sm:flex items-center gap-2">
             {/* Language Toggle */}
             <DropdownMenu>
@@ -180,30 +180,30 @@ export const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-background/95 backdrop-blur-2xl border-b animate-in slide-in-from-top duration-500 overflow-hidden rounded-b-[3rem] shadow-2xl">
-          <div className="flex flex-col p-8 gap-6">
+        <div className="md:hidden bg-background/95 backdrop-blur-2xl border-b animate-in slide-in-from-top duration-500 overflow-hidden rounded-b-[2rem] sm:rounded-b-[3rem] shadow-2xl">
+          <div className="flex flex-col p-6 sm:p-8 gap-4 sm:gap-6">
             {navItems.map((item) => (
               <Link 
                 key={item.label} 
                 href={item.href}
                 onClick={(e) => handleSmoothScroll(e, item.href)}
-                className="text-2xl font-black font-headline uppercase tracking-tight p-2 hover:text-primary"
+                className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight p-2 hover:text-primary"
               >
                 {item.label}
               </Link>
             ))}
-            <div className="flex items-center gap-4 py-4 border-t border-border/10">
-               <Button variant="ghost" size="icon" onClick={() => setLanguage(language === 'id' ? 'en' : 'id')} className="rounded-xl h-14 w-14 bg-muted/50">
-                  <Globe className="h-6 w-6" />
+            <div className="flex items-center gap-3 sm:gap-4 py-4 border-t border-border/10 flex-wrap">
+               <Button variant="ghost" size="icon" onClick={() => setLanguage(language === 'id' ? 'en' : 'id')} className="rounded-xl h-12 w-12 sm:h-14 sm:w-14 bg-muted/50">
+                  <Globe className="h-5 w-5 sm:h-6 sm:w-6" />
                </Button>
 
                <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-xl h-14 w-14 bg-muted/50">
-                    <Palette className="h-6 w-6" />
+                  <Button variant="ghost" size="icon" className="rounded-xl h-12 w-12 sm:h-14 sm:w-14 bg-muted/50">
+                    <Palette className="h-5 w-5 sm:h-6 sm:w-6" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="grid grid-cols-2 gap-1 w-80 p-4 rounded-[2.5rem] border-none shadow-2xl bg-[#0a0b0e]/95 backdrop-blur-2xl">
+                <DropdownMenuContent align="end" className="grid grid-cols-2 gap-1 w-72 sm:w-80 p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] border-none shadow-2xl bg-[#0a0b0e]/95 backdrop-blur-2xl">
                   {themes.map((tName) => (
                     <DropdownMenuItem 
                       key={tName} 
@@ -212,22 +212,22 @@ export const Navbar = () => {
                         setIsMobileMenuOpen(false);
                       }}
                       className={cn(
-                        "capitalize rounded-[1.5rem] gap-4 p-3.5 transition-all cursor-pointer",
+                        "capitalize rounded-[1.5rem] gap-3 p-3 transition-all cursor-pointer",
                         theme === tName 
                           ? "bg-[#3b82f6] text-white font-black shadow-lg shadow-blue-500/20" 
                           : "hover:bg-white/5 text-muted-foreground hover:text-white"
                       )}
                     >
-                      <div className={cn("w-7 h-7 rounded-full shadow-inner border border-white/10 shrink-0", getThemeColor(tName))} />
-                      <span className="text-[11px] font-black uppercase tracking-[0.15em] truncate">{tName}</span>
+                      <div className={cn("w-6 h-6 sm:w-7 sm:h-7 rounded-full shadow-inner border border-white/10 shrink-0", getThemeColor(tName))} />
+                      <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.15em] truncate">{tName}</span>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
 
-               <Link href="/admin/login" onClick={() => setIsMobileMenuOpen(false)} className="flex-1">
-                <Button className="w-full h-14 rounded-2xl gap-3 font-black uppercase tracking-widest">
-                  <LogIn className="h-5 w-5" />
+               <Link href="/admin/login" onClick={() => setIsMobileMenuOpen(false)} className="flex-1 min-w-[120px]">
+                <Button className="w-full h-12 sm:h-14 rounded-2xl gap-2 sm:gap-3 font-black uppercase tracking-widest text-sm sm:text-base">
+                  <LogIn className="h-4 w-4 sm:h-5 sm:w-5" />
                   {t.navAdmin}
                 </Button>
               </Link>

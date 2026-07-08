@@ -26,6 +26,8 @@ export const viewport: Viewport = {
   themeColor: '#0ea5e9',
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 export const metadata: Metadata = {
@@ -63,7 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <LanguageProvider>
             <ThemeProvider>
               <SecurityProvider>
-                <div className="print:hidden overflow-x-hidden">{children}</div>
+                <div className="print:hidden overflow-x-hidden w-full">{children}</div>
                 <div className="hidden print:block print:p-8">{children}</div>
                 <Toaster />
                 <ScrollProgressButton />

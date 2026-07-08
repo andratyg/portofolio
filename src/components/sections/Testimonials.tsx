@@ -15,10 +15,10 @@ export const Testimonials = () => {
   if (testimonials.length === 0) return null;
 
   return (
-    <section className="py-24">
-      <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold font-headline text-center mb-16">{t.testimonials}</h2>
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+    <section className="py-16 md:py-24">
+      <div className="container mx-auto px-4 sm:px-6">
+        <h2 className="text-3xl sm:text-4xl font-bold font-headline text-center mb-10 md:mb-16">{t.testimonials}</h2>
+        <div className="grid sm:grid-cols-2 gap-5 sm:gap-8 max-w-5xl mx-auto">
           {testimonials.map((test) => {
             const role = language === 'id' ? test.roleId : (test.roleEn || test.roleId);
             const content = language === 'id' ? test.contentId : (test.contentEn || test.contentId);
@@ -27,14 +27,14 @@ export const Testimonials = () => {
             const isValidAvatarUrl = test.avatarUrl && (test.avatarUrl.startsWith('http') || test.avatarUrl.startsWith('/'));
             
             return (
-              <Card key={test.id} className="border-none shadow-xl bg-gradient-to-br from-primary/5 to-accent/5 rounded-3xl p-8 relative overflow-hidden group">
-                <Quote className="absolute -top-4 -right-4 h-24 w-24 text-primary/5 rotate-12 transition-transform group-hover:scale-125 duration-500" />
+              <Card key={test.id} className="border-none shadow-xl bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl sm:rounded-3xl p-5 sm:p-8 relative overflow-hidden group">
+                <Quote className="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 h-16 w-16 sm:h-24 sm:w-24 text-primary/5 rotate-12 transition-transform group-hover:scale-125 duration-500" />
                 <CardContent className="p-0 relative z-10">
-                  <p className="text-lg italic text-muted-foreground mb-8 leading-relaxed">
-                    "{content}"
+                  <p className="text-base sm:text-lg italic text-muted-foreground mb-5 sm:mb-8 leading-relaxed">
+                    &quot;{content}&quot;
                   </p>
-                  <div className="flex items-center gap-4">
-                    <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-primary shadow-lg bg-muted flex items-center justify-center">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="relative w-11 h-11 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-primary shadow-lg bg-muted flex items-center justify-center shrink-0">
                       {isValidAvatarUrl ? (
                         <Image 
                           src={test.avatarUrl} 
@@ -50,8 +50,8 @@ export const Testimonials = () => {
                       )}
                     </div>
                     <div>
-                      <h4 className="font-bold text-lg">{test.name}</h4>
-                      <p className="text-sm text-primary font-medium">{role}</p>
+                      <h4 className="font-bold text-base sm:text-lg">{test.name}</h4>
+                      <p className="text-xs sm:text-sm text-primary font-medium">{role}</p>
                     </div>
                   </div>
                 </CardContent>

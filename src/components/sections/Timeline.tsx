@@ -20,12 +20,12 @@ export const Timeline = () => {
   };
 
   return (
-    <section id="journey" className="py-24 bg-muted/20 relative overflow-hidden">
-      <div className="container mx-auto px-4">
+    <section id="journey" className="py-16 md:py-24 bg-muted/20 relative overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16 space-y-4">
+          <div className="text-center mb-10 md:mb-16 space-y-4">
             <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-full font-bold uppercase tracking-wider">Career Path</Badge>
-            <h2 className="text-4xl md:text-5xl font-bold font-headline mb-4">{t.careerJourney}</h2>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-headline mb-4">{t.careerJourney}</h2>
             <div className="w-20 h-1.5 bg-primary mx-auto rounded-full"></div>
           </div>
 
@@ -57,13 +57,13 @@ export const Timeline = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="w-[calc(100%-4rem)] md:w-[45%] p-6 rounded-[2.5rem] border bg-card shadow-sm hover:shadow-xl transition-all group-hover:border-primary/50 will-change-transform">
+                    <div className="w-[calc(100%-3.5rem)] md:w-[45%] p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2.5rem] border bg-card shadow-sm hover:shadow-xl transition-all group-hover:border-primary/50 will-change-transform">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1 rounded-full uppercase tracking-widest">{exp.year}</span>
+                        <span className="text-[9px] sm:text-[10px] font-black text-primary bg-primary/10 px-2.5 sm:px-3 py-1 rounded-full uppercase tracking-widest">{exp.year}</span>
                       </div>
-                      <h3 className="text-xl font-bold font-headline">{title}</h3>
-                      <p className="text-sm text-muted-foreground font-medium mb-3">{exp.company}</p>
-                      <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
+                      <h3 className="text-lg sm:text-xl font-bold font-headline">{title}</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-2 sm:mb-3">{exp.company}</p>
+                      <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">{description}</p>
                     </div>
                   </div>
                 );
