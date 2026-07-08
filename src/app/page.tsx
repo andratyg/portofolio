@@ -46,7 +46,7 @@ export default function Home() {
 
   return (
     <ProjectStoreProvider>
-      <main className="min-h-screen selection:bg-primary selection:text-primary-foreground pt-16 sm:pt-20">
+      <main className="min-h-screen selection:bg-primary selection:text-primary-foreground">
         {/* --- Above the fold (loaded immediately) --- */}
         <Navbar />
         <Hero />
