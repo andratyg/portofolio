@@ -24,8 +24,8 @@ export const Timeline = () => {
       <div className="container mx-auto px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10 md:mb-16 space-y-4">
-            <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-full font-bold uppercase tracking-wider">Career Path</Badge>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-headline mb-4">{t.careerJourney}</h2>
+            <Badge className="bg-primary text-primary-foreground px-4 py-1.5 rounded-full font-bold tracking-wider">Career Path</Badge>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold  mb-4">{t.careerJourney}</h2>
             <div className="w-20 h-1.5 bg-primary mx-auto rounded-full"></div>
           </div>
 
@@ -61,7 +61,7 @@ export const Timeline = () => {
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-[9px] sm:text-[10px] font-black text-primary bg-primary/10 px-2.5 sm:px-3 py-1 rounded-full uppercase tracking-widest">{exp.year}</span>
                       </div>
-                      <h3 className="text-lg sm:text-xl font-bold font-headline">{title}</h3>
+                      <h3 className="text-lg sm:text-xl font-bold ">{title}</h3>
                       <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-2 sm:mb-3">{exp.company}</p>
                       <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">{description}</p>
                     </div>

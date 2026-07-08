@@ -17,7 +17,7 @@ export const Testimonials = () => {
   return (
     <section className="py-16 md:py-24">
       <div className="container mx-auto px-4 sm:px-6">
-        <h2 className="text-3xl sm:text-4xl font-bold font-headline text-center mb-10 md:mb-16">{t.testimonials}</h2>
+        <h2 className="text-3xl sm:text-4xl font-bold  text-center mb-10 md:mb-16">{t.testimonials}</h2>
         <div className="grid sm:grid-cols-2 gap-5 sm:gap-8 max-w-5xl mx-auto">
           {testimonials.map((test) => {
             const role = language === 'id' ? test.roleId : (test.roleEn || test.roleId);

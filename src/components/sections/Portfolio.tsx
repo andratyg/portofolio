@@ -68,8 +68,8 @@ export const Portfolio = () => {
     <section id="portfolio" className="py-16 md:py-24 bg-background relative overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="mb-10 md:mb-16 text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black font-headline tracking-tighter leading-tight text-foreground mb-4">{portfolioTitle}</h2>
-          <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black  tracking-normal leading-tight text-foreground mb-4">{portfolioTitle}</h2>
+          <p className="text-base sm:text-lg text-muted-foreground max-w-prose mx-auto">
             {portfolioSubtitle}
           </p>
         </div>
@@ -167,9 +167,11 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
         <DialogTrigger asChild>
           <div className="cursor-pointer group h-full">
             <Card className="overflow-hidden h-full border-border/20 bg-card/60 backdrop-blur-xl rounded-[2.5rem] flex flex-col group-hover:-translate-y-3 group-hover:shadow-2xl group-hover:shadow-primary/10 transition-all duration-500 ease-in-out">
-              <div className="relative aspect-[16/10] bg-muted overflow-hidden">
-                <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover transition-transform duration-1000 ease-in-out group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative aspect-[16/10] bg-muted">
+                <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-1000 ease-in-out overflow-hidden rounded-t-[2.5rem]">
+                  <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover" />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-300 rounded-t-[2.5rem]"></div>
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="p-4 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
                        <Eye className="h-6 w-6 text-white" />
@@ -177,12 +179,12 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
                 </div>
               </div>
               <CardContent className="pt-6 px-5 sm:px-7 pb-4 flex-1">
-                <h4 className="text-xl font-black font-headline mb-3 text-foreground group-hover:text-primary transition-colors">{title}</h4>
+                <h3 className="text-xl font-black  mb-3 text-foreground group-hover:text-primary transition-colors">{title}</h3>
                 <p className="text-muted-foreground line-clamp-2 text-sm font-medium">{description}</p>
               </CardContent>
               <CardFooter className="px-7 pb-7 flex justify-between items-center pt-4 border-t border-border/10">
-                <span className="text-[9px] font-black text-primary uppercase tracking-widest flex items-center gap-1.5">{t.viewSpecs} <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" /></span>
-                {project.impactStats && <Badge variant="secondary" className="text-[8px] font-black uppercase px-3 py-1 bg-primary/10 text-primary border-none">{project.impactStats}</Badge>}
+                <span className="text-[9px] font-black text-primary tracking-widest flex items-center gap-1.5 capitalize">{t.viewSpecs.toLowerCase()} <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" /></span>
+                {project.impactStats && <div className="text-[8px] font-black px-3 py-1 bg-primary/10 text-primary rounded-full capitalize">{project.impactStats.toLowerCase()}</div>}
               </CardFooter>
             </Card>
           </div>
@@ -195,7 +197,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
               <div className="flex items-end justify-between gap-3 sm:gap-4">
                 <div className='space-y-1 sm:space-y-2'>
                   <Badge className="bg-primary text-primary-foreground px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold">{t.projectCategories[project.type as keyof typeof t.projectCategories]}</Badge>
-                  <DialogTitle className="text-xl sm:text-3xl md:text-4xl font-black font-headline text-white tracking-tighter leading-tight">{title}</DialogTitle>
+                  <DialogTitle className="text-xl sm:text-3xl md:text-4xl font-black  text-white tracking-normal leading-tight">{title}</DialogTitle>
                 </div>
                 {hasDemoUrl && (
                   <Button 
@@ -214,19 +216,19 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
           </div>
           <div className="flex-1 overflow-y-auto p-5 sm:p-10 space-y-6 sm:space-y-12 no-scrollbar bg-muted/20">
             <div className="grid md:grid-cols-2 gap-8">
-                <Card className="p-8 rounded-[2rem] bg-card border-none shadow-sm">
-                  <h3 className="text-lg font-black font-headline uppercase flex items-center gap-3 mb-4"><AlertCircle className="h-5 w-5 text-destructive" /> {t.technicalChallenge}</h3>
+                <div className="p-8 rounded-[2rem] bg-card border border-border/5 shadow-sm">
+                  <h3 className="text-lg font-black  uppercase flex items-center gap-3 mb-4"><AlertCircle className="h-5 w-5 text-destructive" /> {t.technicalChallenge}</h3>
                   <DialogDescription className="text-muted-foreground text-base leading-relaxed font-medium">{problem}</DialogDescription>
-                </Card>
-                <Card className="p-8 rounded-[2rem] bg-card border-none shadow-sm">
-                  <h3 className="text-lg font-black font-headline uppercase flex items-center gap-3 mb-4"><CheckCircle2 className="h-5 w-5 text-primary" /> {t.strategicSolution}</h3>
+                </div>
+                <div className="p-8 rounded-[2rem] bg-card border border-border/5 shadow-sm">
+                  <h3 className="text-lg font-black  uppercase flex items-center gap-3 mb-4"><CheckCircle2 className="h-5 w-5 text-primary" /> {t.strategicSolution}</h3>
                   <p className="text-muted-foreground text-base leading-relaxed font-medium">{solution}</p>
-                </Card>
+                </div>
             </div>
-            <Card className="p-8 rounded-[2rem] bg-card border-none shadow-sm">
-              <h3 className="text-lg font-black font-headline uppercase flex items-center gap-3 mb-6"><Terminal className="h-5 w-5 text-primary" /> {t.systemStack}</h3>
+            <div className="p-8 rounded-[2rem] bg-card border border-border/5 shadow-sm">
+              <h3 className="text-lg font-black  uppercase flex items-center gap-3 mb-6"><Terminal className="h-5 w-5 text-primary" /> {t.systemStack}</h3>
               <div className="flex flex-wrap gap-3">{(project.technologies || []).map(t => <Badge key={t} variant="outline" className="px-4 py-2 rounded-xl border-primary/20 text-sm font-semibold bg-primary/5">{t}</Badge>)}</div>
-            </Card>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

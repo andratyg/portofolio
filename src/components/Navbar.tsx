@@ -94,7 +94,7 @@ export const Navbar = () => {
           <MotionLink 
             href="/" 
             onClick={handleLogoClick}
-            className="text-3xl font-black font-headline text-primary cursor-pointer tracking-tighter"
+            className="text-3xl font-black  text-primary cursor-pointer tracking-normal"
             whileHover={{ scale: 1.1, rotate: -5 }}
             whileTap={{ scale: 0.95, rotate: 10, y: -5 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -187,7 +187,7 @@ export const Navbar = () => {
                 key={item.label} 
                 href={item.href}
                 onClick={(e) => handleSmoothScroll(e, item.href)}
-                className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight p-2 hover:text-primary"
+                className="text-xl sm:text-2xl font-black  uppercase tracking-tight p-2 hover:text-primary"
               >
                 {item.label}
               </Link>

@@ -64,7 +64,7 @@ export default function AdminLogin() {
           <div className="mx-auto w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
              <LogIn className="h-6 w-6" />
           </div>
-          <CardTitle className="text-2xl font-headline font-bold">PORTAL ADMIN</CardTitle>
+          <CardTitle className="text-2xl  font-bold">PORTAL ADMIN</CardTitle>
           <p className="text-primary-foreground/70 text-xs mt-1">Masuk untuk mengelola infrastruktur portofolio</p>
         </CardHeader>
         <CardContent className="pt-8 px-8">

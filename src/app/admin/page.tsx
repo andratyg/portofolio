@@ -251,7 +251,7 @@ function AdminContent() {
       <div className="min-h-screen flex items-center justify-center bg-background p-6">
         <Card className="w-full max-w-lg rounded-[2.5rem] p-10 text-center space-y-8 shadow-2xl border-destructive/20">
           <ShieldAlert className="h-16 w-16 text-destructive mx-auto" />
-          <h2 className="text-3xl font-black font-headline uppercase">Akses Ditolak</h2>
+          <h2 className="text-3xl font-black  uppercase">Akses Ditolak</h2>
           <p className="text-muted-foreground text-sm font-medium">Akun Anda tidak memiliki otoritas untuk mengakses infrastruktur admin.</p>
           <Button onClick={() => signOut(auth)} variant="destructive" className="w-full h-14 rounded-2xl font-black uppercase">Keluar Sesi</Button>
         </Card>
@@ -274,7 +274,7 @@ function AdminContent() {
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => router.push('/')} className="rounded-xl h-10 w-10"><ArrowLeft className="h-5 w-5" /></Button>
           <div>
-            <h1 className="text-xs font-black font-headline uppercase tracking-widest flex items-center gap-2">
+            <h1 className="text-xs font-black  uppercase tracking-widest flex items-center gap-2">
               PUSAT KENDALI KARYAPRO <Badge className="h-5 text-[8px] bg-primary text-primary-foreground font-black px-2">{userRole === 'super' ? 'SUPER ADMIN' : 'EDITOR'}</Badge>
             </h1>
             <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em]">{user?.email}</p>
@@ -352,7 +352,7 @@ function AdminContent() {
 
                    <div className="lg:col-span-8 space-y-10">
                       <div className="space-y-6">
-                        <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
+                        <h3 className="text-xl font-black  uppercase tracking-tight flex items-center gap-3">
                            <UserCircle className="h-6 w-6 text-primary" /> Informasi Dasar
                         </h3>
                         <div className="grid md:grid-cols-2 gap-6">
@@ -366,7 +366,7 @@ function AdminContent() {
                       </div>
 
                       <div className="space-y-6">
-                        <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
+                        <h3 className="text-xl font-black  uppercase tracking-tight flex items-center gap-3">
                            <Zap className="h-6 w-6 text-primary" /> Narasi Utama (Hero)
                         </h3>
                         <div className="grid md:grid-cols-2 gap-6">
@@ -380,7 +380,7 @@ function AdminContent() {
                       </div>
 
                       <div className="space-y-6">
-                        <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
+                        <h3 className="text-xl font-black  uppercase tracking-tight flex items-center gap-3">
                            <ImageIcon className="h-6 w-6 text-primary" /> Tentang Saya
                         </h3>
                         <div className="grid md:grid-cols-2 gap-6">
@@ -390,7 +390,7 @@ function AdminContent() {
                       </div>
 
                       <div className="space-y-6">
-                        <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
+                        <h3 className="text-xl font-black  uppercase tracking-tight flex items-center gap-3">
                            <Share2 className="h-6 w-6 text-primary" /> Konektivitas Sosial
                         </h3>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -411,12 +411,12 @@ function AdminContent() {
             <form onSubmit={handleContentSubmit} className="max-w-4xl mx-auto space-y-12">
               <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
                 <CardHeader className="p-0 pb-10">
-                  <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">Manajemen Konten Halaman</CardTitle>
+                  <CardTitle className="font-black  text-3xl uppercase tracking-normal">Manajemen Konten Halaman</CardTitle>
                   <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Sunting teks di berbagai bagian situs.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-0 space-y-10">
                   <div className="space-y-6">
-                    <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
+                    <h3 className="text-xl font-black  uppercase tracking-tight flex items-center gap-3">
                       <Briefcase className="h-6 w-6 text-primary" /> Bagian Portofolio
                     </h3>
                     <div className="grid md:grid-cols-2 gap-6">
@@ -441,7 +441,7 @@ function AdminContent() {
                     </div>
                   </div>
                   <div className="space-y-6">
-                    <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
+                    <h3 className="text-xl font-black  uppercase tracking-tight flex items-center gap-3">
                       <Award className="h-6 w-6 text-primary" /> Bagian Sertifikat
                     </h3>
                     <div className="grid md:grid-cols-2 gap-6">
@@ -476,7 +476,7 @@ function AdminContent() {
                <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
                 <CardHeader className="p-0 pb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="space-y-1">
-                    <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingProjectId ? 'Ubah Data Proyek' : 'Deploy Proyek Baru'}</CardTitle>
+                    <CardTitle className="font-black  text-3xl uppercase tracking-normal">{editingProjectId ? 'Ubah Data Proyek' : 'Deploy Proyek Baru'}</CardTitle>
                     <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Arsip Arsitektur Sistem & Rekayasa Kode</CardDescription>
                   </div>
                   <Button type="button" size="sm" onClick={() => handleAITranslate('projects', projectForm, setProjectForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase" disabled={isTranslating === 'projects'}>
@@ -557,7 +557,7 @@ function AdminContent() {
                <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
                 <CardHeader className="p-0 pb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="space-y-1">
-                    <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingCertId ? 'Mutakhirkan Kredensial' : 'Daftarkan Kredensial'}</CardTitle>
+                    <CardTitle className="font-black  text-3xl uppercase tracking-normal">{editingCertId ? 'Mutakhirkan Kredensial' : 'Daftarkan Kredensial'}</CardTitle>
                     <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Validasi Validitas & Akreditasi Industri</CardDescription>
                   </div>
                   <Button type="button" size="sm" onClick={() => handleAITranslate('certificates', certForm, setCertForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase" disabled={isTranslating === 'certificates'}>
@@ -621,7 +621,7 @@ function AdminContent() {
                <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
                 <CardHeader className="p-0 pb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="space-y-1">
-                    <CardTitle className="font-black font-headline text-3xl uppercase tracking-tighter">{editingJourneyId ? 'Ubah Milestone' : 'Catat Milestone Karir'}</CardTitle>
+                    <CardTitle className="font-black  text-3xl uppercase tracking-normal">{editingJourneyId ? 'Ubah Milestone' : 'Catat Milestone Karir'}</CardTitle>
                     <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Log Kronologis Riwayat Profesional & Akademik</CardDescription>
                   </div>
                   <Button type="button" size="sm" onClick={() => handleAITranslate('journey', journeyForm, setJourneyForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase" disabled={isTranslating === 'journey'}>
@@ -672,7 +672,7 @@ function AdminContent() {
           <TabsContent value="messages" className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
              <div className="flex items-center justify-between px-6">
                 <div>
-                  <h3 className="text-3xl font-black font-headline tracking-tighter uppercase">Inbound Messages</h3>
+                  <h3 className="text-3xl font-black  tracking-normal uppercase">Inbound Messages</h3>
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em]">Log Transmisi Pesan Pengunjung</p>
                 </div>
                 <Badge className="bg-primary/10 text-primary border-primary/20 h-8 px-4 font-black rounded-xl">{messages.length} Records</Badge>
@@ -721,7 +721,7 @@ function AdminContent() {
 
           <TabsContent value="system" className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
              <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
-                <CardHeader className="p-0 pb-10"><CardTitle className="text-3xl font-black font-headline tracking-tighter uppercase">Infrastruktur & Maintenance</CardTitle></CardHeader>
+                <CardHeader className="p-0 pb-10"><CardTitle className="text-3xl font-black  tracking-normal uppercase">Infrastruktur & Maintenance</CardTitle></CardHeader>
                 <CardContent className="p-0 flex gap-6">
                   <Button variant="outline" onClick={backupData} className="flex-1 h-40 flex-col gap-5 rounded-[2.5rem] bg-card border-none hover:bg-muted/30">
                     <Download className="h-8 w-8 text-primary" />

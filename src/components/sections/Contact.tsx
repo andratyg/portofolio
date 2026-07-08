@@ -63,7 +63,7 @@ export const Contact = () => {
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
           <div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-headline mb-4 sm:mb-6">{t.contactMe}</h2>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold  mb-4 sm:mb-6">{t.contactMe}</h2>
             <p className="text-base sm:text-xl text-primary-foreground/80 mb-8 sm:mb-12 max-w-md">Initialize a new communication node. Let's build future-ready architecture together.</p>
             <div className="space-y-3 sm:space-y-6">
               {socialLinks.map((link) => (

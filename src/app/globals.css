@@ -20,13 +20,13 @@
     --card-foreground: 210 10% 15%;
     --popover: 0 0% 100%;
     --popover-foreground: 210 10% 15%;
-    --primary: 211 100% 50%;
+    --primary: 211 100% 45%;
     --primary-foreground: 0 0% 100%;
     --secondary: 210 16% 93%;
     --secondary-foreground: 210 10% 15%;
     --muted: 210 16% 93%;
-    --muted-foreground: 210 8% 45%;
-    --accent: 211 100% 55%; 
+    --muted-foreground: 210 8% 40%;
+    --accent: 211 100% 45%; 
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -160,6 +160,9 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
   }
+  h1, h2 {
+    font-family: var(--font-space-grotesk);
+  }
   
   /* Add warm glow to ramadan theme */
   body[data-theme='ramadan'] {
@@ -172,15 +175,14 @@
  * == CUSTOM ADDITIONS
  * ============================================= */
 
-/* Force hide scrollbar across all browsers */
-body::-webkit-scrollbar, 
-html::-webkit-scrollbar {
-  display: none;
+/* Force hide all scrollbars globally */
+::-webkit-scrollbar {
+  display: none !important;
 }
 
-body, html {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+* {
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
 }
 
 .theme-transition {

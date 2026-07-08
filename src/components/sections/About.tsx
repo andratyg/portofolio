@@ -45,7 +45,7 @@ export const About = () => {
             <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-black tracking-wider uppercase">
               {t.aboutMeTitle}
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold font-headline leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold  leading-tight">
               {profile.name} <br />
               <span className="text-primary">{role}</span>
             </h2>
