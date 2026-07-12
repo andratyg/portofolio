@@ -1,0 +1,33 @@
+{
+  "name": "Nara Andra Tyaga — Portfolio",
+  "short_name": "NAT Portfolio",
+  "description": "Portofolio resmi Nara Andra Tyaga (Andra), siswa PPLG SMK Wikrama Bogor. Web Developer & Student.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "lang": "id",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "apple touch icon"
+    }
+  ],
+  "categories": ["portfolio", "education", "technology"],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "label": "Nara Andra Tyaga Portfolio"
+    }
+  ]
+}

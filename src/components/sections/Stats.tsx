@@ -1,89 +1,125 @@
+
 "use client"
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { useProjectStore } from '../ProjectStore';
-import { Card, CardContent } from '../ui/card';
-import { motion } from 'framer-motion';
-import { Briefcase, ShieldCheck, Activity, BarChart3, Terminal } from 'lucide-react';
+import { Briefcase, ShieldCheck, Activity, Terminal } from 'lucide-react';
+
+// Count-up animation hook
+function useCountUp(target: number, duration = 1500, trigger: boolean = false) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!trigger) return;
+    let start = 0;
+    const step = Math.ceil(target / (duration / 16));
+    const timer = setInterval(() => {
+      start = Math.min(start + step, target);
+      setCount(start);
+      if (start >= target) clearInterval(timer);
+    }, 16);
+    return () => clearInterval(timer);
+  }, [target, duration, trigger]);
+  return count;
+}
+
+type StatItem = {
+  label: string;
+  value: number;
+  suffix: string;
+  icon: React.ElementType;
+  description: string;
+  size: 'large' | 'small';
+};
+
+const StatCard = ({ stat, trigger }: { stat: StatItem; trigger: boolean }) => {
+  const count = useCountUp(stat.value, 1800, trigger);
+  const Icon = stat.icon;
+
+  if (stat.size === 'large') {
+    return (
+      <div className="glass-card glow-card p-8 sm:p-10 flex flex-col justify-between h-full relative overflow-hidden group">
+        <div className="absolute -top-8 -right-8 w-40 h-40 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-700" />
+        <div className="relative z-10">
+          <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors duration-300">
+            <Icon className="h-7 w-7 text-primary" />
+          </div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground mb-3">{stat.label}</p>
+          <div className="flex items-end gap-1 mb-3">
+            <span className="text-7xl sm:text-8xl font-black font-headline tracking-tight leading-none text-foreground tabular-nums">
+              {count}
+            </span>
+            <span className="text-3xl font-black text-primary mb-2">{stat.suffix}</span>
+          </div>
+          <p className="text-sm text-muted-foreground">{stat.description}</p>
+        </div>
+        {/* Watermark */}
+        <div className="absolute bottom-4 right-4 text-[7rem] font-black text-foreground/[0.025] leading-none select-none pointer-events-none tabular-nums">
+          {stat.value}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="glass-card glow-card p-6 flex flex-col justify-between relative overflow-hidden group">
+      <div className="flex items-start justify-between mb-4">
+        <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
+          <Icon className="h-5 w-5 text-primary" />
+        </div>
+        <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/50">{stat.label}</span>
+      </div>
+      <div>
+        <div className="flex items-end gap-0.5 mb-1">
+          <span className="text-4xl font-black font-headline tracking-tight text-foreground tabular-nums">{count}</span>
+          <span className="text-xl font-black text-primary mb-1">{stat.suffix}</span>
+        </div>
+        <p className="text-xs text-muted-foreground">{stat.description}</p>
+      </div>
+    </div>
+  );
+};
 
 export const Stats = () => {
   const { t } = useLanguage();
   const { stats } = useProjectStore();
+  const [triggered, setTriggered] = useState(false);
+  const ref = useRef<HTMLElement>(null);
 
-  const statsData = [
-    { 
-      label: t.statsCompleted, 
-      value: stats.completedProjects, 
-      icon: Briefcase, 
-      color: 'text-primary', 
-      bg: 'bg-primary/10',
-      tag: 'Units Deployed'
-    },
-    { 
-      label: t.statsExperience, 
-      value: stats.yearsExperience, 
-      icon: Activity, 
-      color: 'text-primary', 
-      bg: 'bg-primary/10',
-      tag: 'Industry Tenure'
-    },
-    { 
-      label: t.statsTechnologies, 
-      value: stats.techMastered, 
-      icon: Terminal, 
-      color: 'text-primary', 
-      bg: 'bg-primary/10',
-      tag: 'System Stack'
-    },
-    { 
-      label: 'Client Satisfaction', 
-      value: stats.clientSatisfaction, 
-      icon: ShieldCheck, 
-      color: 'text-primary', 
-      bg: 'bg-primary/10',
-      tag: 'Uptime SLA'
-    },
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setTriggered(true); observer.disconnect(); } },
+      { threshold: 0.2 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const statsData: StatItem[] = [
+    { label: t.statsCompleted,    value: parseInt(String(stats.completedProjects), 10) || 0,  suffix: '+', icon: Briefcase,    description: 'Proyek selesai dan terpublikasi', size: 'large' },
+    { label: t.statsExperience,   value: parseInt(String(stats.yearsExperience), 10) || 0,    suffix: '+', icon: Activity,     description: 'Tahun pengalaman aktif',          size: 'small' },
+    { label: t.statsTechnologies, value: parseInt(String(stats.techMastered), 10) || 0,       suffix: '+', icon: Terminal,     description: 'Teknologi dikuasai',              size: 'small' },
+    { label: 'Kepuasan Klien',    value: parseInt(String(stats.clientSatisfaction), 10) || 100, suffix: '%', icon: ShieldCheck,  description: 'Tingkat kepuasan client',         size: 'small' },
   ];
 
   return (
-    <section className="py-12 md:py-20 bg-muted/30 relative overflow-hidden">
+    <section ref={ref} className="py-20 relative overflow-hidden">
+      <div className="section-divider absolute top-0 left-0 right-0" />
+      <div className="section-divider absolute bottom-0 left-0 right-0" />
       <div className="container mx-auto px-4 sm:px-6">
-        <ul className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 list-none m-0 p-0">
-          {statsData.map((stat, i) => (
-            <motion.li 
-               key={i} 
-               className="group relative block"
-               initial={{ opacity: 0, y: 30 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true, margin: "-50px" }}
-               transition={{ duration: 0.6, delay: i * 0.1, ease: "easeOut" }}
-            >
-               {/* Hover Glow */}
-               <div className="absolute -inset-2 bg-primary/10 rounded-[2rem] sm:rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-all duration-500 blur-xl"></div>
-               
-               {/* Main Card */}
-               <div className="relative h-full ring-1 ring-border/20 bg-background/50 backdrop-blur-xl rounded-[1.5rem] sm:rounded-[2.5rem] hover:ring-primary/40 transition-all duration-500">
-                  <div className="absolute top-0 right-0 p-3 sm:p-4 opacity-10 group-hover:opacity-30 transition-opacity">
-                    <BarChart3 className={stat.color + " h-8 w-8 sm:h-12 sm:w-12"} />
-                  </div>
-                  <div className="p-5 sm:p-8">
-                    <div className={`w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-500`}>
-                      <stat.icon className="h-4 w-4 sm:h-6 sm:w-6" />
-                    </div>
-                    <div className="space-y-1">
-                       <p className="text-[11px] sm:text-xs font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-muted-foreground">{stat.tag}</p>
-                       <div className="text-2xl sm:text-4xl font-black  tracking-normal flex items-end gap-1 text-foreground">
-                          {stat.value}
-                          {stat.label.includes('Satisfaction') && <span className="text-base sm:text-xl text-primary">%</span>}
-                       </div>
-                       <p className="text-[11px] sm:text-xs font-bold text-muted-foreground pt-1 sm:pt-3">{stat.label}</p>
-                    </div>
-                  </div>
-               </div>
-            </motion.li>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          {/* First stat = large, spanning 2 rows on lg */}
+          <div className="col-span-2 lg:col-span-1 lg:row-span-1">
+            <StatCard stat={statsData[0]} trigger={triggered} />
+          </div>
+          {statsData.slice(1).map((stat) => (
+            <div key={stat.label}>
+              <StatCard stat={stat} trigger={triggered} />
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   );

@@ -197,10 +197,11 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
     <Dialog>
       <DialogTrigger asChild>
         <div className="cursor-pointer group h-full py-4">
-          <Card className="h-full border-none shadow-xl hover:shadow-2xl transition-all duration-700 bg-card flex flex-col group-hover:-translate-y-3" style={{ clipPath: 'inset(0 round 2.5rem)' }}>
+          {/* interactive-card: proper border-radius + overflow-hidden hover, NO clipPath */}
+          <Card className="interactive-card h-full shadow-lg bg-card flex flex-col">
             <div className="relative aspect-[4/3] bg-muted">
               {hasImage ? (
-                <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-1000" style={{ clipPath: 'inset(0 round 2.5rem 2.5rem 0 0)' }}>
+                <div className="card-image-zoom">
                   <Image 
                     src={cert.imageUrl!}
                     alt={title}
@@ -218,8 +219,8 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                   {cert.year}
                 </Badge>
               </div>
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <div className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-full p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-400 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <div className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-full p-4 scale-75 group-hover:scale-100 transition-transform duration-400 ease-out">
                   <Eye className="h-6 w-6 text-white" />
                 </div>
               </div>
@@ -229,13 +230,13 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                 <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse"></div>
                 <span className="text-xs font-black text-accent tracking-wide capitalize">{cert.issuer.toLowerCase()}</span>
               </div>
-              <h3 className="text-xl font-bold  mb-3 text-foreground group-hover:text-primary transition-colors">{title}</h3>
+              <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors duration-300">{title}</h3>
               <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed mb-6 font-medium">{shortDesc}</p>
             </CardContent>
           </Card>
         </div>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] sm:max-w-[700px] max-h-[95dvh] sm:h-[85vh] p-0 border-none shadow-2xl flex flex-col bg-background" style={{ clipPath: 'inset(0 round 2.5rem)' }}>
+      <DialogContent className="w-[95vw] sm:max-w-[700px] max-h-[95dvh] sm:h-[85vh] p-0 border-none shadow-2xl flex flex-col bg-background rounded-[2rem] overflow-hidden">
         <div className="bg-card border-b p-5 sm:p-8 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
            <div className="space-y-1">
              <Badge className="bg-primary text-primary-foreground text-xs font-black px-3 capitalize">{cert.issuer.toLowerCase()}</Badge>

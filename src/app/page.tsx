@@ -76,11 +76,30 @@ export default function Home() {
           <Contact />
         </AnimateOnScroll>
         
-        <footer className="py-10 md:py-16 border-t bg-muted/20">
-          <div className="container mx-auto px-4 text-center">
-            <p className="text-xs sm:text-sm font-medium text-muted-foreground">
-              {t.footerCopyright}
-            </p>
+        <footer className="relative pt-12 pb-8 overflow-hidden">
+          <div className="section-divider absolute top-0 left-0 right-0" />
+          {/* Background subtle glow */}
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/3 to-transparent pointer-events-none" />
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="flex flex-col items-center gap-6">
+              {/* Logo mark */}
+              <div className="flex items-center gap-2.5 glass-card px-5 py-2.5">
+                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-[9px] font-black">N</div>
+                <span className="text-sm font-bold">Nara Andra Tyaga</span>
+              </div>
+              {/* Copyright */}
+              <p className="text-xs text-muted-foreground/60 text-center">
+                {t.footerCopyright}
+              </p>
+              {/* Tech stack */}
+              <div className="flex flex-wrap justify-center gap-2">
+                {['Next.js 15', 'React', 'TypeScript', 'Tailwind CSS', 'Firebase'].map(tech => (
+                  <span key={tech} className="text-[9px] font-semibold px-2.5 py-1 rounded-full border border-border/30 text-muted-foreground/50 hover:text-primary hover:border-primary/30 transition-colors cursor-default">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </footer>
       </main>

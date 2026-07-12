@@ -166,32 +166,34 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
       <Dialog>
         <DialogTrigger asChild>
           <div className="cursor-pointer group h-full">
-            <Card className="h-full border-border/20 bg-card/60 backdrop-blur-xl flex flex-col group-hover:-translate-y-3 group-hover:shadow-2xl group-hover:shadow-primary/10 transition-all duration-500 ease-in-out" style={{ clipPath: 'inset(0 round 2.5rem)' }}>
+            {/* interactive-card handles: border-radius, overflow-hidden, hover lift, glow — NO clipPath */}
+            <Card className="interactive-card h-full border-border/20 bg-card/70 backdrop-blur-xl flex flex-col">
               <div className="relative aspect-[16/10] bg-muted">
-                <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-1000 ease-in-out" style={{ clipPath: 'inset(0 round 2.5rem 2.5rem 0 0)' }}>
+                {/* card-image-zoom handles the zoom without clipPath */}
+                <div className="card-image-zoom rounded-none">
                   <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover" />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-300 rounded-t-[2.5rem]"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-400" />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="p-4 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
+                    <div className="p-4 bg-white/10 backdrop-blur-md rounded-full border border-white/20 scale-90 group-hover:scale-100 transition-transform duration-300">
                        <Eye className="h-6 w-6 text-white" />
                     </div>
                 </div>
               </div>
               <CardContent className="pt-6 px-5 sm:px-7 pb-4 flex-1">
-                <h3 className="text-xl font-black  mb-3 text-foreground group-hover:text-primary transition-colors">{title}</h3>
+                <h3 className="text-xl font-black mb-3 text-foreground group-hover:text-primary transition-colors duration-300">{title}</h3>
                 <p className="text-muted-foreground line-clamp-2 text-sm font-medium">{description}</p>
               </CardContent>
               <CardFooter className="px-7 pb-7 flex justify-between items-center pt-4 border-t border-border/10">
-                <span className="text-xs font-black text-primary tracking-normal flex items-center gap-1.5 capitalize">{t.viewSpecs.toLowerCase()} <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" /></span>
+                <span className="text-xs font-black text-primary tracking-normal flex items-center gap-1.5 capitalize">{t.viewSpecs.toLowerCase()} <ArrowRight className="h-3 w-3 group-hover:translate-x-1.5 transition-transform duration-300" /></span>
                 {project.impactStats && <div className="text-xs font-black px-3 py-1 bg-primary/10 text-primary rounded-full capitalize">{project.impactStats.toLowerCase()}</div>}
               </CardFooter>
             </Card>
           </div>
         </DialogTrigger>
-        <DialogContent className="w-[95vw] sm:max-w-[800px] max-h-[95dvh] sm:h-[85vh] p-0 border-none shadow-2xl bg-background flex flex-col" style={{ clipPath: 'inset(0 round 2.5rem)' }}>
+        <DialogContent className="w-[95vw] sm:max-w-[800px] max-h-[95dvh] sm:h-[85vh] p-0 border-none shadow-2xl bg-background flex flex-col rounded-[2rem] overflow-hidden">
           <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
-            <div className="relative h-64 sm:h-96 shrink-0 bg-muted">
+            <div className="relative h-64 sm:h-96 shrink-0 bg-muted overflow-hidden">
               <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
               <div className="absolute bottom-4 sm:bottom-8 left-5 sm:left-10 right-5 sm:right-10">

@@ -30,8 +30,8 @@ export const About = () => {
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <div className="relative group max-w-sm mx-auto lg:max-w-none w-full">
             <div className="absolute -inset-4 bg-gradient-to-tr from-primary to-accent rounded-[2.5rem] blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
-            <div className="relative aspect-[3/4] border-4 border-background" style={{ clipPath: 'inset(0 round 2.5rem)' }}>
-              <div className="absolute inset-0 group-hover:scale-105 transition-transform duration-1000">
+            <div className="relative aspect-[3/4] border-4 border-background rounded-[2.5rem] overflow-hidden [transform:translateZ(0)]">
+              <div className="card-image-zoom rounded-none group-hover:[transform:scale(1.05)_translateZ(0)] transition-transform duration-1000 ease-out">
                 <Image 
                   src={profileImage} 
                   alt={profile.name} 

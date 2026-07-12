@@ -57,7 +57,7 @@ export const Timeline = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="w-[calc(100%-3.5rem)] md:w-[45%] p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2.5rem] border bg-card shadow-sm hover:shadow-xl transition-all group-hover:border-primary/50 will-change-transform">
+                    <div className="w-[calc(100%-3.5rem)] md:w-[45%] p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border bg-card shadow-sm group-hover:shadow-xl group-hover:shadow-primary/5 group-hover:border-primary/40 group-hover:-translate-y-1 transition-[transform,box-shadow,border-color] duration-400 ease-out [transform:translateZ(0)] will-change-[transform,box-shadow]">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-[9px] sm:text-[10px] font-black text-primary bg-primary/10 px-2.5 sm:px-3 py-1 rounded-full uppercase tracking-widest">{exp.year}</span>
                       </div>
