@@ -61,15 +61,15 @@ export const Contact = () => {
     <section id="contact" className="py-16 md:py-24 bg-primary text-primary-foreground overflow-hidden relative">
       <div className="absolute top-0 right-0 w-1/2 h-full bg-white/5 skew-x-12 translate-x-1/2"></div>
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
-          <div>
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start overflow-hidden">
+          <div className="min-w-0">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold  mb-4 sm:mb-6">{t.contactMe}</h2>
-            <p className="text-base sm:text-xl text-primary-foreground/80 mb-8 sm:mb-12 max-w-md">Initialize a new communication node. Let's build future-ready architecture together.</p>
+            <p className="text-base sm:text-xl text-primary-foreground/80 mb-8 sm:mb-12 max-w-prose break-words">Initialize a new communication node. Let's build future-ready architecture together.</p>
             <div className="space-y-3 sm:space-y-6">
               {socialLinks.map((link) => (
-                <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-white/10 hover:bg-white/20 transition-all border border-white/10 group no-print">
+                <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-white/10 hover:bg-white/20 transition-all border border-white/10 group no-print min-w-0">
                   <div className={`p-2 sm:p-3 ${link.color} rounded-xl shadow-lg shrink-0`}><link.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" /></div>
-                  <div className="flex-1 min-w-0"><p className="font-bold text-sm sm:text-lg">{link.label}</p><p className="text-xs sm:text-sm text-primary-foreground/70 truncate">{link.value}</p></div>
+                  <div className="flex-1 min-w-0 overflow-hidden"><p className="font-bold text-sm sm:text-lg">{link.label}</p><p className="text-xs sm:text-sm text-primary-foreground/70 truncate">{link.value}</p></div>
                   <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 opacity-0 group-hover:opacity-100 shrink-0" />
                 </a>
               ))}

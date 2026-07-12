@@ -227,7 +227,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
             <CardContent className="p-6 md:p-8 flex-1 flex flex-col">
               <div className="flex items-center gap-2 mb-3">
                 <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse"></div>
-                <span className="text-xs font-black text-accent tracking-widest capitalize">{cert.issuer.toLowerCase()}</span>
+                <span className="text-xs font-black text-accent tracking-wide capitalize">{cert.issuer.toLowerCase()}</span>
               </div>
               <h3 className="text-xl font-bold  mb-3 text-foreground group-hover:text-primary transition-colors">{title}</h3>
               <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed mb-6 font-medium">{shortDesc}</p>

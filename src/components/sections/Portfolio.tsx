@@ -183,7 +183,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
                 <p className="text-muted-foreground line-clamp-2 text-sm font-medium">{description}</p>
               </CardContent>
               <CardFooter className="px-7 pb-7 flex justify-between items-center pt-4 border-t border-border/10">
-                <span className="text-xs font-black text-primary tracking-widest flex items-center gap-1.5 capitalize">{t.viewSpecs.toLowerCase()} <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" /></span>
+                <span className="text-xs font-black text-primary tracking-normal flex items-center gap-1.5 capitalize">{t.viewSpecs.toLowerCase()} <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" /></span>
                 {project.impactStats && <div className="text-xs font-black px-3 py-1 bg-primary/10 text-primary rounded-full capitalize">{project.impactStats.toLowerCase()}</div>}
               </CardFooter>
             </Card>
