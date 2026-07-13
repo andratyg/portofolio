@@ -67,16 +67,24 @@ export const Contact = () => {
             <p className="text-base sm:text-xl text-primary-foreground/80 mb-8 sm:mb-12 max-w-prose break-words">Initialize a new communication node. Let's build future-ready architecture together.</p>
             <div className="space-y-3 sm:space-y-6">
               {socialLinks.map((link) => (
-                <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-white/10 hover:bg-white/20 transition-all border border-white/10 group no-print min-w-0">
+                <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer"
+                   className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-white/10 border border-white/10 group no-print min-w-0
+                              hover:bg-white/20 hover:border-white/20 hover:-translate-y-0.5
+                              transition-[background-color,border-color,transform] duration-300 ease-out"
+                >
                   <div className={`p-2 sm:p-3 ${link.color} rounded-xl shadow-lg shrink-0`}><link.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" /></div>
                   <div className="flex-1 min-w-0 overflow-hidden"><p className="font-bold text-sm sm:text-lg">{link.label}</p><p className="text-xs sm:text-sm text-primary-foreground/70 truncate">{link.value}</p></div>
-                  <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 opacity-0 group-hover:opacity-100 shrink-0" />
+                  <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shrink-0" />
                 </a>
               ))}
-              <a href={`mailto:${profile.email || 'admin@karyapro.app'}`} className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-white/5 hover:bg-white/20 transition-all border border-white/10 group">
+              <a href={`mailto:${profile.email || 'admin@karyapro.app'}`}
+                 className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-white/5 border border-white/10 group
+                            hover:bg-white/20 hover:border-white/20 hover:-translate-y-0.5
+                            transition-[background-color,border-color,transform] duration-300 ease-out"
+              >
                 <div className="p-2 sm:p-3 bg-white/10 rounded-xl shrink-0"><Mail className="h-5 w-5 sm:h-6 sm:w-6 text-white" /></div>
                 <div className="flex-1 min-w-0"><p className="font-bold text-sm sm:text-lg">Email Node</p><p className="text-xs sm:text-sm text-primary-foreground/70 truncate">{profile.email || 'admin@karyapro.app'}</p></div>
-                <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 opacity-0 group-hover:opacity-100 shrink-0" />
+                <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shrink-0" />
               </a>
             </div>
           </div>
@@ -87,8 +95,8 @@ export const Contact = () => {
                 <div className="space-y-2"><label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactEmail}</label><Input id="email" required type="email" name="email" placeholder="alpha@network.com" className="h-11 sm:h-12 rounded-xl" /></div>
               </div>
               <div className="space-y-2"><label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactMessage}</label><Textarea id="message" required name="message" placeholder="Input payload..." className="min-h-[120px] sm:min-h-[150px] rounded-xl" /></div>
-              <Button type="submit" className="w-full h-12 sm:h-14 rounded-xl text-base sm:text-lg font-bold gap-2 bg-primary text-primary-foreground" disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <>{t.sendMessage}<Send className="h-5 w-5" /></>}
+              <Button type="submit" className="w-full h-12 sm:h-14 rounded-2xl text-base sm:text-lg font-bold gap-2 bg-primary text-primary-foreground relative overflow-hidden group shimmer-btn hover:shadow-lg hover:shadow-primary/20 transition-[box-shadow] duration-300" disabled={isSubmitting}>
+                {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <><span className="relative">{t.sendMessage}</span><Send className="relative h-5 w-5 group-hover:translate-x-0.5 transition-transform duration-300" /></>}
               </Button>
             </form>
           </div>

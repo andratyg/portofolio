@@ -12,7 +12,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
-const MotionLink = motion(Link);
+const MotionLink = motion.create(Link);
 
 export const Navbar = () => {
   const { t, language, setLanguage } = useLanguage();
@@ -108,7 +108,7 @@ export const Navbar = () => {
                 key={item.label} 
                 href={item.href}
                 onClick={(e) => handleSmoothScroll(e, item.href)}
-                className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-colors"
+                className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-colors duration-200"
               >
                 {item.label}
               </Link>
@@ -146,7 +146,7 @@ export const Navbar = () => {
                     key={tName} 
                     onClick={() => setTheme(tName)}
                     className={cn(
-                      "capitalize rounded-[1.5rem] gap-4 p-3.5 transition-all cursor-pointer",
+                      "capitalize rounded-[1.5rem] gap-4 p-3.5 cursor-pointer transition-[background-color,color,box-shadow] duration-200",
                       theme === tName 
                         ? "bg-[#3b82f6] text-white font-black shadow-lg shadow-blue-500/20" 
                         : "hover:bg-white/5 text-muted-foreground hover:text-white"
@@ -187,7 +187,7 @@ export const Navbar = () => {
                 key={item.label} 
                 href={item.href}
                 onClick={(e) => handleSmoothScroll(e, item.href)}
-                className="text-xl sm:text-2xl font-black  uppercase tracking-tight p-2 hover:text-primary"
+                className="text-xl sm:text-2xl font-black uppercase tracking-tight p-2 hover:text-primary transition-colors duration-200"
               >
                 {item.label}
               </Link>
@@ -212,7 +212,7 @@ export const Navbar = () => {
                         setIsMobileMenuOpen(false);
                       }}
                       className={cn(
-                        "capitalize rounded-[1.5rem] gap-3 p-3 transition-all cursor-pointer",
+                        "capitalize rounded-[1.5rem] gap-3 p-3 cursor-pointer transition-[background-color,color,box-shadow] duration-200",
                         theme === tName 
                           ? "bg-[#3b82f6] text-white font-black shadow-lg shadow-blue-500/20" 
                           : "hover:bg-white/5 text-muted-foreground hover:text-white"

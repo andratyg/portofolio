@@ -119,10 +119,10 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   } : defaultProfile;
 
   const stats: PortfolioStats = profileData ? {
-    completedProjects: String(profileData.totalProjectsCompleted || '0'),
-    yearsExperience: String(profileData.codingExperienceYears || '0'),
-    techMastered: String(profileData.totalTechnologiesMastered || '0'),
-    clientSatisfaction: profileData.clientSatisfaction || '100%'
+    completedProjects: String(profileData.totalProjectsCompleted || defaultStats.completedProjects),
+    yearsExperience: String(profileData.codingExperienceYears || defaultStats.yearsExperience),
+    techMastered: String(profileData.totalTechnologiesMastered || defaultStats.techMastered),
+    clientSatisfaction: profileData.clientSatisfaction || defaultStats.clientSatisfaction
   } : defaultStats;
 
   const isLoading = loadingProjects || loadingCerts || loadingTests || loadingJourney || loadingProfile || loadingMessages;

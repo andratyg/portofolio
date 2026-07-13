@@ -338,6 +338,31 @@
   border-radius: 1px;
 }
 
+/* Section divider — gradient line between sections */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--border) / 0.6) 20%,
+    hsl(var(--primary) / 0.3) 50%,
+    hsl(var(--border) / 0.6) 80%,
+    transparent 100%
+  );
+}
+
+/*
+  GLOBAL FIX: Prevent border-radius from being dropped during GPU compositing.
+  When a browser promotes an element to its own layer for transforms,
+  it can lose border-radius on children. This rule forces the browser
+  to maintain the stacking context properly.
+*/
+[class*="rounded-"] {
+  /* Ensure all rounded elements maintain their clipping during transforms */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
 /* =============================================
  * == MOBILE RESPONSIVE IMPROVEMENTS
  * ============================================= */

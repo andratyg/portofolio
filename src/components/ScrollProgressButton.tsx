@@ -51,8 +51,9 @@ export const ScrollProgressButton = () => {
       onClick={scrollToTop}
       aria-label="Scroll to top"
       className={cn(
-        'fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 w-12 h-12 sm:w-16 sm:h-16 rounded-full shadow-lg border-border/10 flex items-center justify-center transition-all duration-300 ease-in-out',
+        'fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 w-12 h-12 sm:w-16 sm:h-16 rounded-full shadow-lg border-border/10 flex items-center justify-center',
         'hover:scale-110 active:scale-95',
+        'transition-[opacity,transform,background-color] duration-300 ease-out',
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none',
         {
           'bg-primary': isAtBottom,

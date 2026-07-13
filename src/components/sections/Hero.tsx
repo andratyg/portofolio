@@ -216,7 +216,7 @@ export const Hero = () => {
                 {featuredProject && isValidImageUrl(featuredProject.imageUrl) ? (
                   <>
                     {/* Image with smooth zoom on hover */}
-                    <div className="absolute inset-0 group-hover:scale-[1.06] transition-transform duration-[900ms] ease-out">
+                    <div className="absolute inset-0 group-hover:scale-[1.06] transition-transform ease-out" style={{ transitionDuration: '900ms' }}>
                       <Image
                         src={featuredProject.imageUrl}
                         alt={language === 'id' ? featuredProject.titleId : featuredProject.titleEn}
@@ -266,7 +266,7 @@ export const Hero = () => {
       {/* ── Scroll indicator ──────────────────────────────────────── */}
       <div className={cn(
         "absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2",
-        "transition-[opacity,transform] duration-1000 delay-[1200ms]",
+        "transition-[opacity,transform] duration-1000",
         isVisible ? "opacity-35 translate-y-0" : "opacity-0 translate-y-4"
       )}>
         <span className="text-[8px] uppercase tracking-[0.35em] text-muted-foreground">Scroll</span>
