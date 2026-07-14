@@ -223,6 +223,36 @@ const jsonLd = [
       '@type': 'Person',
       name: FULL_NAME
     }
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Siapakah Nara Andra Tyaga?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Nara Andra Tyaga (biasa dipanggil Andra) adalah seorang Web Developer muda dan berbakat asal Bogor, Indonesia. Saat ini, ia sedang menempuh pendidikan di SMK Wikrama Bogor dengan jurusan Pengembangan Perangkat Lunak dan Gim (PPLG). Ia memiliki spesialisasi dalam membangun aplikasi web modern menggunakan Next.js, React, TypeScript, dan Firebase.'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'Di mana Nara Andra Tyaga sekolah?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Nara Andra Tyaga bersekolah di SMK Wikrama Bogor, mengambil jurusan PPLG (Pengembangan Perangkat Lunak dan Gim).'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'Apa keahlian Nara Andra Tyaga?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Keahlian utama Nara Andra Tyaga meliputi Frontend Web Development dengan Next.js dan React, UI/UX Design menggunakan Figma, animasi web dengan Framer Motion, serta integrasi backend menggunakan Firebase.'
+        }
+      }
+    ]
   }
 ];
 
