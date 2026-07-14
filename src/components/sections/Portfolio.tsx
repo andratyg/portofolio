@@ -64,8 +64,41 @@ export const Portfolio = () => {
     return sorted;
   }, [projects, language, search, filter, sortBy]);
 
+  // ─── JSON-LD Structured Data for Projects (AI/SEO Optimization) ───────────
+  const projectSchema = useMemo(() => {
+    if (!projects || projects.length === 0) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "itemListElement": projects.map((p, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "item": {
+          "@type": "SoftwareApplication",
+          "name": p.titleId || p.titleEn,
+          "description": p.shortDescriptionId || p.shortDescriptionEn,
+          "url": typeof p.demoUrl === 'string' && p.demoUrl.startsWith('http') ? p.demoUrl : undefined,
+          "image": p.imageUrl,
+          "applicationCategory": p.type,
+          "operatingSystem": "Web",
+          "keywords": (p.technologies || []).join(", "),
+          "author": {
+            "@type": "Person",
+            "name": "Nara Andra Tyaga"
+          }
+        }
+      }))
+    };
+  }, [projects]);
+
   return (
     <section id="portfolio" className="py-16 md:py-24 bg-background relative">
+      {projectSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(projectSchema) }}
+        />
+      )}
       <div className="container mx-auto px-4 sm:px-6">
         <div className="mb-10 md:mb-16 text-center">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black  tracking-normal leading-tight text-foreground mb-4">{portfolioTitle}</h2>

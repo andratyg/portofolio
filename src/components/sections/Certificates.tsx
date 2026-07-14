@@ -82,6 +82,32 @@ export const Certificates = () => {
     );
   };
 
+  // ─── JSON-LD Structured Data for Certificates (AI/SEO Optimization) ────────
+  const certSchema = useMemo(() => {
+    if (!certificates || certificates.length === 0) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "itemListElement": certificates.map((c, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "item": {
+          "@type": "EducationalOccupationalCredential",
+          "name": c.titleId || c.titleEn,
+          "description": c.shortDescriptionId || c.shortDescriptionEn,
+          "credentialCategory": "Certificate",
+          "recognizedBy": {
+            "@type": "Organization",
+            "name": c.issuer
+          },
+          "dateCreated": c.year,
+          "url": typeof c.credentialUrl === 'string' && c.credentialUrl.startsWith('http') ? c.credentialUrl : undefined,
+          "image": c.imageUrl
+        }
+      }))
+    };
+  }, [certificates]);
+
   if (isLoading) return (
     <div className="flex flex-col items-center justify-center space-y-4 min-h-[400px]">
       <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -97,7 +123,13 @@ export const Certificates = () => {
   );
 
   return (
-    <section id="certificates" className="py-16 md:py-24 bg-muted/30">
+    <section id="certificates" className="py-16 md:py-24 bg-muted/30 relative">
+      {certSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(certSchema) }}
+        />
+      )}
       <div className="container mx-auto px-4 sm:px-6">
         <div className="text-center mb-8 md:mb-12 space-y-4">
           <Badge className="bg-primary text-primary-foreground px-4 py-1.5 rounded-full font-bold tracking-wider">{certificatesTitle}</Badge>
