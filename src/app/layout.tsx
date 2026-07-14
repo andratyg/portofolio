@@ -80,6 +80,19 @@ export const metadata: Metadata = {
     'Portofolio Siswa PPLG',
     'Bogor Web Developer',
     'Portofolio Web Developer',
+    'UI/UX Design',
+    'Software Engineer Indonesia',
+    'Frontend Engineer',
+    'Web Design Bogor',
+    'Jasa Pembuatan Website Bogor',
+    'Pelajar SMK Wikrama',
+    'Profil Nara Andra Tyaga',
+    'Biodata Nara Andra Tyaga',
+    'Siapa Nara Andra Tyaga',
+    'Andra Tyaga PPLG',
+    'Andra Web Design',
+    'Karya Pro',
+    'KaryaPro'
   ],
 
   authors: [{ name: FULL_NAME, url: BASE_URL }],
@@ -156,41 +169,62 @@ export const metadata: Metadata = {
   },
 };
 
-// ─── JSON-LD Structured Data ──────────────────────────────────────────────────
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: 'Nara Andra Tyaga',
-  alternateName: ['Andra', 'Andra Tyaga', 'Nara Andra', 'NAT', 'Tyaga'],
-  description: DESCRIPTION,
-  url: BASE_URL,
-  sameAs: [
-    'https://github.com/nara-andra-tyaga',
-    'https://linkedin.com/in/nara-andra-tyaga',
-  ],
-  jobTitle: ROLE,
-  worksFor: {
-    '@type': 'EducationalOrganization',
-    name: SCHOOL,
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Bogor',
-      addressRegion: 'Jawa Barat',
-      addressCountry: 'ID',
+// ─── JSON-LD Structured Data (Massively expanded for AI Search/SGE) ───────────
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Nara Andra Tyaga',
+    alternateName: ['Andra', 'Andra Tyaga', 'Nara Andra', 'NAT', 'Tyaga'],
+    description: DESCRIPTION,
+    url: BASE_URL,
+    sameAs: [
+      'https://github.com/nara-andra-tyaga',
+      'https://linkedin.com/in/nara-andra-tyaga',
+      'https://instagram.com/nara_andra'
+    ],
+    jobTitle: ROLE,
+    worksFor: {
+      '@type': 'EducationalOrganization',
+      name: SCHOOL,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Bogor',
+        addressRegion: 'Jawa Barat',
+        addressCountry: 'ID',
+      },
+    },
+    alumniOf: {
+      '@type': 'EducationalOrganization',
+      name: `${SCHOOL} — ${PROGRAM}`,
+    },
+    knowsAbout: [
+      'Next.js', 'React', 'TypeScript', 'Firebase', 'Tailwind CSS', 
+      'Web Development', 'Frontend Development', 'UI/UX Design', 
+      'JavaScript', 'HTML', 'CSS', 'Node.js', 'Git', 'Vercel', 
+      'Figma', 'SEO', 'Responsive Web Design', 'PPLG', 'Software Engineering',
+      'Framer Motion', 'Web Animations'
+    ],
+    nationality: { '@type': 'Country', name: 'Indonesia' },
+    image: OG_IMAGE,
+    mainEntityOfPage: {
+      '@type': 'ProfilePage',
+      '@id': BASE_URL,
     },
   },
-  alumniOf: {
-    '@type': 'EducationalOrganization',
-    name: `${SCHOOL} — ${PROGRAM}`,
-  },
-  knowsAbout: ['Next.js', 'React', 'TypeScript', 'Firebase', 'Tailwind CSS', 'Web Development'],
-  nationality: { '@type': 'Country', name: 'Indonesia' },
-  image: OG_IMAGE,
-  mainEntityOfPage: {
-    '@type': 'WebPage',
-    '@id': BASE_URL,
-  },
-};
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: `${FULL_NAME} Portfolio`,
+    alternateName: ['Portofolio Andra', 'Nara Andra Tyaga Web'],
+    url: BASE_URL,
+    description: DESCRIPTION,
+    publisher: {
+      '@type': 'Person',
+      name: FULL_NAME
+    }
+  }
+];
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
 export default function RootLayout({ children }: { children: React.ReactNode }) {
