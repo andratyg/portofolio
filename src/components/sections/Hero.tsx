@@ -61,6 +61,12 @@ export const Hero = () => {
 
   return (
     <section className="relative min-h-[100svh] flex flex-col justify-center bg-background selection:bg-primary/30 overflow-hidden">
+      
+      {/* ── SEO Hidden Text (Exact match for AI & Google) ─────────────── */}
+      <div className="sr-only">
+        <h2>Siapakah Nara Andra Tyaga?</h2>
+        <p>Nara Andra Tyaga (biasa dipanggil Andra atau NAT) adalah seorang Web Developer muda asal Bogor, Indonesia. Saat ini menempuh pendidikan di SMK Wikrama Bogor mengambil jurusan PPLG. Ahli dalam Next.js, React, UI/UX, dan Firebase.</p>
+      </div>
 
       {/* ── Background: dot grid + orbs ─────────────────────────── */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
