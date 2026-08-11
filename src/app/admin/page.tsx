@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
-import { ProfileData, Project, Certificate, Experience, PortfolioStats } from '@/lib/types';
+import { ProfileData, Project, Certificate, Experience, PortfolioStats, TechSkill } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -33,6 +33,7 @@ function AdminContent() {
     messages, deleteMessage,
     profile, updateProfileAndStats,
     stats,
+    techSkills, addTechSkill, deleteTechSkill,
     backupData, restoreData,
     isLoading: storeLoading
   } = useProjectStore();
@@ -111,9 +112,15 @@ function AdminContent() {
     year: '', titleId: '', titleEn: '', company: '', descriptionId: '', descriptionEn: ''
   };
 
+  const initialTechSkillState: TechSkill = {
+    id: '', name: '', icon: '', level: 50, color: 'from-blue-400 to-blue-600', category: 'Frontend'
+  };
+
   const [projectForm, setProjectForm] = useState(initialProjectState);
   const [certForm, setCertForm] = useState(initialCertState);
   const [journeyForm, setJourneyForm] = useState(initialJourneyState);
+  const [techSkillForm, setTechSkillForm] = useState(initialTechSkillState);
+  const [editingTechSkillId, setEditingTechSkillId] = useState<string | null>(null);
   const [profileFormData, setProfileFormData] = useState<ProfileData>(profile);
   const [statsFormData, setStatsFormData] = useState<PortfolioStats>(stats);
   const contentStore = useContentStore();
@@ -195,6 +202,23 @@ function AdminContent() {
     toast({ title: "Konten Berhasil Diperbarui" });
   };
 
+  const handleTechSkillSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const skillData = { ...techSkillForm };
+    if (!editingTechSkillId) skillData.id = Date.now().toString();
+    else skillData.id = editingTechSkillId;
+    addTechSkill(skillData as any);
+    setTechSkillForm(initialTechSkillState);
+    setEditingTechSkillId(null);
+    toast({ title: editingTechSkillId ? "Skill Diperbarui" : "Skill Ditambahkan" });
+  };
+
+  const startEditTechSkill = (s: TechSkill) => {
+    setEditingTechSkillId(s.id);
+    setTechSkillForm(s);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -238,8 +262,8 @@ function AdminContent() {
   };
 
   const cancelEdit = () => {
-    setEditingProjectId(null); setEditingCertId(null); setEditingJourneyId(null);
-    setProjectForm(initialProjectState); setCertForm(initialCertState); setJourneyForm(initialJourneyState);
+    setEditingProjectId(null); setEditingCertId(null); setEditingJourneyId(null); setEditingTechSkillId(null);
+    setProjectForm(initialProjectState); setCertForm(initialCertState); setJourneyForm(initialJourneyState); setTechSkillForm(initialTechSkillState);
   };
 
   if (isUserLoading || storeLoading || isAdminLoading) {
@@ -268,37 +292,38 @@ function AdminContent() {
       )}
 
       <header className={cn(
-        "bg-background/80 backdrop-blur-2xl border-b h-20 sticky top-0 z-50 flex items-center justify-between px-8 transition-transform duration-500",
+        "bg-background/80 backdrop-blur-2xl border-b h-16 sm:h-20 sticky top-0 z-50 flex items-center justify-between px-4 sm:px-8 transition-transform duration-500",
         isHeaderVisible ? "translate-y-0" : "-translate-y-full"
       )}>
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.push('/')} className="rounded-xl h-10 w-10"><ArrowLeft className="h-5 w-5" /></Button>
-          <div>
-            <h1 className="text-xs font-black  uppercase tracking-widest flex items-center gap-2">
-              PUSAT KENDALI KARYAPRO <Badge className="h-5 text-[8px] bg-primary text-primary-foreground font-black px-2">{userRole === 'super' ? 'SUPER ADMIN' : 'EDITOR'}</Badge>
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+          <Button variant="ghost" size="icon" onClick={() => router.push('/')} className="rounded-xl h-9 w-9 sm:h-10 sm:w-10 shrink-0"><ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" /></Button>
+          <div className="min-w-0">
+            <h1 className="text-[9px] sm:text-xs font-black uppercase tracking-widest flex items-center gap-2 truncate">
+              <span className="hidden sm:inline">PUSAT KENDALI KARYAPRO</span><span className="sm:hidden">ADMIN</span> <Badge className="h-5 text-[8px] bg-primary text-primary-foreground font-black px-2 shrink-0">{userRole === 'super' ? 'SUPER' : 'EDITOR'}</Badge>
             </h1>
-            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em]">{user?.email}</p>
+            <p className="text-[8px] sm:text-[9px] font-bold text-muted-foreground uppercase tracking-[0.15em] sm:tracking-[0.2em] truncate">{user?.email}</p>
           </div>
         </div>
-        <Button variant="ghost" onClick={() => signOut(auth)} className="text-foreground hover:bg-muted rounded-xl h-10 px-4 text-[10px] font-black uppercase tracking-widest gap-2">
-          <LogOut className="h-4 w-4" /> KELUAR SISTEM
+        <Button variant="ghost" onClick={() => signOut(auth)} className="text-foreground hover:bg-muted rounded-xl h-9 sm:h-10 px-2 sm:px-4 text-[10px] font-black uppercase tracking-widest gap-2 shrink-0">
+          <LogOut className="h-4 w-4" /><span className="hidden sm:inline">KELUAR</span>
         </Button>
       </header>
 
-      <div className="container mx-auto px-6 py-12">
-        <Tabs defaultValue="profile" className="space-y-12">
-          <div className={cn("flex justify-center sticky z-40 transition-all duration-500", isHeaderVisible ? "top-24" : "top-4")}>
-            <TabsList className="h-20 bg-card border border-border shadow-2xl p-2 rounded-[2.5rem] w-full max-w-5xl overflow-x-auto no-scrollbar flex justify-between gap-1">
-              <TabsTrigger value="profile" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><UserCircle className="h-4 w-4" /> IDENTITAS</TabsTrigger>
-              <TabsTrigger value="content" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><Edit className="h-4 w-4" /> KONTEN</TabsTrigger>
-              <TabsTrigger value="projects" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><Briefcase className="h-4 w-4" /> PROYEK</TabsTrigger>
-              <TabsTrigger value="certificates" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><Award className="h-4 w-4" /> SERTIFIKAT</TabsTrigger>
-              <TabsTrigger value="journey" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><History className="h-4 w-4" /> JOURNEY</TabsTrigger>
-              <TabsTrigger value="messages" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all relative">
-                <Mail className="h-4 w-4" /> PESAN
-                {messages.length > 0 && <span className="absolute top-4 right-4 w-2 h-2 bg-accent rounded-full animate-pulse" />}
+      <div className="container mx-auto px-3 sm:px-6 py-6 sm:py-12">
+        <Tabs defaultValue="profile" className="space-y-8 sm:space-y-12">
+          <div className={cn("flex justify-center sticky z-40 transition-all duration-500", isHeaderVisible ? "top-[68px] sm:top-24" : "top-4")}>
+            <TabsList className="bg-card border border-border shadow-2xl p-1.5 sm:p-2 rounded-2xl sm:rounded-[2.5rem] w-full max-w-5xl grid grid-cols-4 sm:flex sm:flex-wrap sm:justify-center gap-1 h-auto">
+              <TabsTrigger value="profile" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><UserCircle className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">IDENTITAS</span><span className="sm:hidden text-[7px]">PROFIL</span></TabsTrigger>
+              <TabsTrigger value="content" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Edit className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">KONTEN</span><span className="sm:hidden text-[7px]">KONTEN</span></TabsTrigger>
+              <TabsTrigger value="projects" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Briefcase className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">PROYEK</span><span className="sm:hidden text-[7px]">PROYEK</span></TabsTrigger>
+              <TabsTrigger value="certificates" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Award className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">SERTIFIKAT</span><span className="sm:hidden text-[7px]">SERTIF</span></TabsTrigger>
+              <TabsTrigger value="journey" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><History className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">JOURNEY</span><span className="sm:hidden text-[7px]">KARIR</span></TabsTrigger>
+              <TabsTrigger value="techstack" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Terminal className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">TECH STACK</span><span className="sm:hidden text-[7px]">TECH</span></TabsTrigger>
+              <TabsTrigger value="messages" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row relative">
+                <Mail className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">PESAN</span><span className="sm:hidden text-[7px]">PESAN</span>
+                {messages.length > 0 && <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 w-2 h-2 bg-destructive rounded-full animate-pulse" />}
               </TabsTrigger>
-              <TabsTrigger value="system" className="rounded-[1.8rem] font-black uppercase text-[10px] tracking-widest gap-2 px-6 h-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"><Settings className="h-4 w-4" /> SISTEM</TabsTrigger>
+              <TabsTrigger value="system" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Settings className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">SISTEM</span><span className="sm:hidden text-[7px]">SISTEM</span></TabsTrigger>
             </TabsList>
           </div>
 
@@ -719,19 +744,160 @@ function AdminContent() {
              )}
           </TabsContent>
 
+          <TabsContent value="techstack" className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
+             <Card className="rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-10 bg-card border-none shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1.5 sm:h-2 bg-gradient-to-r from-teal-400 to-cyan-500" />
+                <CardHeader className="px-0 pt-0">
+                  <div className="flex items-center justify-between flex-wrap gap-3">
+                    <div>
+                      <CardTitle className="text-2xl sm:text-3xl font-black uppercase tracking-tight">Katalog Teknologi</CardTitle>
+                      <CardDescription className="mt-1">Manajemen skill dan teknologi yang dikuasai.</CardDescription>
+                    </div>
+                    <Badge className="h-8 px-4 rounded-full text-xs font-black bg-primary/10 text-primary border-primary/20">
+                      {techSkills.length} Skill{techSkills.length !== 1 ? 's' : ''}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="px-0 pt-6 space-y-10">
+                   {/* ── Add/Edit Form ── */}
+                   <form onSubmit={handleTechSkillSubmit} className="space-y-6 p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-muted/30 border border-border/50">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                           <Terminal className="h-4 w-4 text-primary" /> {editingTechSkillId ? 'Edit Skill' : 'Tambah Skill Baru'}
+                        </h3>
+                        {editingTechSkillId && (
+                          <Button type="button" variant="ghost" size="sm" onClick={cancelEdit} className="rounded-xl text-[10px] font-black uppercase gap-1 h-8">
+                            <X className="h-3 w-3" /> Batal
+                          </Button>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                         <div className="space-y-2">
+                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Nama Teknologi *</label>
+                           <Input required value={techSkillForm.name} onChange={e => setTechSkillForm({...techSkillForm, name: e.target.value})} placeholder="Contoh: Next.js" className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background border-none px-4 sm:px-6" />
+                         </div>
+                         <div className="space-y-2">
+                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Ikon (Emoji/Teks) *</label>
+                           <Input required value={techSkillForm.icon} onChange={e => setTechSkillForm({...techSkillForm, icon: e.target.value})} placeholder="Contoh: ▲ atau 🔥" className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background border-none px-4 sm:px-6" />
+                         </div>
+                         <div className="space-y-2">
+                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Tingkat Penguasaan: {techSkillForm.level}%</label>
+                           <div className="flex items-center gap-3 px-1">
+                             <input type="range" min="1" max="100" value={techSkillForm.level} onChange={e => setTechSkillForm({...techSkillForm, level: parseInt(e.target.value) || 0})} className="flex-1 accent-primary h-2 cursor-pointer" />
+                             <span className="text-sm font-black text-primary tabular-nums w-10 text-right">{techSkillForm.level}%</span>
+                           </div>
+                         </div>
+                         <div className="space-y-2">
+                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Kategori *</label>
+                           <Select value={techSkillForm.category} onValueChange={v => setTechSkillForm({...techSkillForm, category: v})}>
+                              <SelectTrigger className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background border-none px-4 sm:px-6">
+                                 <SelectValue placeholder="Pilih Kategori" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                 <SelectItem value="Frontend">Frontend</SelectItem>
+                                 <SelectItem value="Backend">Backend</SelectItem>
+                                 <SelectItem value="Tools">Tools/DevOps</SelectItem>
+                                 <SelectItem value="Design">Design</SelectItem>
+                                 <SelectItem value="Database">Database</SelectItem>
+                                 <SelectItem value="Mobile">Mobile</SelectItem>
+                                 <SelectItem value="Other">Lainnya</SelectItem>
+                              </SelectContent>
+                           </Select>
+                         </div>
+                         <div className="space-y-2 sm:col-span-2">
+                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Warna Gradient (Tailwind)</label>
+                           <div className="flex gap-3 items-center">
+                             <Input required value={techSkillForm.color} onChange={e => setTechSkillForm({...techSkillForm, color: e.target.value})} placeholder="from-cyan-400 to-blue-500" className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background border-none px-4 sm:px-6 flex-1" />
+                             <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br ${techSkillForm.color} shrink-0 shadow-lg`} />
+                           </div>
+                           <div className="flex flex-wrap gap-1.5 px-1 mt-2">
+                             {[
+                               { label: 'Blue', value: 'from-blue-400 to-blue-600' },
+                               { label: 'Cyan', value: 'from-cyan-400 to-blue-500' },
+                               { label: 'Green', value: 'from-green-400 to-emerald-600' },
+                               { label: 'Purple', value: 'from-purple-400 to-pink-500' },
+                               { label: 'Orange', value: 'from-amber-400 to-orange-500' },
+                               { label: 'Red', value: 'from-red-400 to-orange-500' },
+                               { label: 'Teal', value: 'from-teal-400 to-cyan-500' },
+                               { label: 'Yellow', value: 'from-yellow-400 to-yellow-500' },
+                               { label: 'Pink', value: 'from-pink-400 to-rose-500' },
+                               { label: 'Gray', value: 'from-gray-300 to-gray-500' },
+                             ].map(preset => (
+                               <button
+                                 key={preset.value}
+                                 type="button"
+                                 onClick={() => setTechSkillForm({...techSkillForm, color: preset.value})}
+                                 className={cn(
+                                   "px-2.5 py-1 rounded-lg text-[9px] font-bold uppercase transition-all",
+                                   techSkillForm.color === preset.value 
+                                     ? "bg-primary text-primary-foreground shadow-md" 
+                                     : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                                 )}
+                               >{preset.label}</button>
+                             ))}
+                           </div>
+                         </div>
+                      </div>
+                      <Button type="submit" className="h-12 sm:h-14 w-full rounded-xl sm:rounded-2xl font-black uppercase gap-2">
+                         {editingTechSkillId ? <Edit3 className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                         {editingTechSkillId ? 'Simpan Perubahan' : 'Tambahkan Skill'}
+                      </Button>
+                   </form>
+
+                   {/* ── Skills List ── */}
+                   {techSkills.length === 0 ? (
+                     <div className="text-center py-16 space-y-4">
+                       <Terminal className="h-12 w-12 text-muted-foreground/30 mx-auto" />
+                       <p className="text-sm text-muted-foreground">Belum ada skill. Tambahkan dari form di atas.</p>
+                     </div>
+                   ) : (
+                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        {techSkills.map(skill => (
+                           <div key={skill.id} className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-muted/30 border border-border/50 relative group hover:border-primary/20 transition-colors">
+                              <div className="flex items-start gap-3 mb-3">
+                                 <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center text-base shrink-0 bg-gradient-to-br ${skill.color} shadow-md`}>
+                                    <span className="drop-shadow-sm">{skill.icon}</span>
+                                 </div>
+                                 <div className="flex-1 min-w-0">
+                                    <h4 className="font-bold text-sm leading-tight truncate">{skill.name}</h4>
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                      <span className="text-[9px] font-black uppercase text-muted-foreground">{skill.category}</span>
+                                      <span className="text-[9px] font-bold text-primary tabular-nums">{skill.level}%</span>
+                                    </div>
+                                 </div>
+                                 <div className="flex gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
+                                    <Button size="icon" variant="secondary" className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg shadow-md" onClick={() => startEditTechSkill(skill)}><Edit3 className="h-3 w-3" /></Button>
+                                    <Button size="icon" variant="destructive" className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg shadow-md" onClick={() => deleteTechSkill(skill.id!)}><Trash2 className="h-3 w-3" /></Button>
+                                 </div>
+                              </div>
+                              <div className="w-full bg-muted rounded-full h-1.5">
+                                <div className={`h-1.5 rounded-full bg-gradient-to-r ${skill.color} transition-all duration-500`} style={{ width: `${skill.level}%` }} />
+                              </div>
+                           </div>
+                        ))}
+                     </div>
+                   )}
+                </CardContent>
+             </Card>
+          </TabsContent>
+
           <TabsContent value="system" className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
-             <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
-                <CardHeader className="p-0 pb-10"><CardTitle className="text-3xl font-black  tracking-normal uppercase">Infrastruktur & Maintenance</CardTitle></CardHeader>
-                <CardContent className="p-0 flex gap-6">
-                  <Button variant="outline" onClick={backupData} className="flex-1 h-40 flex-col gap-5 rounded-[2.5rem] bg-card border-none hover:bg-muted/30">
-                    <Download className="h-8 w-8 text-primary" />
+             <Card className="rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-10 bg-card border-none shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1.5 sm:h-2 bg-gradient-to-r from-gray-400 to-gray-600" />
+                <CardHeader className="px-0 pt-0">
+                  <CardTitle className="text-2xl sm:text-3xl font-black tracking-normal uppercase">Infrastruktur & Maintenance</CardTitle>
+                  <CardDescription className="mt-1">Cadangkan dan pulihkan data portofolio Anda.</CardDescription>
+                </CardHeader>
+                <CardContent className="px-0 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                  <Button variant="outline" onClick={backupData} className="h-32 sm:h-40 flex-col gap-4 sm:gap-5 rounded-2xl sm:rounded-[2.5rem] bg-muted/20 border border-border/50 hover:bg-muted/40 hover:border-primary/20 transition-all">
+                    <Download className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
                     <div className="text-center">
                       <span className="text-[10px] font-black uppercase block">Ekspor Seluruh Data (JSON)</span>
                       <p className="text-[8px] text-muted-foreground mt-1">Unduh cadangan data portofolio</p>
                     </div>
                   </Button>
-                  <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="flex-1 h-40 flex-col gap-5 rounded-[2.5rem] bg-card border-none hover:bg-muted/30">
-                    <Upload className="h-8 w-8 text-accent" />
+                  <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="h-32 sm:h-40 flex-col gap-4 sm:gap-5 rounded-2xl sm:rounded-[2.5rem] bg-muted/20 border border-border/50 hover:bg-muted/40 hover:border-accent/20 transition-all">
+                    <Upload className="h-7 w-7 sm:h-8 sm:w-8 text-accent" />
                     <div className="text-center">
                       <span className="text-[10px] font-black uppercase block">Pulihkan Arsitektur</span>
                       <p className="text-[8px] text-muted-foreground mt-1">Impor data dari berkas eksternal</p>

@@ -267,14 +267,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="id" suppressHydrationWarning style={{ scrollBehavior: 'smooth' }}>
       <head>
         <meta name="google-site-verification" content="cu0oN6kGs748IQbeUkW1eFLhaKDJwYpJ6Gn9daxm9tk" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-body antialiased theme-transition`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-body antialiased theme-transition`} suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          suppressHydrationWarning
+        />
         <FirebaseClientProvider>
           <LanguageProvider>
             <ThemeProvider>

@@ -11,6 +11,7 @@ import { Globe, Palette, LogIn, Menu, X, ChevronDown } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { useProjectStore } from './ProjectStore';
+import { useUser } from '@/firebase';
 import { cn } from '@/lib/utils';
 
 const MotionLink = motion.create(Link);
@@ -19,8 +20,10 @@ export const Navbar = () => {
   const { t, language, setLanguage } = useLanguage();
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
+  const { user } = useUser();
   const { messages } = useProjectStore();
-  const unreadCount = messages.length;
+  // Only show notification badge if user is authenticated (admin logged in)
+  const unreadCount = user ? messages.length : 0;
   const [logoClicks, setLogoClicks] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -163,7 +166,7 @@ export const Navbar = () => {
             </DropdownMenu>
           </div>
 
-          <Link href="/admin/login" className="relative">
+          <Link href={user ? "/admin" : "/admin/login"} className="relative">
             <Button variant="outline" size="sm" className="hidden md:flex gap-2 rounded-2xl border-primary/20 hover:bg-primary/10 h-10 px-6 text-[10px] font-black uppercase tracking-widest">
               <LogIn className="h-4 w-4" />
               {t.navAdmin}
@@ -233,11 +236,16 @@ export const Navbar = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-               <Link href="/admin/login" onClick={() => setIsMobileMenuOpen(false)} className="flex-1 min-w-[120px]">
+               <Link href={user ? "/admin" : "/admin/login"} onClick={() => setIsMobileMenuOpen(false)} className="flex-1 min-w-[120px] relative">
                 <Button className="w-full h-12 sm:h-14 rounded-2xl gap-2 sm:gap-3 font-black uppercase tracking-widest text-sm sm:text-base">
                   <LogIn className="h-4 w-4 sm:h-5 sm:w-5" />
                   {t.navAdmin}
                 </Button>
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[9px] font-black flex items-center justify-center shadow-lg shadow-destructive/30">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
               </Link>
             </div>
           </div>

@@ -1,21 +1,24 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 export const CustomCursor = () => {
   const cursorRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
-  const [isHovering, setIsHovering] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [hasMoved, setHasMoved] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const hasMovedRef = useRef(false);
+  const isHoveringRef = useRef(false);
 
+  // Step 1: detect pointer device (only toggles visibility, no ref access)
   useEffect(() => {
-    // Only show custom cursor on desktop with pointer (no touch)
     if (typeof window === 'undefined') return;
     const mql = window.matchMedia('(hover: hover) and (pointer: fine)');
-    if (!mql.matches) return;
+    if (mql.matches) setIsDesktop(true);
+  }, []);
 
-    setIsVisible(true);
+  // Step 2: attach listeners once DOM elements exist (isDesktop triggers re-render → refs are populated)
+  useEffect(() => {
+    if (!isDesktop) return;
 
     const cursor = cursorRef.current;
     const ring = ringRef.current;
@@ -28,7 +31,13 @@ export const CustomCursor = () => {
     const onMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      if (!hasMoved) setHasMoved(true);
+
+      if (!hasMovedRef.current) {
+        hasMovedRef.current = true;
+        cursor.style.opacity = '1';
+        ring.style.opacity = '1';
+      }
+
       // Dot follows instantly
       cursor.style.transform = `translate(${mouseX - 4}px, ${mouseY - 4}px)`;
     };
@@ -37,8 +46,14 @@ export const CustomCursor = () => {
     const animateRing = () => {
       ringX += (mouseX - ringX) * 0.15;
       ringY += (mouseY - ringY) * 0.15;
-      const scale = isHovering ? 1.8 : 1;
-      ring.style.transform = `translate(${ringX - 20}px, ${ringY - 20}px) scale(${scale})`;
+      const scale = isHoveringRef.current ? 1.8 : 1;
+      const size = isHoveringRef.current ? 60 : 40;
+      ring.style.width = `${size}px`;
+      ring.style.height = `${size}px`;
+      ring.style.borderColor = isHoveringRef.current
+        ? 'rgba(255,255,255,0.8)'
+        : 'rgba(255,255,255,0.5)';
+      ring.style.transform = `translate(${ringX - size / 2}px, ${ringY - size / 2}px) scale(${scale})`;
       raf = requestAnimationFrame(animateRing);
     };
 
@@ -46,14 +61,14 @@ export const CustomCursor = () => {
     const onMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.closest('a, button, [role="button"], input, textarea, select, [data-cursor-hover]')) {
-        setIsHovering(true);
+        isHoveringRef.current = true;
       }
     };
 
     const onMouseOut = (e: MouseEvent) => {
       const target = e.relatedTarget as HTMLElement | null;
       if (!target || !target.closest('a, button, [role="button"], input, textarea, select, [data-cursor-hover]')) {
-        setIsHovering(false);
+        isHoveringRef.current = false;
       }
     };
 
@@ -68,9 +83,9 @@ export const CustomCursor = () => {
       document.removeEventListener('mouseout', onMouseOut);
       cancelAnimationFrame(raf);
     };
-  }, [isHovering, hasMoved]);
+  }, [isDesktop]);
 
-  if (!isVisible) return null;
+  if (!isDesktop) return null;
 
   return (
     <>
@@ -83,8 +98,10 @@ export const CustomCursor = () => {
           height: 8,
           borderRadius: '50%',
           backgroundColor: 'white',
-          opacity: hasMoved ? 1 : 0,
+          opacity: 0,
+          transform: 'translate(-100px, -100px)',
           transition: 'opacity 0.3s ease',
+          willChange: 'transform',
         }}
       />
       {/* Ring */}
@@ -96,13 +113,10 @@ export const CustomCursor = () => {
           height: 40,
           borderRadius: '50%',
           border: '1.5px solid rgba(255,255,255,0.5)',
-          opacity: hasMoved ? 1 : 0,
+          opacity: 0,
+          transform: 'translate(-100px, -100px)',
           transition: 'opacity 0.3s ease, width 0.3s ease, height 0.3s ease, border-color 0.3s ease',
-          ...(isHovering ? { 
-            width: 60, 
-            height: 60, 
-            borderColor: 'rgba(255,255,255,0.8)',
-          } : {}),
+          willChange: 'transform',
         }}
       />
       {/* Hide default cursor via CSS */}
