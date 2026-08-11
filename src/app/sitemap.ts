@@ -1,10 +1,10 @@
 import { MetadataRoute } from 'next'
 
-const BASE_URL = 'https://nara-andra-tyaga.vercel.app';
+const BASE_URL = 'https://naraandratyaga.my.id';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  
+
   return [
     // ── Homepage — highest priority, crawled weekly
     {
