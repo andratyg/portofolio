@@ -2,7 +2,7 @@
 "use client"
 
 import React, { createContext, useContext } from 'react';
-import { Project, Certificate, PortfolioStats, ProfileData, Testimonial, Experience, ContactMessage } from '@/lib/types';
+import { Project, Certificate, PortfolioStats, ProfileData, Testimonial, Experience, ContactMessage, TechSkill } from '@/lib/types';
 import { useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
 import { collection, doc, writeBatch } from 'firebase/firestore';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -29,6 +29,9 @@ interface ProjectStoreType {
   deleteExperience: (id: string) => void;
   deleteMessage: (id: string) => void;
   updateProfileAndStats: (newProfile: ProfileData, newStats: PortfolioStats) => void;
+  techSkills: TechSkill[];
+  addTechSkill: (skill: TechSkill) => void;
+  deleteTechSkill: (id: string) => void;
   backupData: () => void;
   restoreData: (json: string) => Promise<void>;
 }
@@ -71,6 +74,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const testsQuery = useMemoFirebase(() => collection(firestore, 'testimonials'), [firestore]);
   const journeyQuery = useMemoFirebase(() => collection(firestore, 'careerTimelineEntries'), [firestore]);
   const messagesQuery = useMemoFirebase(() => collection(firestore, 'messages'), [firestore]);
+  const techSkillsQuery = useMemoFirebase(() => collection(firestore, 'techSkills'), [firestore]);
   const profileDocRef = useMemoFirebase(() => doc(firestore, 'portfolioOwner', 'profile'), [firestore]);
 
   const { data: projectsData, isLoading: loadingProjects, error: errorProjects } = useCollection<Project>(projectsQuery);
@@ -78,12 +82,21 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const { data: testsData, isLoading: loadingTests, error: errorTests } = useCollection<Testimonial>(testsQuery);
   const { data: journeyData, isLoading: loadingJourney, error: errorJourney } = useCollection<Experience>(journeyQuery);
   const { data: messagesData, isLoading: loadingMessages, error: errorMessages } = useCollection<ContactMessage>(messagesQuery);
+  const { data: techSkillsData, isLoading: loadingTechSkills, error: errorTechSkills } = useCollection<TechSkill>(techSkillsQuery);
   const { data: profileData, isLoading: loadingProfile, error: errorProfile } = useDoc<any>(profileDocRef);
 
   const projects = projectsData || [];
   const testimonials = testsData || [];
   const experiences = journeyData || [];
   const messages = messagesData || [];
+  const techSkills: TechSkill[] = (techSkillsData || []).map((s: any) => ({
+    id: s.id,
+    name: s.name || '',
+    icon: s.icon || '⚡',
+    level: s.level || 50,
+    color: s.color || 'from-blue-400 to-blue-600',
+    category: s.category || 'Other',
+  }));
   const certificates: Certificate[] = (certsData || []).map((c: any) => ({
     id: c.id,
     titleId: c.titleId || '',
@@ -125,8 +138,8 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     clientSatisfaction: profileData.clientSatisfaction || defaultStats.clientSatisfaction
   } : defaultStats;
 
-  const isLoading = loadingProjects || loadingCerts || loadingTests || loadingJourney || loadingProfile || loadingMessages;
-  const error = errorProjects || errorCerts || errorTests || errorJourney || errorProfile || errorMessages;
+  const isLoading = loadingProjects || loadingCerts || loadingTests || loadingJourney || loadingProfile || loadingMessages || loadingTechSkills;
+  const error = errorProjects || errorCerts || errorTests || errorJourney || errorProfile || errorMessages || errorTechSkills;
 
   const backupData = () => {
     const data = {
@@ -201,6 +214,8 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const addExperience = (exp: Experience) => setDocumentNonBlocking(doc(firestore, 'careerTimelineEntries', exp.id), exp, { merge: true });
   const deleteExperience = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'careerTimelineEntries', id));
   const deleteMessage = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'messages', id));
+  const addTechSkill = (skill: TechSkill) => setDocumentNonBlocking(doc(firestore, 'techSkills', skill.id), { ...skill, updatedAt: new Date().toISOString() }, { merge: true });
+  const deleteTechSkill = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'techSkills', id));
 
   const updateProfileAndStats = (newProfile: ProfileData, newStats: PortfolioStats) => {
     const dataToUpdate = {
@@ -231,10 +246,10 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   return (
     <ProjectStoreContext.Provider value={{ 
-      projects, certificates, testimonials, experiences, messages, stats, profile, isLoading, error,
+      projects, certificates, testimonials, experiences, messages, stats, profile, techSkills, isLoading, error,
       addProject, deleteProject, setFeaturedProject, addCertificate, deleteCertificate,
       addTestimonial, deleteTestimonial, addExperience, deleteExperience,
-      deleteMessage, updateProfileAndStats, backupData, restoreData
+      deleteMessage, updateProfileAndStats, addTechSkill, deleteTechSkill, backupData, restoreData
     }}>
       {children}
     </ProjectStoreContext.Provider>

@@ -7,6 +7,11 @@ import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
 import { SecurityProvider } from '@/components/SecurityProvider';
 import { ScrollProgressButton } from '@/components/ScrollProgressButton';
+import { SplashScreen } from '@/components/SplashScreen';
+import { CustomCursor } from '@/components/CustomCursor';
+import { WebVitalsReporter } from '@/components/WebVitalsReporter';
+import { PageTransition } from '@/components/PageTransition';
+import { ServiceWorkerRegistrar } from '@/components/ServiceWorkerRegistrar';
 
 // ─── Fonts ───────────────────────────────────────────────────────────────────
 const inter = Inter({
@@ -35,7 +40,7 @@ export const viewport: Viewport = {
 };
 
 // ─── SEO Constants ───────────────────────────────────────────────────────────
-const BASE_URL   = 'https://nara-andra-tyaga.vercel.app';
+const BASE_URL   = 'https://naraandratyaga.my.id';
 const FULL_NAME  = 'Nara Andra Tyaga';
 const NICKNAME   = 'Andra';
 const ROLE       = 'Web Developer & Student';
@@ -274,10 +279,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <LanguageProvider>
             <ThemeProvider>
               <SecurityProvider>
-                <div className="print:hidden overflow-x-hidden w-full">{children}</div>
+                <SplashScreen />
+                <CustomCursor />
+                <div className="print:hidden overflow-x-hidden w-full">
+                  <PageTransition>{children}</PageTransition>
+                </div>
                 <div className="hidden print:block print:p-8">{children}</div>
                 <Toaster />
                 <ScrollProgressButton />
+                <WebVitalsReporter />
+                <ServiceWorkerRegistrar />
               </SecurityProvider>
             </ThemeProvider>
           </LanguageProvider>

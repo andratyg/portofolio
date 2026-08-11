@@ -10,6 +10,7 @@ import { Button } from './ui/button';
 import { Globe, Palette, LogIn, Menu, X, ChevronDown } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
+import { useProjectStore } from './ProjectStore';
 import { cn } from '@/lib/utils';
 
 const MotionLink = motion.create(Link);
@@ -18,6 +19,8 @@ export const Navbar = () => {
   const { t, language, setLanguage } = useLanguage();
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
+  const { messages } = useProjectStore();
+  const unreadCount = messages.length;
   const [logoClicks, setLogoClicks] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -160,11 +163,16 @@ export const Navbar = () => {
             </DropdownMenu>
           </div>
 
-          <Link href="/admin/login">
+          <Link href="/admin/login" className="relative">
             <Button variant="outline" size="sm" className="hidden md:flex gap-2 rounded-2xl border-primary/20 hover:bg-primary/10 h-10 px-6 text-[10px] font-black uppercase tracking-widest">
               <LogIn className="h-4 w-4" />
               {t.navAdmin}
             </Button>
+            {unreadCount > 0 && (
+              <span className="hidden md:flex absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[9px] font-black items-center justify-center animate-in zoom-in duration-300 shadow-lg shadow-destructive/30">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
           </Link>
 
           <Button 

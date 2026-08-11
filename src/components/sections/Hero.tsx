@@ -1,13 +1,14 @@
 
 "use client"
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { Button } from '../ui/button';
 import { ArrowRight, Download, Code2, Globe2, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useProjectStore } from '../ProjectStore';
+import { useTypewriter } from '@/hooks/use-typewriter';
 import { cn } from '@/lib/utils';
 
 export const Hero = () => {
@@ -15,6 +16,17 @@ export const Hero = () => {
   const { projects, profile } = useProjectStore();
   const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Typewriter for roles
+  const { displayText } = useTypewriter({
+    words: language === 'id'
+      ? ['Pengembang Full-Stack', 'Desainer UI/UX', 'Ahli Firebase', 'Kreator Digital']
+      : ['Full-Stack Developer', 'UI/UX Designer', 'Firebase Expert', 'Digital Creator'],
+    typeSpeed: 70,
+    deleteSpeed: 40,
+    delayBetweenWords: 2500,
+  });
 
   // Smooth tilt on the WRAPPER only — never on the rounded card itself
   const tiltRef = useRef({ x: 0, y: 0, raf: 0 });
@@ -22,6 +34,70 @@ export const Hero = () => {
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
 
+    // ── Particle Animation ──
+    const canvas = canvasRef.current;
+    let particleRaf: number;
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        const resize = () => {
+          canvas.width = canvas.offsetWidth;
+          canvas.height = canvas.offsetHeight;
+        };
+        resize();
+        window.addEventListener('resize', resize);
+
+        const particles: { x: number; y: number; vx: number; vy: number; size: number; opacity: number }[] = [];
+        const count = Math.min(60, Math.floor(canvas.width * canvas.height / 15000));
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: (Math.random() - 0.5) * 0.4,
+            size: Math.random() * 2 + 0.5,
+            opacity: Math.random() * 0.5 + 0.2,
+          });
+        }
+
+        const drawParticles = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          const style = getComputedStyle(document.documentElement);
+          const fg = style.getPropertyValue('--foreground').trim();
+
+          particles.forEach((p, i) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+            if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `hsla(${fg}, ${p.opacity})`;
+            ctx.fill();
+
+            // Draw connections
+            for (let j = i + 1; j < particles.length; j++) {
+              const dx = p.x - particles[j].x;
+              const dy = p.y - particles[j].y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < 120) {
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.strokeStyle = `hsla(${fg}, ${0.08 * (1 - dist / 120)})`;
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+              }
+            }
+          });
+          particleRaf = requestAnimationFrame(drawParticles);
+        };
+        drawParticles();
+      }
+    }
+
+    // ── Mouse tilt ──
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth  - 0.5) * 14;
       const y = (e.clientY / window.innerHeight - 0.5) * 10;
@@ -51,6 +127,7 @@ export const Hero = () => {
       clearTimeout(timer);
       window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(tiltRef.current.raf);
+      if (particleRaf) cancelAnimationFrame(particleRaf);
     };
   }, []);
 
@@ -68,14 +145,12 @@ export const Hero = () => {
         <p>Nara Andra Tyaga (biasa dipanggil Andra atau NAT) adalah seorang Web Developer muda asal Bogor, Indonesia. Saat ini menempuh pendidikan di SMK Wikrama Bogor mengambil jurusan PPLG. Ahli dalam Next.js, React, UI/UX, dan Firebase.</p>
       </div>
 
-      {/* ── Background: dot grid + orbs ─────────────────────────── */}
+      {/* ── Background: particles + orbs ─────────────────────────── */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div
-          className="absolute inset-0 opacity-[0.025]"
-          style={{
-            backgroundImage: 'radial-gradient(circle, hsl(var(--foreground)) 1px, transparent 1px)',
-            backgroundSize: '30px 30px',
-          }}
+        {/* Particle canvas */}
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full opacity-[0.12]"
         />
         {/* Orbs — tilt via direct DOM, no React re-render */}
         <div
@@ -110,9 +185,12 @@ export const Hero = () => {
             </span>
           </div>
 
-          {/* Name */}
-          <p className="text-base sm:text-lg font-semibold text-muted-foreground mb-3 tracking-wide">
+          {/* Name + Typewriter role */}
+          <p className="text-base sm:text-lg font-semibold text-muted-foreground mb-1 tracking-wide">
             {profile.name || "Nara Andra Tyaga"}
+          </p>
+          <p className="text-sm sm:text-base font-medium text-primary mb-3 h-6">
+            {displayText}<span className="inline-block w-0.5 h-4 bg-primary ml-0.5 animate-pulse" />
           </p>
 
           {/* Headline — staggered word reveal */}

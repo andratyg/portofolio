@@ -95,3 +95,12 @@ export interface AdminUser {
   email: string;
   role: 'super' | 'editor';
 }
+
+export interface TechSkill {
+  id: string;
+  name: string;
+  icon: string;
+  level: number;
+  color: string;
+  category: string;
+}
