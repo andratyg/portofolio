@@ -22,7 +22,7 @@ export const About = () => {
 
   const profileImage = isValidUrl(profile.profilePictureUrl) 
     ? profile.profilePictureUrl 
-    : "https://picsum.photos/seed/karyapro-profile/600/800";
+    : "/profile-fallback.jpg";
 
   return (
     <section id="about" className="py-16 md:py-20 bg-card overflow-hidden">

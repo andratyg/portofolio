@@ -46,7 +46,7 @@ const defaultProfile: ProfileData = {
   roleEn: 'Full-Stack Developer',
   aboutMeId: 'Saya seorang pengembang full-stack dengan hasrat untuk membangun aplikasi web yang indah dan fungsional.',
   aboutMeEn: 'I am a full-stack developer with a passion for building beautiful and functional web applications.',
-  profilePictureUrl: 'https://firebasestorage.googleapis.com/v0/b/personalsite-ad939.appspot.com/o/profile%2Fphoto.jpg?alt=media&token=c1a3258a-e555-4428-a63b-31d167c61f25',
+  profilePictureUrl: '/profile-fallback.jpg',
   heroTitleId: 'Rekayasa Dampak Digital',
   heroTitleEn: 'Engineering Digital Impact',
   heroSubtitleId: 'Saya merancang dan mengembangkan solusi perangkat lunak yang andal, dapat diskalakan, dan berpusat pada pengguna, mengubah ide-ide kompleks menjadi kenyataan digital.',

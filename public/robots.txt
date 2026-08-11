@@ -5,4 +5,4 @@ Disallow: /admin/login
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://nara-andra-tyaga.vercel.app/sitemap.xml
+Sitemap: https://naraandratyaga.my.id/sitemap.xml
