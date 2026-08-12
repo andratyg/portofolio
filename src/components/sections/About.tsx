@@ -5,6 +5,7 @@ import React from 'react';
 import { useLanguage } from '../LanguageContext';
 import { useProjectStore } from '../ProjectStore';
 import Image from 'next/image';
+import { ScrollReveal } from '../ui/ScrollReveal';
 
 export const About = () => {
   const { t, language } = useLanguage();
@@ -30,7 +31,7 @@ export const About = () => {
     <section id="about" className="py-16 md:py-20 bg-card overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          <div className="relative group max-w-sm mx-auto lg:max-w-none w-full">
+          <ScrollReveal direction="right" className="relative group max-w-sm mx-auto lg:max-w-none w-full">
             <div className="absolute -inset-4 bg-gradient-to-tr from-primary to-accent rounded-[2.5rem] blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
             <div className="relative aspect-[3/4] border-4 border-background rounded-[2.5rem] overflow-hidden [transform:translateZ(0)]">
               <div className="card-image-zoom rounded-none group-hover:[transform:scale(1.05)_translateZ(0)] transition-transform duration-1000 ease-out">
@@ -47,8 +48,8 @@ export const About = () => {
                   />
               </div>
             </div>
-          </div>
-          <div className="space-y-4 sm:space-y-6 overflow-hidden">
+          </ScrollReveal>
+          <ScrollReveal direction="left" delay={0.2} className="space-y-4 sm:space-y-6 overflow-hidden">
             <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-black tracking-wider uppercase">
               {t.aboutMeTitle}
             </div>
@@ -59,7 +60,7 @@ export const About = () => {
             <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-prose break-words">
               {aboutText}
             </p>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

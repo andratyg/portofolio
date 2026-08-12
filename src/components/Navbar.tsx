@@ -28,6 +28,7 @@ export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [activeSection, setActiveSection] = useState('/');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,6 +43,20 @@ export const Navbar = () => {
       }
       
       setLastScrollY(currentScrollY);
+
+      // ScrollSpy logic
+      const sections = ['portfolio', 'journey', 'contact'];
+      let current = '/';
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= 150 && rect.bottom >= 150) {
+            current = `#${section}`;
+          }
+        }
+      }
+      setActiveSection(current);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -108,15 +123,25 @@ export const Navbar = () => {
             NAT
           </MotionLink>
           
-          <div className="hidden md:flex gap-8">
+          <div className="hidden md:flex gap-8 relative">
             {navItems.map((item) => (
               <Link 
                 key={item.label} 
                 href={item.href}
                 onClick={(e) => handleSmoothScroll(e, item.href)}
-                className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-colors duration-200"
+                className={cn(
+                  "relative text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-200 py-2",
+                  activeSection === item.href ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                )}
               >
                 {item.label}
+                {activeSection === item.href && (
+                  <motion.div
+                    layoutId="activeNavIndicator"
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
               </Link>
             ))}
           </div>

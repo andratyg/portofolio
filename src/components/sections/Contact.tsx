@@ -9,16 +9,17 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Send, Linkedin, ExternalLink, Github, Instagram, Video, Mail, Loader2 } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa'; // Import WhatsApp icon
-import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
 import { collection, addDoc } from 'firebase/firestore';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 export const Contact = () => {
   const { t } = useLanguage();
   const { profile } = useProjectStore();
-  const { toast } = useToast();
   const db = useFirestore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,11 +29,12 @@ export const Contact = () => {
     const message = (form.elements.namedItem('message') as HTMLTextAreaElement).value;
     
     if (!email.includes('@')) {
-      toast({ variant: "destructive", title: "Invalid Email" });
+      alert("Invalid Email");
       return;
     }
 
     setIsSubmitting(true);
+    setIsSuccess(false);
     try {
       await addDoc(collection(db, 'messages'), {
         name,
@@ -40,10 +42,11 @@ export const Contact = () => {
         message,
         createdAt: new Date().toISOString()
       });
-      toast({ title: "Message Sent!", description: "Transmission successful. I will respond soon." });
+      setIsSuccess(true);
       form.reset();
+      setTimeout(() => setIsSuccess(false), 3000);
     } catch (error) {
-      toast({ variant: "destructive", title: "Transmission Failed", description: "Node error. Please try again." });
+      alert("Transmission Failed. Node error. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -91,12 +94,42 @@ export const Contact = () => {
           <div className="bg-background rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl text-foreground no-print">
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
-                <div className="space-y-2"><label htmlFor="name" className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactName}</label><Input id="name" required name="name" placeholder="User Alpha" className="h-11 sm:h-12 rounded-xl" /></div>
-                <div className="space-y-2"><label htmlFor="email" className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactEmail}</label><Input id="email" required type="email" name="email" placeholder="alpha@network.com" className="h-11 sm:h-12 rounded-xl" /></div>
+                <div className="relative group">
+                  <Input id="name" required name="name" placeholder="User Alpha" className="h-12 sm:h-14 rounded-xl peer placeholder-transparent bg-transparent border-2 border-border/50 focus:border-primary pt-4" />
+                  <label htmlFor="name" className="absolute left-4 top-4 sm:top-5 text-sm text-muted-foreground transition-all duration-300 peer-focus:-translate-y-3 sm:peer-focus:-translate-y-4 peer-focus:text-[10px] peer-focus:font-black peer-focus:text-primary peer-[:not(:placeholder-shown)]:-translate-y-3 sm:peer-[:not(:placeholder-shown)]:-translate-y-4 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:font-black cursor-text">
+                    {t.contactName}
+                  </label>
+                </div>
+                <div className="relative group">
+                  <Input id="email" required type="email" name="email" placeholder="alpha@network.com" className="h-12 sm:h-14 rounded-xl peer placeholder-transparent bg-transparent border-2 border-border/50 focus:border-primary pt-4" />
+                  <label htmlFor="email" className="absolute left-4 top-4 sm:top-5 text-sm text-muted-foreground transition-all duration-300 peer-focus:-translate-y-3 sm:peer-focus:-translate-y-4 peer-focus:text-[10px] peer-focus:font-black peer-focus:text-primary peer-[:not(:placeholder-shown)]:-translate-y-3 sm:peer-[:not(:placeholder-shown)]:-translate-y-4 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:font-black cursor-text">
+                    {t.contactEmail}
+                  </label>
+                </div>
               </div>
-              <div className="space-y-2"><label htmlFor="message" className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactMessage}</label><Textarea id="message" required name="message" placeholder="Input payload..." className="min-h-[120px] sm:min-h-[150px] rounded-xl" /></div>
-              <Button type="submit" className="w-full h-12 sm:h-14 rounded-2xl text-base sm:text-lg font-bold gap-2 bg-primary text-primary-foreground relative overflow-hidden group shimmer-btn hover:shadow-lg hover:shadow-primary/20 transition-[box-shadow] duration-300" disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <><span className="relative">{t.sendMessage}</span><Send className="relative h-5 w-5 group-hover:translate-x-0.5 transition-transform duration-300" /></>}
+              <div className="relative group">
+                <Textarea id="message" required name="message" placeholder="Input payload..." className="min-h-[120px] sm:min-h-[150px] rounded-xl peer placeholder-transparent bg-transparent border-2 border-border/50 focus:border-primary pt-6" />
+                <label htmlFor="message" className="absolute left-4 top-4 sm:top-5 text-sm text-muted-foreground transition-all duration-300 peer-focus:-translate-y-2 sm:peer-focus:-translate-y-3 peer-focus:text-[10px] peer-focus:font-black peer-focus:text-primary peer-[:not(:placeholder-shown)]:-translate-y-2 sm:peer-[:not(:placeholder-shown)]:-translate-y-3 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:font-black cursor-text">
+                  {t.contactMessage}
+                </label>
+              </div>
+              <Button type="submit" className={cn("w-full h-12 sm:h-14 rounded-2xl text-base sm:text-lg font-bold bg-primary text-primary-foreground relative overflow-hidden group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300", isSuccess && "bg-green-500 hover:bg-green-600")} disabled={isSubmitting || isSuccess}>
+                <AnimatePresence mode="wait">
+                  {isSubmitting ? (
+                    <motion.div key="loading" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                      <Loader2 className="h-5 w-5 animate-spin mx-auto" />
+                    </motion.div>
+                  ) : isSuccess ? (
+                    <motion.div key="success" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} className="flex items-center justify-center gap-2">
+                      <span>Message Sent!</span>
+                    </motion.div>
+                  ) : (
+                    <motion.div key="default" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center justify-center gap-2">
+                      <span className="relative">{t.sendMessage}</span>
+                      <Send className="relative h-5 w-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </Button>
             </form>
           </div>

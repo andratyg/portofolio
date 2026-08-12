@@ -7,10 +7,17 @@ import { Badge } from '../ui/badge';
 import { History, Briefcase, GraduationCap, Milestone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ParticleCanvas } from '../ui/ParticleCanvas';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 export const Timeline = () => {
   const { t, language } = useLanguage();
   const { experiences } = useProjectStore();
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start center", "end center"]
+  });
+  const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   const getIcon = (type?: string) => {
     switch(type) {
@@ -21,7 +28,7 @@ export const Timeline = () => {
   };
 
   return (
-    <section id="journey" className="py-16 md:py-24 bg-muted/20 relative overflow-hidden">
+    <section ref={containerRef} id="journey" className="py-16 md:py-24 bg-muted/20 relative overflow-hidden">
       <ParticleCanvas density={12000} className="opacity-60" />
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="max-w-4xl mx-auto">
@@ -36,30 +43,40 @@ export const Timeline = () => {
               No journey entries found.
             </div>
           ) : (
-            <div className="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent">
+            <div className="relative space-y-8">
+              {/* The Drawing Line */}
+              <motion.div 
+                className="absolute left-5 md:left-1/2 top-0 bottom-0 w-0.5 bg-primary origin-top z-0 -translate-x-px md:-translate-x-1/2"
+                style={{ scaleY: lineScale }}
+              />
+              {/* Faded background line for contrast */}
+              <div className="absolute left-5 md:left-1/2 top-0 bottom-0 w-0.5 bg-border/40 z-[-1] -translate-x-px md:-translate-x-1/2" />
+
               {experiences.map((exp, index) => {
                 const title = language === 'id' ? exp.titleId : (exp.titleEn || exp.titleId);
                 const description = language === 'id' ? exp.descriptionId : (exp.descriptionEn || exp.descriptionId);
                 
                 return (
-                  <div 
+                  <motion.div 
                     key={exp.id} 
+                    initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.1 }}
                     className={cn(
-                      "relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group",
-                      "animate-in fade-in slide-in-from-bottom duration-700"
+                      "relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
                     )}
-                    style={{ 
-                      transitionDelay: `${index * 50}ms`,
-                      animationDelay: `${index * 50}ms`
-                    }}
                   >
                     {/* Icon Circle */}
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full border bg-background shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 transition-transform group-hover:scale-110">
-                      <div className="w-3 h-3 rounded-full bg-primary"></div>
-                    </div>
+                    <motion.div 
+                      whileHover={{ scale: 1.2, rotate: 180 }}
+                      className="flex items-center justify-center w-10 h-10 rounded-full border border-primary/30 bg-background shadow-lg shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10"
+                    >
+                      <div className="w-3 h-3 rounded-full bg-primary shadow-[0_0_10px_rgba(59,130,246,0.8)]"></div>
+                    </motion.div>
 
                     {/* Content */}
-                    <div className="w-[calc(100%-3.5rem)] md:w-[45%] p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border bg-card shadow-sm group-hover:shadow-xl group-hover:shadow-primary/5 group-hover:border-primary/40 group-hover:-translate-y-1 transition-[transform,box-shadow,border-color] duration-400 ease-out [transform:translateZ(0)] will-change-[transform,box-shadow]">
+                    <div className="w-[calc(100%-3.5rem)] md:w-[45%] p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border bg-card shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:border-primary/40 hover:-translate-y-1 transition-all duration-400 ease-out z-10">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-[9px] sm:text-[10px] font-black text-primary bg-primary/10 px-2.5 sm:px-3 py-1 rounded-full uppercase tracking-widest">{exp.year}</span>
                       </div>
@@ -67,7 +84,7 @@ export const Timeline = () => {
                       <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-2 sm:mb-3">{exp.company}</p>
                       <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">{description}</p>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>

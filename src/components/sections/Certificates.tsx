@@ -21,8 +21,9 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel"
-import Autoplay from "embla-carousel-autoplay"
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const Certificates = () => {
   const { t, language } = useLanguage();
@@ -109,10 +110,19 @@ export const Certificates = () => {
   }, [certificates]);
 
   if (isLoading) return (
-    <div className="flex flex-col items-center justify-center space-y-4 min-h-[400px]">
-      <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Menyingkronkan Kredensial...</p>
-    </div>
+    <section id="certificates" className="py-16 md:py-24 bg-muted/30 relative">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="text-center mb-8 md:mb-12 space-y-4">
+          <div className="h-6 w-32 bg-card/80 animate-pulse rounded-full mx-auto" />
+          <div className="h-10 w-64 bg-card/80 animate-pulse rounded-xl mx-auto" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="h-64 bg-card/80 animate-pulse rounded-2xl" />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 
   if (error) return (
@@ -194,9 +204,20 @@ export const Certificates = () => {
                 {certificatePages.map((page, index) => (
                   <CarouselItem key={index}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-                      {page.map((cert) => (
-                        <CertificateCard key={cert.id} cert={cert} />
-                      ))}
+                      <AnimatePresence mode="popLayout">
+                        {page.map((cert, i) => (
+                          <motion.div
+                            key={cert.id}
+                            layout
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            transition={{ duration: 0.4, type: "spring", delay: i * 0.1 }}
+                          >
+                            <CertificateCard cert={cert} />
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
                     </div>
                   </CarouselItem>
                 ))}
@@ -231,9 +252,9 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
         <div className="cursor-pointer group h-full py-4">
           {/* interactive-card: proper border-radius + overflow-hidden hover, NO clipPath */}
           <Card className="interactive-card h-full shadow-lg bg-card flex flex-col">
-            <div className="relative aspect-[4/3] bg-muted">
+            <div className="relative aspect-[4/3] bg-muted overflow-hidden">
               {hasImage ? (
-                <div className="card-image-zoom">
+                <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-700 ease-out">
                   <Image 
                     src={cert.imageUrl!}
                     alt={title}

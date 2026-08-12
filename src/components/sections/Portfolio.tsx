@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { Project } from '@/lib/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const CATEGORIES = ['all', 'web', 'ui', 'backend'] as const;
 const SORT_OPTIONS = ['newest', 'oldest', 'asc', 'desc'] as const;
@@ -109,16 +110,26 @@ export const Portfolio = () => {
 
         {/* --- Filter & Search --- */}
         <div className="flex flex-col gap-4 mb-8 md:mb-12">
-          <div className="flex items-center justify-center flex-wrap gap-1.5 sm:gap-2 bg-card/50 p-1.5 sm:p-2 rounded-full border border-border/20 backdrop-blur-sm overflow-x-auto no-scrollbar">
+          <div className="flex items-center justify-center flex-wrap gap-1.5 sm:gap-2 bg-card/50 p-1.5 sm:p-2 rounded-full border border-border/20 backdrop-blur-sm overflow-x-auto no-scrollbar relative">
             {CATEGORIES.map(category => (
-              <Button
+              <button
                 key={category}
-                variant={filter === category ? 'default' : 'ghost'}
                 onClick={() => setFilter(category)}
-                className="capitalize rounded-full px-3 sm:px-6 py-2 text-xs sm:text-sm font-bold transition-all duration-300 shrink-0"
+                className={cn(
+                  "relative capitalize rounded-full px-4 sm:px-6 py-2 text-xs sm:text-sm font-bold transition-colors duration-300 shrink-0",
+                  filter === category ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                )}
               >
-                {t.projectCategories[category]}
-              </Button>
+                {filter === category && (
+                  <motion.div
+                    layoutId="portfolioActiveTab"
+                    className="absolute inset-0 bg-primary rounded-full z-0 shadow-md"
+                    initial={false}
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                <span className="relative z-10">{t.projectCategories[category]}</span>
+              </button>
             ))}
           </div>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full">
@@ -160,14 +171,23 @@ export const Portfolio = () => {
         ) : processedProjects.length > 0 ? (
           <div className="relative">
             <Carousel opts={{ align: "start", loop: true }} className="w-full">
-              <CarouselContent className="-ml-3 sm:-ml-4">
-                {processedProjects.map((project, idx) => (
-                  <CarouselItem key={project.id} className="pl-3 sm:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
-                    <div className="h-full">
-                      <ProjectCard project={project} index={idx} isVisible={isVisible} />
-                    </div>
-                  </CarouselItem>
-                ))}
+              <CarouselContent className="-ml-3 sm:-ml-4 py-4">
+                <AnimatePresence mode="popLayout">
+                  {processedProjects.map((project, idx) => (
+                    <CarouselItem key={project.id} className="pl-3 sm:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
+                      <motion.div 
+                        layout
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.4, type: "spring" }}
+                        className="h-full"
+                      >
+                        <ProjectCard project={project} index={idx} isVisible={isVisible} />
+                      </motion.div>
+                    </CarouselItem>
+                  ))}
+                </AnimatePresence>
               </CarouselContent>
               <CarouselPrevious className="hidden sm:flex -left-4 md:-left-6 h-10 w-10 sm:h-12 sm:w-12 bg-card/80 backdrop-blur-sm border-border/20 hover:bg-primary hover:text-primary-foreground" />
               <CarouselNext className="hidden sm:flex -right-4 md:-right-6 h-10 w-10 sm:h-12 sm:w-12 bg-card/80 backdrop-blur-sm border-border/20 hover:bg-primary hover:text-primary-foreground" />
@@ -202,9 +222,16 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
             {/* interactive-card handles: border-radius, overflow-hidden, hover lift, glow — NO clipPath */}
             <Card className="interactive-card h-full border-border/20 bg-card/70 backdrop-blur-xl flex flex-col">
               <div className="relative aspect-[16/10] bg-muted">
-                {/* card-image-zoom handles the zoom without clipPath */}
-                <div className="card-image-zoom rounded-none">
-                  <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover" />
+                <div className="relative h-56 sm:h-64 w-full overflow-hidden bg-muted">
+                  <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-700 ease-out">
+                    <Image
+                      src={project.imageUrl || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80'}
+                      alt={title || 'Project image'}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  </div>
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-400" />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">

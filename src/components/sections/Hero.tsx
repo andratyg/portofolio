@@ -11,6 +11,7 @@ import { useProjectStore } from '../ProjectStore';
 import { useTypewriter } from '@/hooks/use-typewriter';
 import { cn } from '@/lib/utils';
 import { ParticleCanvas } from '../ui/ParticleCanvas';
+import { motion } from 'framer-motion';
 
 export const Hero = () => {
   const { t, language } = useLanguage();
@@ -127,23 +128,30 @@ export const Hero = () => {
           </p>
 
           {/* Headline — staggered word reveal */}
-          <h1 className="text-[clamp(2.8rem,7.5vw,7rem)] font-black leading-[0.9] mb-7 tracking-tight">
+          <motion.h1 
+            initial="hidden"
+            animate="visible"
+            variants={{
+              visible: { transition: { staggerChildren: 0.1 } }
+            }}
+            className="text-[clamp(2.8rem,7.5vw,7rem)] font-black leading-[0.9] mb-7 tracking-tight"
+          >
             {heroTitle.split(' ').map((word, i) => (
-              <span
+              <motion.span
                 key={i}
+                variants={{
+                  hidden: { opacity: 0, y: 30 },
+                  visible: { opacity: 1, y: 0, transition: { type: 'spring', damping: 15, stiffness: 100 } }
+                }}
                 className={cn(
-                  "inline-block mr-[0.1em]",
-                  "animate-in fade-in slide-in-from-bottom-6 duration-700",
-                  i % 2 !== 0
-                    ? 'text-primary'
-                    : 'text-foreground'
+                  "inline-block mr-[0.2em]",
+                  i % 2 !== 0 ? 'text-primary' : 'text-foreground'
                 )}
-                style={{ animationDelay: `${150 + i * 90}ms`, animationFillMode: 'both' }}
               >
                 {word}
-              </span>
+              </motion.span>
             ))}
-          </h1>
+          </motion.h1>
 
           {/* Subtitle */}
           <div className="flex items-start gap-4 mb-9 max-w-lg">
@@ -156,29 +164,32 @@ export const Hero = () => {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 no-print">
             <Link href="#portfolio" className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto h-14 px-8 rounded-full gap-3 group relative overflow-hidden font-bold bg-primary text-primary-foreground
-                           hover:scale-[1.03] active:scale-[0.97]
-                           transition-[transform,box-shadow] duration-300 ease-out"
-              >
-                <span className="absolute inset-0 bg-white/0 group-hover:bg-white/8 transition-colors duration-300 rounded-full" />
-                <span className="relative">{t.viewProjects}</span>
-                <ArrowRight className="relative h-4 w-4 group-hover:translate-x-1 transition-transform duration-300 ease-out" />
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto h-14 px-8 rounded-full gap-3 group relative overflow-hidden font-bold bg-primary text-primary-foreground
+                             shadow-[0_0_0_rgba(var(--primary),0)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)]
+                             transition-[box-shadow] duration-300 ease-out"
+                >
+                  <span className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 rounded-full" />
+                  <span className="relative">{t.viewProjects}</span>
+                  <ArrowRight className="relative h-4 w-4 group-hover:translate-x-1 transition-transform duration-300 ease-out" />
+                </Button>
+              </motion.div>
             </Link>
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => window.print()}
-              className="w-full sm:w-auto h-14 px-8 rounded-full font-semibold gap-3
-                         border-border/40 hover:border-primary/50 hover:bg-primary/5
-                         hover:scale-[1.03] active:scale-[0.97]
-                         transition-[transform,border-color,background-color] duration-300 ease-out"
-            >
-              <Download className="h-4 w-4" />
-              {language === 'id' ? 'Unduh CV' : 'Download CV'}
-            </Button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => window.print()}
+                className="w-full sm:w-auto h-14 px-8 rounded-full font-semibold gap-3
+                           border-border/40 hover:border-primary/50 hover:bg-primary/5
+                           transition-[border-color,background-color] duration-300 ease-out"
+              >
+                <Download className="h-4 w-4" />
+                {language === 'id' ? 'Unduh CV' : 'Download CV'}
+              </Button>
+            </motion.div>
           </div>
 
           {/* Tech strip */}

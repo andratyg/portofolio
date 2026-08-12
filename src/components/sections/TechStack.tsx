@@ -5,6 +5,7 @@ import { useLanguage } from '../LanguageContext';
 import { useProjectStore } from '../ProjectStore';
 import { cn } from '@/lib/utils';
 import { TechSkill } from '@/lib/types';
+import { motion, useInView, useSpring, useTransform } from 'framer-motion';
 
 // Default tech stack — used as fallback when Firebase collection is empty
 const defaultTechStack: TechSkill[] = [
@@ -22,24 +23,31 @@ const defaultTechStack: TechSkill[] = [
   { id: 'vercel', name: 'Vercel', icon: '◆', level: 88, color: 'from-gray-300 to-gray-500', category: 'Tools' },
 ];
 
-const SkillCard = ({ tech, index, triggered }: { tech: TechSkill; index: number; triggered: boolean }) => {
-  const [progress, setProgress] = useState(0);
+function AnimatedProgressText({ value }: { value: number }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.5 });
+  const spring = useSpring(0, { bounce: 0, duration: 1500 });
+  const display = useTransform(spring, (current) => Math.floor(current));
 
   useEffect(() => {
-    if (!triggered) return;
-    const timer = setTimeout(() => {
-      setProgress(tech.level);
-    }, index * 80);
-    return () => clearTimeout(timer);
-  }, [triggered, tech.level, index]);
+    if (isInView) spring.set(value);
+  }, [isInView, spring, value]);
+
+  return <motion.span ref={ref}>{display}</motion.span>;
+}
+
+const SkillCard = ({ tech, index }: { tech: TechSkill; index: number }) => {
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, delay: index * 0.05 }}
+      whileHover={{ scale: 1.05, rotate: index % 2 === 0 ? 1 : -1 }}
       className={cn(
-        "glass-card p-4 sm:p-5 group hover:border-primary/30 transition-all duration-500",
-        "animate-in fade-in slide-in-from-bottom-4"
+        "glass-card p-4 sm:p-5 group hover:border-primary/30 transition-all duration-300"
       )}
-      style={{ animationDelay: `${index * 60}ms`, animationFillMode: 'both' }}
     >
       <div className="flex items-center gap-3 mb-3">
         <div 
@@ -63,41 +71,33 @@ const SkillCard = ({ tech, index, triggered }: { tech: TechSkill; index: number;
           <h3 className="font-bold text-sm truncate">{tech.name}</h3>
           <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest">{tech.category}</span>
         </div>
-        <span className="text-xs font-black text-primary tabular-nums">{progress}%</span>
+        <span className="text-xs font-black text-primary tabular-nums">
+          <AnimatedProgressText value={tech.level} />%
+        </span>
       </div>
       {/* Progress bar */}
       <div className="h-1.5 bg-muted/50 rounded-full overflow-hidden">
-        <div
-          className="h-full rounded-full bg-primary transition-all duration-1000 ease-out"
-          style={{ width: `${progress}%` }}
+        <motion.div
+          initial={{ width: 0 }}
+          whileInView={{ width: `${tech.level}%` }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.5, delay: index * 0.05, ease: "easeOut" }}
+          className="h-full rounded-full bg-primary"
         />
       </div>
-    </div>
+    </motion.div>
   );
 };
 
 export const TechStack = () => {
   const { language } = useLanguage();
   const { techSkills } = useProjectStore();
-  const [triggered, setTriggered] = useState(false);
-  const ref = useRef<HTMLElement>(null);
 
   // Use Firebase data if available, otherwise use defaults
   const skills = techSkills.length > 0 ? techSkills : defaultTechStack;
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setTriggered(true); observer.disconnect(); } },
-      { threshold: 0.15 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <section ref={ref} className="py-16 md:py-24 relative overflow-hidden">
+    <section className="py-16 md:py-24 relative overflow-hidden">
       <div className="section-divider absolute top-0 left-0 right-0" />
       <div className="container mx-auto px-4 sm:px-6">
         {/* Header */}
@@ -117,9 +117,9 @@ export const TechStack = () => {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 max-w-5xl mx-auto">
-          {skills.map((tech, i) => (
-            <SkillCard key={tech.id} tech={tech} index={i} triggered={triggered} />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+          {skills.map((tech, idx) => (
+            <SkillCard key={tech.id} tech={tech} index={idx} />
           ))}
         </div>
       </div>
