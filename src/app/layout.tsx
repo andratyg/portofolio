@@ -54,18 +54,11 @@ const OG_IMAGE    = `${BASE_URL}/og-image.png`;
 // ─── Metadata ────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
-  alternates: {
-    canonical: '/',
-  },
   title: {
     default: TITLE,
     template: `%s | ${FULL_NAME}`,
   },
   description: DESCRIPTION,
-  robots: {
-    index: false,
-    follow: false,
-  },
   keywords: [
     'Nara Andra Tyaga',
     'Andra Tyaga',
@@ -84,11 +77,11 @@ export const metadata: Metadata = {
   publisher: FULL_NAME,
 
   robots: {
-    index: true,
-    follow: true,
+    index: false,
+    follow: false,
     googleBot: {
-      index: true,
-      follow: true,
+      index: false,
+      follow: false,
       'max-video-preview': -1,
       'max-image-preview': 'large',
       'max-snippet': -1,
@@ -96,7 +89,7 @@ export const metadata: Metadata = {
   },
 
   alternates: {
-    canonical: BASE_URL,
+    canonical: '/',
     languages: {
       'id-ID': BASE_URL,
       'en-US': `${BASE_URL}?lang=en`,
