@@ -54,50 +54,29 @@ const OG_IMAGE    = `${BASE_URL}/og-image.png`;
 // ─── Metadata ────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
+  alternates: {
+    canonical: '/',
+  },
   title: {
     default: TITLE,
     template: `%s | ${FULL_NAME}`,
   },
   description: DESCRIPTION,
-
-  // Covers all search variants: "Nara Andra Tyaga", "Andra", "Andra Tyaga", "Tyaga", "NAT"
+  robots: {
+    index: false,
+    follow: false,
+  },
   keywords: [
     'Nara Andra Tyaga',
     'Andra Tyaga',
-    'Nara Andra',
-    NICKNAME,
-    'Tyaga',
-    'NAT',
-    'nara andra tyaga portofolio',
-    'andra tyaga web developer',
-    'andra smk wikrama',
-    'andra bogor',
-    SCHOOL,
-    PROGRAM,
-    'PPLG Wikrama',
-    'SMK Wikrama PPLG',
-    'Web Developer Indonesia',
+    'Web Developer',
     'Next.js Developer',
     'React Developer',
-    'TypeScript Developer',
-    'Firebase Developer',
-    'Frontend Developer Indonesia',
-    'Portofolio Siswa PPLG',
-    'Bogor Web Developer',
-    'Portofolio Web Developer',
-    'UI/UX Design',
-    'Software Engineer Indonesia',
     'Frontend Engineer',
-    'Web Design Bogor',
-    'Jasa Pembuatan Website Bogor',
-    'Pelajar SMK Wikrama',
-    'Profil Nara Andra Tyaga',
-    'Biodata Nara Andra Tyaga',
-    'Siapa Nara Andra Tyaga',
-    'Andra Tyaga PPLG',
-    'Andra Web Design',
-    'Karya Pro',
-    'KaryaPro'
+    'UI/UX Design',
+    'Firebase Developer',
+    'SMK Wikrama PPLG',
+    'Portofolio Web Developer'
   ],
 
   authors: [{ name: FULL_NAME, url: BASE_URL }],
@@ -283,10 +262,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <SplashScreen />
                 <ThemeDecorations />
                 <CustomCursor />
-                <div className="print:hidden overflow-x-hidden w-full">
+                <div className="overflow-x-hidden w-full">
                   <PageTransition>{children}</PageTransition>
                 </div>
-                <div className="hidden print:block print:p-8">{children}</div>
                 <Toaster />
                 <ScrollProgressButton />
                 <WebVitalsReporter />

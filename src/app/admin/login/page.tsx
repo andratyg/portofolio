@@ -21,6 +21,39 @@ export default function AdminLogin() {
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
 
+  const [lockoutTime, setLockoutTime] = useState<number | null>(null);
+  const [attempts, setAttempts] = useState(0);
+
+  useEffect(() => {
+    const savedLockout = localStorage.getItem('admin_lockout_until');
+    const savedAttempts = localStorage.getItem('admin_login_attempts');
+    if (savedLockout) {
+      const lockoutEnd = parseInt(savedLockout, 10);
+      if (Date.now() < lockoutEnd) {
+        setLockoutTime(lockoutEnd);
+      } else {
+        localStorage.removeItem('admin_lockout_until');
+        localStorage.removeItem('admin_login_attempts');
+      }
+    } else if (savedAttempts) {
+      setAttempts(parseInt(savedAttempts, 10));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (lockoutTime) {
+      const interval = setInterval(() => {
+        if (Date.now() >= lockoutTime) {
+          setLockoutTime(null);
+          setAttempts(0);
+          localStorage.removeItem('admin_lockout_until');
+          localStorage.removeItem('admin_login_attempts');
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [lockoutTime]);
+
   useEffect(() => {
     if (!isUserLoading && user) {
       router.push('/admin');
@@ -29,22 +62,42 @@ export default function AdminLogin() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return;
+    if (!email || !password || lockoutTime) return;
 
     setIsLoggingIn(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      // Reset on success
+      setAttempts(0);
+      localStorage.removeItem('admin_login_attempts');
+      localStorage.removeItem('admin_lockout_until');
+      
       toast({
         title: "Selamat Datang Kembali",
         description: "Otentikasi administrator berhasil.",
       });
       router.push('/admin');
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Akses Ditolak",
-        description: "Email atau kata sandi tidak valid.",
-      });
+      const newAttempts = attempts + 1;
+      setAttempts(newAttempts);
+      localStorage.setItem('admin_login_attempts', newAttempts.toString());
+      
+      if (newAttempts >= 5) {
+        const lockUntil = Date.now() + 5 * 60 * 1000; // 5 minutes
+        setLockoutTime(lockUntil);
+        localStorage.setItem('admin_lockout_until', lockUntil.toString());
+        toast({
+          variant: "destructive",
+          title: "Akses Terkunci Sementara",
+          description: "Terlalu banyak percobaan gagal. Silakan coba lagi dalam 5 menit.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Akses Ditolak",
+          description: `Email atau kata sandi tidak valid. Sisa percobaan: ${5 - newAttempts}`,
+        });
+      }
     } finally {
       setIsLoggingIn(false);
     }
@@ -96,9 +149,15 @@ export default function AdminLogin() {
           <Button 
             form="login-form" 
             className="w-full h-12 rounded-xl text-sm font-black uppercase tracking-widest shadow-xl shadow-primary/20"
-            disabled={isLoggingIn}
+            disabled={isLoggingIn || lockoutTime !== null}
           >
-            {isLoggingIn ? <Loader2 className="h-4 w-4 animate-spin" /> : 'MASUK KE SISTEM'}
+            {isLoggingIn ? (
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> MENGOTENTIKASI...</>
+            ) : lockoutTime ? (
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> TERKUNCI ({Math.ceil((lockoutTime - Date.now()) / 60000)}m)</>
+            ) : (
+              'OTORISASI AKSES'
+            )}
           </Button>
         </CardFooter>
       </Card>

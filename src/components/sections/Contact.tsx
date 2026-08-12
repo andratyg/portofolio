@@ -91,10 +91,10 @@ export const Contact = () => {
           <div className="bg-background rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl text-foreground no-print">
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
-                <div className="space-y-2"><label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactName}</label><Input id="name" required name="name" placeholder="User Alpha" className="h-11 sm:h-12 rounded-xl" /></div>
-                <div className="space-y-2"><label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactEmail}</label><Input id="email" required type="email" name="email" placeholder="alpha@network.com" className="h-11 sm:h-12 rounded-xl" /></div>
+                <div className="space-y-2"><label htmlFor="name" className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactName}</label><Input id="name" required name="name" placeholder="User Alpha" className="h-11 sm:h-12 rounded-xl" /></div>
+                <div className="space-y-2"><label htmlFor="email" className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactEmail}</label><Input id="email" required type="email" name="email" placeholder="alpha@network.com" className="h-11 sm:h-12 rounded-xl" /></div>
               </div>
-              <div className="space-y-2"><label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactMessage}</label><Textarea id="message" required name="message" placeholder="Input payload..." className="min-h-[120px] sm:min-h-[150px] rounded-xl" /></div>
+              <div className="space-y-2"><label htmlFor="message" className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t.contactMessage}</label><Textarea id="message" required name="message" placeholder="Input payload..." className="min-h-[120px] sm:min-h-[150px] rounded-xl" /></div>
               <Button type="submit" className="w-full h-12 sm:h-14 rounded-2xl text-base sm:text-lg font-bold gap-2 bg-primary text-primary-foreground relative overflow-hidden group shimmer-btn hover:shadow-lg hover:shadow-primary/20 transition-[box-shadow] duration-300" disabled={isSubmitting}>
                 {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <><span className="relative">{t.sendMessage}</span><Send className="relative h-5 w-5 group-hover:translate-x-0.5 transition-transform duration-300" /></>}
               </Button>
