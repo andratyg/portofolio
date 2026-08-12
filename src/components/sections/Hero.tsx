@@ -65,7 +65,6 @@ export const Hero = () => {
       clearTimeout(timer);
       window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(tiltRef.current.raf);
-      if (particleRaf) cancelAnimationFrame(particleRaf);
     };
   }, []);
 
