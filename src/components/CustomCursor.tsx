@@ -115,7 +115,7 @@ export const CustomCursor = () => {
           border: '1.5px solid rgba(255,255,255,0.5)',
           opacity: 0,
           transform: 'translate(-100px, -100px)',
-          transition: 'opacity 0.3s ease, width 0.3s ease, height 0.3s ease, border-color 0.3s ease',
+          transition: 'opacity 0.3s ease, border-color 0.3s ease',
           willChange: 'transform',
         }}
       />

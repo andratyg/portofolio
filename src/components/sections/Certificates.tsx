@@ -247,7 +247,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                 </div>
               )}
               <div className="absolute top-4 left-4 z-10">
-                <Badge className="bg-white/90 backdrop-blur-md text-primary font-black text-[10px] uppercase px-3 py-1 rounded-full shadow-sm">
+                <Badge className="bg-zinc-900/90 backdrop-blur-md text-white font-black text-[10px] uppercase px-3 py-1 rounded-full shadow-sm border-none">
                   {cert.year}
                 </Badge>
               </div>

@@ -180,7 +180,7 @@ export const Hero = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
             </span>
-            <span className="text-[11px] font-semibold text-foreground/70 truncate">
+            <span className="text-xs font-semibold text-foreground/70 truncate">
               {language === 'id' ? 'Aktif & Siap Berkolaborasi' : 'Available for Work'}
             </span>
           </div>
@@ -202,7 +202,7 @@ export const Hero = () => {
                   "inline-block mr-[0.1em]",
                   "animate-in fade-in slide-in-from-bottom-6 duration-700",
                   i % 2 !== 0
-                    ? 'bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent'
+                    ? 'text-primary'
                     : 'text-foreground'
                 )}
                 style={{ animationDelay: `${150 + i * 90}ms`, animationFillMode: 'both' }}
@@ -226,8 +226,6 @@ export const Hero = () => {
               <Button
                 size="lg"
                 className="w-full sm:w-auto h-14 px-8 rounded-full gap-3 group relative overflow-hidden font-bold bg-primary text-primary-foreground
-                           shadow-[0_0_32px_-6px_hsl(var(--primary)/0.5)]
-                           hover:shadow-[0_0_48px_-4px_hsl(var(--primary)/0.65)]
                            hover:scale-[1.03] active:scale-[0.97]
                            transition-[transform,box-shadow] duration-300 ease-out"
               >
@@ -253,7 +251,7 @@ export const Hero = () => {
           {/* Tech strip */}
           <div className="mt-12 flex items-center gap-3 text-xs text-muted-foreground/50">
             <div className="flex -space-x-2">
-              {['bg-blue-500', 'bg-purple-500', 'bg-emerald-500'].map((c, i) => (
+              {['bg-blue-700', 'bg-purple-700', 'bg-emerald-700'].map((c, i) => (
                 <div key={i} className={`w-7 h-7 rounded-full border-2 border-background ${c} flex items-center justify-center text-white text-[9px] font-bold`}>
                   {['N', 'A', 'T'][i]}
                 </div>
@@ -293,7 +291,7 @@ export const Hero = () => {
               <div
                 ref={cardRef}
                 className="relative rounded-[2rem] overflow-hidden shadow-2xl aspect-[4/5]
-                           group-hover:-translate-y-3
+                           group-hover:-translate-y-3 bg-zinc-950
                            transition-transform duration-500 ease-out"
                 style={{ isolation: 'isolate' }}
               >

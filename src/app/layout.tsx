@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Space_Grotesk } from 'next/font/google';
+import { Plus_Jakarta_Sans, Outfit } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeContext';
 import { LanguageProvider } from '@/components/LanguageContext';
@@ -14,16 +14,15 @@ import { PageTransition } from '@/components/PageTransition';
 import { ServiceWorkerRegistrar } from '@/components/ServiceWorkerRegistrar';
 
 // ─── Fonts ───────────────────────────────────────────────────────────────────
-const inter = Inter({
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-plus-jakarta',
   display: 'swap',
 });
 
-const spaceGrotesk = Space_Grotesk({
+const outfit = Outfit({
   subsets: ['latin'],
-  weight: ['500', '700'],
-  variable: '--font-space-grotesk',
+  variable: '--font-outfit',
   display: 'swap',
 });
 
@@ -270,7 +269,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-body antialiased theme-transition`} suppressHydrationWarning>
+      <body className={`${plusJakarta.variable} ${outfit.variable} font-body antialiased theme-transition`} suppressHydrationWarning>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -147,9 +147,9 @@ export default function Home() {
 
               {/* Quick links */}
               <div className="space-y-4">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                   {language === 'id' ? 'Tautan Cepat' : 'Quick Links'}
-                </h4>
+                </h3>
                 <nav className="flex flex-col gap-2">
                   {footerLinks.map(link => (
                     <Link
@@ -165,9 +165,9 @@ export default function Home() {
 
               {/* Social */}
               <div className="space-y-4">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                   {language === 'id' ? 'Ikuti Saya' : 'Follow Me'}
-                </h4>
+                </h3>
                 <div className="flex gap-3">
                   {socialLinks.map(link => (
                     <a

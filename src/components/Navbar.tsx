@@ -172,7 +172,7 @@ export const Navbar = () => {
               {t.navAdmin}
             </Button>
             {unreadCount > 0 && (
-              <span className="hidden md:flex absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[9px] font-black items-center justify-center animate-in zoom-in duration-300 shadow-lg shadow-destructive/30">
+              <span className="hidden md:flex absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[9px] font-black items-center justify-center animate-in zoom-in duration-300">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}

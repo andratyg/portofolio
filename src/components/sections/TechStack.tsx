@@ -47,12 +47,12 @@ const SkillCard = ({ tech, index, triggered }: { tech: TechSkill; index: number;
             backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))`,
           }}
         >
-          <span className={cn("bg-gradient-to-br bg-clip-text text-transparent font-black text-base", tech.color)}>
+          <span className="font-black text-base text-foreground">
             {tech.icon}
           </span>
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-bold text-sm truncate">{tech.name}</h4>
+          <h3 className="font-bold text-sm truncate">{tech.name}</h3>
           <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest">{tech.category}</span>
         </div>
         <span className="text-xs font-black text-primary tabular-nums">{progress}%</span>
@@ -60,7 +60,7 @@ const SkillCard = ({ tech, index, triggered }: { tech: TechSkill; index: number;
       {/* Progress bar */}
       <div className="h-1.5 bg-muted/50 rounded-full overflow-hidden">
         <div
-          className={cn("h-full rounded-full bg-gradient-to-r transition-all duration-1000 ease-out", tech.color)}
+          className="h-full rounded-full bg-primary transition-all duration-1000 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
