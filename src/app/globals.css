@@ -41,32 +41,32 @@
     --glass-blur: 10px;
   }
 
-  /* --- Dark Theme (Revamped) --- */
+  /* --- Dark Theme (Premium & Elegant) --- */
   [data-theme='dark'] {
-    --background: 216 21% 5%;
-    --foreground: 0 0% 88%;
-    --card: 216 21% 8%;
-    --card-foreground: 0 0% 88%;
-    --popover: 216 21% 5%;
-    --popover-foreground: 0 0% 88%;
-    --primary: 180 100% 50%; /* Neon Cyan */
-    --primary-foreground: 216 21% 5%;
-    --secondary: 216 21% 12%;
-    --secondary-foreground: 0 0% 88%;
-    --muted: 216 21% 12%;
+    --background: 220 15% 6%; /* Deep professional slate/black */
+    --foreground: 210 10% 93%;
+    --card: 220 15% 9%;
+    --card-foreground: 210 10% 93%;
+    --popover: 220 15% 6%;
+    --popover-foreground: 210 10% 93%;
+    --primary: 211 100% 55%; /* Blue - matching Light Theme branding */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 15% 12%;
+    --secondary-foreground: 210 10% 93%;
+    --muted: 220 15% 12%;
     --muted-foreground: 210 10% 60%;
-    --accent: 277 76% 53%; /* Dark Purple */
-    --accent-foreground: 0 0% 88%;
-    --destructive: 0 72% 51%;
+    --accent: 211 100% 55%; 
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 210 15% 20%;
-    --input: 210 15% 20%;
-    --ring: 180 100% 50%;
+    --border: 220 15% 18%;
+    --input: 220 15% 18%;
+    --ring: 211 100% 55%;
 
     /* Glassmorphism */
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-blur: 10px;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-blur: 16px;
   }
 
   /* --- Ramadan Theme (Revamped) --- */
@@ -164,9 +164,24 @@
     font-family: var(--font-space-grotesk);
   }
   
-  /* Add warm glow to ramadan theme */
+  /* Premium background gradients for all themes */
+  body[data-theme='dark'] {
+    background-image: radial-gradient(ellipse at top left, hsl(var(--primary) / 0.08), transparent 50%),
+                      radial-gradient(ellipse at bottom right, hsl(var(--primary) / 0.04), transparent 50%);
+    background-attachment: fixed;
+  }
   body[data-theme='ramadan'] {
-    background-image: radial-gradient(ellipse at bottom, hsl(var(--primary) / 0.15), transparent 70%);
+    background-image: radial-gradient(ellipse at top center, hsl(var(--primary) / 0.1), transparent 60%),
+                      radial-gradient(ellipse at bottom, hsl(var(--primary) / 0.15), transparent 70%);
+    background-attachment: fixed;
+  }
+  body[data-theme='imlek'] {
+    background-image: radial-gradient(ellipse at top right, hsl(var(--primary) / 0.15), transparent 60%);
+    background-attachment: fixed;
+  }
+  body[data-theme='natal'] {
+    background-image: radial-gradient(ellipse at top left, rgba(255,255,255,0.05), transparent 60%),
+                      radial-gradient(ellipse at bottom right, hsl(var(--primary) / 0.1), transparent 60%);
     background-attachment: fixed;
   }
 }
