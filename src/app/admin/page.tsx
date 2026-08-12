@@ -807,12 +807,22 @@ function AdminContent() {
                          <div className="space-y-2 sm:col-span-2">
                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Warna Background (Hex, RGB, atau Tailwind)</label>
                            <div className="flex gap-3 items-center">
-                             <input 
-                               type="color" 
-                               value={techSkillForm.color.startsWith('#') ? techSkillForm.color : '#3b82f6'} 
-                               onChange={e => setTechSkillForm({...techSkillForm, color: e.target.value})} 
-                               className="w-12 h-12 sm:w-14 sm:h-14 p-1 rounded-xl sm:rounded-2xl bg-background border-none shrink-0 cursor-pointer" 
-                             />
+                             <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl border-2 border-primary/20 hover:border-primary/50 overflow-hidden shrink-0 cursor-pointer flex items-center justify-center bg-background group transition-all shadow-sm hover:shadow-md" title="Pilih Warna">
+                               <input 
+                                 type="color" 
+                                 value={techSkillForm.color.startsWith('#') ? techSkillForm.color : '#3b82f6'} 
+                                 onChange={e => setTechSkillForm({...techSkillForm, color: e.target.value})} 
+                                 className="absolute inset-[-20px] w-32 h-32 opacity-0 cursor-pointer z-10" 
+                               />
+                               <div 
+                                 className="absolute inset-0 pointer-events-none opacity-10 group-hover:opacity-20 transition-opacity duration-300" 
+                                 style={{ background: techSkillForm.color.startsWith('#') ? techSkillForm.color : '#3b82f6' }}
+                               />
+                               <div 
+                                 className="w-6 h-6 sm:w-8 sm:h-8 rounded-full shadow-[0_4px_10px_rgba(0,0,0,0.3)] border-2 border-white/80 pointer-events-none group-hover:scale-110 transition-transform duration-300 relative z-0" 
+                                 style={{ background: techSkillForm.color.startsWith('#') ? techSkillForm.color : '#3b82f6' }}
+                               />
+                             </div>
                              <Input required value={techSkillForm.color} onChange={e => setTechSkillForm({...techSkillForm, color: e.target.value})} placeholder="Kode Hex (#FF0000) atau kelas Tailwind" className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background border-none px-4 sm:px-6 flex-1" />
                              <div 
                                 className={cn(
