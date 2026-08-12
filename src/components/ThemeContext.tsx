@@ -28,9 +28,18 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
-    localStorage.setItem('karyapro-theme', newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
+    const applyTheme = () => {
+      setThemeState(newTheme);
+      localStorage.setItem('karyapro-theme', newTheme);
+      document.documentElement.setAttribute('data-theme', newTheme);
+    };
+
+    // Use native View Transitions API for buttery smooth theme switching
+    if (document.startViewTransition) {
+      document.startViewTransition(() => applyTheme());
+    } else {
+      applyTheme();
+    }
   };
 
   return (
