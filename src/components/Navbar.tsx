@@ -18,7 +18,7 @@ const MotionLink = motion.create(Link);
 
 export const Navbar = () => {
   const { t, language, setLanguage } = useLanguage();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, isAutoTheme, setAutoTheme } = useTheme();
   const { toast } = useToast();
   const { user } = useUser();
   const { messages } = useProjectStore();
@@ -150,18 +150,40 @@ export const Navbar = () => {
                 {themes.map((tName) => (
                   <DropdownMenuItem 
                     key={tName} 
-                    onClick={() => setTheme(tName)}
+                    onClick={() => setTheme(tName, true)}
                     className={cn(
-                      "capitalize rounded-[1.5rem] gap-4 p-3.5 cursor-pointer transition-[background-color,color,box-shadow] duration-200",
+                      "capitalize rounded-[1.5rem] gap-4 p-3.5 cursor-pointer transition-[background-color,color,box-shadow] duration-200 outline-none focus:outline-none focus:ring-0",
                       theme === tName 
-                        ? "bg-[#3b82f6] text-white font-black shadow-lg shadow-blue-500/20" 
-                        : "hover:bg-white/5 text-muted-foreground hover:text-white"
+                        ? "bg-[#3b82f6] text-white font-black shadow-lg shadow-blue-500/20 focus:bg-[#3b82f6] focus:text-white" 
+                        : "text-muted-foreground hover:bg-white/5 hover:text-white focus:bg-white/5 focus:text-white"
                     )}
                   >
                     <div className={cn("w-7 h-7 rounded-full shadow-inner border border-white/10 shrink-0", getThemeColor(tName))} />
                     <span className="text-[11px] font-black uppercase tracking-[0.15em] truncate">{tName}</span>
+                    {theme === tName && <span className="ml-auto opacity-70">✓</span>}
                   </DropdownMenuItem>
                 ))}
+                
+                <div className="my-2 border-t border-white/10 col-span-2" />
+                
+                <div className="col-span-2 flex items-center justify-between p-3.5 rounded-[1.5rem] hover:bg-white/5 transition-colors cursor-pointer outline-none select-none" onClick={(e) => {
+                  e.preventDefault();
+                  setAutoTheme(!isAutoTheme);
+                }}>
+                  <div className="flex flex-col">
+                    <span className="text-sm text-white font-semibold">Auto-Detect</span>
+                    <span className="text-[10px] text-muted-foreground">Sesuaikan tema dengan bulan</span>
+                  </div>
+                  <div className={cn(
+                    "w-10 h-5 rounded-full transition-colors relative",
+                    isAutoTheme ? "bg-primary" : "bg-white/10"
+                  )}>
+                    <div className={cn(
+                      "absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm",
+                      isAutoTheme ? "left-[22px]" : "left-1"
+                    )} />
+                  </div>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

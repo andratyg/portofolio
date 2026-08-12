@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 export default function ImlekDecorations() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -15,6 +16,95 @@ export default function ImlekDecorations() {
       return () => mediaQuery.removeEventListener('change', listener);
     }
   }, []);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let rafId: number;
+    let mouseX = -1000;
+    let mouseY = -1000;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    };
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    const particles: {x: number, y: number, size: number, vx: number, vy: number, angle: number, rotSpeed: number}[] = [];
+    const count = Math.min(30, Math.floor(window.innerWidth * window.innerHeight / 20000));
+    
+    for(let i=0; i<count; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 4 + 3,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: Math.random() * 1.5 + 1,
+        angle: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.1
+      });
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      particles.forEach(p => {
+        // Repulsion logic (mouse repel)
+        const dx = mouseX - p.x;
+        const dy = mouseY - p.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        
+        if (dist < 120) {
+          const force = (120 - dist) / 120;
+          p.x -= (dx / dist) * force * 3;
+          p.y -= (dy / dist) * force * 3;
+        }
+
+        p.x += p.vx;
+        p.y += p.vy;
+        p.angle += p.rotSpeed;
+        
+        // Reset if out of bounds
+        if (p.y > canvas.height) {
+          p.y = -10;
+          p.x = Math.random() * canvas.width;
+        }
+        if (p.x > canvas.width) p.x = 0;
+        if (p.x < 0) p.x = canvas.width;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle);
+        ctx.fillStyle = 'rgba(250, 204, 21, 0.8)';
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = 'rgba(250, 204, 21, 0.6)';
+        ctx.fillRect(-p.size/2, -p.size, p.size, p.size * 2);
+        ctx.restore();
+      });
+
+      rafId = requestAnimationFrame(animate);
+    };
+    
+    animate();
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', resize);
+      cancelAnimationFrame(rafId);
+    };
+  }, [prefersReducedMotion]);
 
   // Lantern component
   const Lantern = ({ delay, left, scale }: { delay: number; left: string; scale: number }) => (
@@ -54,38 +144,12 @@ export default function ImlekDecorations() {
       <Lantern delay={0.5} left="85%" scale={0.9} />
       <Lantern delay={2} left="70%" scale={0.6} />
 
-      {/* Gold Particles */}
+      {/* Gold Particles (Canvas) */}
       {!prefersReducedMotion && (
-        <div className="absolute inset-0">
-          {Array.from({ length: 20 }).map((_, i) => {
-            const left = `${Math.random() * 100}%`;
-            const duration = 10 + Math.random() * 20;
-            const delay = Math.random() * -20;
-            const size = 3 + Math.random() * 5;
-            
-            return (
-              <div
-                key={i}
-                className="absolute top-[-5%] bg-yellow-400 rounded-sm opacity-60"
-                style={{
-                  left,
-                  width: size,
-                  height: size * 1.5,
-                  animation: `imlekFall ${duration}s linear ${delay}s infinite`,
-                  boxShadow: '0 0 8px rgba(250, 204, 21, 0.6)',
-                }}
-              />
-            );
-          })}
-          <style>{`
-            @keyframes imlekFall {
-              0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
-              10% { opacity: 0.6; }
-              90% { opacity: 0.6; }
-              100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-            }
-          `}</style>
-        </div>
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 pointer-events-none"
+        />
       )}
     </div>
   );

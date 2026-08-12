@@ -1,10 +1,10 @@
-
 "use client"
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../LanguageContext';
 import { useProjectStore } from '../ProjectStore';
 import { Briefcase, ShieldCheck, Activity, Terminal } from 'lucide-react';
+import { ParticleCanvas } from '../ui/ParticleCanvas';
 
 // Count-up animation hook
 function useCountUp(target: number, duration = 1500, trigger: boolean = false) {
@@ -106,9 +106,10 @@ export const Stats = () => {
 
   return (
     <section ref={ref} className="py-20 relative overflow-hidden">
-      <div className="section-divider absolute top-0 left-0 right-0" />
-      <div className="section-divider absolute bottom-0 left-0 right-0" />
-      <div className="container mx-auto px-4 sm:px-6">
+      <ParticleCanvas density={12000} className="opacity-80" />
+      <div className="section-divider absolute top-0 left-0 right-0 z-10" />
+      <div className="section-divider absolute bottom-0 left-0 right-0 z-10" />
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {/* First stat = large, spanning 2 rows on lg */}
           <div className="col-span-2 lg:col-span-1 lg:row-span-1">

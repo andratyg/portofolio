@@ -6,6 +6,7 @@ import { useProjectStore } from '../ProjectStore';
 import { Badge } from '../ui/badge';
 import { History, Briefcase, GraduationCap, Milestone } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ParticleCanvas } from '../ui/ParticleCanvas';
 
 export const Timeline = () => {
   const { t, language } = useLanguage();
@@ -21,7 +22,8 @@ export const Timeline = () => {
 
   return (
     <section id="journey" className="py-16 md:py-24 bg-muted/20 relative overflow-hidden">
-      <div className="container mx-auto px-4 sm:px-6">
+      <ParticleCanvas density={12000} className="opacity-60" />
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10 md:mb-16 space-y-4">
             <Badge className="bg-primary text-primary-foreground px-4 py-1.5 rounded-full font-bold tracking-wider">Career Path</Badge>

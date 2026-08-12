@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 export default function RamadanDecorations() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -15,6 +16,97 @@ export default function RamadanDecorations() {
       return () => mediaQuery.removeEventListener('change', listener);
     }
   }, []);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let rafId: number;
+    let mouseX = -1000;
+    let mouseY = -1000;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    };
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    const particles: {x: number, y: number, size: number, baseX: number, baseY: number, speed: number, angle: number}[] = [];
+    const count = Math.min(30, Math.floor(window.innerWidth * window.innerHeight / 20000));
+    
+    for(let i=0; i<count; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        baseX: Math.random() * canvas.width,
+        baseY: Math.random() * canvas.height,
+        size: Math.random() * 2 + 1,
+        speed: Math.random() * 0.02 + 0.01,
+        angle: Math.random() * Math.PI * 2
+      });
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      particles.forEach(p => {
+        // Natural floating movement
+        p.angle += p.speed;
+        p.baseX += Math.sin(p.angle) * 0.5;
+        p.baseY -= Math.cos(p.angle) * 0.5;
+
+        // Wrap around screen
+        if (p.baseY < -50) p.baseY = canvas.height + 50;
+        if (p.baseY > canvas.height + 50) p.baseY = -50;
+        if (p.baseX < -50) p.baseX = canvas.width + 50;
+        if (p.baseX > canvas.width + 50) p.baseX = -50;
+
+        // Spring back to base position
+        p.x += (p.baseX - p.x) * 0.05;
+        p.y += (p.baseY - p.y) * 0.05;
+
+        // Repulsion logic (mouse repel)
+        const dx = mouseX - p.x;
+        const dy = mouseY - p.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        
+        if (dist < 150) {
+          const force = (150 - dist) / 150;
+          p.x -= (dx / dist) * force * 5;
+          p.y -= (dy / dist) * force * 5;
+        }
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(253, 224, 71, ${0.4 + Math.sin(p.angle * 2) * 0.3})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = 'rgba(253, 224, 71, 0.8)';
+        ctx.fill();
+        ctx.shadowBlur = 0; // reset
+      });
+
+      rafId = requestAnimationFrame(animate);
+    };
+    
+    animate();
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', resize);
+      cancelAnimationFrame(rafId);
+    };
+  }, [prefersReducedMotion]);
 
   // Fanous (Ramadan Lantern)
   const Fanous = ({ delay, left, scale }: { delay: number; left: string; scale: number }) => (
@@ -51,40 +143,12 @@ export default function RamadanDecorations() {
       <Fanous delay={1} left="35%" scale={0.6} />
       <Fanous delay={0.5} left="80%" scale={1} />
       
-      {/* Glowing Dust / Fireflies */}
+      {/* Glowing Dust / Fireflies (Canvas) */}
       {!prefersReducedMotion && (
-        <div className="absolute inset-0">
-          {Array.from({ length: 25 }).map((_, i) => {
-            const left = `${Math.random() * 100}%`;
-            const top = `${Math.random() * 100}%`;
-            const duration = 5 + Math.random() * 10;
-            const delay = Math.random() * -10;
-            const size = 1 + Math.random() * 3;
-            
-            return (
-              <div
-                key={i}
-                className="absolute bg-yellow-200 rounded-full"
-                style={{
-                  left,
-                  top,
-                  width: size,
-                  height: size,
-                  animation: `ramadanFloat ${duration}s ease-in-out ${delay}s infinite`,
-                  boxShadow: '0 0 6px rgba(253, 224, 71, 0.8)',
-                }}
-              />
-            );
-          })}
-          <style>{`
-            @keyframes ramadanFloat {
-              0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
-              25% { transform: translate(10px, -20px) scale(1.2); opacity: 0.8; }
-              50% { transform: translate(-5px, -40px) scale(0.8); opacity: 0.4; }
-              75% { transform: translate(-15px, -15px) scale(1.1); opacity: 0.7; }
-            }
-          `}</style>
-        </div>
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 pointer-events-none"
+        />
       )}
     </div>
   );

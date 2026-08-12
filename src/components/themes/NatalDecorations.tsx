@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 export default function NatalDecorations() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -15,6 +16,92 @@ export default function NatalDecorations() {
       return () => mediaQuery.removeEventListener('change', listener);
     }
   }, []);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let rafId: number;
+    let mouseX = -1000;
+    let mouseY = -1000;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    };
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    const particles: {x: number, y: number, r: number, vx: number, vy: number, opacity: number}[] = [];
+    const count = Math.min(100, Math.floor(window.innerWidth * window.innerHeight / 12000));
+    
+    for(let i=0; i<count; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 2.5 + 1,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: Math.random() * 1 + 0.5,
+        opacity: Math.random() * 0.5 + 0.3
+      });
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      particles.forEach(p => {
+        // Repulsion logic (mouse repel)
+        const dx = mouseX - p.x;
+        const dy = mouseY - p.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        
+        if (dist < 120) {
+          const force = (120 - dist) / 120;
+          p.x -= (dx / dist) * force * 3;
+          p.y -= (dy / dist) * force * 3;
+        }
+
+        p.x += p.vx;
+        p.y += p.vy;
+        
+        // Reset if out of bounds
+        if (p.y > canvas.height) {
+          p.y = -10;
+          p.x = Math.random() * canvas.width;
+        }
+        if (p.x > canvas.width) p.x = 0;
+        if (p.x < 0) p.x = canvas.width;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${p.opacity})`;
+        ctx.shadowBlur = 5;
+        ctx.shadowColor = 'rgba(255,255,255,0.8)';
+        ctx.fill();
+        ctx.shadowBlur = 0; // reset
+      });
+
+      rafId = requestAnimationFrame(animate);
+    };
+    
+    animate();
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', resize);
+      cancelAnimationFrame(rafId);
+    };
+  }, [prefersReducedMotion]);
 
   // String Lights
   const StringLight = ({ left, color, delay }: { left: string; color: string; delay: number }) => (
@@ -54,40 +141,12 @@ export default function NatalDecorations() {
       <StringLight delay={0.9} left="80%" color="#22c55e" />
       <StringLight delay={0.4} left="90%" color="#ef4444" />
       
-      {/* Snowfall */}
+      {/* Snowfall (Canvas) */}
       {!prefersReducedMotion && (
-        <div className="absolute inset-0">
-          {Array.from({ length: 40 }).map((_, i) => {
-            const left = `${Math.random() * 100}%`;
-            const duration = 15 + Math.random() * 25;
-            const delay = Math.random() * -25;
-            const size = 2 + Math.random() * 6;
-            const opacity = 0.3 + Math.random() * 0.7;
-            
-            return (
-              <div
-                key={i}
-                className="absolute top-[-5%] bg-white rounded-full"
-                style={{
-                  left,
-                  width: size,
-                  height: size,
-                  opacity,
-                  animation: `snowFall ${duration}s linear ${delay}s infinite`,
-                  boxShadow: '0 0 4px rgba(255,255,255,0.8)',
-                }}
-              />
-            );
-          })}
-          <style>{`
-            @keyframes snowFall {
-              0% { transform: translateY(-10vh) translateX(0px); opacity: 0; }
-              10% { opacity: 1; }
-              90% { opacity: 1; }
-              100% { transform: translateY(110vh) translateX(20px); opacity: 0; }
-            }
-          `}</style>
-        </div>
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 pointer-events-none"
+        />
       )}
     </div>
   );
