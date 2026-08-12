@@ -12,6 +12,7 @@ import { CustomCursor } from '@/components/CustomCursor';
 import { WebVitalsReporter } from '@/components/WebVitalsReporter';
 import { PageTransition } from '@/components/PageTransition';
 import { ServiceWorkerRegistrar } from '@/components/ServiceWorkerRegistrar';
+import ThemeDecorations from '@/components/themes/ThemeDecorations';
 
 // ─── Fonts ───────────────────────────────────────────────────────────────────
 const plusJakarta = Plus_Jakarta_Sans({
@@ -280,6 +281,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <ThemeProvider>
               <SecurityProvider>
                 <SplashScreen />
+                <ThemeDecorations />
                 <CustomCursor />
                 <div className="print:hidden overflow-x-hidden w-full">
                   <PageTransition>{children}</PageTransition>
