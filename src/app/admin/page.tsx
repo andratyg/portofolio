@@ -777,8 +777,8 @@ function AdminContent() {
                            <Input required value={techSkillForm.name} onChange={e => setTechSkillForm({...techSkillForm, name: e.target.value})} placeholder="Contoh: Next.js" className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background border-none px-4 sm:px-6" />
                          </div>
                          <div className="space-y-2">
-                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Ikon (Emoji/Teks) *</label>
-                           <Input required value={techSkillForm.icon} onChange={e => setTechSkillForm({...techSkillForm, icon: e.target.value})} placeholder="Contoh: ▲ atau 🔥" className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background border-none px-4 sm:px-6" />
+                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Ikon (URL Gambar atau Emoji) *</label>
+                           <Input required value={techSkillForm.icon} onChange={e => setTechSkillForm({...techSkillForm, icon: e.target.value})} placeholder="URL (https://...) atau Emoji (🔥)" className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background border-none px-4 sm:px-6" />
                          </div>
                          <div className="space-y-2">
                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Tingkat Penguasaan: {techSkillForm.level}%</label>
@@ -805,23 +805,41 @@ function AdminContent() {
                            </Select>
                          </div>
                          <div className="space-y-2 sm:col-span-2">
-                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Warna Gradient (Tailwind)</label>
+                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Warna Background (Hex, RGB, atau Tailwind)</label>
                            <div className="flex gap-3 items-center">
-                             <Input required value={techSkillForm.color} onChange={e => setTechSkillForm({...techSkillForm, color: e.target.value})} placeholder="from-cyan-400 to-blue-500" className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background border-none px-4 sm:px-6 flex-1" />
-                             <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br ${techSkillForm.color} shrink-0 shadow-lg`} />
+                             <input 
+                               type="color" 
+                               value={techSkillForm.color.startsWith('#') ? techSkillForm.color : '#3b82f6'} 
+                               onChange={e => setTechSkillForm({...techSkillForm, color: e.target.value})} 
+                               className="w-12 h-12 sm:w-14 sm:h-14 p-1 rounded-xl sm:rounded-2xl bg-background border-none shrink-0 cursor-pointer" 
+                             />
+                             <Input required value={techSkillForm.color} onChange={e => setTechSkillForm({...techSkillForm, color: e.target.value})} placeholder="Kode Hex (#FF0000) atau kelas Tailwind" className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background border-none px-4 sm:px-6 flex-1" />
+                             <div 
+                                className={cn(
+                                  "w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-lg overflow-hidden",
+                                  (techSkillForm.color.includes('from-') || techSkillForm.color.includes('bg-')) ? `bg-gradient-to-br ${techSkillForm.color}` : ""
+                                )}
+                                style={!(techSkillForm.color.includes('from-') || techSkillForm.color.includes('bg-')) ? { background: techSkillForm.color || 'var(--primary)' } : {}}
+                             >
+                               {(techSkillForm.icon && (techSkillForm.icon.startsWith('http') || techSkillForm.icon.startsWith('/'))) ? (
+                                 <img src={techSkillForm.icon} alt="preview" className="w-6 h-6 object-contain" />
+                               ) : (
+                                 <span className="font-black text-xl text-white">{techSkillForm.icon}</span>
+                               )}
+                             </div>
                            </div>
                            <div className="flex flex-wrap gap-1.5 px-1 mt-2">
                              {[
-                               { label: 'Blue', value: 'from-blue-400 to-blue-600' },
-                               { label: 'Cyan', value: 'from-cyan-400 to-blue-500' },
-                               { label: 'Green', value: 'from-green-400 to-emerald-600' },
-                               { label: 'Purple', value: 'from-purple-400 to-pink-500' },
-                               { label: 'Orange', value: 'from-amber-400 to-orange-500' },
-                               { label: 'Red', value: 'from-red-400 to-orange-500' },
-                               { label: 'Teal', value: 'from-teal-400 to-cyan-500' },
-                               { label: 'Yellow', value: 'from-yellow-400 to-yellow-500' },
-                               { label: 'Pink', value: 'from-pink-400 to-rose-500' },
-                               { label: 'Gray', value: 'from-gray-300 to-gray-500' },
+                               { label: 'Blue', value: '#3b82f6' },
+                               { label: 'Cyan', value: '#06b6d4' },
+                               { label: 'Green', value: '#10b981' },
+                               { label: 'Purple', value: '#8b5cf6' },
+                               { label: 'Orange', value: '#f59e0b' },
+                               { label: 'Red', value: '#ef4444' },
+                               { label: 'Teal', value: '#14b8a6' },
+                               { label: 'Yellow', value: '#eab308' },
+                               { label: 'Pink', value: '#f43f5e' },
+                               { label: 'Gray', value: '#64748b' },
                              ].map(preset => (
                                <button
                                  key={preset.value}
@@ -855,8 +873,20 @@ function AdminContent() {
                         {techSkills.map(skill => (
                            <div key={skill.id} className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-muted/30 border border-border/50 relative group hover:border-primary/20 transition-colors">
                               <div className="flex items-start gap-3 mb-3">
-                                 <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center text-base shrink-0 bg-gradient-to-br ${skill.color} shadow-md`}>
-                                    <span className="drop-shadow-sm">{skill.icon}</span>
+                                 <div 
+                                    className={cn(
+                                      "w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center text-base shrink-0 shadow-md overflow-hidden",
+                                      (skill.color.includes('from-') || skill.color.includes('bg-')) ? `bg-gradient-to-br ${skill.color}` : ""
+                                    )}
+                                    style={!(skill.color.includes('from-') || skill.color.includes('bg-')) ? { background: skill.color || 'var(--primary)' } : {}}
+                                 >
+                                    <span className="drop-shadow-sm flex items-center justify-center w-full h-full text-white">
+                                       {(skill.icon && (skill.icon.startsWith('http') || skill.icon.startsWith('/'))) ? (
+                                         <img src={skill.icon} alt={skill.name} className="w-5 h-5 object-contain" />
+                                       ) : (
+                                         skill.icon
+                                       )}
+                                    </span>
                                  </div>
                                  <div className="flex-1 min-w-0">
                                     <h4 className="font-bold text-sm leading-tight truncate">{skill.name}</h4>

@@ -42,13 +42,21 @@ const SkillCard = ({ tech, index, triggered }: { tech: TechSkill; index: number;
       style={{ animationDelay: `${index * 60}ms`, animationFillMode: 'both' }}
     >
       <div className="flex items-center gap-3 mb-3">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center text-sm font-bold shrink-0 shadow-lg"
-          style={{
-            backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))`,
-          }}
+        <div 
+          className={cn(
+            "w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 shadow-lg overflow-hidden",
+            (tech.color && (tech.color.includes('from-') || tech.color.includes('bg-'))) 
+              ? `bg-gradient-to-br ${tech.color}` 
+              : ""
+          )}
+          style={!(tech.color && (tech.color.includes('from-') || tech.color.includes('bg-'))) ? { background: tech.color || 'var(--primary)' } : {}}
         >
-          <span className="font-black text-base text-foreground">
-            {tech.icon}
+          <span className="font-black text-base text-foreground flex items-center justify-center w-full h-full">
+            {(tech.icon && (tech.icon.startsWith('http') || tech.icon.startsWith('/'))) ? (
+              <img src={tech.icon} alt={tech.name} className="w-6 h-6 object-contain drop-shadow-md" />
+            ) : (
+              tech.icon
+            )}
           </span>
         </div>
         <div className="flex-1 min-w-0">
