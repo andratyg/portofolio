@@ -15,6 +15,9 @@ import { useUser } from '@/firebase';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
+let globalLogoClicks = 0;
+let clickTimeout: NodeJS.Timeout;
+
 const MotionLink = motion.create(Link);
 
 export const Navbar = () => {
@@ -26,7 +29,6 @@ export const Navbar = () => {
   const router = useRouter();
   // Only show notification badge if user is authenticated (admin logged in)
   const unreadCount = user ? messages.length : 0;
-  const [logoClicks, setLogoClicks] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -65,16 +67,31 @@ export const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
-  const handleLogoClick = () => {
-    const newClicks = logoClicks + 1;
-    setLogoClicks(newClicks);
-    if (newClicks === 5) {
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    globalLogoClicks += 1;
+    
+    if (globalLogoClicks === 5) {
+      clearTimeout(clickTimeout);
+      globalLogoClicks = 0;
       toast({
         title: "Admin Portal",
         description: "Redirecting...",
       });
-      setLogoClicks(0);
       router.push('/admin/login');
+    } else {
+      clearTimeout(clickTimeout);
+      clickTimeout = setTimeout(() => {
+        const clicks = globalLogoClicks;
+        globalLogoClicks = 0;
+        if (clicks > 0 && clicks < 5) {
+          if (window.location.pathname !== '/') {
+            router.push('/');
+          } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }
+      }, 350);
     }
   };
 
@@ -115,7 +132,7 @@ export const Navbar = () => {
     )}>
       <div className="container mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
         <div className="flex items-center gap-12">
-          <MotionLink 
+          <motion.a 
             href="/" 
             onClick={handleLogoClick}
             className="text-3xl font-black  text-primary cursor-pointer tracking-normal"
@@ -124,7 +141,7 @@ export const Navbar = () => {
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
             NAT
-          </MotionLink>
+          </motion.a>
           
           <div className="hidden md:flex gap-8 relative">
             {navItems.map((item) => (
