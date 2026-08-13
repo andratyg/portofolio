@@ -1,8 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /admin/login
-Disallow: /api/
-
-# Sitemap
-Sitemap: https://naraandratyaga.my.id/sitemap.xml
