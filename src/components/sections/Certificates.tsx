@@ -146,7 +146,7 @@ export const Certificates = () => {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold ">{certificatesSubtitle}</h2>
         </div>
 
-        <div className="max-w-6xl mx-auto bg-card/50 backdrop-blur-lg border p-3 sm:p-4 rounded-[1.5rem] sm:rounded-[2rem] shadow-lg mb-8 sm:mb-12 flex flex-col gap-3 sm:gap-4">
+        <div className="max-w-6xl mx-auto bg-card/50 backdrop-blur-sm border p-3 sm:p-4 rounded-[1.5rem] sm:rounded-[2rem] shadow-lg mb-8 sm:mb-12 flex flex-col gap-3 sm:gap-4">
           <div className="relative w-full">
             <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
             <Input 
@@ -259,7 +259,8 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                     src={cert.imageUrl!}
                     alt={title}
                     fill 
-                    className="object-cover" 
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                 </div>
               ) : (
@@ -273,7 +274,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                 </Badge>
               </div>
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-400 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <div className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-full p-4 scale-75 group-hover:scale-100 transition-transform duration-400 ease-out">
+                <div className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-full p-4 scale-75 group-hover:scale-100 transition-transform duration-400 ease-out">
                   <Eye className="h-6 w-6 text-white" />
                 </div>
               </div>
@@ -311,7 +312,8 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                   src={cert.imageUrl!}
                   alt={title} 
                   fill 
-                  className="object-contain" 
+                  className="object-contain"
+                  sizes="(max-width: 768px) 100vw, 700px"
                  />
               </div>
            ) : (

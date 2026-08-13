@@ -292,7 +292,7 @@ function AdminContent() {
       )}
 
       <header className={cn(
-        "bg-background/80 backdrop-blur-2xl border-b h-16 sm:h-20 sticky top-0 z-50 flex items-center justify-between px-4 sm:px-8 transition-transform duration-500",
+        "bg-background/80 backdrop-blur-sm border-b h-16 sm:h-20 sticky top-0 z-50 flex items-center justify-between px-4 sm:px-8 transition-transform duration-500",
         isHeaderVisible ? "translate-y-0" : "-translate-y-full"
       )}>
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
@@ -711,7 +711,7 @@ function AdminContent() {
              ) : (
                <div className="grid gap-6">
                  {messages.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(msg => (
-                    <Card key={msg.id} className="rounded-[2rem] border-none bg-card/50 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all group overflow-hidden">
+                    <Card key={msg.id} className="rounded-[2rem] border-none bg-card/50 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all group overflow-hidden">
                        <CardContent className="p-8">
                           <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                              <div className="flex gap-4 items-center">

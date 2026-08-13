@@ -127,7 +127,7 @@ export const Navbar = () => {
 
   return (
     <nav className={cn(
-      "fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-3xl border-b transition-transform duration-700 ease-in-out",
+      "fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b transition-transform duration-700 ease-in-out",
       isVisible ? "translate-y-0" : "-translate-y-full"
     )}>
       <div className="container mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
@@ -176,7 +176,7 @@ export const Navbar = () => {
                   <Globe className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="rounded-2xl border-none shadow-2xl bg-card/95 backdrop-blur-2xl p-2">
+              <DropdownMenuContent align="end" className="rounded-2xl border-none shadow-2xl bg-card/95 backdrop-blur-sm p-2">
                 <DropdownMenuItem onClick={() => setLanguage('en')} className="rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-2.5">English {language === 'en' && '✓'}</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setLanguage('id')} className="rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-2.5">Indonesia {language === 'id' && '✓'}</DropdownMenuItem>
               </DropdownMenuContent>
@@ -191,7 +191,7 @@ export const Navbar = () => {
                   <ChevronDown className="h-3 w-3 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="grid grid-cols-2 gap-1 w-80 p-4 rounded-[2.5rem] border-none shadow-2xl bg-[#0a0b0e]/95 backdrop-blur-2xl">
+              <DropdownMenuContent align="end" className="grid grid-cols-2 gap-1 w-80 p-4 rounded-[2.5rem] border-none shadow-2xl bg-[#0a0b0e]/95 backdrop-blur-sm">
                 {themes.map((tName) => (
                   <DropdownMenuItem 
                     key={tName} 
@@ -248,7 +248,7 @@ export const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-background/95 backdrop-blur-2xl border-b animate-in slide-in-from-top duration-500 overflow-hidden rounded-b-[2rem] sm:rounded-b-[3rem] shadow-2xl">
+        <div className="md:hidden bg-background/95 backdrop-blur-sm border-b animate-in slide-in-from-top duration-500 overflow-hidden rounded-b-[2rem] sm:rounded-b-[3rem] shadow-2xl">
           <div className="flex flex-col p-6 sm:p-8 gap-4 sm:gap-6">
             {navItems.map((item) => (
               <Link 
@@ -271,7 +271,7 @@ export const Navbar = () => {
                     <Palette className="h-5 w-5 sm:h-6 sm:w-6" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="grid grid-cols-2 gap-1 w-72 sm:w-80 p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] border-none shadow-2xl bg-[#0a0b0e]/95 backdrop-blur-2xl">
+                <DropdownMenuContent align="end" className="grid grid-cols-2 gap-1 w-72 sm:w-80 p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] border-none shadow-2xl bg-[#0a0b0e]/95 backdrop-blur-sm">
                   {themes.map((tName) => (
                     <DropdownMenuItem 
                       key={tName} 

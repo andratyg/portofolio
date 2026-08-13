@@ -220,7 +220,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
         <DialogTrigger asChild>
           <div className="cursor-pointer group h-full">
             {/* interactive-card handles: border-radius, overflow-hidden, hover lift, glow — NO clipPath */}
-            <Card className="interactive-card h-full border-border/20 bg-card/70 backdrop-blur-xl flex flex-col">
+            <Card className="interactive-card h-full border-border/20 bg-card/70 backdrop-blur-sm flex flex-col">
               <div className="relative aspect-[16/10] bg-muted">
                 <div className="relative h-56 sm:h-64 w-full overflow-hidden bg-muted">
                   <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-700 ease-out">
@@ -254,7 +254,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
         <DialogContent className="w-[95vw] sm:max-w-[800px] max-h-[95dvh] sm:h-[85vh] p-0 border-none shadow-2xl bg-background flex flex-col rounded-[2rem] overflow-hidden">
           <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
             <div className="relative h-64 sm:h-96 shrink-0 bg-muted overflow-hidden">
-              <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover" />
+              <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover" sizes="(max-width: 768px) 100vw, 800px" />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
               <div className="absolute bottom-4 sm:bottom-8 left-5 sm:left-10 right-5 sm:right-10">
                 <div className="flex items-end justify-between gap-3 sm:gap-4">

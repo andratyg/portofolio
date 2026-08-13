@@ -112,7 +112,7 @@ export default function AdminLogin() {
         <ArrowLeft className="h-4 w-4" /> Kembali ke Situs
       </Link>
       
-      <Card className="w-full max-w-md shadow-2xl rounded-[2.5rem] overflow-hidden border border-border bg-card/50 backdrop-blur-xl relative z-10">
+      <Card className="w-full max-w-md shadow-2xl rounded-[2.5rem] overflow-hidden border border-border bg-card/50 backdrop-blur-sm relative z-10">
         <CardHeader className="bg-primary text-primary-foreground py-8 text-center">
           <div className="mx-auto w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
              <LogIn className="h-6 w-6" />

@@ -15,8 +15,9 @@ export const CustomCursor = () => {
   // Step 1: detect pointer device (only toggles visibility, no ref access)
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const mql = window.matchMedia('(hover: hover) and (pointer: fine)');
-    if (mql.matches) setIsDesktop(true);
+    const isHoverable = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (isHoverable && !isReducedMotion) setIsDesktop(true);
   }, []);
 
   // Step 2: attach listeners once DOM elements exist (isDesktop triggers re-render → refs are populated)

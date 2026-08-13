@@ -78,11 +78,12 @@ const SkillCard = ({ tech, index }: { tech: TechSkill; index: number }) => {
       {/* Progress bar */}
       <div className="h-1.5 bg-muted/50 rounded-full overflow-hidden">
         <motion.div
-          initial={{ width: 0 }}
-          whileInView={{ width: `${tech.level}%` }}
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1.5, delay: index * 0.05, ease: "easeOut" }}
-          className="h-full rounded-full bg-primary"
+          className="h-full rounded-full bg-primary origin-left"
+          style={{ width: `${tech.level}%` }}
         />
       </div>
     </motion.div>
