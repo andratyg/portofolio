@@ -40,7 +40,7 @@ export const viewport: Viewport = {
 };
 
 // ─── SEO Constants ───────────────────────────────────────────────────────────
-const BASE_URL   = 'https://naraandratyaga.my.id';
+const BASE_URL   = 'https://www.naraandratyaga.my.id';
 const FULL_NAME  = 'Nara Andra Tyaga';
 const NICKNAME   = 'Andra';
 const ROLE       = 'Web Developer & Student';
@@ -158,7 +158,7 @@ const jsonLd = [
     sameAs: [
       'https://github.com/nara-andra-tyaga',
       'https://linkedin.com/in/nara-andra-tyaga',
-      'https://instagram.com/nara_andra'
+      'https://instagram.com/nara.dev'
     ],
     jobTitle: ROLE,
     worksFor: {

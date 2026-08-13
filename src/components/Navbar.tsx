@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useProjectStore } from './ProjectStore';
 import { useUser } from '@/firebase';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 const MotionLink = motion.create(Link);
 
@@ -22,6 +23,7 @@ export const Navbar = () => {
   const { toast } = useToast();
   const { user } = useUser();
   const { messages } = useProjectStore();
+  const router = useRouter();
   // Only show notification badge if user is authenticated (admin logged in)
   const unreadCount = user ? messages.length : 0;
   const [logoClicks, setLogoClicks] = useState(0);
@@ -68,10 +70,11 @@ export const Navbar = () => {
     setLogoClicks(newClicks);
     if (newClicks === 5) {
       toast({
-        title: "Easter Egg Found! 🎉",
-        description: "You've unlocked a secret greeting! Have a creative day!",
+        title: "Admin Portal",
+        description: "Redirecting...",
       });
       setLogoClicks(0);
+      router.push('/admin/login');
     }
   };
 
@@ -213,17 +216,7 @@ export const Navbar = () => {
             </DropdownMenu>
           </div>
 
-          <Link href={user ? "/admin" : "/admin/login"} className="relative">
-            <Button variant="outline" size="sm" className="hidden md:flex gap-2 rounded-2xl border-primary/20 hover:bg-primary/10 h-10 px-6 text-[10px] font-black uppercase tracking-widest">
-              <LogIn className="h-4 w-4" />
-              {t.navAdmin}
-            </Button>
-            {unreadCount > 0 && (
-              <span className="hidden md:flex absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[9px] font-black items-center justify-center animate-in zoom-in duration-300">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </Link>
+
 
           <Button 
             variant="ghost" 
@@ -283,17 +276,7 @@ export const Navbar = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-               <Link href={user ? "/admin" : "/admin/login"} onClick={() => setIsMobileMenuOpen(false)} className="flex-1 min-w-[120px] relative">
-                <Button className="w-full h-12 sm:h-14 rounded-2xl gap-2 sm:gap-3 font-black uppercase tracking-widest text-sm sm:text-base">
-                  <LogIn className="h-4 w-4 sm:h-5 sm:w-5" />
-                  {t.navAdmin}
-                </Button>
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[9px] font-black flex items-center justify-center shadow-lg shadow-destructive/30">
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </span>
-                )}
-              </Link>
+
             </div>
           </div>
         </div>

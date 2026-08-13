@@ -62,11 +62,37 @@ export default function Home() {
   const socialLinks = [
     { icon: Github, href: 'https://github.com/naradev', label: 'GitHub' },
     { icon: Linkedin, href: 'https://linkedin.com/in/nara-andra-tyaga', label: 'LinkedIn' },
-    { icon: Instagram, href: 'https://instagram.com/nara_andra', label: 'Instagram' },
+    { icon: Instagram, href: 'https://instagram.com/nara.dev', label: 'Instagram' },
   ];
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Person',
+        name: 'Nara Andra Tyaga',
+        jobTitle: 'Full-Stack Developer & UI/UX Designer',
+        url: 'https://naraandratyaga.my.id',
+        sameAs: [
+          'https://linkedin.com/in/nara-andra-tyaga',
+          'https://github.com/naradev',
+          'https://instagram.com/nara.dev'
+        ]
+      },
+      {
+        '@type': 'WebSite',
+        name: 'Nara Andra Tyaga - Portfolio',
+        url: 'https://naraandratyaga.my.id'
+      }
+    ]
+  };
 
   return (
     <ProjectStoreProvider>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <main className="min-h-screen selection:bg-primary selection:text-primary-foreground">
         {/* --- Above the fold (loaded immediately) --- */}
         <Navbar />

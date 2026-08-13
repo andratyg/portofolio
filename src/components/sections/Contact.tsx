@@ -28,6 +28,20 @@ export const Contact = () => {
     const email = (form.elements.namedItem('email') as HTMLInputElement).value;
     const message = (form.elements.namedItem('message') as HTMLTextAreaElement).value;
     
+    const honey = (form.elements.namedItem('_honey') as HTMLInputElement)?.value;
+
+    if (honey) {
+      // Bot detected, fake success
+      setIsSubmitting(true);
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setIsSuccess(true);
+        form.reset();
+        setTimeout(() => setIsSuccess(false), 3000);
+      }, 1000);
+      return;
+    }
+
     if (!email.includes('@')) {
       alert("Invalid Email");
       return;
@@ -93,6 +107,7 @@ export const Contact = () => {
           </div>
           <div className="bg-background rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl text-foreground no-print">
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+              <input type="text" name="_honey" style={{ display: 'none' }} className="hidden" tabIndex={-1} autoComplete="off" />
               <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                 <div className="relative group">
                   <Input id="name" required name="name" placeholder="User Alpha" className="h-12 sm:h-14 rounded-xl peer placeholder-transparent bg-transparent border-2 border-border/50 focus:border-primary pt-4" />

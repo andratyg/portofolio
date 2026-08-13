@@ -279,7 +279,7 @@ export const Hero = () => {
                     <Globe2 className="h-14 w-14 text-primary animate-pulse" />
                     <div className="space-y-1">
                       <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-primary">System Online</p>
-                      <p className="text-muted-foreground text-xs">Tambah proyek di Admin Dashboard</p>
+                      <p className="text-muted-foreground text-xs">Proyek sedang disiapkan...</p>
                     </div>
                   </div>
                 )}
