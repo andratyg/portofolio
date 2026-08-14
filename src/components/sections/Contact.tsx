@@ -111,20 +111,20 @@ export const Contact = () => {
               <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                 <div className="relative group">
                   <Input id="name" required name="name" placeholder="User Alpha" className="h-12 sm:h-14 rounded-xl peer placeholder-transparent bg-transparent border-2 border-border/50 focus:border-primary pt-4" />
-                  <label htmlFor="name" className="absolute left-4 top-4 sm:top-5 text-sm text-muted-foreground transition-all duration-300 peer-focus:-translate-y-3 sm:peer-focus:-translate-y-4 peer-focus:text-[10px] peer-focus:font-black peer-focus:text-primary peer-[:not(:placeholder-shown)]:-translate-y-3 sm:peer-[:not(:placeholder-shown)]:-translate-y-4 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:font-black cursor-text">
+                  <label htmlFor="name" className="absolute left-4 top-4 sm:top-5 text-sm text-muted-foreground transition-all duration-300 peer-focus:-translate-y-3 sm:peer-focus:-translate-y-4 peer-focus:text-[10px] peer-focus:font-black peer-focus:text-primary peer-autofill:-translate-y-3 sm:peer-autofill:-translate-y-4 peer-autofill:text-[10px] peer-autofill:font-black peer-autofill:text-primary peer-[:not(:placeholder-shown)]:-translate-y-3 sm:peer-[:not(:placeholder-shown)]:-translate-y-4 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:font-black cursor-text">
                     {t.contactName}
                   </label>
                 </div>
                 <div className="relative group">
                   <Input id="email" required type="email" name="email" placeholder="alpha@network.com" className="h-12 sm:h-14 rounded-xl peer placeholder-transparent bg-transparent border-2 border-border/50 focus:border-primary pt-4" />
-                  <label htmlFor="email" className="absolute left-4 top-4 sm:top-5 text-sm text-muted-foreground transition-all duration-300 peer-focus:-translate-y-3 sm:peer-focus:-translate-y-4 peer-focus:text-[10px] peer-focus:font-black peer-focus:text-primary peer-[:not(:placeholder-shown)]:-translate-y-3 sm:peer-[:not(:placeholder-shown)]:-translate-y-4 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:font-black cursor-text">
+                  <label htmlFor="email" className="absolute left-4 top-4 sm:top-5 text-sm text-muted-foreground transition-all duration-300 peer-focus:-translate-y-3 sm:peer-focus:-translate-y-4 peer-focus:text-[10px] peer-focus:font-black peer-focus:text-primary peer-autofill:-translate-y-3 sm:peer-autofill:-translate-y-4 peer-autofill:text-[10px] peer-autofill:font-black peer-autofill:text-primary peer-[:not(:placeholder-shown)]:-translate-y-3 sm:peer-[:not(:placeholder-shown)]:-translate-y-4 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:font-black cursor-text">
                     {t.contactEmail}
                   </label>
                 </div>
               </div>
               <div className="relative group">
                 <Textarea id="message" required name="message" placeholder="Input payload..." className="min-h-[120px] sm:min-h-[150px] rounded-xl peer placeholder-transparent bg-transparent border-2 border-border/50 focus:border-primary pt-6" />
-                <label htmlFor="message" className="absolute left-4 top-4 sm:top-5 text-sm text-muted-foreground transition-all duration-300 peer-focus:-translate-y-2 sm:peer-focus:-translate-y-3 peer-focus:text-[10px] peer-focus:font-black peer-focus:text-primary peer-[:not(:placeholder-shown)]:-translate-y-2 sm:peer-[:not(:placeholder-shown)]:-translate-y-3 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:font-black cursor-text">
+                <label htmlFor="message" className="absolute left-4 top-4 sm:top-5 text-sm text-muted-foreground transition-all duration-300 peer-focus:-translate-y-2 sm:peer-focus:-translate-y-3 peer-focus:text-[10px] peer-focus:font-black peer-focus:text-primary peer-autofill:-translate-y-2 sm:peer-autofill:-translate-y-3 peer-autofill:text-[10px] peer-autofill:font-black peer-autofill:text-primary peer-[:not(:placeholder-shown)]:-translate-y-2 sm:peer-[:not(:placeholder-shown)]:-translate-y-3 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:font-black cursor-text">
                   {t.contactMessage}
                 </label>
               </div>

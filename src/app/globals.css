@@ -213,6 +213,12 @@
   scrollbar-width: none;
 }
 
+/* Force input/textarea placeholders to be transparent for floating labels */
+.placeholder-transparent::placeholder {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+
 /* =============================================
  * == ANIMATION & INTERACTION SYSTEM
  * ============================================= */

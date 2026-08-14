@@ -14,6 +14,7 @@ import { PageTransition } from '@/components/PageTransition';
 import { ServiceWorkerRegistrar } from '@/components/ServiceWorkerRegistrar';
 import ThemeDecorations from '@/components/themes/ThemeDecorations';
 
+
 // ─── Fonts ───────────────────────────────────────────────────────────────────
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -236,7 +237,7 @@ const jsonLd = [
 // ─── Layout ──────────────────────────────────────────────────────────────────
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" suppressHydrationWarning style={{ scrollBehavior: 'smooth' }}>
+    <html lang="id" suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="cu0oN6kGs748IQbeUkW1eFLhaKDJwYpJ6Gn9daxm9tk" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
