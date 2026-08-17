@@ -1,7 +1,7 @@
 # KaryaPro | Professional Portfolio "OP" Enterprise Edition
 
 KaryaPro adalah platform branding digital kelas dunia yang dirancang untuk pengembang profesional. Versi ini (v2.5.0) mengusung standar arsitektur perusahaan dengan fokus pada narasi teknis (Case Studies), ketahanan sistem, dan keamanan tingkat tinggi.
-
+a
 ## 🏛️ Arsitektur & Teknologi (Tech Stack)
 - **Framework:** Next.js 15 (App Router) - Optimasi performa dan SEO.
 - **State Management:** Layered Context-Store - Pemisahan logika bisnis dari UI.
