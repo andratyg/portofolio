@@ -34,7 +34,9 @@ export const Hero = () => {
   const tiltRef = useRef({ x: 0, y: 0, raf: 0 });
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 100);
+    // Start visible immediately — avoids 100ms + 1000ms fade-in contributing to LCP
+    setIsVisible(true);
+    const timer = setTimeout(() => {}, 0); // keep for cleanup pattern
 
     // ── Mouse tilt ──
     const handleMouseMove = (e: MouseEvent) => {
@@ -128,20 +130,32 @@ export const Hero = () => {
           </p>
 
           {/* Headline — staggered word reveal */}
-          <motion.h1 
+          {/* Static fallback visible immediately for LCP (hidden from AT, replaced by animated version) */}
+          {!heroTitle && (
+            <h1
+              aria-hidden="true"
+              className="text-[clamp(2.8rem,7.5vw,7rem)] font-black leading-[0.9] mb-7 tracking-tight text-foreground"
+            >
+              Nara Andra Tyaga
+            </h1>
+          )}
+          <motion.h1
             initial="hidden"
-            animate="visible"
+            animate={heroTitle ? 'visible' : 'hidden'}
             variants={{
-              visible: { transition: { staggerChildren: 0.1 } }
+              visible: { transition: { staggerChildren: 0.05 } }
             }}
-            className="text-[clamp(2.8rem,7.5vw,7rem)] font-black leading-[0.9] mb-7 tracking-tight"
+            className={cn(
+              "text-[clamp(2.8rem,7.5vw,7rem)] font-black leading-[0.9] mb-7 tracking-tight",
+              !heroTitle && "hidden"
+            )}
           >
             {heroTitle.split(' ').map((word, i) => (
               <motion.span
                 key={i}
                 variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: { opacity: 1, y: 0, transition: { type: 'spring', damping: 15, stiffness: 100 } }
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { type: 'spring', damping: 20, stiffness: 150 } }
                 }}
                 className={cn(
                   "inline-block mr-[0.2em]",
