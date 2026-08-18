@@ -172,7 +172,7 @@ export const Navbar = () => {
             {/* Language Toggle */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-xl">
+                <Button variant="ghost" size="icon" className="rounded-xl" aria-label="Change language">
                   <Globe className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
@@ -185,7 +185,7 @@ export const Navbar = () => {
             {/* Theme Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest px-4 hover:bg-primary/10">
+                <Button variant="ghost" className="rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest px-4 hover:bg-primary/10" aria-label="Change theme">
                   <Palette className="h-4 w-4" />
                   <span className="hidden lg:inline">{theme}</span>
                   <ChevronDown className="h-3 w-3 opacity-50" />
@@ -240,6 +240,7 @@ export const Navbar = () => {
             size="icon" 
             className="md:hidden rounded-xl"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           >
             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
@@ -261,13 +262,13 @@ export const Navbar = () => {
               </Link>
             ))}
             <div className="flex items-center gap-3 sm:gap-4 py-4 border-t border-border/10 flex-wrap">
-               <Button variant="ghost" size="icon" onClick={() => setLanguage(language === 'id' ? 'en' : 'id')} className="rounded-xl h-12 w-12 sm:h-14 sm:w-14 bg-muted/50">
+               <Button variant="ghost" size="icon" onClick={() => setLanguage(language === 'id' ? 'en' : 'id')} className="rounded-xl h-12 w-12 sm:h-14 sm:w-14 bg-muted/50" aria-label="Toggle language">
                   <Globe className="h-5 w-5 sm:h-6 sm:w-6" />
                </Button>
 
                <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-xl h-12 w-12 sm:h-14 sm:w-14 bg-muted/50">
+                  <Button variant="ghost" size="icon" className="rounded-xl h-12 w-12 sm:h-14 sm:w-14 bg-muted/50" aria-label="Toggle theme">
                     <Palette className="h-5 w-5 sm:h-6 sm:w-6" />
                   </Button>
                 </DropdownMenuTrigger>
