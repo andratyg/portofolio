@@ -1,11 +1,11 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 
 const BASE_URL = 'https://www.naraandratyaga.my.id';
 
 export const metadata: Metadata = {
   title: 'Sertifikat & Pencapaian',
   description:
-    'Koleksi sertifikat dan pencapaian resmi Nara Andra Tyaga di bidang web development, UI/UX design, dan teknologi � dari berbagai lembaga dan platform terpercaya.',
+    'Koleksi sertifikat dan pencapaian resmi Nara Andra Tyaga di bidang web development, UI/UX design, dan teknologi — dari berbagai lembaga dan platform terpercaya.',
   alternates: {
     canonical: `${BASE_URL}/certificates`,
   },
