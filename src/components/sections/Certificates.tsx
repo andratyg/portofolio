@@ -180,7 +180,7 @@ export const Certificates = () => {
               </DropdownMenuContent>
             </DropdownMenu>
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="h-11 sm:h-14 rounded-xl sm:rounded-2xl px-3 sm:px-6 flex-1 sm:w-[180px] bg-transparent border-dashed">
+              <SelectTrigger aria-label={`${t.sortBy} sertifikat`} className="h-11 sm:h-14 rounded-xl sm:rounded-2xl px-3 sm:px-6 flex-1 sm:w-[180px] bg-transparent border-dashed">
                 <SelectValue placeholder={t.sortBy} />
               </SelectTrigger>
               <SelectContent>
@@ -249,7 +249,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="cursor-pointer group h-full py-4">
+        <button type="button" className="cursor-pointer group h-full py-4 w-full text-left">
           {/* interactive-card: proper border-radius + overflow-hidden hover, NO clipPath */}
           <Card className="interactive-card h-full shadow-lg bg-card flex flex-col">
             <div className="relative aspect-[4/3] bg-muted overflow-hidden">
@@ -288,7 +288,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
               <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed mb-6 font-medium">{shortDesc}</p>
             </CardContent>
           </Card>
-        </div>
+          </button>
       </DialogTrigger>
       <DialogContent className="w-[95vw] sm:max-w-[700px] max-h-[95dvh] sm:h-[85vh] p-0 border-none shadow-2xl flex flex-col bg-background rounded-[2rem] overflow-hidden">
         <div className="bg-card border-b p-5 sm:p-8 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">

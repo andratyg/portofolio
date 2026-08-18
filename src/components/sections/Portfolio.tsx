@@ -143,7 +143,7 @@ export const Portfolio = () => {
               />
             </div>
             <Select value={sortBy} onValueChange={(value) => setSortBy(value as (typeof SORT_OPTIONS)[number])}>
-              <SelectTrigger className="w-full sm:w-auto h-12 sm:h-14 rounded-full bg-card/50 border-border/20 backdrop-blur-sm px-4 sm:px-5 font-bold text-sm text-left">
+              <SelectTrigger aria-label={`${t.sortBy} proyek`} className="w-full sm:w-auto h-12 sm:h-14 rounded-full bg-card/50 border-border/20 backdrop-blur-sm px-4 sm:px-5 font-bold text-sm text-left">
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground whitespace-nowrap">{t.sortBy}:</span>
                   <SelectValue />
@@ -218,7 +218,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
     <div className={cn("group transition-all duration-1000 h-full", isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16")} style={{ transitionDelay: `${index * 100}ms` }}>
       <Dialog>
         <DialogTrigger asChild>
-          <div className="cursor-pointer group h-full">
+          <button type="button" className="cursor-pointer group h-full w-full text-left">
             {/* interactive-card handles: border-radius, overflow-hidden, hover lift, glow — NO clipPath */}
             <Card className="interactive-card h-full border-border/20 bg-card/70 backdrop-blur-sm flex flex-col">
               <div className="relative aspect-[16/10] bg-muted">
@@ -249,7 +249,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
                 {project.impactStats && <div className="text-xs font-black px-3 py-1 bg-primary/10 text-primary rounded-full capitalize">{project.impactStats.toLowerCase()}</div>}
               </CardFooter>
             </Card>
-          </div>
+          </button>
         </DialogTrigger>
         <DialogContent className="w-[95vw] sm:max-w-[800px] max-h-[95dvh] sm:h-[85vh] p-0 border-none shadow-2xl bg-background flex flex-col rounded-[2rem] overflow-hidden">
           <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
