@@ -13,6 +13,7 @@ import { WebVitalsReporter } from '@/components/WebVitalsReporter';
 import { PageTransition } from '@/components/PageTransition';
 import { ServiceWorkerRegistrar } from '@/components/ServiceWorkerRegistrar';
 import ThemeDecorations from '@/components/themes/ThemeDecorations';
+import { MotionProvider } from '@/components/MotionProvider';
 
 
 // ─── Fonts ───────────────────────────────────────────────────────────────────
@@ -241,7 +242,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta name="google-site-verification" content="cu0oN6kGs748IQbeUkW1eFLhaKDJwYpJ6Gn9daxm9tk" />
         {/* Firestore preconnect — saves ~180ms LCP (Lighthouse recommendation) */}
-        <link rel="preconnect" href="https://firestore.googleapis.com" />
+        <link rel="preconnect" href="https://firestore.googleapis.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
       </head>
       <body className={`${plusJakarta.variable} ${outfit.variable} font-body antialiased theme-transition`} suppressHydrationWarning>
@@ -254,16 +255,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <LanguageProvider>
             <ThemeProvider>
               <SecurityProvider>
-                <SplashScreen />
-                <ThemeDecorations />
-                <CustomCursor />
-                <div className="overflow-x-hidden w-full">
-                  <PageTransition>{children}</PageTransition>
-                </div>
-                <Toaster />
-                <ScrollProgressButton />
-                <WebVitalsReporter />
-                <ServiceWorkerRegistrar />
+                <MotionProvider>
+                  <SplashScreen />
+                  <ThemeDecorations />
+                  <CustomCursor />
+                  <div className="overflow-x-hidden w-full">
+                    <PageTransition>{children}</PageTransition>
+                  </div>
+                  <Toaster />
+                  <ScrollProgressButton />
+                  <WebVitalsReporter />
+                  <ServiceWorkerRegistrar />
+                </MotionProvider>
               </SecurityProvider>
             </ThemeProvider>
           </LanguageProvider>

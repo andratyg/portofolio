@@ -11,7 +11,12 @@ import { useProjectStore } from '../ProjectStore';
 import { useTypewriter } from '@/hooks/use-typewriter';
 import { cn } from '@/lib/utils';
 import { ParticleCanvas } from '../ui/ParticleCanvas';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+
+const DynamicParticleCanvas = dynamic(() => import('../ui/ParticleCanvas').then(mod => mod.ParticleCanvas), {
+  ssr: false,
+});
 
 export const Hero = () => {
   const { t, language } = useLanguage();
@@ -87,7 +92,7 @@ export const Hero = () => {
 
       {/* ── Background: particles + orbs ─────────────────────────── */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <ParticleCanvas density={9000} />
+        <DynamicParticleCanvas density={9000} />
         {/* Orbs — tilt via direct DOM, no React re-render */}
         <div
           id="hero-orb-1"

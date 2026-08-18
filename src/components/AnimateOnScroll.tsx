@@ -2,7 +2,7 @@
 "use client"
 
 import { useEffect, useRef } from 'react';
-import { motion, useInView, useAnimation } from 'framer-motion';
+import { m as motion, useInView, useAnimation } from 'framer-motion';
 
 interface AnimateOnScrollProps {
   children: React.ReactNode;
