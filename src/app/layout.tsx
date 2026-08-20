@@ -1,16 +1,16 @@
-import type { Metadata, Viewport } from 'next';
+﻿import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, Outfit } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider } from '@/components/ThemeContext';
-import { LanguageProvider } from '@/components/LanguageContext';
+import { ThemeProvider } from '@/components/providers/ThemeContext';
+import { LanguageProvider } from '@/components/providers/LanguageContext';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
-import { SecurityProvider } from '@/components/SecurityProvider';
-import { ScrollProgressButton } from '@/components/ScrollProgressButton';
-import { SplashScreen } from '@/components/SplashScreen';
-import { PageTransition } from '@/components/PageTransition';
-import { MotionProvider } from '@/components/MotionProvider';
-import { ClientShell } from '@/components/ClientShell';
+import { SecurityProvider } from '@/components/providers/SecurityProvider';
+import { ScrollProgressButton } from '@/components/layout/ScrollProgressButton';
+import { SplashScreen } from '@/components/layout/SplashScreen';
+import { PageTransition } from '@/components/layout/PageTransition';
+import { MotionProvider } from '@/components/providers/MotionProvider';
+import { ClientShell } from '@/components/providers/ClientShell';
 
 // â”€â”€â”€ Fonts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const plusJakarta = Plus_Jakarta_Sans({

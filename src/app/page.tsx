@@ -1,10 +1,10 @@
-import dynamic from 'next/dynamic';
-import { Navbar } from '@/components/Navbar';
+﻿import dynamic from 'next/dynamic';
+import { Navbar } from '@/components/layout/Navbar';
 import { Hero } from '@/components/sections/Hero';
-import { ProjectStoreProvider } from '@/components/ProjectStore';
-import { SectionErrorBoundary } from '@/components/SectionErrorBoundary';
+import { ProjectStoreProvider } from '@/stores/ProjectStore';
+import { SectionErrorBoundary } from '@/components/utils/SectionErrorBoundary';
 import { AnimateOnScroll } from '@/components/AnimateOnScroll';
-import { Footer } from '@/components/Footer';
+import { Footer } from '@/components/layout/Footer';
 
 // --- Skeleton Loaders ---
 import { AboutSkeleton } from '@/components/skeletons/AboutSkeleton';

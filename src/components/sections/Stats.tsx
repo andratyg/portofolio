@@ -1,10 +1,10 @@
-"use client"
+﻿"use client"
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useLanguage } from '../LanguageContext';
-import { useProjectStore } from '../ProjectStore';
+import { useLanguage } from '../providers/LanguageContext';
+import { useProjectStore } from '@/stores/ProjectStore';
 import { Briefcase, ShieldCheck, Activity, Terminal } from 'lucide-react';
-import { ParticleCanvas } from '../ui/ParticleCanvas';
+import { ParticleCanvas } from '../features/ParticleCanvas';
 
 import { m as motion, useInView, useSpring, useTransform } from 'framer-motion';
 

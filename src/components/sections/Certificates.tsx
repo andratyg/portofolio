@@ -1,8 +1,8 @@
-"use client"
+﻿"use client"
 
 import React, { useState, useMemo, useRef } from 'react';
-import { useLanguage } from '../LanguageContext';
-import { useProjectStore } from '../ProjectStore';
+import { useLanguage } from '../providers/LanguageContext';
+import { useProjectStore } from '@/stores/ProjectStore';
 import { Card, CardContent } from '../ui/card';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
 import { Award, Eye, Landmark, Info, Loader2, AlertCircle, FileText, ExternalLink, Search, ChevronDown, Check } from 'lucide-react';
@@ -13,7 +13,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from '../ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { useEditableContent } from '../ContentStore';
+import { useEditableContent } from '@/stores/ContentStore';
 import { cn } from '@/lib/utils';
 import {
   Carousel,

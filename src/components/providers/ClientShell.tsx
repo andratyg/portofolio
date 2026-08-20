@@ -9,15 +9,15 @@
 import dynamic from 'next/dynamic';
 
 const CustomCursor = dynamic(
-  () => import('@/components/CustomCursor').then(m => ({ default: m.CustomCursor })),
+  () => import('@/components/features/CustomCursor').then(m => ({ default: m.CustomCursor })),
   { ssr: false, loading: () => null }
 );
 const WebVitalsReporter = dynamic(
-  () => import('@/components/WebVitalsReporter').then(m => ({ default: m.WebVitalsReporter })),
+  () => import('@/components/utils/WebVitalsReporter').then(m => ({ default: m.WebVitalsReporter })),
   { ssr: false, loading: () => null }
 );
 const ServiceWorkerRegistrar = dynamic(
-  () => import('@/components/ServiceWorkerRegistrar').then(m => ({ default: m.ServiceWorkerRegistrar })),
+  () => import('@/components/utils/ServiceWorkerRegistrar').then(m => ({ default: m.ServiceWorkerRegistrar })),
   { ssr: false, loading: () => null }
 );
 const ThemeDecorations = dynamic(

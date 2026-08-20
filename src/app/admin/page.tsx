@@ -1,9 +1,9 @@
-"use client"
+﻿"use client"
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useProjectStore, ProjectStoreProvider } from '@/components/ProjectStore';
-import { useContentStore } from '@/components/ContentStore';
+import { useProjectStore, ProjectStoreProvider } from '@/stores/ProjectStore';
+import { useContentStore } from '@/stores/ContentStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';

@@ -2,19 +2,19 @@
 "use client"
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { useLanguage } from '../LanguageContext';
+import { useLanguage } from '../providers/LanguageContext';
 import { Button } from '../ui/button';
 import { ArrowRight, Download, Code2, Globe2, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useProjectStore } from '../ProjectStore';
+import { useProjectStore } from '@/stores/ProjectStore';
 import { useTypewriter } from '@/hooks/use-typewriter';
 import { cn } from '@/lib/utils';
 import { m as motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
 // Load ParticleCanvas only after page is idle — prevents it from competing with LCP
-const DynamicParticleCanvas = dynamic(() => import('../ui/ParticleCanvas').then(mod => mod.ParticleCanvas), {
+const DynamicParticleCanvas = dynamic(() => import('@/components/features/ParticleCanvas').then(mod => mod.ParticleCanvas), {
   ssr: false,
   loading: () => null,
 });

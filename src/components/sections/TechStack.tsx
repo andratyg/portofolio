@@ -1,8 +1,8 @@
-"use client"
+﻿"use client"
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useLanguage } from '../LanguageContext';
-import { useProjectStore } from '../ProjectStore';
+import { useLanguage } from '../providers/LanguageContext';
+import { useProjectStore } from '@/stores/ProjectStore';
 import { cn } from '@/lib/utils';
 import { TechSkill } from '@/lib/types';
 import { m as motion, useInView, useSpring, useTransform } from 'framer-motion';

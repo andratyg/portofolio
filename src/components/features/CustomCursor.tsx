@@ -1,7 +1,7 @@
-"use client"
+﻿"use client"
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useTheme } from './ThemeContext';
+import { useTheme } from '@/components/providers/ThemeContext';
 
 export const CustomCursor = () => {
   const { theme } = useTheme();

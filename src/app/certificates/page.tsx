@@ -1,10 +1,10 @@
-"use client"
+﻿"use client"
 
-import { Navbar } from '@/components/Navbar';
+import { Navbar } from '@/components/layout/Navbar';
 import { Certificates } from '@/components/sections/Certificates';
 import { Contact } from '@/components/sections/Contact';
-import { ProjectStoreProvider } from '@/components/ProjectStore';
-import { useLanguage } from '@/components/LanguageContext';
+import { ProjectStoreProvider } from '@/stores/ProjectStore';
+import { useLanguage } from '@/components/providers/LanguageContext';
 
 export default function CertificatesPage() {
   const { t } = useLanguage();

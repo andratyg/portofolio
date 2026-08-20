@@ -1,9 +1,9 @@
-"use client"
+﻿"use client"
 
 import React from 'react';
-import { Navbar } from '@/components/Navbar';
-import { ProjectStoreProvider } from '@/components/ProjectStore';
-import { useLanguage } from '@/components/LanguageContext';
+import { Navbar } from '@/components/layout/Navbar';
+import { ProjectStoreProvider } from '@/stores/ProjectStore';
+import { useLanguage } from '@/components/providers/LanguageContext';
 import { FileText, Clock, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';

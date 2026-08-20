@@ -1,16 +1,16 @@
-
+﻿
 "use client"
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { m as motion } from 'framer-motion';
-import { useLanguage } from './LanguageContext';
-import { useTheme, themes } from './ThemeContext';
-import { Button } from './ui/button';
+import { useLanguage } from '@/components/providers/LanguageContext';
+import { useTheme, themes } from '@/components/providers/ThemeContext';
+import { Button } from '@/components/ui/button';
 import { Globe, Palette, LogIn, Menu, X, ChevronDown } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
-import { useProjectStore } from './ProjectStore';
+import { useProjectStore } from '@/stores/ProjectStore';
 import { useUser } from '@/firebase';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';

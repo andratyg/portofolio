@@ -1,9 +1,9 @@
-
+﻿
 "use client"
 
 import React from 'react';
-import { useLanguage } from '../LanguageContext';
-import { useProjectStore } from '../ProjectStore';
+import { useLanguage } from '../providers/LanguageContext';
+import { useProjectStore } from '@/stores/ProjectStore';
 import { Card, CardContent } from '../ui/card';
 import { Quote, Star } from 'lucide-react';
 import Image from 'next/image';

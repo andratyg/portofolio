@@ -1,9 +1,9 @@
-
+﻿
 "use client"
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { useLanguage } from '../LanguageContext';
-import { useEditableContent } from '../ContentStore';
+import { useLanguage } from '../providers/LanguageContext';
+import { useEditableContent } from '@/stores/ContentStore';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardFooter } from '../ui/card';
@@ -11,7 +11,7 @@ import { Badge } from '../ui/badge';
 import { Search, Globe, Eye, ArrowRight, AlertCircle, CheckCircle2, Terminal } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
 import Image from 'next/image';
-import { useProjectStore } from '../ProjectStore';
+import { useProjectStore } from '@/stores/ProjectStore';
 import { cn } from '@/lib/utils';
 import { Project } from '@/lib/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';

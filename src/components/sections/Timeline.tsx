@@ -1,12 +1,12 @@
-"use client"
+﻿"use client"
 
 import React from 'react';
-import { useLanguage } from '../LanguageContext';
-import { useProjectStore } from '../ProjectStore';
+import { useLanguage } from '../providers/LanguageContext';
+import { useProjectStore } from '@/stores/ProjectStore';
 import { Badge } from '../ui/badge';
 import { History, Briefcase, GraduationCap, Milestone } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ParticleCanvas } from '../ui/ParticleCanvas';
+import { ParticleCanvas } from '../features/ParticleCanvas';
 import { m as motion, useScroll, useTransform } from 'framer-motion';
 
 export const Timeline = () => {

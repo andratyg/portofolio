@@ -1,7 +1,7 @@
-"use client"
+﻿"use client"
 
 import Link from 'next/link';
-import { useLanguage } from '@/components/LanguageContext';
+import { useLanguage } from '@/components/providers/LanguageContext';
 import { Github, Linkedin, Instagram, ArrowUp } from 'lucide-react';
 
 export const Footer = () => {
