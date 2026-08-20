@@ -4,25 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 export const SplashScreen = () => {
-  const [phase, setPhase] = useState<'loading' | 'reveal' | 'done'>('loading');
+  const [phase, setPhase] = useState<'loading' | 'reveal' | 'done'>('done');
 
   useEffect(() => {
-    // Check if already shown this session
-    if (sessionStorage.getItem('splash-shown')) {
-      setPhase('done');
-      return;
-    }
-
-    const timer1 = setTimeout(() => setPhase('reveal'), 1800);
-    const timer2 = setTimeout(() => {
-      setPhase('done');
-      sessionStorage.setItem('splash-shown', 'true');
-    }, 2600);
-
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-    };
+    setPhase('done');
   }, []);
 
   if (phase === 'done') return null;

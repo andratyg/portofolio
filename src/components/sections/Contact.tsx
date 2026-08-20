@@ -11,7 +11,7 @@ import { Send, Linkedin, ExternalLink, Github, Instagram, Video, Mail, Loader2 }
 import { FaWhatsapp } from 'react-icons/fa'; // Import WhatsApp icon
 import { useFirestore } from '@/firebase';
 import { collection, addDoc } from 'firebase/firestore';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 export const Contact = () => {

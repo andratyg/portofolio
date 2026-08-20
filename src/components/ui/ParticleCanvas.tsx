@@ -4,10 +4,10 @@ import { cn } from '@/lib/utils';
 
 interface ParticleCanvasProps {
   className?: string;
-  density?: number; // default 10000
+  density?: number; // default 20000
 }
 
-export const ParticleCanvas = ({ className, density = 10000 }: ParticleCanvasProps) => {
+export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -18,6 +18,8 @@ export const ParticleCanvas = ({ className, density = 10000 }: ParticleCanvasPro
     if (!ctx) return;
 
     let particleRaf: number;
+    let lastFrameTime = 0;
+    const fpsInterval = 1000 / 30; // Cap to 30 FPS
 
     const resize = () => {
       canvas.width = canvas.offsetWidth;
@@ -27,29 +29,32 @@ export const ParticleCanvas = ({ className, density = 10000 }: ParticleCanvasPro
     window.addEventListener('resize', resize);
 
     const particles: { x: number; y: number; vx: number; vy: number; size: number; opacity: number }[] = [];
-    const count = Math.min(120, Math.floor(canvas.width * canvas.height / density));
+    const count = Math.min(60, Math.floor((canvas.width * canvas.height) / density));
     
     for (let i = 0; i < count; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: (Math.random() - 0.5) * 0.6,
-        size: Math.random() * 2 + 1, // bigger size
-        opacity: Math.random() * 0.6 + 0.4, // higher base opacity
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        size: Math.random() * 1.5 + 0.5,
+        opacity: Math.random() * 0.4 + 0.2,
       });
     }
 
-    const drawParticles = () => {
+    const drawParticles = (timestamp: number) => {
+      particleRaf = requestAnimationFrame(drawParticles);
+
+      const elapsed = timestamp - lastFrameTime;
+      if (elapsed < fpsInterval) return;
+      lastFrameTime = timestamp - (elapsed % fpsInterval);
+
+      if (document.hidden) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-      
-      // Only show particles in light and dark mode. Skip rendering in seasonal themes.
-      if (currentTheme !== 'light' && currentTheme !== 'dark') {
-        particleRaf = requestAnimationFrame(drawParticles);
-        return;
-      }
+      if (currentTheme !== 'light' && currentTheme !== 'dark') return;
 
       const isDarkTheme = currentTheme === 'dark';
       const rgbArgs = isDarkTheme ? '255, 255, 255' : '34, 38, 42';
@@ -68,21 +73,20 @@ export const ParticleCanvas = ({ className, density = 10000 }: ParticleCanvasPro
         for (let j = i + 1; j < particles.length; j++) {
           const dx = p.x - particles[j].x;
           const dy = p.y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 140) { // increased range
+          const distSq = dx * dx + dy * dy;
+          if (distSq < 14400) { // 120 * 120
+            const dist = Math.sqrt(distSq);
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            const lineOpacity = 0.25 * (1 - dist / 140) * (isDarkTheme ? 1.8 : 1.2);
-            ctx.strokeStyle = `rgba(${rgbArgs}, ${lineOpacity})`;
-            ctx.lineWidth = isDarkTheme ? 1.0 : 0.8;
+            ctx.strokeStyle = `rgba(${rgbArgs}, ${0.15 * (1 - dist / 120)})`;
             ctx.stroke();
           }
         }
       });
-      particleRaf = requestAnimationFrame(drawParticles);
     };
-    drawParticles();
+
+    particleRaf = requestAnimationFrame(drawParticles);
 
     return () => {
       window.removeEventListener('resize', resize);

@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 import { useLanguage } from './LanguageContext';
 import { useTheme, themes } from './ThemeContext';
 import { Button } from './ui/button';
@@ -177,8 +177,8 @@ export const Navbar = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="rounded-2xl border-none shadow-2xl bg-card/95 backdrop-blur-sm p-2">
-                <DropdownMenuItem onClick={() => setLanguage('en')} className="rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-2.5">English {language === 'en' && '✓'}</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage('id')} className="rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-2.5">Indonesia {language === 'id' && '✓'}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage('en')} className="rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-2.5">English {language === 'en' && 'âœ“'}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage('id')} className="rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-2.5">Indonesia {language === 'id' && 'âœ“'}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -205,7 +205,7 @@ export const Navbar = () => {
                   >
                     <div className={cn("w-7 h-7 rounded-full shadow-inner border border-white/10 shrink-0", getThemeColor(tName))} />
                     <span className="text-[11px] font-black uppercase tracking-[0.15em] truncate">{tName}</span>
-                    {theme === tName && <span className="ml-auto opacity-70">✓</span>}
+                    {theme === tName && <span className="ml-auto opacity-70">âœ“</span>}
                   </DropdownMenuItem>
                 ))}
                 

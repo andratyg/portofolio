@@ -7,7 +7,7 @@ import { Badge } from '../ui/badge';
 import { History, Briefcase, GraduationCap, Milestone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ParticleCanvas } from '../ui/ParticleCanvas';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { m as motion, useScroll, useTransform } from 'framer-motion';
 
 export const Timeline = () => {
   const { t, language } = useLanguage();

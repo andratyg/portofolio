@@ -8,15 +8,11 @@ import { FirebaseClientProvider } from '@/firebase';
 import { SecurityProvider } from '@/components/SecurityProvider';
 import { ScrollProgressButton } from '@/components/ScrollProgressButton';
 import { SplashScreen } from '@/components/SplashScreen';
-import { CustomCursor } from '@/components/CustomCursor';
-import { WebVitalsReporter } from '@/components/WebVitalsReporter';
 import { PageTransition } from '@/components/PageTransition';
-import { ServiceWorkerRegistrar } from '@/components/ServiceWorkerRegistrar';
-import ThemeDecorations from '@/components/themes/ThemeDecorations';
 import { MotionProvider } from '@/components/MotionProvider';
+import { ClientShell } from '@/components/ClientShell';
 
-
-// ─── Fonts ───────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Fonts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-plus-jakarta',
@@ -29,7 +25,7 @@ const outfit = Outfit({
   display: 'swap',
 });
 
-// ─── Viewport ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Viewport â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const viewport: Viewport = {
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#f8f7f4' },
@@ -41,7 +37,7 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
-// ─── SEO Constants ───────────────────────────────────────────────────────────
+// â”€â”€â”€ SEO Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const BASE_URL   = 'https://www.naraandratyaga.my.id';
 const FULL_NAME  = 'Nara Andra Tyaga';
 const NICKNAME   = 'Andra';
@@ -49,11 +45,11 @@ const ROLE       = 'Web Developer & Student';
 const SCHOOL     = 'SMK Wikrama Bogor';
 const PROGRAM    = 'PPLG';
 
-const TITLE       = `${FULL_NAME} — Web Developer · ${SCHOOL}`;
+const TITLE       = `${FULL_NAME} â€” Web Developer Â· ${SCHOOL}`;
 const DESCRIPTION = `Portofolio resmi Nara Andra Tyaga (Andra), siswa ${PROGRAM} di ${SCHOOL}. Spesialis pengembangan web modern menggunakan Next.js, React, TypeScript, dan Firebase. Lihat proyek, sertifikat, dan perjalanan karir saya.`;
 const OG_IMAGE    = `${BASE_URL}/og-image.png`;
 
-// ─── Metadata ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Metadata â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
@@ -98,7 +94,7 @@ export const metadata: Metadata = {
     },
   },
 
-  // ── Open Graph (WhatsApp, Discord, Facebook, LINE, dll)
+  // â”€â”€ Open Graph (WhatsApp, Discord, Facebook, LINE, dll)
   openGraph: {
     type: 'profile',
     firstName: 'Nara Andra',
@@ -113,14 +109,14 @@ export const metadata: Metadata = {
         url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: `${FULL_NAME} — ${ROLE} · ${SCHOOL}`,
+        alt: `${FULL_NAME} â€” ${ROLE} Â· ${SCHOOL}`,
         type: 'image/png',
       },
     ],
     locale: 'id_ID',
   },
 
-  // ── Twitter / X Card
+  // â”€â”€ Twitter / X Card
   twitter: {
     card: 'summary_large_image',
     title: TITLE,
@@ -148,7 +144,7 @@ export const metadata: Metadata = {
   },
 };
 
-// ─── JSON-LD Structured Data (Massively expanded for AI Search/SGE) ───────────
+// â”€â”€â”€ JSON-LD Structured Data (Massively expanded for AI Search/SGE) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const jsonLd = [
   {
     '@context': 'https://schema.org',
@@ -175,7 +171,7 @@ const jsonLd = [
     },
     alumniOf: {
       '@type': 'EducationalOrganization',
-      name: `${SCHOOL} — ${PROGRAM}`,
+      name: `${SCHOOL} â€” ${PROGRAM}`,
     },
     knowsAbout: [
       'Next.js', 'React', 'TypeScript', 'Firebase', 'Tailwind CSS', 
@@ -235,15 +231,19 @@ const jsonLd = [
   }
 ];
 
-// ─── Layout ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Layout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Layout ───────────────────────────────────────────────────────────────────
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="cu0oN6kGs748IQbeUkW1eFLhaKDJwYpJ6Gn9daxm9tk" />
-        {/* Firestore preconnect — saves ~180ms LCP (Lighthouse recommendation) */}
+        {/* Preconnect to origins needed for LCP */}
         <link rel="preconnect" href="https://firestore.googleapis.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
+        {/* Preconnect for project images hosted on ibb.co.com */}
+        <link rel="preconnect" href="https://i.ibb.co.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://i.ibb.co.com" />
       </head>
       <body className={`${plusJakarta.variable} ${outfit.variable} font-body antialiased theme-transition`} suppressHydrationWarning>
         <script
@@ -257,15 +257,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <SecurityProvider>
                 <MotionProvider>
                   <SplashScreen />
-                  <ThemeDecorations />
-                  <CustomCursor />
+                  <ClientShell />
                   <div className="overflow-x-hidden w-full">
                     <PageTransition>{children}</PageTransition>
                   </div>
                   <Toaster />
                   <ScrollProgressButton />
-                  <WebVitalsReporter />
-                  <ServiceWorkerRegistrar />
                 </MotionProvider>
               </SecurityProvider>
             </ThemeProvider>

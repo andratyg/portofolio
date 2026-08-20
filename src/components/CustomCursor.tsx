@@ -20,7 +20,7 @@ export const CustomCursor = () => {
     if (isHoverable && !isReducedMotion) setIsDesktop(true);
   }, []);
 
-  // Step 2: attach listeners once DOM elements exist (isDesktop triggers re-render → refs are populated)
+  // Step 2: attach listeners once DOM elements exist (isDesktop triggers re-render â†’ refs are populated)
   useEffect(() => {
     if (!isDesktop) return;
 
@@ -31,10 +31,12 @@ export const CustomCursor = () => {
     let mouseX = -100, mouseY = -100;
     let ringX = -100, ringY = -100;
     let raf: number;
+    let isDirty = false; // Only animate ring when mouse has moved
 
     const onMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
+      isDirty = true;
 
       if (!hasMovedRef.current) {
         hasMovedRef.current = true;
@@ -44,20 +46,34 @@ export const CustomCursor = () => {
 
       // Dot follows instantly
       cursor.style.transform = `translate(${mouseX - 4}px, ${mouseY - 4}px)`;
+
+      // Restart ring RAF if it was stopped
+      if (!raf) {
+        raf = requestAnimationFrame(animateRing);
+      }
     };
 
-    // Ring follows with smooth lag
+    // Ring follows with smooth lag — stops itself when settled
     const animateRing = () => {
-      ringX += (mouseX - ringX) * 0.15;
-      ringY += (mouseY - ringY) * 0.15;
-      const scale = isHoveringRef.current ? 1.8 : 1;
+      const dx = mouseX - ringX;
+      const dy = mouseY - ringY;
+      ringX += dx * 0.15;
+      ringY += dy * 0.15;
+
       const size = isHoveringRef.current ? 60 : 40;
       ring.style.width = `${size}px`;
       ring.style.height = `${size}px`;
       ring.style.borderColor = isHoveringRef.current
         ? 'rgba(255,255,255,0.8)'
         : 'rgba(255,255,255,0.5)';
-      ring.style.transform = `translate(${ringX - size / 2}px, ${ringY - size / 2}px) scale(${scale})`;
+      ring.style.transform = `translate(${ringX - size / 2}px, ${ringY - size / 2}px)`;
+
+      // Stop RAF when ring has caught up (within 0.5px)
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5 && !isDirty) {
+        (raf as any) = 0;
+        return;
+      }
+      isDirty = false;
       raf = requestAnimationFrame(animateRing);
     };
 
@@ -191,7 +207,7 @@ export const CustomCursor = () => {
         ref={canvasRef}
         className="fixed top-0 left-0 w-full h-full pointer-events-none z-[9997]"
       />
-      {/* Dot — hidden until mouse has moved */}
+      {/* Dot â€” hidden until mouse has moved */}
       <div
         ref={cursorRef}
         className="fixed top-0 left-0 z-[9999] pointer-events-none mix-blend-difference"

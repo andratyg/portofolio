@@ -10,7 +10,7 @@ export function WebVitalsReporter() {
     const reportWebVital = (metric: { name: string; value: number; id: string; rating: string }) => {
       // Log to console in development
       if (process.env.NODE_ENV === 'development') {
-        const color = metric.rating === 'good' ? '🟢' : metric.rating === 'needs-improvement' ? '🟡' : '🔴';
+        const color = metric.rating === 'good' ? 'ðŸŸ¢' : metric.rating === 'needs-improvement' ? 'ðŸŸ¡' : 'ðŸ”´';
         console.log(`${color} ${metric.name}: ${Math.round(metric.value)}ms [${metric.rating}]`);
       }
 
@@ -34,7 +34,7 @@ export function WebVitalsReporter() {
       onTTFB(reportWebVital);
       onINP(reportWebVital);
     }).catch(() => {
-      // web-vitals not installed — silently ignore
+      // web-vitals not installed â€” silently ignore
     });
   }, []);
 

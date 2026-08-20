@@ -92,7 +92,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const techSkills: TechSkill[] = (techSkillsData || []).map((s: any) => ({
     id: s.id,
     name: s.name || '',
-    icon: s.icon || '⚡',
+    icon: s.icon || 'âš¡',
     level: s.level || 50,
     color: s.color || 'from-blue-400 to-blue-600',
     category: s.category || 'Other',

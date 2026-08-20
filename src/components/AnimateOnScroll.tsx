@@ -2,7 +2,6 @@
 "use client"
 
 import { useEffect, useRef } from 'react';
-import { m as motion, useInView, useAnimation } from 'framer-motion';
 
 interface AnimateOnScrollProps {
   children: React.ReactNode;
@@ -15,31 +14,46 @@ export const AnimateOnScroll = ({
   children, 
   delay = 0.2,
   duration = 0.5,
-  className
+  className,
 }: AnimateOnScrollProps) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true }); // `once: true` ensures the animation only runs once
-  const mainControls = useAnimation();
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isInView) {
-      mainControls.start("visible");
+    const el = ref.current;
+    if (!el) return;
+
+    // Respect reduced motion preference
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+      return;
     }
-  }, [isInView, mainControls]);
+
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(40px)';
+    el.style.transition = `opacity ${duration}s ease ${delay}s, transform ${duration}s ease ${delay}s`;
+    el.style.willChange = 'opacity, transform';
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+          // Clean up willChange after animation to free compositor resources
+          setTimeout(() => { el.style.willChange = 'auto'; }, (duration + delay) * 1000 + 100);
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [delay, duration]);
 
   return (
-    <motion.div
-      ref={ref}
-      className={className}
-      variants={{
-        hidden: { opacity: 0, y: 50 }, // Start 50px below and transparent
-        visible: { opacity: 1, y: 0 },    // End at original position and fully visible
-      }}
-      initial="hidden"
-      animate={mainControls}
-      transition={{ duration, delay, ease: 'easeOut' }}
-    >
+    <div ref={ref} className={className}>
       {children}
-    </motion.div>
+    </div>
   );
 };

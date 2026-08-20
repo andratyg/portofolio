@@ -51,9 +51,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const faviconMap: Record<Theme, string> = {
       light: '', // Uses default if empty
       dark: '',
-      imlek: '🏮',
-      ramadan: '🌙',
-      natal: '❄️'
+      imlek: 'ðŸ®',
+      ramadan: 'ðŸŒ™',
+      natal: 'â„ï¸'
     };
     
     const emoji = faviconMap[theme];

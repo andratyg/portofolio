@@ -10,18 +10,18 @@ import Image from 'next/image';
 import { useProjectStore } from '../ProjectStore';
 import { useTypewriter } from '@/hooks/use-typewriter';
 import { cn } from '@/lib/utils';
-import { ParticleCanvas } from '../ui/ParticleCanvas';
 import { m as motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
+// Load ParticleCanvas only after page is idle — prevents it from competing with LCP
 const DynamicParticleCanvas = dynamic(() => import('../ui/ParticleCanvas').then(mod => mod.ParticleCanvas), {
   ssr: false,
+  loading: () => null,
 });
 
-export const Hero = () => {
+export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any }) => {
   const { t, language } = useLanguage();
   const { projects, profile } = useProjectStore();
-  const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -39,11 +39,7 @@ export const Hero = () => {
   const tiltRef = useRef({ x: 0, y: 0, raf: 0 });
 
   useEffect(() => {
-    // Start visible immediately — avoids 100ms + 1000ms fade-in contributing to LCP
-    setIsVisible(true);
-    const timer = setTimeout(() => {}, 0); // keep for cleanup pattern
-
-    // ── Mouse tilt ──
+    // ——— Mouse tilt ———
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth  - 0.5) * 14;
       const y = (e.clientY / window.innerHeight - 0.5) * 10;
@@ -70,13 +66,13 @@ export const Hero = () => {
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => {
-      clearTimeout(timer);
       window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(tiltRef.current.raf);
     };
   }, []);
 
-  const featuredProject = projects.find(p => p.featured);
+  const storeFeatured = projects.find(p => p.featured);
+  const featuredProject = storeFeatured || initialFeaturedProject;
   const heroTitle    = (language === 'id' ? profile.heroTitleId    : (profile.heroTitleEn    || profile.heroTitleId))    ?? '';
   const heroSubtitle = (language === 'id' ? profile.heroSubtitleId : (profile.heroSubtitleEn || profile.heroSubtitleId)) ?? '';
   const isValidImageUrl = (url: string) => url && (url.startsWith('http') || url.startsWith('/'));
@@ -84,16 +80,16 @@ export const Hero = () => {
   return (
     <section className="relative min-h-[100svh] flex flex-col justify-center bg-background selection:bg-primary/30 overflow-hidden">
       
-      {/* ── SEO Hidden Text (Exact match for AI & Google) ─────────────── */}
+      {/* â”€â”€ SEO Hidden Text (Exact match for AI & Google) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="sr-only">
         <h2>Siapakah Nara Andra Tyaga?</h2>
         <p>Nara Andra Tyaga (biasa dipanggil Andra atau NAT) adalah seorang Web Developer muda asal Bogor, Indonesia. Saat ini menempuh pendidikan di SMK Wikrama Bogor mengambil jurusan PPLG. Ahli dalam Next.js, React, UI/UX, dan Firebase.</p>
       </div>
 
-      {/* ── Background: particles + orbs ─────────────────────────── */}
+      {/* â”€â”€ Background: particles + orbs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <DynamicParticleCanvas density={9000} />
-        {/* Orbs — tilt via direct DOM, no React re-render */}
+        <DynamicParticleCanvas density={15000} />
+        {/* Orbs â€” tilt via direct DOM, no React re-render */}
         <div
           id="hero-orb-1"
           className="absolute top-[10%] left-[5%] w-[560px] h-[560px] bg-primary/8 rounded-full blur-[140px]"
@@ -110,11 +106,8 @@ export const Hero = () => {
 
       <div className="container mx-auto px-4 sm:px-6 grid lg:grid-cols-12 gap-10 lg:gap-16 items-center relative z-10 py-24 sm:py-32">
 
-        {/* ── LEFT: Text content ──────────────────────────────────── */}
-        <div className={cn(
-          "lg:col-span-7 transition-[opacity,transform] duration-1000 ease-out",
-          isVisible ? "translate-x-0 opacity-100" : "-translate-x-12 opacity-0"
-        )}>
+        {/* â”€â”€ LEFT: Text content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        <div className="lg:col-span-7 animate-in fade-in slide-in-from-left-12 duration-1000 fill-mode-both">
           {/* Status badge */}
           <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full glass-card mb-7 max-w-full">
             <span className="relative flex h-2 w-2 shrink-0">
@@ -134,43 +127,12 @@ export const Hero = () => {
             {displayText}<span className="inline-block w-0.5 h-4 bg-primary ml-0.5 animate-pulse" />
           </p>
 
-          {/* Headline — staggered word reveal */}
-          {/* Static fallback visible immediately for LCP (hidden from AT, replaced by animated version) */}
-          {!heroTitle && (
-            <h1
-              aria-hidden="true"
-              className="text-[clamp(2.8rem,7.5vw,7rem)] font-black leading-[0.9] mb-7 tracking-tight text-foreground"
-            >
-              Nara Andra Tyaga
-            </h1>
-          )}
-          <motion.h1
-            initial="hidden"
-            animate={heroTitle ? 'visible' : 'hidden'}
-            variants={{
-              visible: { transition: { staggerChildren: 0.05 } }
-            }}
-            className={cn(
-              "text-[clamp(2.8rem,7.5vw,7rem)] font-black leading-[0.9] mb-7 tracking-tight",
-              !heroTitle && "hidden"
-            )}
+          {/* Headline â€” staggered word reveal */}
+          <h1
+            className="text-[clamp(2.8rem,7.5vw,7rem)] font-black leading-[0.9] mb-7 tracking-tight text-foreground"
           >
-            {heroTitle.split(' ').map((word, i) => (
-              <motion.span
-                key={i}
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0, transition: { type: 'spring', damping: 20, stiffness: 150 } }
-                }}
-                className={cn(
-                  "inline-block mr-[0.2em]",
-                  i % 2 !== 0 ? 'text-primary' : 'text-foreground'
-                )}
-              >
-                {word}
-              </motion.span>
-            ))}
-          </motion.h1>
+            {heroTitle || 'Nara Andra Tyaga'}
+          </h1>
 
           {/* Subtitle */}
           <div className="flex items-start gap-4 mb-9 max-w-lg">
@@ -220,26 +182,23 @@ export const Hero = () => {
                 </div>
               ))}
             </div>
-            <span>Next.js · React · TypeScript · Firebase</span>
+            <span>Next.js Â· React Â· TypeScript Â· Firebase</span>
           </div>
         </div>
 
-        {/* ── RIGHT: Project card ─────────────────────────────────── */}
-        <div className={cn(
-          "lg:col-span-5 transition-[opacity,transform] duration-1000 delay-300 ease-out order-first lg:order-last",
-          isVisible ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0"
-        )}>
+        {/* â”€â”€ RIGHT: Project card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        <div className="lg:col-span-5 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300 fill-mode-both order-first lg:order-last">
           <div className="relative group max-w-[320px] sm:max-w-[380px] mx-auto lg:max-w-none">
 
-            {/* Ambient glow — purely decorative, behind the card */}
+            {/* Ambient glow â€” purely decorative, behind the card */}
             <div
               className="absolute -inset-6 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-[3rem] blur-3xl
                          opacity-40 group-hover:opacity-70 transition-opacity duration-700"
             />
 
             {/*
-              TILT WRAPPER — this is the only element that receives 3D perspective transform.
-              It has NO overflow: hidden, NO border-radius → so 3D rotation never causes
+              TILT WRAPPER â€” this is the only element that receives 3D perspective transform.
+              It has NO overflow: hidden, NO border-radius â†’ so 3D rotation never causes
               the "boxy corners" bug. It just tilts freely in 3D space.
             */}
             <div
@@ -247,7 +206,7 @@ export const Hero = () => {
               style={{ transition: 'transform 0.15s linear' }}
             >
               {/*
-                VISUAL CARD — has overflow: hidden + border-radius.
+                VISUAL CARD â€” has overflow: hidden + border-radius.
                 It NEVER receives a 3D transform. Only hover lift (translateY) is allowed here.
                 This is the key fix: separate the 3D tilt from the rounded element.
               */}
@@ -308,12 +267,8 @@ export const Hero = () => {
         </div>
       </div>
 
-      {/* ── Scroll indicator ──────────────────────────────────────── */}
-      <div className={cn(
-        "absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2",
-        "transition-[opacity,transform] duration-1000",
-        isVisible ? "opacity-35 translate-y-0" : "opacity-0 translate-y-4"
-      )}>
+      {/* â”€â”€ Scroll indicator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500 fill-mode-both opacity-35">
         <span className="text-[8px] uppercase tracking-[0.35em] text-muted-foreground">Scroll</span>
         <div className="w-px h-10 bg-gradient-to-b from-muted-foreground/60 to-transparent animate-pulse" />
       </div>

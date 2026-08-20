@@ -137,7 +137,7 @@ export default function AdminLogin() {
               <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest px-1">Kata Sandi</label>
               <Input 
                 type="password" 
-                placeholder="••••••••" 
+                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" 
                 className="h-12 rounded-xl bg-background/50"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

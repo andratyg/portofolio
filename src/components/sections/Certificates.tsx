@@ -23,7 +23,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 export const Certificates = () => {
   const { t, language } = useLanguage();
@@ -83,7 +83,7 @@ export const Certificates = () => {
     );
   };
 
-  // ─── JSON-LD Structured Data for Certificates (AI/SEO Optimization) ────────
+  // â”€â”€â”€ JSON-LD Structured Data for Certificates (AI/SEO Optimization) â”€â”€â”€â”€â”€â”€â”€â”€
   const certSchema = useMemo(() => {
     if (!certificates || certificates.length === 0) return null;
     return {

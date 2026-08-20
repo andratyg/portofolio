@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 const BASE_URL = 'https://www.naraandratyaga.my.id';
 

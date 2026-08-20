@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { m as motion } from 'framer-motion';
 
 export default function ImlekDecorations() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);

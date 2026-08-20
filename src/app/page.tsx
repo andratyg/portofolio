@@ -42,8 +42,8 @@ const Contact = dynamic(() => import('@/components/sections/Contact').then(mod =
   loading: () => <ContactSkeleton />,
 });
 
-// Fetch featured project image for LCP optimization
-async function getFeaturedProjectImageUrl() {
+// Fetch featured project for LCP optimization
+async function getFeaturedProject() {
   try {
     const res = await fetch(
       'https://firestore.googleapis.com/v1/projects/studio-6743233958-ba96d/databases/(default)/documents/projects',
@@ -51,15 +51,25 @@ async function getFeaturedProjectImageUrl() {
     );
     if (!res.ok) return null;
     const data = await res.json();
-    const featured = data.documents?.find((doc: any) => doc.fields?.featured?.booleanValue === true);
-    return featured?.fields?.imageUrl?.stringValue || null;
+    let doc = data.documents?.find((doc: any) => doc.fields?.featured?.booleanValue === true);
+    if (!doc && data.documents?.length > 0) {
+      doc = data.documents[0]; // Fallback to first project
+    }
+    if (!doc) return null;
+    
+    return {
+      imageUrl: doc.fields?.imageUrl?.stringValue || '',
+      titleId: doc.fields?.titleId?.stringValue || '',
+      titleEn: doc.fields?.titleEn?.stringValue || '',
+      technologies: doc.fields?.technologies?.arrayValue?.values?.map((v: any) => v.stringValue) || [],
+    };
   } catch (error) {
     return null;
   }
 }
 
 export default async function Home() {
-  const featuredImageUrl = await getFeaturedProjectImageUrl();
+  const featuredProject = await getFeaturedProject();
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -84,21 +94,17 @@ export default async function Home() {
   };
 
   return (
-    <>
-      {featuredImageUrl && (
-        <link rel="preload" as="image" href={featuredImageUrl} fetchPriority="high" />
-      )}
-      <ProjectStoreProvider>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        <main className="min-h-screen selection:bg-primary selection:text-primary-foreground">
-          {/* --- Above the fold (loaded immediately) --- */}
-          <Navbar />
-          <SectionErrorBoundary sectionName="Hero">
-            <Hero />
-          </SectionErrorBoundary>
+    <ProjectStoreProvider>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <main className="min-h-screen selection:bg-primary selection:text-primary-foreground">
+        {/* --- Above the fold (loaded immediately) --- */}
+        <Navbar />
+        <SectionErrorBoundary sectionName="Hero">
+          <Hero initialFeaturedProject={featuredProject} />
+        </SectionErrorBoundary>
 
           {/* --- Below the fold (lazy loaded with skeletons & animations) --- */}
           <SectionErrorBoundary sectionName="About">
@@ -153,6 +159,5 @@ export default async function Home() {
           <Footer />
         </main>
       </ProjectStoreProvider>
-    </>
   );
 }
