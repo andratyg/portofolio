@@ -52,7 +52,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       light: '', // Uses default if empty
       dark: '',
       imlek: 'ðŸ®',
-      ramadan: 'ðŸŒ™',
+      ramadan: '🌙',
       natal: 'â„ï¸'
     };
     

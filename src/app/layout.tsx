@@ -1,4 +1,4 @@
-﻿import type { Metadata, Viewport } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, Outfit } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/providers/ThemeContext';
@@ -12,7 +12,7 @@ import { PageTransition } from '@/components/layout/PageTransition';
 import { MotionProvider } from '@/components/providers/MotionProvider';
 import { ClientShell } from '@/components/providers/ClientShell';
 
-// â”€â”€â”€ Fonts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Fonts ───────────────────────────────────────────────────────────────────
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-plus-jakarta',
@@ -25,7 +25,7 @@ const outfit = Outfit({
   display: 'swap',
 });
 
-// â”€â”€â”€ Viewport â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Viewport ────────────────────────────────────────────────────────────────
 export const viewport: Viewport = {
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#f8f7f4' },
@@ -37,7 +37,7 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
-// â”€â”€â”€ SEO Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── SEO Constants ───────────────────────────────────────────────────────────
 const BASE_URL   = 'https://www.naraandratyaga.my.id';
 const FULL_NAME  = 'Nara Andra Tyaga';
 const NICKNAME   = 'Andra';
@@ -45,11 +45,11 @@ const ROLE       = 'Web Developer & Student';
 const SCHOOL     = 'SMK Wikrama Bogor';
 const PROGRAM    = 'PPLG';
 
-const TITLE       = `${FULL_NAME} â€” Web Developer Â· ${SCHOOL}`;
+const TITLE       = `${FULL_NAME} — Web Developer · ${SCHOOL}`;
 const DESCRIPTION = `Portofolio resmi Nara Andra Tyaga (Andra), siswa ${PROGRAM} di ${SCHOOL}. Spesialis pengembangan web modern menggunakan Next.js, React, TypeScript, dan Firebase. Lihat proyek, sertifikat, dan perjalanan karir saya.`;
 const OG_IMAGE    = `${BASE_URL}/og-image.png`;
 
-// â”€â”€â”€ Metadata â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Metadata ────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
@@ -94,7 +94,7 @@ export const metadata: Metadata = {
     },
   },
 
-  // â”€â”€ Open Graph (WhatsApp, Discord, Facebook, LINE, dll)
+  // ── Open Graph (WhatsApp, Discord, Facebook, LINE, dll)
   openGraph: {
     type: 'profile',
     firstName: 'Nara Andra',
@@ -109,14 +109,14 @@ export const metadata: Metadata = {
         url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: `${FULL_NAME} â€” ${ROLE} Â· ${SCHOOL}`,
+        alt: `${FULL_NAME} — ${ROLE} · ${SCHOOL}`,
         type: 'image/png',
       },
     ],
     locale: 'id_ID',
   },
 
-  // â”€â”€ Twitter / X Card
+  // ── Twitter / X Card
   twitter: {
     card: 'summary_large_image',
     title: TITLE,
@@ -144,7 +144,7 @@ export const metadata: Metadata = {
   },
 };
 
-// â”€â”€â”€ JSON-LD Structured Data (Massively expanded for AI Search/SGE) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── JSON-LD Structured Data (Massively expanded for AI Search/SGE) ───────────
 const jsonLd = [
   {
     '@context': 'https://schema.org',
@@ -171,7 +171,7 @@ const jsonLd = [
     },
     alumniOf: {
       '@type': 'EducationalOrganization',
-      name: `${SCHOOL} â€” ${PROGRAM}`,
+      name: `${SCHOOL} — ${PROGRAM}`,
     },
     knowsAbout: [
       'Next.js', 'React', 'TypeScript', 'Firebase', 'Tailwind CSS', 
@@ -231,19 +231,20 @@ const jsonLd = [
   }
 ];
 
-// â”€â”€â”€ Layout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Layout ──────────────────────────────────────────────────────────────────
 // ─── Layout ───────────────────────────────────────────────────────────────────
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="cu0oN6kGs748IQbeUkW1eFLhaKDJwYpJ6Gn9daxm9tk" />
-        {/* Preconnect to origins needed for LCP */}
-        <link rel="preconnect" href="https://firestore.googleapis.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
-        {/* Preconnect for project images hosted on ibb.co.com */}
-        <link rel="preconnect" href="https://i.ibb.co.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://i.ibb.co.com" />
+        {/* Preconnect: LCP image CDN (project images on ibb.co) */}
+        <link rel="preconnect" href="https://i.ibb.co" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://i.ibb.co" />
+        {/* Preconnect: Firebase Auth (used early by FirebaseClientProvider) */}
+        <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossOrigin="anonymous" />
+        {/* Preload local profile fallback to avoid lazy-load penalty */}
+        <link rel="preload" as="image" href="/profile-fallback.jpg" fetchPriority="high" />
       </head>
       <body className={`${plusJakarta.variable} ${outfit.variable} font-body antialiased theme-transition`} suppressHydrationWarning>
         <script

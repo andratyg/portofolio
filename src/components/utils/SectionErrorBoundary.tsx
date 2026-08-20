@@ -33,7 +33,7 @@ export class SectionErrorBoundary extends Component<Props, State> {
         <div className="py-12 text-center">
           <div className="glass-card max-w-md mx-auto p-8 space-y-4">
             <div className="w-12 h-12 mx-auto rounded-2xl bg-destructive/10 flex items-center justify-center">
-              <span className="text-destructive text-xl">âš </span>
+              <span className="text-destructive text-xl">⚠️</span>
             </div>
             <p className="text-sm text-muted-foreground">
               {this.props.sectionName 

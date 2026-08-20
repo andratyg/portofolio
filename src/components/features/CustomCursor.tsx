@@ -20,7 +20,7 @@ export const CustomCursor = () => {
     if (isHoverable && !isReducedMotion) setIsDesktop(true);
   }, []);
 
-  // Step 2: attach listeners once DOM elements exist (isDesktop triggers re-render â†’ refs are populated)
+  // Step 2: attach listeners once DOM elements exist (isDesktop triggers re-render → refs are populated)
   useEffect(() => {
     if (!isDesktop) return;
 
@@ -207,7 +207,7 @@ export const CustomCursor = () => {
         ref={canvasRef}
         className="fixed top-0 left-0 w-full h-full pointer-events-none z-[9997]"
       />
-      {/* Dot â€” hidden until mouse has moved */}
+      {/* Dot — hidden until mouse has moved */}
       <div
         ref={cursorRef}
         className="fixed top-0 left-0 z-[9999] pointer-events-none mix-blend-difference"

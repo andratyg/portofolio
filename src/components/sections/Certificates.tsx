@@ -83,7 +83,7 @@ export const Certificates = () => {
     );
   };
 
-  // â”€â”€â”€ JSON-LD Structured Data for Certificates (AI/SEO Optimization) â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── JSON-LD Structured Data for Certificates (AI/SEO Optimization) ────────
   const certSchema = useMemo(() => {
     if (!certificates || certificates.length === 0) return null;
     return {

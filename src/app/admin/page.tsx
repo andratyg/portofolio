@@ -759,7 +759,7 @@ function AdminContent() {
                   </div>
                 </CardHeader>
                 <CardContent className="px-0 pt-6 space-y-10">
-                   {/* â”€â”€ Add/Edit Form â”€â”€ */}
+                   {/* ── Add/Edit Form ── */}
                    <form onSubmit={handleTechSkillSubmit} className="space-y-6 p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-muted/30 border border-border/50">
                       <div className="flex items-center justify-between">
                         <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest flex items-center gap-2">
@@ -778,7 +778,7 @@ function AdminContent() {
                          </div>
                          <div className="space-y-2">
                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Ikon (URL Gambar atau Emoji) *</label>
-                           <Input required value={techSkillForm.icon} onChange={e => setTechSkillForm({...techSkillForm, icon: e.target.value})} placeholder="URL (https://...) atau Emoji (ðŸ”¥)" className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background border-none px-4 sm:px-6" />
+                           <Input required value={techSkillForm.icon} onChange={e => setTechSkillForm({...techSkillForm, icon: e.target.value})} placeholder="URL (https://...) atau Emoji (🔥)" className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background border-none px-4 sm:px-6" />
                          </div>
                          <div className="space-y-2">
                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Tingkat Penguasaan: {techSkillForm.level}%</label>
@@ -872,7 +872,7 @@ function AdminContent() {
                       </Button>
                    </form>
 
-                   {/* â”€â”€ Skills List â”€â”€ */}
+                   {/* ── Skills List ── */}
                    {techSkills.length === 0 ? (
                      <div className="text-center py-16 space-y-4">
                        <Terminal className="h-12 w-12 text-muted-foreground/30 mx-auto" />

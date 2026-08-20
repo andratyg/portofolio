@@ -13,8 +13,9 @@ const nextConfig: NextConfig = {
   },
   // Tree-shake large packages — reduces unused JS significantly
   experimental: {
-    optimizePackageImports: ['framer-motion', 'lucide-react'],
+    optimizePackageImports: ['framer-motion', 'lucide-react', '@radix-ui/react-icons'],
   },
+
   async headers() {
     const isDev = process.env.NODE_ENV === 'development';
     const scriptSrc = `default-src 'self'; script-src 'self' ${isDev ? "'unsafe-eval'" : ""} 'unsafe-inline' https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;`;

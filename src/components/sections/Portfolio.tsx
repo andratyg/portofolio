@@ -65,7 +65,7 @@ export const Portfolio = () => {
     return sorted;
   }, [projects, language, search, filter, sortBy]);
 
-  // â”€â”€â”€ JSON-LD Structured Data for Projects (AI/SEO Optimization) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── JSON-LD Structured Data for Projects (AI/SEO Optimization) ───────────
   const projectSchema = useMemo(() => {
     if (!projects || projects.length === 0) return null;
     return {
@@ -219,7 +219,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
       <Dialog>
         <DialogTrigger asChild>
           <button type="button" className="cursor-pointer group h-full w-full text-left">
-            {/* interactive-card handles: border-radius, overflow-hidden, hover lift, glow â€” NO clipPath */}
+            {/* interactive-card handles: border-radius, overflow-hidden, hover lift, glow — NO clipPath */}
             <Card className="interactive-card h-full border-border/20 bg-card/70 backdrop-blur-sm flex flex-col">
               <div className="relative aspect-[16/10] bg-muted">
                 <div className="relative h-56 sm:h-64 w-full overflow-hidden bg-muted">

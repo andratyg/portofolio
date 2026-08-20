@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../providers/LanguageContext';
@@ -7,20 +7,20 @@ import { cn } from '@/lib/utils';
 import { TechSkill } from '@/lib/types';
 import { m as motion, useInView, useSpring, useTransform } from 'framer-motion';
 
-// Default tech stack â€” used as fallback when Firebase collection is empty
+// Default tech stack — used as fallback when Firebase collection is empty
 const defaultTechStack: TechSkill[] = [
-  { id: 'nextjs', name: 'Next.js', icon: 'â–²', level: 90, color: 'from-white to-gray-400', category: 'Frontend' },
-  { id: 'react', name: 'React', icon: 'âš›', level: 92, color: 'from-cyan-400 to-blue-500', category: 'Frontend' },
+  { id: 'nextjs', name: 'Next.js', icon: '▲', level: 90, color: 'from-white to-gray-400', category: 'Frontend' },
+  { id: 'react', name: 'React', icon: '⚛', level: 92, color: 'from-cyan-400 to-blue-500', category: 'Frontend' },
   { id: 'typescript', name: 'TypeScript', icon: 'TS', level: 88, color: 'from-blue-400 to-blue-600', category: 'Frontend' },
   { id: 'javascript', name: 'JavaScript', icon: 'JS', level: 95, color: 'from-yellow-400 to-yellow-500', category: 'Frontend' },
-  { id: 'tailwindcss', name: 'Tailwind CSS', icon: 'ðŸŽ¨', level: 93, color: 'from-teal-400 to-cyan-500', category: 'Frontend' },
-  { id: 'htmlcss', name: 'HTML/CSS', icon: 'ðŸŒ', level: 97, color: 'from-orange-400 to-red-500', category: 'Frontend' },
-  { id: 'firebase', name: 'Firebase', icon: 'ðŸ”¥', level: 85, color: 'from-amber-400 to-orange-500', category: 'Backend' },
-  { id: 'nodejs', name: 'Node.js', icon: 'ðŸŸ¢', level: 78, color: 'from-green-400 to-emerald-600', category: 'Backend' },
-  { id: 'git', name: 'Git', icon: 'ðŸ“¦', level: 82, color: 'from-red-400 to-orange-500', category: 'Tools' },
-  { id: 'figma', name: 'Figma', icon: 'ðŸŽ¯', level: 80, color: 'from-purple-400 to-pink-500', category: 'Design' },
-  { id: 'framermotion', name: 'Framer Motion', icon: 'âœ¨', level: 83, color: 'from-pink-400 to-purple-500', category: 'Frontend' },
-  { id: 'vercel', name: 'Vercel', icon: 'â—†', level: 88, color: 'from-gray-300 to-gray-500', category: 'Tools' },
+  { id: 'tailwindcss', name: 'Tailwind CSS', icon: '🎨', level: 93, color: 'from-teal-400 to-cyan-500', category: 'Frontend' },
+  { id: 'htmlcss', name: 'HTML/CSS', icon: '🌐', level: 97, color: 'from-orange-400 to-red-500', category: 'Frontend' },
+  { id: 'firebase', name: 'Firebase', icon: '🔥', level: 85, color: 'from-amber-400 to-orange-500', category: 'Backend' },
+  { id: 'nodejs', name: 'Node.js', icon: '🟢', level: 78, color: 'from-green-400 to-emerald-600', category: 'Backend' },
+  { id: 'git', name: 'Git', icon: '📦', level: 82, color: 'from-red-400 to-orange-500', category: 'Tools' },
+  { id: 'figma', name: 'Figma', icon: '🎯', level: 80, color: 'from-purple-400 to-pink-500', category: 'Design' },
+  { id: 'framermotion', name: 'Framer Motion', icon: '✨', level: 83, color: 'from-pink-400 to-purple-500', category: 'Frontend' },
+  { id: 'vercel', name: 'Vercel', icon: '◆', level: 88, color: 'from-gray-300 to-gray-500', category: 'Tools' },
 ];
 
 function AnimatedProgressText({ value }: { value: number }) {
@@ -104,7 +104,7 @@ export const TechStack = () => {
         {/* Header */}
         <div className="text-center mb-10 md:mb-16 space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card text-primary text-[10px] font-bold tracking-wider uppercase">
-            <span>âš¡</span>
+            <span>⚡</span>
             Tech Arsenal
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">

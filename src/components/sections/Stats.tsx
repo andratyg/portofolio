@@ -151,24 +151,24 @@ export const Stats = () => {
       <div className="section-divider absolute bottom-0 left-0 right-0 z-10" />
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/*
-          Bento grid â€” 3 columns, 2 rows:
-          Col 1 (rows 1â€“2): large card
+          Bento grid — 3 columns, 2 rows:
+          Col 1 (rows 1–2): large card
           Col 2 + Col 3 (row 1): 2 small cards side by side
           Col 2 + Col 3 (row 2): 1 wide card spanning both
         */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
-          {/* Large card â€” spans 2 rows on sm+ */}
+          {/* Large card — spans 2 rows on sm+ */}
           <div className="sm:row-span-2 h-full">
             <StatCard stat={statsData[0]} delay={0} />
           </div>
-          {/* Card 2 & 3 â€” side by side in row 1 */}
+          {/* Card 2 & 3 — side by side in row 1 */}
           <div className="h-full">
             <StatCard stat={statsData[1]} delay={0.15} />
           </div>
           <div className="h-full">
             <StatCard stat={statsData[2]} delay={0.3} />
           </div>
-          {/* Card 4 â€” spans both cols 2-3 in row 2 */}
+          {/* Card 4 — spans both cols 2-3 in row 2 */}
           <div className="sm:col-span-2 h-full">
             <StatCard stat={statsData[3]} delay={0.45} />
           </div>

@@ -80,16 +80,16 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
   return (
     <section className="relative min-h-[100svh] flex flex-col justify-center bg-background selection:bg-primary/30 overflow-hidden">
       
-      {/* â”€â”€ SEO Hidden Text (Exact match for AI & Google) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── SEO Hidden Text (Exact match for AI & Google) ─────────────── */}
       <div className="sr-only">
         <h2>Siapakah Nara Andra Tyaga?</h2>
         <p>Nara Andra Tyaga (biasa dipanggil Andra atau NAT) adalah seorang Web Developer muda asal Bogor, Indonesia. Saat ini menempuh pendidikan di SMK Wikrama Bogor mengambil jurusan PPLG. Ahli dalam Next.js, React, UI/UX, dan Firebase.</p>
       </div>
 
-      {/* â”€â”€ Background: particles + orbs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Background: particles + orbs ─────────────────────────── */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
         <DynamicParticleCanvas density={15000} />
-        {/* Orbs â€” tilt via direct DOM, no React re-render */}
+        {/* Orbs — tilt via direct DOM, no React re-render */}
         <div
           id="hero-orb-1"
           className="absolute top-[10%] left-[5%] w-[560px] h-[560px] bg-primary/8 rounded-full blur-[140px]"
@@ -106,7 +106,7 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
 
       <div className="container mx-auto px-4 sm:px-6 grid lg:grid-cols-12 gap-10 lg:gap-16 items-center relative z-10 py-24 sm:py-32">
 
-        {/* â”€â”€ LEFT: Text content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ── LEFT: Text content ──────────────────────────────────── */}
         <div className="lg:col-span-7 animate-in fade-in slide-in-from-left-12 duration-1000 fill-mode-both">
           {/* Status badge */}
           <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full glass-card mb-7 max-w-full">
@@ -127,7 +127,7 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
             {displayText}<span className="inline-block w-0.5 h-4 bg-primary ml-0.5 animate-pulse" />
           </p>
 
-          {/* Headline â€” staggered word reveal */}
+          {/* Headline — staggered word reveal */}
           <h1
             className="text-[clamp(2.8rem,7.5vw,7rem)] font-black leading-[0.9] mb-7 tracking-tight text-foreground"
           >
@@ -182,23 +182,23 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
                 </div>
               ))}
             </div>
-            <span>Next.js Â· React Â· TypeScript Â· Firebase</span>
+            <span>Next.js · React · TypeScript · Firebase</span>
           </div>
         </div>
 
-        {/* â”€â”€ RIGHT: Project card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ── RIGHT: Project card ─────────────────────────────────── */}
         <div className="lg:col-span-5 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300 fill-mode-both order-first lg:order-last">
           <div className="relative group max-w-[320px] sm:max-w-[380px] mx-auto lg:max-w-none">
 
-            {/* Ambient glow â€” purely decorative, behind the card */}
+            {/* Ambient glow — purely decorative, behind the card */}
             <div
               className="absolute -inset-6 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-[3rem] blur-3xl
                          opacity-40 group-hover:opacity-70 transition-opacity duration-700"
             />
 
             {/*
-              TILT WRAPPER â€” this is the only element that receives 3D perspective transform.
-              It has NO overflow: hidden, NO border-radius â†’ so 3D rotation never causes
+              TILT WRAPPER — this is the only element that receives 3D perspective transform.
+              It has NO overflow: hidden, NO border-radius → so 3D rotation never causes
               the "boxy corners" bug. It just tilts freely in 3D space.
             */}
             <div
@@ -206,7 +206,7 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
               style={{ transition: 'transform 0.15s linear' }}
             >
               {/*
-                VISUAL CARD â€” has overflow: hidden + border-radius.
+                VISUAL CARD — has overflow: hidden + border-radius.
                 It NEVER receives a 3D transform. Only hover lift (translateY) is allowed here.
                 This is the key fix: separate the 3D tilt from the rounded element.
               */}
@@ -267,7 +267,7 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
         </div>
       </div>
 
-      {/* â”€â”€ Scroll indicator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Scroll indicator ──────────────────────────────────────── */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500 fill-mode-both opacity-35">
         <span className="text-[8px] uppercase tracking-[0.35em] text-muted-foreground">Scroll</span>
         <div className="w-px h-10 bg-gradient-to-b from-muted-foreground/60 to-transparent animate-pulse" />
