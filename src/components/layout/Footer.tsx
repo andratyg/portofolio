@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import Link from 'next/link';
 import { useLanguage } from '@/components/providers/LanguageContext';
@@ -35,7 +35,7 @@ export const Footer = () => {
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-[10px] font-black">N</div>
               <span className="text-lg font-black">Nara Andra Tyaga</span>
             </div>
-            <p className="text-sm text-muted-foreground/70 leading-relaxed max-w-xs">
+            <p className="text-sm text-foreground/80 leading-relaxed max-w-xs">
               {language === 'id' 
                 ? 'Membangun solusi digital yang modern, cepat, dan berdampak.'
                 : 'Building modern, fast, and impactful digital solutions.'}
@@ -44,7 +44,7 @@ export const Footer = () => {
 
           {/* Quick links */}
           <div className="space-y-4">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/90">
               {language === 'id' ? 'Tautan Cepat' : 'Quick Links'}
             </h3>
             <nav className="flex flex-col gap-2">
@@ -52,7 +52,7 @@ export const Footer = () => {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="text-sm text-muted-foreground/60 hover:text-primary transition-colors duration-200 w-fit"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 w-fit"
                 >
                   {link.label}
                 </Link>
@@ -62,7 +62,7 @@ export const Footer = () => {
 
           {/* Social */}
           <div className="space-y-4">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/90">
               {language === 'id' ? 'Ikuti Saya' : 'Follow Me'}
             </h3>
             <div className="flex gap-3">
@@ -87,13 +87,13 @@ export const Footer = () => {
 
         {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground/50 text-center sm:text-left">
+          <p className="text-xs text-muted-foreground text-center sm:text-left">
             {t.footerCopyright}
           </p>
           {/* Tech stack badges */}
           <div className="flex flex-wrap justify-center gap-2">
             {['Next.js 15', 'React', 'TypeScript', 'Tailwind CSS', 'Firebase'].map(tech => (
-              <span key={tech} className="text-[8px] font-semibold px-2 py-0.5 rounded-full border border-border/20 text-muted-foreground/40 hover:text-primary hover:border-primary/30 transition-colors cursor-default">
+              <span key={tech} className="text-[8px] font-semibold px-2 py-0.5 rounded-full border border-border/40 text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors cursor-default">
                 {tech}
               </span>
             ))}

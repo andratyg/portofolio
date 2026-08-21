@@ -1,4 +1,4 @@
-﻿
+
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -35,32 +35,39 @@ export const Navbar = () => {
   const [activeSection, setActiveSection] = useState('/');
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      if (currentScrollY < 10) {
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-      
-      setLastScrollY(currentScrollY);
-
-      // ScrollSpy logic
-      const sections = ['portfolio', 'journey', 'contact'];
-      let current = '/';
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 150 && rect.bottom >= 150) {
-            current = `#${section}`;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          
+          if (currentScrollY < 10) {
+            setIsVisible(true);
+          } else if (currentScrollY > lastScrollY) {
+            setIsVisible(false);
+          } else {
+            setIsVisible(true);
           }
-        }
+          
+          setLastScrollY(currentScrollY);
+
+          // ScrollSpy logic
+          const sections = ['portfolio', 'journey', 'contact'];
+          let current = '/';
+          for (const section of sections) {
+            const element = document.getElementById(section);
+            if (element) {
+              const rect = element.getBoundingClientRect();
+              if (rect.top <= 150 && rect.bottom >= 150) {
+                current = `#${section}`;
+              }
+            }
+          }
+          setActiveSection(current);
+          ticking = false;
+        });
+        ticking = true;
       }
-      setActiveSection(current);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });

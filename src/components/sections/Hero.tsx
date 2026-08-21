@@ -93,12 +93,12 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
         <div
           id="hero-orb-1"
           className="absolute top-[10%] left-[5%] w-[560px] h-[560px] bg-primary/8 rounded-full blur-[140px]"
-          style={{ transition: 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}
+          style={{ transition: 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)', willChange: 'transform', contain: 'strict' }}
         />
         <div
           id="hero-orb-2"
           className="absolute bottom-[5%] right-[0%] w-[420px] h-[420px] bg-primary/5 rounded-full blur-[120px]"
-          style={{ transition: 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}
+          style={{ transition: 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)', willChange: 'transform', contain: 'strict' }}
         />
         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
         <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-border/40 to-transparent" />

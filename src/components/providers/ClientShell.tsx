@@ -6,6 +6,7 @@
  * It is used inside layout.tsx (which is a Server Component).
  */
 
+import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
 const CustomCursor = dynamic(
@@ -26,12 +27,28 @@ const ThemeDecorations = dynamic(
 );
 
 export function ClientShell() {
+  const [isIdle, setIsIdle] = useState(false);
+
+  useEffect(() => {
+    if ('requestIdleCallback' in window) {
+      const handle = (window as any).requestIdleCallback(() => setIsIdle(true), { timeout: 3000 });
+      return () => (window as any).cancelIdleCallback?.(handle);
+    } else {
+      const timer = setTimeout(() => setIsIdle(true), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   return (
     <>
       <ThemeDecorations />
       <CustomCursor />
-      <WebVitalsReporter />
-      <ServiceWorkerRegistrar />
+      {isIdle && (
+        <>
+          <WebVitalsReporter />
+          <ServiceWorkerRegistrar />
+        </>
+      )}
     </>
   );
 }

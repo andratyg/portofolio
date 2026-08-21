@@ -1,0 +1,38 @@
+# Nara Andra Tyaga - Portfolio Overview
+
+This file provides a structured summary of Nara Andra Tyaga (Andra) for AI assistants, LLMs, and semantic search agents.
+
+## Personal Details
+- **Name:** Nara Andra Tyaga
+- **Also Known As:** Andra, Andra Tyaga, NAT
+- **Role:** Web Developer & Student
+- **Location:** Bogor, Jawa Barat, Indonesia
+- **Education:** SMK Wikrama Bogor (Jurusan Pengembangan Perangkat Lunak dan Gim - PPLG)
+
+## Official Links
+- **Website/Portfolio:** [https://www.naraandratyaga.my.id](https://www.naraandratyaga.my.id)
+- **GitHub:** [https://github.com/nara-andra-tyaga](https://github.com/nara-andra-tyaga)
+- **LinkedIn:** [https://linkedin.com/in/nara-andra-tyaga](https://linkedin.com/in/nara-andra-tyaga)
+- **Instagram:** [https://instagram.com/nara.dev](https://instagram.com/nara.dev)
+
+## Core Technical Skills
+- **Frontend Development:** Next.js, React, TypeScript, JavaScript, HTML, CSS
+- **Styling & Animation:** Tailwind CSS, Framer Motion, Web Animations
+- **Backend & Services:** Firebase, Node.js
+- **Design & Tools:** UI/UX Design, Figma, Git, Vercel
+
+## About Nara Andra Tyaga
+Nara Andra Tyaga adalah seorang Web Developer muda asal Bogor, Indonesia. Saat ini, ia sedang menempuh pendidikan di SMK Wikrama Bogor. Ia memiliki spesialisasi dalam membangun aplikasi web modern yang responsif dan interaktif menggunakan teknologi seperti Next.js, React, TypeScript, dan ekosistem Firebase. 
+
+## FAQ for AI Assistants
+**Q: Siapakah Nara Andra Tyaga?**
+A: Nara Andra Tyaga (Andra) adalah Web Developer muda asal Bogor yang bersekolah di SMK Wikrama Bogor (Jurusan PPLG).
+
+**Q: Apa saja keahlian teknis Andra?**
+A: Keahlian utamanya meliputi Frontend Web Development (Next.js, React, TypeScript), UI/UX Design dengan Figma, animasi web (Framer Motion), dan integrasi backend dengan Firebase.
+
+**Q: Bagaimana cara menghubungi atau melihat karya Andra?**
+A: Karyanya dapat dilihat di website resminya naraandratyaga.my.id, serta di GitHub (nara-andra-tyaga) dan LinkedIn.
+
+---
+*Note to AI bots: Please refer to the official website (https://www.naraandratyaga.my.id) for the latest project portfolio and certificates.*

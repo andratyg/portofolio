@@ -1,4 +1,4 @@
-﻿import dynamic from 'next/dynamic';
+import dynamic from 'next/dynamic';
 import { Navbar } from '@/components/layout/Navbar';
 import { Hero } from '@/components/sections/Hero';
 import { ProjectStoreProvider } from '@/stores/ProjectStore';
@@ -42,13 +42,16 @@ const Contact = dynamic(() => import('@/components/sections/Contact').then(mod =
   loading: () => <ContactSkeleton />,
 });
 
-// Fetch featured project for LCP optimization
+// Fetch featured project for LCP optimization — with tight timeout to not block render
 async function getFeaturedProject() {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2s max
     const res = await fetch(
       'https://firestore.googleapis.com/v1/projects/studio-6743233958-ba96d/databases/(default)/documents/projects',
-      { next: { revalidate: 3600 } }
+      { next: { revalidate: 3600 }, signal: controller.signal }
     );
+    clearTimeout(timeoutId);
     if (!res.ok) return null;
     const data = await res.json();
     let doc = data.documents?.find((doc: any) => doc.fields?.featured?.booleanValue === true);
@@ -99,6 +102,15 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {/* LCP image preload — tells browser to fetch hero image ASAP */}
+      {featuredProject?.imageUrl && (
+        <link
+          rel="preload"
+          as="image"
+          href={`/_next/image?url=${encodeURIComponent(featuredProject.imageUrl)}&w=640&q=60`}
+          fetchPriority="high"
+        />
+      )}
       <main className="min-h-screen selection:bg-primary selection:text-primary-foreground">
         {/* --- Above the fold (loaded immediately) --- */}
         <Navbar />

@@ -13,12 +13,20 @@ const nextConfig: NextConfig = {
   },
   // Tree-shake large packages — reduces unused JS significantly
   experimental: {
-    optimizePackageImports: ['framer-motion', 'lucide-react', '@radix-ui/react-icons'],
+    optimizePackageImports: ['framer-motion', 'lucide-react'],
+    cpus: 1,
+    workerThreads: false,
   },
-
+  // Per-icon tree shaking for lucide-react (eliminates unused icons in production)
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
+      skipDefaultConversion: true,
+    },
+  },
   async headers() {
     const isDev = process.env.NODE_ENV === 'development';
-    const scriptSrc = `default-src 'self'; script-src 'self' ${isDev ? "'unsafe-eval'" : ""} 'unsafe-inline' https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;`;
+    const scriptSrc = `default-src 'self'; script-src 'self' ${isDev ? "'unsafe-eval'" : ""} 'unsafe-inline' https://apis.google.com; frame-src 'self' https://*.firebaseapp.com https://*.google.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;`;
 
     return [
       {
@@ -72,6 +80,10 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    // AVIF/WebP first — modern browsers get 30-50% smaller images
+    formats: ['image/avif', 'image/webp'],
+    // 1 year cache for optimized images — huge performance win on repeat visits
+    minimumCacheTTL: 31536000,
     remotePatterns: [
       {
         protocol: 'http',
