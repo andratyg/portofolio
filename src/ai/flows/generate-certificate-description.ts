@@ -13,7 +13,9 @@ import {z} from 'genkit';
 const GenerateCertificateDescriptionInputSchema = z.object({
   title: z.string().describe('The title of the certificate.'),
   issuer: z.string().describe('The organization that issued the certificate.'),
-  shortDescription: z.string().optional().describe('A brief overview of the certificate.'),
+  shortDescription: z.string().optional().describe('A brief overview or notes of the certificate.'),
+  existingCertificatesContext: z.string().optional().describe('Summary of other certificates in the portfolio to maintain consistent terminology, tone, and experience claims.'),
+  developerProfileContext: z.string().optional().describe('Context regarding the developer identity, key tech stack, and background.'),
 });
 export type GenerateCertificateDescriptionInput = z.infer<
   typeof GenerateCertificateDescriptionInputSchema
@@ -23,7 +25,7 @@ const GenerateCertificateDescriptionOutputSchema = z.object({
   descriptionSuggestion: z
     .string()
     .describe(
-      'A professional and detailed description of the certificate and what it validates.'
+      'A professional, authoritative, and contextually consistent description of the certificate and what competencies it validates.'
     ),
 });
 export type GenerateCertificateDescriptionOutput = z.infer<
@@ -40,20 +42,28 @@ const prompt = ai.definePrompt({
   name: 'generateCertificateDescriptionPrompt',
   input: {schema: GenerateCertificateDescriptionInputSchema},
   output: {schema: GenerateCertificateDescriptionOutputSchema},
-  prompt: `You are an AI assistant helping a professional build their portfolio.
-Your task is to write a compelling, professional, and detailed "Full Description" for a certificate.
+  prompt: `You are an expert technical portfolio consultant helping a Software Developer craft high-impact certificate descriptions.
+Your task is to write a compelling, authoritative, and professional "Full Description" for a certificate.
 
-This description should explain:
-1. What technical skills or knowledge were validated by this certification.
-2. The significance of the certification in the industry.
-3. The commitment required to earn it.
+{{#if developerProfileContext}}
+--- DEVELOPER PROFILE & BACKGROUND ---
+{{{developerProfileContext}}}
+{{/if}}
 
-Certificate Details:
+{{#if existingCertificatesContext}}
+--- EXISTING CREDENTIALS IN PORTFOLIO (FOR HARMONY & CONSISTENT TONE) ---
+{{{existingCertificatesContext}}}
+{{/if}}
+
+Certificate Details to Describe:
 Title: {{{title}}}
 Issuer: {{{issuer}}}
-{{#if shortDescription}}Overview: {{{shortDescription}}}{{/if}}
+{{#if shortDescription}}Overview / Notes: {{{shortDescription}}}{{/if}}
 
-Please generate a detailed description of 2-3 paragraphs. Keep it professional and authoritative.`,
+Guidelines:
+1. Harmonize with the developer's core skill set and existing portfolio certificates.
+2. Clearly articulate the technical competencies validated by this credential and its relevance to modern software engineering standards.
+3. Keep the tone confident, professional, and authoritative. Provide 2-3 focused paragraphs.`,
 });
 
 const generateCertificateDescriptionFlow = ai.defineFlow(
@@ -70,3 +80,4 @@ const generateCertificateDescriptionFlow = ai.defineFlow(
     return output;
   }
 );
+

@@ -16,9 +16,12 @@ import {
   UserCircle, Loader2, Camera, Briefcase, History, ShieldAlert, 
   Download, Upload, WifiOff, Edit3, X, Mail, User, CheckCircle2, AlertCircle, 
   Terminal, Image as ImageIcon, Globe, Share2, BarChart3, Zap, FileText, ExternalLink, Star, Edit,
-  BookOpen, Tag, Calendar, Clock
+  BookOpen, Tag, Calendar, Clock, Sparkles
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
+import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-portfolio-description-suggestion';
+import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
+import { AIAdvisorPanel } from '@/components/admin/AIAdvisorPanel';
 import { useToast } from '@/hooks/use-toast';
 import { ProfileData, Project, Certificate, Experience, PortfolioStats, TechSkill, BlogPost } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -46,6 +49,9 @@ function AdminContent() {
   const auth = useAuth();
   const db = useFirestore();
   
+  const [activeTab, setActiveTab] = useState<string>('advisor');
+  const [isGeneratingProjectDesc, setIsGeneratingProjectDesc] = useState(false);
+  const [isGeneratingCertDesc, setIsGeneratingCertDesc] = useState(false);
   const [isTranslating, setIsTranslating] = useState<string | null>(null);
   const [isOnline, setIsOnline] = useState(true);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
@@ -201,6 +207,86 @@ function AdminContent() {
       toast({ variant: "destructive", title: "Gagal Sinkronisasi AI", description: "Terjadi kesalahan pada layanan kecerdasan buatan." });
     } finally {
       setIsTranslating(null);
+    }
+  };
+
+  const handleGenerateProjectDescription = async () => {
+    if (!projectForm.titleId.trim()) {
+      toast({ variant: "destructive", title: "Judul Proyek Diperlukan", description: "Masukkan nama/judul proyek terlebih dahulu." });
+      return;
+    }
+    setIsGeneratingProjectDesc(true);
+    try {
+      const existingSummary = projects
+        .filter(p => p.id !== editingProjectId)
+        .slice(0, 5)
+        .map(p => `- ${p.titleId} (${p.type}): ${(p.technologies || []).join(', ')}`)
+        .join('\n');
+      const profileSummary = `${profile?.name || 'Nara Andra Tyaga'} - ${profile?.roleId || 'Full-Stack Developer'} (${profile?.roleEn || 'Full-Stack Developer'}). Bio: ${profile?.aboutMeId || ''}. Top skills: ${techSkills.slice(0, 6).map(s => s.name).join(', ')}`;
+
+      const techArray = typeof projectForm.technologies === 'string'
+        ? projectForm.technologies.split(',').map(s => s.trim()).filter(Boolean)
+        : (projectForm.technologies || []);
+
+      const res = await generatePortfolioDescriptionSuggestion({
+        title: projectForm.titleId,
+        projectType: projectForm.type,
+        technologiesUsed: techArray.length > 0 ? techArray : ['Next.js', 'React', 'TypeScript'],
+        problemSolved: projectForm.problemId || undefined,
+        keyFeatures: projectForm.solutionId || undefined,
+        existingProjectsContext: existingSummary,
+        developerProfileContext: profileSummary,
+      });
+
+      if (res.descriptionSuggestion) {
+        setProjectForm(prev => ({
+          ...prev,
+          solutionId: prev.solutionId ? `${prev.solutionId}\n\n${res.descriptionSuggestion}` : res.descriptionSuggestion
+        }));
+        toast({ title: "Saran Deskripsi AI Berhasil", description: "Deskripsi konsisten telah disisipkan ke solusi strategis proyek." });
+      }
+    } catch (err: any) {
+      console.error("Generate project desc error:", err);
+      toast({ variant: "destructive", title: "Gagal Menghasilkan Deskripsi", description: err.message });
+    } finally {
+      setIsGeneratingProjectDesc(false);
+    }
+  };
+
+  const handleGenerateCertDescription = async () => {
+    if (!certForm.titleId.trim()) {
+      toast({ variant: "destructive", title: "Judul Sertifikat Diperlukan", description: "Masukkan judul sertifikat terlebih dahulu." });
+      return;
+    }
+    setIsGeneratingCertDesc(true);
+    try {
+      const existingCertsSummary = certificates
+        .filter(c => c.id !== editingCertId)
+        .slice(0, 5)
+        .map(c => `- ${c.titleId} (${c.issuer}, ${c.year})`)
+        .join('\n');
+      const profileSummary = `${profile?.name || 'Nara Andra Tyaga'} - ${profile?.roleId || 'Full-Stack Developer'} (${profile?.roleEn || 'Full-Stack Developer'}). Skills: ${techSkills.slice(0, 6).map(s => s.name).join(', ')}`;
+
+      const res = await generateCertificateDescription({
+        title: certForm.titleId,
+        issuer: certForm.issuer || 'Lembaga Sertifikasi',
+        shortDescription: certForm.shortDescriptionId || undefined,
+        existingCertificatesContext: existingCertsSummary,
+        developerProfileContext: profileSummary,
+      });
+
+      if (res.descriptionSuggestion) {
+        setCertForm(prev => ({
+          ...prev,
+          fullDescriptionId: res.descriptionSuggestion
+        }));
+        toast({ title: "Deskripsi Kredensial AI Berhasil", description: "Deskripsi mendalam dengan konteks portofolio telah digenerate." });
+      }
+    } catch (err: any) {
+      console.error("Generate cert desc error:", err);
+      toast({ variant: "destructive", title: "Gagal Menghasilkan Deskripsi", description: err.message });
+    } finally {
+      setIsGeneratingCertDesc(false);
     }
   };
 
@@ -385,9 +471,10 @@ function AdminContent() {
       </header>
 
       <div className="container mx-auto px-3 sm:px-6 py-6 sm:py-12">
-        <Tabs defaultValue="profile" className="space-y-8 sm:space-y-12">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8 sm:space-y-12">
           <div className={cn("flex justify-center sticky z-40 transition-all duration-500", isHeaderVisible ? "top-[68px] sm:top-24" : "top-4")}>
-            <TabsList className="bg-card border border-border shadow-2xl p-1.5 sm:p-2 rounded-2xl sm:rounded-[2.5rem] w-full max-w-5xl grid grid-cols-4 sm:flex sm:flex-wrap sm:justify-center gap-1 h-auto">
+            <TabsList className="bg-card border border-border shadow-2xl p-1.5 sm:p-2 rounded-2xl sm:rounded-[2.5rem] w-full max-w-5xl grid grid-cols-5 sm:flex sm:flex-wrap sm:justify-center gap-1 h-auto">
+              <TabsTrigger value="advisor" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row border-2 border-primary/20 data-[state=active]:border-primary"><Sparkles className="h-4 w-4 text-primary data-[state=active]:text-primary-foreground" /><span className="hidden sm:inline">AI ADVISOR</span><span className="sm:hidden text-[7px]">ADVISOR</span></TabsTrigger>
               <TabsTrigger value="profile" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><UserCircle className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">IDENTITAS</span><span className="sm:hidden text-[7px]">PROFIL</span></TabsTrigger>
               <TabsTrigger value="content" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Edit className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">KONTEN</span><span className="sm:hidden text-[7px]">KONTEN</span></TabsTrigger>
               <TabsTrigger value="projects" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Briefcase className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">PROYEK</span><span className="sm:hidden text-[7px]">PROYEK</span></TabsTrigger>
@@ -402,6 +489,22 @@ function AdminContent() {
               <TabsTrigger value="system" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Settings className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">SISTEM</span><span className="sm:hidden text-[7px]">SISTEM</span></TabsTrigger>
             </TabsList>
           </div>
+
+          <TabsContent value="advisor" className="animate-in fade-in slide-in-from-bottom-8 duration-500">
+            <AIAdvisorPanel
+              projects={projects}
+              certificates={certificates}
+              experiences={experiences}
+              techSkills={techSkills}
+              blogs={blogs}
+              profile={profile}
+              stats={stats}
+              onNavigateTab={(tab) => {
+                setActiveTab(tab);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+          </TabsContent>
 
           <TabsContent value="profile" className="animate-in fade-in slide-in-from-bottom-8 duration-500">
              <form onSubmit={handleProfileSubmit} className="space-y-20">
@@ -580,9 +683,15 @@ function AdminContent() {
                     <CardTitle className="font-black  text-3xl uppercase tracking-normal">{editingProjectId ? 'Ubah Data Proyek' : 'Deploy Proyek Baru'}</CardTitle>
                     <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Arsip Arsitektur Sistem & Rekayasa Kode</CardDescription>
                   </div>
-                  <Button type="button" size="sm" onClick={() => handleAITranslate('projects', projectForm, setProjectForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase" disabled={isTranslating === 'projects'}>
-                    {isTranslating === 'projects' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} SINKRONISASI AI (OTOMATIS)
-                  </Button>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button type="button" size="sm" onClick={handleGenerateProjectDescription} className="rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground h-12 px-5 font-black uppercase gap-2 transition-all" disabled={isGeneratingProjectDesc}>
+                      {isGeneratingProjectDesc ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                      <span>SARANKAN DESKRIPSI (AI)</span>
+                    </Button>
+                    <Button type="button" size="sm" onClick={() => handleAITranslate('projects', projectForm, setProjectForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase" disabled={isTranslating === 'projects'}>
+                      {isTranslating === 'projects' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} SINKRONISASI AI (OTOMATIS)
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent className="p-0">
                   <form onSubmit={(e) => {
@@ -661,9 +770,15 @@ function AdminContent() {
                     <CardTitle className="font-black  text-3xl uppercase tracking-normal">{editingCertId ? 'Mutakhirkan Kredensial' : 'Daftarkan Kredensial'}</CardTitle>
                     <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">Validasi Validitas & Akreditasi Industri</CardDescription>
                   </div>
-                  <Button type="button" size="sm" onClick={() => handleAITranslate('certificates', certForm, setCertForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase" disabled={isTranslating === 'certificates'}>
-                    {isTranslating === 'certificates' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} SINKRONISASI AI
-                  </Button>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button type="button" size="sm" onClick={handleGenerateCertDescription} className="rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground h-12 px-5 font-black uppercase gap-2 transition-all" disabled={isGeneratingCertDesc}>
+                      {isGeneratingCertDesc ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                      <span>DESKRIPSI AI</span>
+                    </Button>
+                    <Button type="button" size="sm" onClick={() => handleAITranslate('certificates', certForm, setCertForm)} className="rounded-xl bg-primary/10 text-primary h-12 px-6 font-black uppercase" disabled={isTranslating === 'certificates'}>
+                      {isTranslating === 'certificates' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} SINKRONISASI AI
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent className="p-0">
                   <form onSubmit={(e) => {

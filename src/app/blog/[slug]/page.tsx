@@ -123,8 +123,37 @@ function BlogDetailContent() {
     { day: 'numeric', month: 'long', year: 'numeric' }
   );
 
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: title,
+    description: summary,
+    image: blog.coverImage ? [blog.coverImage] : ['https://www.naraandratyaga.my.id/og-image.png'],
+    datePublished: blog.publishedAt || new Date().toISOString(),
+    dateModified: blog.updatedAt || blog.publishedAt || new Date().toISOString(),
+    author: {
+      '@type': 'Person',
+      name: blog.author || profile.name || 'Nara Andra Tyaga',
+      url: 'https://www.naraandratyaga.my.id',
+    },
+    publisher: {
+      '@type': 'Person',
+      name: 'Nara Andra Tyaga',
+      url: 'https://www.naraandratyaga.my.id',
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://www.naraandratyaga.my.id/blog/${slug}`,
+    },
+    keywords: (blog.tags || []).join(', '),
+  };
+
   return (
     <div className="min-h-screen selection:bg-primary selection:text-primary-foreground flex flex-col justify-between">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <div>
         <Navbar />
 

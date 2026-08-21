@@ -30,6 +30,14 @@ const GeneratePortfolioDescriptionSuggestionInputSchema = z.object({
     .string()
     .optional()
     .describe('The problem or challenge that the project addresses.'),
+  existingProjectsContext: z
+    .string()
+    .optional()
+    .describe('Summary of existing projects in portfolio to ensure consistency in tone, narrative structure, and claimed technical mastery.'),
+  developerProfileContext: z
+    .string()
+    .optional()
+    .describe('Summary of developer profile, background, and claimed expertise.'),
 });
 export type GeneratePortfolioDescriptionSuggestionInput = z.infer<
   typeof GeneratePortfolioDescriptionSuggestionInputSchema
@@ -39,7 +47,7 @@ const GeneratePortfolioDescriptionSuggestionOutputSchema = z.object({
   descriptionSuggestion: z
     .string()
     .describe(
-      'A creative and engaging description suggestion for the portfolio item.'
+      'A creative, engaging, and contextually consistent description suggestion for the portfolio item.'
     ),
 });
 export type GeneratePortfolioDescriptionSuggestionOutput = z.infer<
@@ -56,11 +64,20 @@ const prompt = ai.definePrompt({
   name: 'generatePortfolioDescriptionPrompt',
   input: {schema: GeneratePortfolioDescriptionSuggestionInputSchema},
   output: {schema: GeneratePortfolioDescriptionSuggestionOutputSchema},
-  prompt: `You are an AI assistant specialized in generating creative, engaging, and professional descriptions for portfolio items.
-Your goal is to help an administrator create compelling content for their portfolio.
+  prompt: `You are an elite technical portfolio consultant and senior software engineering mentor.
+Your task is to craft an engaging, high-impact, and professional description for a project in a developer's portfolio.
 
-Based on the following information, suggest a concise and impactful description for a new portfolio item. The description should highlight its unique aspects, value proposition, and appeal to potential clients or employers.
+{{#if developerProfileContext}}
+--- DEVELOPER BACKGROUND & PROFILE ---
+{{{developerProfileContext}}}
+{{/if}}
 
+{{#if existingProjectsContext}}
+--- EXISTING PORTFOLIO PROJECTS (FOR HARMONY, TONE, AND CONSISTENCY) ---
+{{{existingProjectsContext}}}
+{{/if}}
+
+Project Information:
 Project Title: {{{title}}}
 Project Type: {{{projectType}}}
 Technologies Used: {{#each technologiesUsed}}- {{{this}}}
@@ -75,7 +92,10 @@ Problem Solved: {{{problemSolved}}}
 Target Audience: {{{targetAudience}}}
 {{/if}}
 
-Generate a description of approximately 2-3 paragraphs, focusing on clarity, creativity, and the impact of the project.
+Instructions:
+1. Ensure the narrative style, vocabulary, and technical framing are consistent with the developer's experience level and other portfolio entries.
+2. Structure the description around the core engineering value: Problem / Motivation -> Technical Architecture & Key Features -> Practical Real-World Impact.
+3. Write 2-3 focused paragraphs in a confident, professional, and clear tone suitable for engineering managers, clients, and technical recruiters.
 `,
 });
 
@@ -93,3 +113,4 @@ const generatePortfolioDescriptionSuggestionFlow = ai.defineFlow(
     return output;
   }
 );
+

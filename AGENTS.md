@@ -25,6 +25,10 @@ Dokumen ini adalah panduan standar dan catatan historis untuk semua AI Agent yan
   - Manajemen blog di dashboard admin (`/admin`) dengan dukungan terjemahan AI (ID/EN) dan tag.
   - Halaman publik `/blog` dengan fitur pencarian instan dan filter kategori/tag.
   - Halaman detail artikel `/blog/[slug]` dengan format typography modern, code block parser, dan related articles.
+- **AI Studio Admin & AI Portfolio Advisor**:
+  - Context Injection pada `generate-certificate-description.ts` & `generate-portfolio-description-suggestion.ts` untuk konsistensi gaya bahasa dan klaim pengalaman.
+  - Flow baru `analyze-portfolio-recommendations.ts` (Gemini 2.5 Flash) untuk audit otomatis kelengkapan data, validasi bilingual, dan konsistensi metrik.
+  - Komponen UI `AIAdvisorPanel.tsx` di `/admin` dengan visual health score, filter kategori, badge prioritas (tinggi/sedang/rendah), navigasi langsung ke tab terkait, dan fitur dismissal permanen tersimpan ke Firestore.
 - **Optimasi Performa Core Web Vitals (Lighthouse)**:
   - Lazy load Firebase Auth (mengeliminasi *iframe blocking* 3.4-4.5 detik di halaman publik).
   - Transisi Firestore data publik ke One-Time Fetch (`getDocs`/`getDoc`) + memory cache, memulihkan *bfcache*.
@@ -49,4 +53,5 @@ Dokumen ini adalah panduan standar dan catatan historis untuk semua AI Agent yan
 | **2026-08-21** | `tsconfig.json`<br>`package.json` | Upgrade target TypeScript ke `ES2022` dan browserslist ke browser modern untuk mengeliminasi polyfill JavaScript usang (~8 KiB). |
 | **2026-08-21** | `next.config.ts`<br>`src/app/layout.tsx` | Penguatan CSP & Trusted Types: Mengisolasi `require-trusted-types-for` ke mode production dan mendaftarkan default policy di root layout agar HMR dev server tidak error. |
 | **2026-08-21** | `src/firebase/index.ts` | Eliminasi `console.warn` pada inisialisasi Firebase fallback untuk mencegah regresi audit "Browser errors in console" pada Lighthouse Best Practices (100). |
+| **2026-08-21** | `src/ai/flows/generate-certificate-description.ts`<br>`src/ai/flows/generate-portfolio-description-suggestion.ts`<br>`src/ai/flows/analyze-portfolio-recommendations.ts`<br>`src/components/admin/AIAdvisorPanel.tsx`<br>`src/app/admin/page.tsx` | Implementasi Context Injection pada generator deskripsi dan flow baru AI Portfolio Advisor (Gemini 2.5 Flash) lengkap dengan panel audit rekomendasi di dashboard admin. |
 | **2026-08-21** | `AGENTS.md` | Inisialisasi dokumen panduan agen dan pencatatan log perubahan terstruktur. |
