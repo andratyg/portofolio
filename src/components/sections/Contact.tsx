@@ -86,8 +86,10 @@ export const Contact = () => {
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start overflow-hidden">
           <div className="min-w-0">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold  mb-4 sm:mb-6">{t.contactMe}</h2>
-            <p className="text-base sm:text-xl text-primary-foreground/80 mb-8 sm:mb-12 max-w-prose break-words">Initialize a new communication node. Let's build future-ready architecture together.</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">{t.contactMe}</h2>
+            <p className="text-base sm:text-xl text-primary-foreground/80 mb-8 sm:mb-12 max-w-prose break-words">
+              {t.contactSubtitle || "Hubungi saya untuk mendiskusikan peluang kerja sama atau proyek impian Anda."}
+            </p>
             <div className="space-y-3 sm:space-y-6">
               {socialLinks.map((link) => (
                 <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer"
@@ -106,7 +108,7 @@ export const Contact = () => {
                             transition-[background-color,border-color,transform] duration-300 ease-out"
               >
                 <div className="p-2 sm:p-3 bg-white/10 rounded-xl shrink-0"><Mail className="h-5 w-5 sm:h-6 sm:w-6 text-white" /></div>
-                <div className="flex-1 min-w-0"><p className="font-bold text-sm sm:text-lg">Email Node</p><p className="text-xs sm:text-sm text-primary-foreground/70 truncate">{profile.email || 'admin@karyapro.app'}</p></div>
+                <div className="flex-1 min-w-0"><p className="font-bold text-sm sm:text-lg">{t.emailLink || 'Email'}</p><p className="text-xs sm:text-sm text-primary-foreground/70 truncate">{profile.email || 'admin@karyapro.app'}</p></div>
                 <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shrink-0" />
               </a>
             </div>

@@ -118,14 +118,14 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
   // Memoize the context value
   const contextValue = useMemo((): FirebaseContextState => {
-    const servicesAvailable = !!(firebaseApp && firestore && auth);
+    const servicesAvailable = !!(firebaseApp && firestore);
     return {
       areServicesAvailable: servicesAvailable,
-      firebaseApp: servicesAvailable ? firebaseApp : null,
-      firestore: servicesAvailable ? firestore : null,
-      auth: servicesAvailable ? auth : null,
+      firebaseApp: firebaseApp || null,
+      firestore: firestore || null,
+      auth: auth || null,
       user: userAuthState.user,
-      isUserLoading: userAuthState.isUserLoading,
+      isUserLoading: auth ? userAuthState.isUserLoading : false,
       userError: userAuthState.userError,
     };
   }, [firebaseApp, firestore, auth, userAuthState]);
@@ -149,14 +149,14 @@ export const useFirebase = (): FirebaseServicesAndUser => {
     throw new Error('useFirebase must be used within a FirebaseProvider.');
   }
 
-  if (!context.areServicesAvailable || !context.firebaseApp || !context.firestore || !context.auth) {
+  if (!context.areServicesAvailable || !context.firebaseApp || !context.firestore) {
     throw new Error('Firebase core services not available. Check FirebaseProvider props.');
   }
 
   return {
     firebaseApp: context.firebaseApp,
     firestore: context.firestore,
-    auth: context.auth,
+    auth: context.auth || (context.firebaseApp ? getAuth(context.firebaseApp) : (null as any)),
     user: context.user,
     isUserLoading: context.isUserLoading,
     userError: context.userError,
@@ -165,8 +165,10 @@ export const useFirebase = (): FirebaseServicesAndUser => {
 
 /** Hook to access Firebase Auth instance. */
 export const useAuth = (): Auth => {
-  const { auth } = useFirebase();
-  return auth;
+  const { auth, firebaseApp } = useFirebase();
+  if (auth) return auth;
+  if (firebaseApp) return getAuth(firebaseApp);
+  throw new Error("Firebase Auth is not available.");
 };
 
 /** Hook to access Firestore instance. */

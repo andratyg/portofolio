@@ -107,7 +107,7 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
       <div className="container mx-auto px-4 sm:px-6 grid lg:grid-cols-12 gap-10 lg:gap-16 items-center relative z-10 py-24 sm:py-32">
 
         {/* ── LEFT: Text content ──────────────────────────────────── */}
-        <div className="lg:col-span-7 animate-in fade-in slide-in-from-left-12 duration-1000 fill-mode-both">
+        <div className="lg:col-span-7">
           {/* Status badge */}
           <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full glass-card mb-7 max-w-full">
             <span className="relative flex h-2 w-2 shrink-0">
@@ -187,7 +187,7 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
         </div>
 
         {/* ── RIGHT: Project card ─────────────────────────────────── */}
-        <div className="lg:col-span-5 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300 fill-mode-both order-first lg:order-last">
+        <div className="lg:col-span-5 order-first lg:order-last">
           <div className="relative group max-w-[320px] sm:max-w-[380px] mx-auto lg:max-w-none">
 
             {/* Ambient glow — purely decorative, behind the card */}
@@ -225,7 +225,8 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
                         src={featuredProject.imageUrl}
                         alt={language === 'id' ? featuredProject.titleId : featuredProject.titleEn}
                         fill priority
-                        sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 40vw"
+                        fetchPriority="high"
+                        sizes="(max-width: 640px) 340px, (max-width: 1024px) 380px, 420px"
                         className="object-cover"
                       />
                     </div>

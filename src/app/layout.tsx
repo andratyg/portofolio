@@ -240,8 +240,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="google-site-verification" content="cu0oN6kGs748IQbeUkW1eFLhaKDJwYpJ6Gn9daxm9tk" />
         {/* DNS Prefetch for project images on ibb.co */}
         <link rel="dns-prefetch" href="https://i.ibb.co" />
-        {/* Preload local profile fallback to avoid lazy-load penalty */}
-        <link rel="preload" as="image" href="/profile-fallback.jpg" fetchPriority="high" />
       </head>
       <body className={`${plusJakarta.variable} ${outfit.variable} font-body antialiased theme-transition`} suppressHydrationWarning>
         <script
