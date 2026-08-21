@@ -238,11 +238,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="id" suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="cu0oN6kGs748IQbeUkW1eFLhaKDJwYpJ6Gn9daxm9tk" />
-        {/* Preconnect: LCP image CDN (project images on ibb.co) */}
-        <link rel="preconnect" href="https://i.ibb.co" crossOrigin="anonymous" />
+        {/* DNS Prefetch for project images on ibb.co */}
         <link rel="dns-prefetch" href="https://i.ibb.co" />
-        {/* Preconnect: Firebase Auth (used early by FirebaseClientProvider) */}
-        <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossOrigin="anonymous" />
         {/* Preload local profile fallback to avoid lazy-load penalty */}
         <link rel="preload" as="image" href="/profile-fallback.jpg" fetchPriority="high" />
       </head>

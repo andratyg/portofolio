@@ -107,7 +107,7 @@ export default async function Home() {
         <link
           rel="preload"
           as="image"
-          href={`/_next/image?url=${encodeURIComponent(featuredProject.imageUrl)}&w=640&q=60`}
+          href={`/_next/image?url=${encodeURIComponent(featuredProject.imageUrl)}&w=640&q=75`}
           fetchPriority="high"
         />
       )}
@@ -120,50 +120,50 @@ export default async function Home() {
 
           {/* --- Below the fold (lazy loaded with skeletons & animations) --- */}
           <SectionErrorBoundary sectionName="About">
-            <AnimateOnScroll>
+            <AnimateOnScroll fallback={<AboutSkeleton />} minHeight="500px">
               <About />
             </AnimateOnScroll>
           </SectionErrorBoundary>
 
           <SectionErrorBoundary sectionName="Stats">
-            <AnimateOnScroll>
+            <AnimateOnScroll fallback={<StatsSkeleton />} minHeight="300px">
               <Stats />
             </AnimateOnScroll>
           </SectionErrorBoundary>
 
           <SectionErrorBoundary sectionName="Tech Stack">
-            <AnimateOnScroll>
+            <AnimateOnScroll fallback={<TechStackSkeleton />} minHeight="400px">
               <TechStack />
             </AnimateOnScroll>
           </SectionErrorBoundary>
 
           <div className="space-y-12">
             <SectionErrorBoundary sectionName="Portfolio">
-              <AnimateOnScroll>
+              <AnimateOnScroll fallback={<PortfolioSkeleton />} minHeight="600px">
                 <Portfolio />
               </AnimateOnScroll>
             </SectionErrorBoundary>
             <SectionErrorBoundary sectionName="Certificates">
-              <AnimateOnScroll>
+              <AnimateOnScroll fallback={<CertificatesSkeleton />} minHeight="600px">
                 <Certificates />
               </AnimateOnScroll>
             </SectionErrorBoundary>
           </div>
 
           <SectionErrorBoundary sectionName="Timeline">
-            <AnimateOnScroll>
+            <AnimateOnScroll fallback={<TimelineSkeleton />} minHeight="500px">
               <Timeline />
             </AnimateOnScroll>
           </SectionErrorBoundary>
 
           <SectionErrorBoundary sectionName="Testimonials">
-            <AnimateOnScroll>
+            <AnimateOnScroll fallback={<TestimonialsSkeleton />} minHeight="400px">
               <Testimonials />
             </AnimateOnScroll>
           </SectionErrorBoundary>
 
           <SectionErrorBoundary sectionName="Contact">
-            <AnimateOnScroll>
+            <AnimateOnScroll fallback={<ContactSkeleton />} minHeight="500px">
               <Contact />
             </AnimateOnScroll>
           </SectionErrorBoundary>

@@ -73,7 +73,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const certsQuery = useMemoFirebase(() => collection(firestore, 'certificates'), [firestore]);
   const testsQuery = useMemoFirebase(() => collection(firestore, 'testimonials'), [firestore]);
   const journeyQuery = useMemoFirebase(() => collection(firestore, 'careerTimelineEntries'), [firestore]);
-  const messagesQuery = useMemoFirebase(() => collection(firestore, 'messages'), [firestore]);
+  const messagesQuery = useMemoFirebase(() => (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin') ? collection(firestore, 'messages') : null), [firestore]);
   const techSkillsQuery = useMemoFirebase(() => collection(firestore, 'techSkills'), [firestore]);
   const profileDocRef = useMemoFirebase(() => doc(firestore, 'portfolioOwner', 'profile'), [firestore]);
 

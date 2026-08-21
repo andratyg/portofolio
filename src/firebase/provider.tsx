@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
 import { FirebaseApp } from 'firebase/app';
@@ -76,17 +76,44 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
     setUserAuthState({ user: null, isUserLoading: true, userError: null }); // Reset on auth instance change
 
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (firebaseUser) => { // Auth state determined
-        setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
-      },
-      (error) => { // Auth listener error
-        console.error("FirebaseProvider: onAuthStateChanged error:", error);
-        setUserAuthState({ user: null, isUserLoading: false, userError: error });
+    let unsubscribe: (() => void) | undefined;
+    let isCancelled = false;
+
+    const startAuthListener = () => {
+      if (isCancelled) return;
+      unsubscribe = onAuthStateChanged(
+        auth,
+        (firebaseUser) => { // Auth state determined
+          setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
+        },
+        (error) => { // Auth listener error
+          console.error("FirebaseProvider: onAuthStateChanged error:", error);
+          setUserAuthState({ user: null, isUserLoading: false, userError: error });
+        }
+      );
+    };
+
+    // If on admin route, start immediately; otherwise defer to idle
+    const isAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
+    let idleHandle: any;
+
+    if (isAdmin) {
+      startAuthListener();
+    } else if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      idleHandle = (window as any).requestIdleCallback(startAuthListener, { timeout: 5000 });
+    } else {
+      idleHandle = setTimeout(startAuthListener, 1000);
+    }
+
+    return () => {
+      isCancelled = true;
+      if (typeof window !== 'undefined' && 'cancelIdleCallback' in window && typeof idleHandle === 'number') {
+        (window as any).cancelIdleCallback(idleHandle);
+      } else {
+        clearTimeout(idleHandle);
       }
-    );
-    return () => unsubscribe(); // Cleanup
+      if (unsubscribe) unsubscribe();
+    };
   }, [auth]); // Depends on the auth instance
 
   // Memoize the context value

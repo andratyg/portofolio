@@ -87,18 +87,18 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
       </div>
 
       {/* ── Background: particles + orbs ─────────────────────────── */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden>
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
         <DynamicParticleCanvas density={15000} />
-        {/* Orbs — tilt via direct DOM, no React re-render */}
+        {/* Orbs — tilt via direct DOM, isolated from document layout */}
         <div
           id="hero-orb-1"
-          className="absolute top-[10%] left-[5%] w-[560px] h-[560px] bg-primary/8 rounded-full blur-[140px]"
-          style={{ transition: 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)', willChange: 'transform', contain: 'strict' }}
+          className="absolute -top-12 -left-12 w-[320px] sm:w-[560px] h-[320px] sm:h-[560px] bg-primary/8 rounded-full blur-[80px] sm:blur-[140px]"
+          style={{ transition: 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)', willChange: 'transform', contain: 'layout paint size' }}
         />
         <div
           id="hero-orb-2"
-          className="absolute bottom-[5%] right-[0%] w-[420px] h-[420px] bg-primary/5 rounded-full blur-[120px]"
-          style={{ transition: 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)', willChange: 'transform', contain: 'strict' }}
+          className="absolute -bottom-12 -right-12 w-[280px] sm:w-[420px] h-[280px] sm:h-[420px] bg-primary/5 rounded-full blur-[70px] sm:blur-[120px]"
+          style={{ transition: 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)', willChange: 'transform', contain: 'layout paint size' }}
         />
         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
         <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-border/40 to-transparent" />
