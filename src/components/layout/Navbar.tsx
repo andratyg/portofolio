@@ -171,26 +171,29 @@ export const Navbar = () => {
           </motion.a>
           
           <div className="hidden md:flex gap-8 relative">
-            {navItems.map((item) => (
-              <Link 
-                key={item.label} 
-                href={item.href}
-                onClick={(e) => handleSmoothScroll(e, item.href)}
-                className={cn(
-                  "relative text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-200 py-2",
-                  activeSection === item.href ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {item.label}
-                {activeSection === item.href && (
-                  <motion.div
-                    layoutId="activeNavIndicator"
-                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            {navItems.map((item) => {
+              const isActive = activeSection === item.href;
+              return (
+                <Link 
+                  key={item.label} 
+                  href={item.href}
+                  onClick={(e) => handleSmoothScroll(e, item.href)}
+                  className={cn(
+                    "relative text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-200 py-2",
+                    isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {item.label}
+                  <span
+                    className={cn(
+                      "absolute -bottom-1 left-0 right-0 h-0.5 bg-primary transition-all duration-300 pointer-events-none",
+                      isActive ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
+                    )}
+                    aria-hidden="true"
                   />
-                )}
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </div>
 

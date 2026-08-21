@@ -212,6 +212,7 @@ function BlogListContent() {
                           <img 
                             src={featuredBlog.coverImage} 
                             alt={featuredBlog.titleId} 
+                            loading="lazy"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                           />
                         ) : (
@@ -295,6 +296,7 @@ function BlogListContent() {
                                 <img 
                                   src={b.coverImage} 
                                   alt={title} 
+                                  loading="lazy"
                                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                                 />
                               ) : (

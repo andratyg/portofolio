@@ -13,7 +13,16 @@ const nextConfig: NextConfig = {
   },
   // Tree-shake large packages — reduces unused JS significantly
   experimental: {
-    optimizePackageImports: ['framer-motion', 'lucide-react'],
+    optimizePackageImports: [
+      'framer-motion',
+      'lucide-react',
+      'date-fns',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-toast',
+      '@radix-ui/react-slot',
+      'zustand',
+    ],
   },
   async headers() {
     const isDev = process.env.NODE_ENV === 'development';
@@ -89,6 +98,9 @@ const nextConfig: NextConfig = {
   images: {
     // AVIF/WebP first — modern browsers get 30-50% smaller images
     formats: ['image/avif', 'image/webp'],
+    // Granular device sizes to eliminate oversized images on mobile viewports
+    deviceSizes: [360, 414, 640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // 1 year cache for optimized images — huge performance win on repeat visits
     minimumCacheTTL: 31536000,
     remotePatterns: [

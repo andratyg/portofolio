@@ -61,7 +61,7 @@ const SkillCard = ({ tech, index }: { tech: TechSkill; index: number }) => {
         >
           <span className="font-black text-base text-foreground flex items-center justify-center w-full h-full">
             {(tech.icon && (tech.icon.startsWith('http') || tech.icon.startsWith('/'))) ? (
-              <img src={tech.icon} alt={tech.name} className="w-6 h-6 object-contain drop-shadow-md" />
+              <img src={tech.icon} alt={tech.name} width="24" height="24" loading="lazy" className="w-6 h-6 object-contain drop-shadow-md" />
             ) : (
               tech.icon
             )}

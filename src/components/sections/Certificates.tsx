@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import React, { useState, useMemo, useRef } from 'react';
 import { useLanguage } from '../providers/LanguageContext';
@@ -259,8 +259,10 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                     src={cert.imageUrl!}
                     alt={title}
                     fill 
+                    loading="lazy"
                     className="object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    sizes="(max-width: 640px) 92vw, (max-width: 1024px) 48vw, 380px"
+                    quality={75}
                   />
                 </div>
               ) : (
@@ -313,7 +315,8 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                   alt={title} 
                   fill 
                   className="object-contain"
-                  sizes="(max-width: 768px) 100vw, 700px"
+                  sizes="(max-width: 768px) 95vw, 680px"
+                  quality={75}
                  />
               </div>
            ) : (

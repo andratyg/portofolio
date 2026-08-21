@@ -28,9 +28,9 @@ export const ScrollProgressButton = () => {
     };
 
     // We add a listener for load and resize to handle dynamic content
-    window.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', handleScroll); // Recalculate on resize
-    window.addEventListener('load', handleScroll); // Recalculate when page is fully loaded
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true }); // Recalculate on resize
+    window.addEventListener('load', handleScroll, { passive: true }); // Recalculate when page is fully loaded
 
     // Initial calculation
     handleScroll();

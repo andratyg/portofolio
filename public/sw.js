@@ -1,20 +1,24 @@
 // Service Worker for Nara Andra Tyaga Portfolio
-// Provides offline support and caching for a better PWA experience
-
-const CACHE_NAME = 'nat-portfolio-v1';
+// Robust, lightweight PWA caching with strict origin checking
+const CACHE_NAME = 'nat-portfolio-v3';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
   '/icon.svg',
   '/profile-fallback.jpg',
-  '/og-image.png',
 ];
 
-// Install — cache static assets
+// Install — cache static assets safely
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
+    caches.open(CACHE_NAME).then(async (cache) => {
+      for (const asset of STATIC_ASSETS) {
+        try {
+          await cache.add(asset);
+        } catch (err) {
+          // ignore missing assets
+        }
+      }
     })
   );
   self.skipWaiting();
@@ -23,58 +27,52 @@ self.addEventListener('install', (event) => {
 // Activate — clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      );
-    })
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
+      )
+    )
   );
   self.clients.claim();
 });
 
-// Fetch — network first, fallback to cache
+// Fetch handler
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests and Chrome extensions
   if (event.request.method !== 'GET') return;
-  if (event.request.url.startsWith('chrome-extension://')) return;
-  
-  // For navigation requests — network first
+
+  const url = new URL(event.request.url);
+
+  // ONLY handle same-origin requests (never intercept Firestore, Google APIs, extensions)
+  if (url.origin !== self.location.origin) return;
+
+  // Ignore Next.js internal and dev routes
+  if (url.pathname.startsWith('/api') || url.pathname.startsWith('/_next/webpack-hmr')) return;
+
+  // Navigation requests: network first with offline fallback
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match('/') || new Response('Offline', { status: 503 });
+      fetch(event.request).catch(async () => {
+        const cached = await caches.match('/');
+        return cached || new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain' } });
       })
     );
     return;
   }
 
-  // For static assets — cache first
-  if (STATIC_ASSETS.some(asset => event.request.url.endsWith(asset))) {
+  // Static assets: cache first with network fallback
+  if (STATIC_ASSETS.includes(url.pathname)) {
     event.respondWith(
       caches.match(event.request).then((cached) => {
-        return cached || fetch(event.request).then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          return response;
+        if (cached) return cached;
+        return fetch(event.request).then((res) => {
+          if (res && res.status === 200 && res.type === 'basic') {
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return res;
         });
-      })
+      }).catch(() => new Response('', { status: 404 }))
     );
-    return;
   }
-
-  // For everything else — network first with cache fallback
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        // Cache successful responses
-        if (response.ok && response.type === 'basic') {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        }
-        return response;
-      })
-      .catch(() => caches.match(event.request))
-  );
 });
+

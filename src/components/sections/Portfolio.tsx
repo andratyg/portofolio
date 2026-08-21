@@ -230,7 +230,8 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
                       fill
                       loading="lazy"
                       className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      sizes="(max-width: 640px) 92vw, (max-width: 1024px) 48vw, 380px"
+                      quality={75}
                     />
                   </div>
                 </div>
@@ -255,7 +256,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
         <DialogContent className="w-[95vw] sm:max-w-[800px] max-h-[95dvh] sm:h-[85vh] p-0 border-none shadow-2xl bg-background flex flex-col rounded-[2rem] overflow-hidden">
           <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
             <div className="relative h-64 sm:h-96 shrink-0 bg-muted overflow-hidden">
-              <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover" sizes="(max-width: 768px) 100vw, 800px" />
+              <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover" sizes="(max-width: 768px) 95vw, 750px" quality={75} />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
               <div className="absolute bottom-4 sm:bottom-8 left-5 sm:left-10 right-5 sm:right-10">
                 <div className="flex items-end justify-between gap-3 sm:gap-4">

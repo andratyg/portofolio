@@ -40,7 +40,8 @@ export const About = () => {
                     alt={`${profile.name} – Web Developer Portfolio`} 
                     fill 
                     className="object-cover"
-                    sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 45vw"
+                    sizes="(max-width: 640px) 85vw, (max-width: 1024px) 45vw, 360px"
+                    quality={75}
                     loading="lazy"
                     placeholder="blur"
                     blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAKAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABgUH/8QAIhAAAQQBBAMBAAAAAAAAAAAAAQIDBBEABRIhMQYTQWH/xAAVAQEBAAAAAAAAAAAAAAAAAAADBP/EABkRAQADAQEAAAAAAAAAAAAAAAEAAhEhMf/aAAwDAQACEQMRAD8Aw2PJkNaJFdadcQlLqkJKVEAGiePuTpGvargd8sYP/9k="

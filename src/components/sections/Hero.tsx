@@ -232,7 +232,8 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
                         alt={language === 'id' ? featuredProject.titleId : featuredProject.titleEn}
                         fill priority
                         fetchPriority="high"
-                        sizes="(max-width: 640px) 340px, (max-width: 1024px) 380px, 420px"
+                        sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 420px"
+                        quality={75}
                         className="object-cover"
                       />
                     </div>

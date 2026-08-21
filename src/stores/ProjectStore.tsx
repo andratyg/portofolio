@@ -119,22 +119,10 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     async function fetchPublicData() {
       try {
-        const [
-          projectsSnap,
-          certsSnap,
-          testsSnap,
-          journeySnap,
-          skillsSnap,
-          blogsSnap,
-          profileSnap,
-        ] = await Promise.all([
-          getDocs(collection(firestore, 'projects')),
-          getDocs(collection(firestore, 'certificates')),
-          getDocs(collection(firestore, 'testimonials')),
-          getDocs(collection(firestore, 'careerTimelineEntries')),
-          getDocs(collection(firestore, 'techSkills')),
-          getDocs(collection(firestore, 'blogs')),
+        // Critical Tier 1: Fetch Profile & Projects for instantaneous Hero LCP
+        const [profileSnap, projectsSnap] = await Promise.all([
           getDoc(doc(firestore, 'portfolioOwner', 'profile')),
+          getDocs(collection(firestore, 'projects')),
         ]);
 
         if (!isMounted) return;
@@ -165,8 +153,46 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
           clientSatisfaction: profileSnap.data()?.clientSatisfaction || defaultStats.clientSatisfaction,
         } : defaultStats;
 
-        const builtState = {
-          projects: projectsSnap.docs.map(d => ({ ...(d.data() as Project), id: d.id })),
+        const loadedProjects = projectsSnap.docs.map(d => ({ ...(d.data() as Project), id: d.id }));
+
+        // Unblock initial Hero LCP immediately
+        setPublicData(prev => ({
+          ...(prev || {
+            projects: loadedProjects,
+            certificates: [],
+            testimonials: [],
+            experiences: [],
+            messages: [],
+            techSkills: [],
+            blogs: [],
+            profile: pData,
+            stats: sData,
+          }),
+          projects: loadedProjects,
+          profile: pData,
+          stats: sData,
+        }));
+        setIsPublicLoading(false);
+
+        // Secondary Tier 2: Fetch below-the-fold collections concurrently
+        const [
+          certsSnap,
+          testsSnap,
+          journeySnap,
+          skillsSnap,
+          blogsSnap,
+        ] = await Promise.all([
+          getDocs(collection(firestore, 'certificates')),
+          getDocs(collection(firestore, 'testimonials')),
+          getDocs(collection(firestore, 'careerTimelineEntries')),
+          getDocs(collection(firestore, 'techSkills')),
+          getDocs(collection(firestore, 'blogs')),
+        ]);
+
+        if (!isMounted) return;
+
+        const fullState = {
+          projects: loadedProjects,
           certificates: certsSnap.docs.map(d => ({ ...(d.data() as Certificate), id: d.id })),
           testimonials: testsSnap.docs.map(d => ({ ...(d.data() as Testimonial), id: d.id })),
           experiences: journeySnap.docs.map(d => ({ ...(d.data() as Experience), id: d.id })),
@@ -196,9 +222,8 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
           stats: sData,
         };
 
-        cachedStoreState = builtState;
-        setPublicData(builtState);
-        setIsPublicLoading(false);
+        cachedStoreState = fullState;
+        setPublicData(fullState);
       } catch (err: any) {
         if (!isMounted) return;
         setPublicError(err);

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useLanguage } from '@/components/providers/LanguageContext';
 import { Github, Linkedin, Instagram, ArrowUp } from 'lucide-react';
+import { TikTokIcon } from '@/components/icons/TikTokIcon';
 
 export const Footer = () => {
   const { t, language } = useLanguage();
@@ -20,6 +21,7 @@ export const Footer = () => {
     { icon: Github, href: 'https://github.com/naradev', label: 'GitHub' },
     { icon: Linkedin, href: 'https://linkedin.com/in/nara-andra-tyaga', label: 'LinkedIn' },
     { icon: Instagram, href: 'https://instagram.com/nara.dev', label: 'Instagram' },
+    { icon: TikTokIcon, href: 'https://www.tiktok.com/@naradev', label: 'TikTok' },
   ];
 
   return (
