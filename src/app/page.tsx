@@ -102,15 +102,6 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/* LCP image preload — tells browser to fetch hero image ASAP */}
-      {featuredProject?.imageUrl && (
-        <link
-          rel="preload"
-          as="image"
-          href={`/_next/image?url=${encodeURIComponent(featuredProject.imageUrl)}&w=640&q=75`}
-          fetchPriority="high"
-        />
-      )}
       <main className="min-h-screen selection:bg-primary selection:text-primary-foreground">
         {/* --- Above the fold (loaded immediately) --- */}
         <Navbar />

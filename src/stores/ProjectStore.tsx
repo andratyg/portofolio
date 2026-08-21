@@ -1,10 +1,10 @@
 
 "use client"
 
-import React, { createContext, useContext } from 'react';
-import { Project, Certificate, PortfolioStats, ProfileData, Testimonial, Experience, ContactMessage, TechSkill } from '@/lib/types';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Project, Certificate, PortfolioStats, ProfileData, Testimonial, Experience, ContactMessage, TechSkill, BlogPost } from '@/lib/types';
 import { useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
-import { collection, doc, writeBatch } from 'firebase/firestore';
+import { collection, doc, writeBatch, getDocs, getDoc } from 'firebase/firestore';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
 
@@ -16,6 +16,7 @@ interface ProjectStoreType {
   messages: ContactMessage[];
   stats: PortfolioStats;
   profile: ProfileData;
+  blogs: BlogPost[];
   isLoading: boolean;
   error: any;
   addProject: (project: Project) => void;
@@ -32,6 +33,8 @@ interface ProjectStoreType {
   techSkills: TechSkill[];
   addTechSkill: (skill: TechSkill) => void;
   deleteTechSkill: (id: string) => void;
+  addBlog: (blog: BlogPost) => void;
+  deleteBlog: (id: string) => void;
   backupData: () => void;
   restoreData: (json: string) => Promise<void>;
 }
@@ -65,81 +68,207 @@ const defaultProfile: ProfileData = {
 
 const ProjectStoreContext = createContext<ProjectStoreType | undefined>(undefined);
 
+// In-memory cache for public visitors to ensure 0ms instant render across page navigation
+let cachedStoreState: {
+  projects: Project[];
+  certificates: Certificate[];
+  testimonials: Testimonial[];
+  experiences: Experience[];
+  messages: ContactMessage[];
+  techSkills: TechSkill[];
+  blogs: BlogPost[];
+  profile: ProfileData;
+  stats: PortfolioStats;
+} | null = null;
+
 export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const projectsQuery = useMemoFirebase(() => collection(firestore, 'projects'), [firestore]);
-  const certsQuery = useMemoFirebase(() => collection(firestore, 'certificates'), [firestore]);
-  const testsQuery = useMemoFirebase(() => collection(firestore, 'testimonials'), [firestore]);
-  const journeyQuery = useMemoFirebase(() => collection(firestore, 'careerTimelineEntries'), [firestore]);
-  const messagesQuery = useMemoFirebase(() => (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin') ? collection(firestore, 'messages') : null), [firestore]);
-  const techSkillsQuery = useMemoFirebase(() => collection(firestore, 'techSkills'), [firestore]);
-  const profileDocRef = useMemoFirebase(() => doc(firestore, 'portfolioOwner', 'profile'), [firestore]);
+  const isAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
 
-  const { data: projectsData, isLoading: loadingProjects, error: errorProjects } = useCollection<Project>(projectsQuery);
-  const { data: certsData, isLoading: loadingCerts, error: errorCerts } = useCollection<Certificate>(certsQuery);
-  const { data: testsData, isLoading: loadingTests, error: errorTests } = useCollection<Testimonial>(testsQuery);
-  const { data: journeyData, isLoading: loadingJourney, error: errorJourney } = useCollection<Experience>(journeyQuery);
-  const { data: messagesData, isLoading: loadingMessages, error: errorMessages } = useCollection<ContactMessage>(messagesQuery);
-  const { data: techSkillsData, isLoading: loadingTechSkills, error: errorTechSkills } = useCollection<TechSkill>(techSkillsQuery);
-  const { data: profileData, isLoading: loadingProfile, error: errorProfile } = useDoc<any>(profileDocRef);
+  // Real-time queries for Admin dashboard only
+  const projectsQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'projects') : null), [firestore, isAdmin]);
+  const certsQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'certificates') : null), [firestore, isAdmin]);
+  const testsQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'testimonials') : null), [firestore, isAdmin]);
+  const journeyQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'careerTimelineEntries') : null), [firestore, isAdmin]);
+  const messagesQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'messages') : null), [firestore, isAdmin]);
+  const techSkillsQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'techSkills') : null), [firestore, isAdmin]);
+  const blogsQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'blogs') : null), [firestore, isAdmin]);
+  const profileDocRef = useMemoFirebase(() => (isAdmin ? doc(firestore, 'portfolioOwner', 'profile') : null), [firestore, isAdmin]);
 
-  const projects = projectsData || [];
-  const testimonials = testsData || [];
-  const experiences = journeyData || [];
-  const messages = messagesData || [];
-  const techSkills: TechSkill[] = (techSkillsData || []).map((s: any) => ({
-    id: s.id,
-    name: s.name || '',
-    icon: s.icon || '⚡',
-    level: s.level || 50,
-    color: s.color || 'from-blue-400 to-blue-600',
-    category: s.category || 'Other',
-  }));
-  const certificates: Certificate[] = (certsData || []).map((c: any) => ({
-    id: c.id,
-    titleId: c.titleId || '',
-    titleEn: c.titleEn || '',
-    shortDescriptionId: c.shortDescriptionId || '',
-    shortDescriptionEn: c.shortDescriptionEn || '',
-    fullDescriptionId: c.fullDescriptionId || '',
-    fullDescriptionEn: c.fullDescriptionEn || '',
-    year: c.year || '',
-    issuer: c.issuer || '',
-    validUntil: c.validUntil || 'N/A',
-    imageUrl: c.imageUrl || c.url || '',
-    credentialUrl: c.credentialUrl || '',
-  }));
+  const { data: adminProjects, isLoading: loadingProjects } = useCollection<Project>(projectsQuery);
+  const { data: adminCerts, isLoading: loadingCerts } = useCollection<Certificate>(certsQuery);
+  const { data: adminTests, isLoading: loadingTests } = useCollection<Testimonial>(testsQuery);
+  const { data: adminJourney, isLoading: loadingJourney } = useCollection<Experience>(journeyQuery);
+  const { data: adminMessages, isLoading: loadingMessages } = useCollection<ContactMessage>(messagesQuery);
+  const { data: adminTechSkills, isLoading: loadingTechSkills } = useCollection<TechSkill>(techSkillsQuery);
+  const { data: adminBlogs, isLoading: loadingBlogs } = useCollection<BlogPost>(blogsQuery);
+  const { data: adminProfile, isLoading: loadingProfile } = useDoc<any>(profileDocRef);
 
-  const profile: ProfileData = profileData ? {
-    name: profileData.name || defaultProfile.name,
-    roleId: profileData.roleId || defaultProfile.roleId,
-    roleEn: profileData.roleEn || defaultProfile.roleEn,
-    aboutMeId: profileData.aboutMeId || defaultProfile.aboutMeId,
-    aboutMeEn: profileData.aboutMeEn || defaultProfile.aboutMeEn,
-    profilePictureUrl: profileData.profilePictureUrl || defaultProfile.profilePictureUrl,
-    heroTitleId: profileData.heroTitleId || defaultProfile.heroTitleId,
-    heroTitleEn: profileData.heroTitleEn || defaultProfile.heroTitleEn,
-    heroSubtitleId: profileData.heroSubtitleId || defaultProfile.heroSubtitleId,
-    heroSubtitleEn: profileData.heroSubtitleEn || defaultProfile.heroSubtitleEn,
-    email: profileData.email || defaultProfile.email,
-    whatsapp: profileData.whatsAppNumber || defaultProfile.whatsapp,
-    linkedin: profileData.linkedInProfileUrl || defaultProfile.linkedin,
-    instagram: profileData.instagram || defaultProfile.instagram,
-    github: profileData.githubProfileUrl || defaultProfile.github,
-    tiktok: profileData.tiktok || defaultProfile.tiktok
-  } : defaultProfile;
+  // State for public one-time fetch
+  const [publicData, setPublicData] = useState<typeof cachedStoreState>(cachedStoreState);
+  const [isPublicLoading, setIsPublicLoading] = useState(!cachedStoreState && !isAdmin);
+  const [publicError, setPublicError] = useState<any>(null);
 
-  const stats: PortfolioStats = profileData ? {
-    completedProjects: String(profileData.totalProjectsCompleted || defaultStats.completedProjects),
-    yearsExperience: String(profileData.codingExperienceYears || defaultStats.yearsExperience),
-    techMastered: String(profileData.totalTechnologiesMastered || defaultStats.techMastered),
-    clientSatisfaction: profileData.clientSatisfaction || defaultStats.clientSatisfaction
-  } : defaultStats;
+  // One-time fetch for public pages to avoid persistent WebSockets & enable bfcache
+  useEffect(() => {
+    if (isAdmin || cachedStoreState) return;
 
-  const isLoading = loadingProjects || loadingCerts || loadingTests || loadingJourney || loadingProfile || loadingMessages || loadingTechSkills;
-  const error = errorProjects || errorCerts || errorTests || errorJourney || errorProfile || errorMessages || errorTechSkills;
+    let isMounted = true;
+
+    async function fetchPublicData() {
+      try {
+        const [
+          projectsSnap,
+          certsSnap,
+          testsSnap,
+          journeySnap,
+          skillsSnap,
+          blogsSnap,
+          profileSnap,
+        ] = await Promise.all([
+          getDocs(collection(firestore, 'projects')),
+          getDocs(collection(firestore, 'certificates')),
+          getDocs(collection(firestore, 'testimonials')),
+          getDocs(collection(firestore, 'careerTimelineEntries')),
+          getDocs(collection(firestore, 'techSkills')),
+          getDocs(collection(firestore, 'blogs')),
+          getDoc(doc(firestore, 'portfolioOwner', 'profile')),
+        ]);
+
+        if (!isMounted) return;
+
+        const pData: ProfileData = profileSnap.exists() ? {
+          name: profileSnap.data()?.name || defaultProfile.name,
+          roleId: profileSnap.data()?.roleId || defaultProfile.roleId,
+          roleEn: profileSnap.data()?.roleEn || defaultProfile.roleEn,
+          aboutMeId: profileSnap.data()?.aboutMeId || defaultProfile.aboutMeId,
+          aboutMeEn: profileSnap.data()?.aboutMeEn || defaultProfile.aboutMeEn,
+          profilePictureUrl: profileSnap.data()?.profilePictureUrl || defaultProfile.profilePictureUrl,
+          heroTitleId: profileSnap.data()?.heroTitleId || defaultProfile.heroTitleId,
+          heroTitleEn: profileSnap.data()?.heroTitleEn || defaultProfile.heroTitleEn,
+          heroSubtitleId: profileSnap.data()?.heroSubtitleId || defaultProfile.heroSubtitleId,
+          heroSubtitleEn: profileSnap.data()?.heroSubtitleEn || defaultProfile.heroSubtitleEn,
+          email: profileSnap.data()?.email || defaultProfile.email,
+          whatsapp: profileSnap.data()?.whatsAppNumber || defaultProfile.whatsapp,
+          linkedin: profileSnap.data()?.linkedInProfileUrl || defaultProfile.linkedin,
+          instagram: profileSnap.data()?.instagram || defaultProfile.instagram,
+          github: profileSnap.data()?.githubProfileUrl || defaultProfile.github,
+          tiktok: profileSnap.data()?.tiktok || defaultProfile.tiktok,
+        } : defaultProfile;
+
+        const sData: PortfolioStats = profileSnap.exists() ? {
+          completedProjects: String(profileSnap.data()?.totalProjectsCompleted || defaultStats.completedProjects),
+          yearsExperience: String(profileSnap.data()?.codingExperienceYears || defaultStats.yearsExperience),
+          techMastered: String(profileSnap.data()?.totalTechnologiesMastered || defaultStats.techMastered),
+          clientSatisfaction: profileSnap.data()?.clientSatisfaction || defaultStats.clientSatisfaction,
+        } : defaultStats;
+
+        const builtState = {
+          projects: projectsSnap.docs.map(d => ({ ...(d.data() as Project), id: d.id })),
+          certificates: certsSnap.docs.map(d => ({ ...(d.data() as Certificate), id: d.id })),
+          testimonials: testsSnap.docs.map(d => ({ ...(d.data() as Testimonial), id: d.id })),
+          experiences: journeySnap.docs.map(d => ({ ...(d.data() as Experience), id: d.id })),
+          messages: [],
+          techSkills: skillsSnap.docs.map(d => ({ ...(d.data() as TechSkill), id: d.id })),
+          blogs: blogsSnap.docs.map(d => {
+            const b = d.data() as any;
+            return {
+              id: d.id,
+              slug: b.slug || d.id,
+              titleId: b.titleId || '',
+              titleEn: b.titleEn || '',
+              summaryId: b.summaryId || '',
+              summaryEn: b.summaryEn || '',
+              contentId: b.contentId || '',
+              contentEn: b.contentEn || '',
+              coverImage: b.coverImage || '',
+              tags: Array.isArray(b.tags) ? b.tags : (b.tags ? b.tags.split(',').map((t: string) => t.trim()) : []),
+              author: b.author || 'Nara Andra Tyaga',
+              publishedAt: b.publishedAt || new Date().toISOString(),
+              readingTime: b.readingTime || '3 min read',
+              featured: !!b.featured,
+              updatedAt: b.updatedAt || '',
+            };
+          }),
+          profile: pData,
+          stats: sData,
+        };
+
+        cachedStoreState = builtState;
+        setPublicData(builtState);
+        setIsPublicLoading(false);
+      } catch (err: any) {
+        if (!isMounted) return;
+        setPublicError(err);
+        setIsPublicLoading(false);
+      }
+    }
+
+    fetchPublicData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [firestore, isAdmin]);
+
+  // Derived values
+  const projects = isAdmin ? (adminProjects || []) : (publicData?.projects || []);
+  const certificates = isAdmin ? (adminCerts || []) : (publicData?.certificates || []);
+  const testimonials = isAdmin ? (adminTests || []) : (publicData?.testimonials || []);
+  const experiences = isAdmin ? (adminJourney || []) : (publicData?.experiences || []);
+  const messages = isAdmin ? (adminMessages || []) : (publicData?.messages || []);
+  const techSkills = isAdmin ? (adminTechSkills || []) : (publicData?.techSkills || []);
+  const blogs = isAdmin ? ((adminBlogs || []).map((b: any) => ({
+    id: b.id,
+    slug: b.slug || b.id,
+    titleId: b.titleId || '',
+    titleEn: b.titleEn || '',
+    summaryId: b.summaryId || '',
+    summaryEn: b.summaryEn || '',
+    contentId: b.contentId || '',
+    contentEn: b.contentEn || '',
+    coverImage: b.coverImage || '',
+    tags: Array.isArray(b.tags) ? b.tags : (b.tags ? b.tags.split(',').map((t: string) => t.trim()) : []),
+    author: b.author || 'Nara Andra Tyaga',
+    publishedAt: b.publishedAt || new Date().toISOString(),
+    readingTime: b.readingTime || '3 min read',
+    featured: !!b.featured,
+    updatedAt: b.updatedAt || '',
+  }))) : (publicData?.blogs || []);
+
+  const profile: ProfileData = isAdmin ? (adminProfile ? {
+    name: adminProfile.name || defaultProfile.name,
+    roleId: adminProfile.roleId || defaultProfile.roleId,
+    roleEn: adminProfile.roleEn || defaultProfile.roleEn,
+    aboutMeId: adminProfile.aboutMeId || defaultProfile.aboutMeId,
+    aboutMeEn: adminProfile.aboutMeEn || defaultProfile.aboutMeEn,
+    profilePictureUrl: adminProfile.profilePictureUrl || defaultProfile.profilePictureUrl,
+    heroTitleId: adminProfile.heroTitleId || defaultProfile.heroTitleId,
+    heroTitleEn: adminProfile.heroTitleEn || defaultProfile.heroTitleEn,
+    heroSubtitleId: adminProfile.heroSubtitleId || defaultProfile.heroSubtitleId,
+    heroSubtitleEn: adminProfile.heroSubtitleEn || defaultProfile.heroSubtitleEn,
+    email: adminProfile.email || defaultProfile.email,
+    whatsapp: adminProfile.whatsAppNumber || defaultProfile.whatsapp,
+    linkedin: adminProfile.linkedInProfileUrl || defaultProfile.linkedin,
+    instagram: adminProfile.instagram || defaultProfile.instagram,
+    github: adminProfile.githubProfileUrl || defaultProfile.github,
+    tiktok: adminProfile.tiktok || defaultProfile.tiktok
+  } : defaultProfile) : (publicData?.profile || defaultProfile);
+
+  const stats: PortfolioStats = isAdmin ? (adminProfile ? {
+    completedProjects: String(adminProfile.totalProjectsCompleted || defaultStats.completedProjects),
+    yearsExperience: String(adminProfile.codingExperienceYears || defaultStats.yearsExperience),
+    techMastered: String(adminProfile.totalTechnologiesMastered || defaultStats.techMastered),
+    clientSatisfaction: adminProfile.clientSatisfaction || defaultStats.clientSatisfaction
+  } : defaultStats) : (publicData?.stats || defaultStats);
+
+  const isLoading = isAdmin
+    ? (loadingProjects || loadingCerts || loadingTests || loadingJourney || loadingProfile || loadingMessages || loadingTechSkills || loadingBlogs)
+    : isPublicLoading;
+
+  const error = isAdmin ? null : publicError;
 
   const backupData = () => {
     const data = {
@@ -147,6 +276,8 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       certificates,
       testimonials,
       experiences,
+      blogs,
+      techSkills,
       profile,
       stats,
       version: '2.5.0',
@@ -168,8 +299,10 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       if (!data.projects || !data.certificates) throw new Error("Invalid format");
       data.projects.forEach((p: any) => batch.set(doc(firestore, 'projects', p.id), p));
       data.certificates.forEach((c: any) => batch.set(doc(firestore, 'certificates', c.id), c));
-      data.testimonials.forEach((t: any) => batch.set(doc(firestore, 'testimonials', t.id), t));
-      data.experiences.forEach((e: any) => batch.set(doc(firestore, 'careerTimelineEntries', e.id), e));
+      data.testimonials?.forEach((t: any) => batch.set(doc(firestore, 'testimonials', t.id), t));
+      data.experiences?.forEach((e: any) => batch.set(doc(firestore, 'careerTimelineEntries', e.id), e));
+      data.blogs?.forEach((b: any) => batch.set(doc(firestore, 'blogs', b.id), b));
+      data.techSkills?.forEach((s: any) => batch.set(doc(firestore, 'techSkills', s.id), s));
       await batch.commit();
       toast({ title: "Restore Successful" });
     } catch (e: any) {
@@ -216,6 +349,8 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const deleteMessage = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'messages', id));
   const addTechSkill = (skill: TechSkill) => setDocumentNonBlocking(doc(firestore, 'techSkills', skill.id), { ...skill, updatedAt: new Date().toISOString() }, { merge: true });
   const deleteTechSkill = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'techSkills', id));
+  const addBlog = (blog: BlogPost) => setDocumentNonBlocking(doc(firestore, 'blogs', blog.id), { ...blog, updatedAt: new Date().toISOString() }, { merge: true });
+  const deleteBlog = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'blogs', id));
 
   const updateProfileAndStats = (newProfile: ProfileData, newStats: PortfolioStats) => {
     const dataToUpdate = {
@@ -241,15 +376,16 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       clientSatisfaction: newStats.clientSatisfaction,
       updatedAt: new Date().toISOString()
     };
-    setDocumentNonBlocking(profileDocRef, dataToUpdate, { merge: true });
+    const pRef = doc(firestore, 'portfolioOwner', 'profile');
+    setDocumentNonBlocking(pRef, dataToUpdate, { merge: true });
   };
 
   return (
     <ProjectStoreContext.Provider value={{ 
-      projects, certificates, testimonials, experiences, messages, stats, profile, techSkills, isLoading, error,
+      projects, certificates, testimonials, experiences, messages, stats, profile, techSkills, blogs, isLoading, error,
       addProject, deleteProject, setFeaturedProject, addCertificate, deleteCertificate,
       addTestimonial, deleteTestimonial, addExperience, deleteExperience,
-      deleteMessage, updateProfileAndStats, addTechSkill, deleteTechSkill, backupData, restoreData
+      deleteMessage, updateProfileAndStats, addTechSkill, deleteTechSkill, addBlog, deleteBlog, backupData, restoreData
     }}>
       {children}
     </ProjectStoreContext.Provider>

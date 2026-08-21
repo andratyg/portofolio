@@ -39,6 +39,11 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
   const tiltRef = useRef({ x: 0, y: 0, raf: 0 });
 
   useEffect(() => {
+    // Only attach mouse tilt on desktop pointers
+    if (typeof window === 'undefined' || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      return;
+    }
+
     // ——— Mouse tilt ———
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth  - 0.5) * 14;
@@ -123,9 +128,10 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
           <p className="text-base sm:text-lg font-semibold text-muted-foreground mb-1 tracking-wide">
             {profile.name || "Nara Andra Tyaga"}
           </p>
-          <p className="text-sm sm:text-base font-medium text-primary mb-3 h-6">
-            {displayText}<span className="inline-block w-0.5 h-4 bg-primary ml-0.5 animate-pulse" />
-          </p>
+          <div className="flex items-center text-sm sm:text-base font-medium text-primary mb-3 h-6 leading-none">
+            <span>{displayText}</span>
+            <span className="inline-block w-0.5 h-4 bg-primary ml-1 shrink-0 animate-pulse" aria-hidden="true" />
+          </div>
 
           {/* Headline — staggered word reveal */}
           <h1
@@ -135,7 +141,7 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
           </h1>
 
           {/* Subtitle */}
-          <div className="flex items-start gap-4 mb-9 max-w-lg">
+          <div className="flex items-start gap-4 mb-9 max-w-lg min-h-[3rem]">
             <div className="w-[2px] self-stretch bg-gradient-to-b from-primary via-primary/40 to-transparent rounded-full shrink-0" />
             <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
               {heroSubtitle}
@@ -244,7 +250,7 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
                         {language === 'id' ? featuredProject.titleId : featuredProject.titleEn}
                       </h2>
                       <div className="flex flex-wrap gap-1.5">
-                        {featuredProject.technologies.slice(0, 3).map(tech => (
+                        {featuredProject.technologies.slice(0, 3).map((tech: string) => (
                           <div key={tech} className="flex items-center gap-1.5 text-[9px] font-semibold bg-white/10 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
                             <Code2 className="h-2.5 w-2.5 text-primary" />
                             {tech}

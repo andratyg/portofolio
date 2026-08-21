@@ -67,6 +67,10 @@ export default function AdminLogin() {
     setIsLoggingIn(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      // Mark admin session in sessionStorage
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('is_admin', '1');
+      }
       // Reset on success
       setAttempts(0);
       localStorage.removeItem('admin_login_attempts');

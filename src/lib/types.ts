@@ -104,3 +104,21 @@ export interface TechSkill {
   color: string;
   category: string;
 }
+
+export interface BlogPost {
+  id: string;
+  slug: string;
+  titleId: string;
+  titleEn: string;
+  summaryId: string;
+  summaryEn: string;
+  contentId: string;
+  contentEn: string;
+  coverImage?: string;
+  tags: string[];
+  author?: string;
+  publishedAt?: string;
+  readingTime?: string;
+  featured?: boolean;
+  updatedAt?: string;
+}

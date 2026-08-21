@@ -1,0 +1,35 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/login
+
+# Explicitly Welcome AI Crawlers
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /admin
+
+User-agent: Claude-Web
+Allow: /
+Disallow: /admin
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin
+
+User-agent: cohere-ai
+Allow: /
+Disallow: /admin
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin
+
+Sitemap: https://www.naraandratyaga.my.id/sitemap.xml

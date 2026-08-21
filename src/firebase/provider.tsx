@@ -3,14 +3,14 @@
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
 import { FirebaseApp } from 'firebase/app';
 import { Firestore } from 'firebase/firestore';
-import { Auth, User, onAuthStateChanged } from 'firebase/auth';
+import { Auth, User, onAuthStateChanged, getAuth } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/utils/FirebaseErrorListener'
 
 interface FirebaseProviderProps {
   children: ReactNode;
   firebaseApp: FirebaseApp;
   firestore: Firestore;
-  auth: Auth;
+  auth?: Auth | null;
 }
 
 // Internal state for user authentication
@@ -93,25 +93,20 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
       );
     };
 
-    // If on admin route, start immediately; otherwise defer to idle
-    const isAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
-    let idleHandle: any;
+    // If on admin route or admin session exists, start auth listener; otherwise skip to prevent iframe overhead
+    const isAdmin = typeof window !== 'undefined' && (
+      window.location.pathname.startsWith('/admin') || 
+      sessionStorage.getItem('is_admin') === '1'
+    );
 
     if (isAdmin) {
       startAuthListener();
-    } else if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      idleHandle = (window as any).requestIdleCallback(startAuthListener, { timeout: 5000 });
     } else {
-      idleHandle = setTimeout(startAuthListener, 1000);
+      setUserAuthState({ user: null, isUserLoading: false, userError: null });
     }
 
     return () => {
       isCancelled = true;
-      if (typeof window !== 'undefined' && 'cancelIdleCallback' in window && typeof idleHandle === 'number') {
-        (window as any).cancelIdleCallback(idleHandle);
-      } else {
-        clearTimeout(idleHandle);
-      }
       if (unsubscribe) unsubscribe();
     };
   }, [auth]); // Depends on the auth instance

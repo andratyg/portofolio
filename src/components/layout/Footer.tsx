@@ -11,6 +11,7 @@ export const Footer = () => {
     { label: language === 'id' ? 'Beranda' : 'Home', href: '/' },
     { label: language === 'id' ? 'Portofolio' : 'Portfolio', href: '#portfolio' },
     { label: language === 'id' ? 'Sertifikat' : 'Certificates', href: '/certificates' },
+    { label: language === 'id' ? 'Blog' : 'Blog', href: '/blog' },
     { label: language === 'id' ? 'Tentang' : 'About', href: '#about' },
     { label: language === 'id' ? 'Kontak' : 'Contact', href: '#contact' },
   ];

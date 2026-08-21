@@ -14,19 +14,26 @@ const nextConfig: NextConfig = {
   // Tree-shake large packages — reduces unused JS significantly
   experimental: {
     optimizePackageImports: ['framer-motion', 'lucide-react'],
-    cpus: 1,
-    workerThreads: false,
-  },
-  // Per-icon tree shaking for lucide-react (eliminates unused icons in production)
-  modularizeImports: {
-    'lucide-react': {
-      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
-      skipDefaultConversion: true,
-    },
   },
   async headers() {
     const isDev = process.env.NODE_ENV === 'development';
-    const scriptSrc = `default-src 'self'; script-src 'self' ${isDev ? "'unsafe-eval'" : ""} 'unsafe-inline' https://apis.google.com; frame-src 'self' https://*.firebaseapp.com https://*.google.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;`;
+    const cspDirectives = [
+      "default-src 'self'",
+      `script-src 'self' ${isDev ? "'unsafe-eval'" : ""} 'unsafe-inline' https://apis.google.com https://*.firebaseio.com https://*.googleapis.com`,
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "img-src 'self' data: https: blob:",
+      "font-src 'self' data: https://fonts.gstatic.com",
+      "frame-src 'self' https://*.firebaseapp.com https://*.google.com https://apis.google.com",
+      "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com",
+      ...(!isDev ? [
+        "require-trusted-types-for 'script'",
+        "trusted-types default nextjs#bundler next-image-loader",
+      ] : []),
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'self'",
+    ].join('; ');
 
     return [
       {
@@ -34,7 +41,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: scriptSrc,
+            value: cspDirectives,
           },
           {
             key: 'X-Frame-Options',

@@ -51,24 +51,36 @@ export const Navbar = () => {
           
           setLastScrollY(currentScrollY);
 
-          // ScrollSpy logic
-          const sections = ['portfolio', 'journey', 'contact'];
-          let current = '/';
-          for (const section of sections) {
-            const element = document.getElementById(section);
-            if (element) {
-              const rect = element.getBoundingClientRect();
-              if (rect.top <= 150 && rect.bottom >= 150) {
-                current = `#${section}`;
+          // ScrollSpy logic for home page sections
+          if (window.location.pathname === '/') {
+            const sections = ['portfolio', 'journey', 'contact'];
+            let current = '/';
+            for (const section of sections) {
+              const element = document.getElementById(section);
+              if (element) {
+                const rect = element.getBoundingClientRect();
+                if (rect.top <= 150 && rect.bottom >= 150) {
+                  current = `#${section}`;
+                }
               }
             }
+            setActiveSection(current);
+          } else if (window.location.pathname.startsWith('/blog')) {
+            setActiveSection('/blog');
+          } else {
+            setActiveSection(window.location.pathname);
           }
-          setActiveSection(current);
           ticking = false;
         });
         ticking = true;
       }
     };
+
+    if (typeof window !== 'undefined') {
+      if (window.location.pathname.startsWith('/blog')) {
+        setActiveSection('/blog');
+      }
+    }
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -104,14 +116,21 @@ export const Navbar = () => {
 
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
     if (href.startsWith('#')) {
+      if (window.location.pathname !== '/') {
+        e.preventDefault();
+        router.push('/' + href);
+        if (isMobileMenuOpen) setIsMobileMenuOpen(false);
+        return;
+      }
       e.preventDefault();
       const elementId = href.substring(1);
       const element = document.getElementById(elementId);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-      // Close mobile menu on click
-      if(isMobileMenuOpen) setIsMobileMenuOpen(false);
+      if (isMobileMenuOpen) setIsMobileMenuOpen(false);
+    } else {
+      if (isMobileMenuOpen) setIsMobileMenuOpen(false);
     }
   };
 
@@ -119,6 +138,7 @@ export const Navbar = () => {
     { label: t.navHome, href: '/' },
     { label: t.navPortfolio, href: '#portfolio' },
     { label: t.navJourney, href: '#journey' },
+    { label: t.navBlog, href: '/blog' },
     { label: t.navContact, href: '#contact' },
   ];
 

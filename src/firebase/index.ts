@@ -16,12 +16,8 @@ export function initializeFirebase() {
     try {
       // Attempt to initialize via Firebase App Hosting environment variables
       firebaseApp = initializeApp();
-    } catch (e) {
-      // Only warn in production because it's normal to use the firebaseConfig to initialize
-      // during development
-      if (process.env.NODE_ENV === "production") {
-        console.warn('Automatic initialization failed. Falling back to firebase config object.', e);
-      }
+    } catch {
+      // Initialize with config object cleanly without polluting browser console
       firebaseApp = initializeApp(firebaseConfig);
     }
 
@@ -33,9 +29,13 @@ export function initializeFirebase() {
 }
 
 export function getSdks(firebaseApp: FirebaseApp) {
+  const isAdmin = typeof window !== 'undefined' && (
+    window.location.pathname.startsWith('/admin') ||
+    sessionStorage.getItem('is_admin') === '1'
+  );
   return {
     firebaseApp,
-    auth: getAuth(firebaseApp),
+    auth: isAdmin ? getAuth(firebaseApp) : null,
     firestore: getFirestore(firebaseApp)
   };
 }

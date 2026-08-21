@@ -1,4 +1,4 @@
-﻿
+
 "use client"
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -228,7 +228,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
                       src={project.imageUrl || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80'}
                       alt={title || 'Project image'}
                       fill
-                      priority={index < 4}
+                      loading="lazy"
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />

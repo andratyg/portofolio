@@ -17,8 +17,9 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Respect prefers-reduced-motion
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // Skip on mobile or reduced motion to save 100% CPU on mobile
+    const isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
+    if (isMobile || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
 
@@ -27,13 +28,12 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
     const fpsInterval = 1000 / 30; // Cap to 30 FPS
 
     const resize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+      if (!canvas) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     };
     resize();
-    window.addEventListener('resize', resize);
-
-    const isMobile = window.innerWidth < 640;
+    window.addEventListener('resize', resize, { passive: true });
     const particles: { x: number; y: number; vx: number; vy: number; size: number; opacity: number }[] = [];
     const maxParticles = isMobile ? 15 : 45;
     const count = Math.min(maxParticles, Math.floor((canvas.width * canvas.height) / density));

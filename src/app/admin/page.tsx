@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -15,11 +15,12 @@ import {
   Plus, Trash2, LogOut, ArrowLeft, Laptop, Award, Settings, 
   UserCircle, Loader2, Camera, Briefcase, History, ShieldAlert, 
   Download, Upload, WifiOff, Edit3, X, Mail, User, CheckCircle2, AlertCircle, 
-  Terminal, Image as ImageIcon, Globe, Share2, BarChart3, Zap, FileText, ExternalLink, Star, Edit
+  Terminal, Image as ImageIcon, Globe, Share2, BarChart3, Zap, FileText, ExternalLink, Star, Edit,
+  BookOpen, Tag, Calendar, Clock
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { useToast } from '@/hooks/use-toast';
-import { ProfileData, Project, Certificate, Experience, PortfolioStats, TechSkill } from '@/lib/types';
+import { ProfileData, Project, Certificate, Experience, PortfolioStats, TechSkill, BlogPost } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -30,6 +31,7 @@ function AdminContent() {
     projects, addProject, deleteProject, setFeaturedProject, 
     certificates, addCertificate, deleteCertificate,
     experiences, addExperience, deleteExperience,
+    blogs, addBlog, deleteBlog,
     messages, deleteMessage,
     profile, updateProfileAndStats,
     stats,
@@ -116,11 +118,23 @@ function AdminContent() {
     id: '', name: '', icon: '', level: 50, color: 'from-blue-400 to-blue-600', category: 'Frontend'
   };
 
+  const initialBlogState = {
+    titleId: '', titleEn: '', slug: '',
+    summaryId: '', summaryEn: '',
+    contentId: '', contentEn: '',
+    coverImage: '', tags: '',
+    author: 'Nara Andra Tyaga',
+    readingTime: '3 min read',
+    featured: false
+  };
+
   const [projectForm, setProjectForm] = useState(initialProjectState);
   const [certForm, setCertForm] = useState(initialCertState);
   const [journeyForm, setJourneyForm] = useState(initialJourneyState);
   const [techSkillForm, setTechSkillForm] = useState(initialTechSkillState);
+  const [blogForm, setBlogForm] = useState(initialBlogState);
   const [editingTechSkillId, setEditingTechSkillId] = useState<string | null>(null);
+  const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
   const [profileFormData, setProfileFormData] = useState<ProfileData>(profile);
   const [statsFormData, setStatsFormData] = useState<PortfolioStats>(stats);
   const contentStore = useContentStore();
@@ -213,6 +227,40 @@ function AdminContent() {
     toast({ title: editingTechSkillId ? "Skill Diperbarui" : "Skill Ditambahkan" });
   };
 
+  const handleBlogSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const blogSlug = (blogForm.slug && blogForm.slug.trim())
+      ? blogForm.slug.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')
+      : (blogForm.titleId || 'post').toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') || `post-${Date.now()}`;
+
+    const tagsArray = typeof blogForm.tags === 'string'
+      ? blogForm.tags.split(',').map(s => s.trim()).filter(Boolean)
+      : (blogForm.tags || []);
+
+    const blogData: BlogPost = {
+      id: editingBlogId || Date.now().toString(),
+      slug: blogSlug,
+      titleId: blogForm.titleId,
+      titleEn: blogForm.titleEn || blogForm.titleId,
+      summaryId: blogForm.summaryId,
+      summaryEn: blogForm.summaryEn || blogForm.summaryId,
+      contentId: blogForm.contentId,
+      contentEn: blogForm.contentEn || blogForm.contentId,
+      coverImage: blogForm.coverImage || '',
+      tags: tagsArray.length > 0 ? tagsArray : ['Tech'],
+      author: blogForm.author || 'Nara Andra Tyaga',
+      publishedAt: editingBlogId ? (blogs.find(b => b.id === editingBlogId)?.publishedAt || new Date().toISOString()) : new Date().toISOString(),
+      readingTime: blogForm.readingTime || '3 min read',
+      featured: blogForm.featured,
+      updatedAt: new Date().toISOString(),
+    };
+
+    addBlog(blogData);
+    setBlogForm(initialBlogState);
+    setEditingBlogId(null);
+    toast({ title: editingBlogId ? "Artikel Berhasil Diperbarui" : "Artikel Berhasil Dipublikasikan" });
+  };
+
   const startEditTechSkill = (s: TechSkill) => {
     setEditingTechSkillId(s.id);
     setTechSkillForm(s);
@@ -261,9 +309,36 @@ function AdminContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const startEditBlog = (b: BlogPost) => {
+    setEditingBlogId(b.id);
+    setBlogForm({
+      titleId: b.titleId || '',
+      titleEn: b.titleEn || '',
+      slug: b.slug || '',
+      summaryId: b.summaryId || '',
+      summaryEn: b.summaryEn || '',
+      contentId: b.contentId || '',
+      contentEn: b.contentEn || '',
+      coverImage: b.coverImage || '',
+      tags: Array.isArray(b.tags) ? b.tags.join(', ') : (b.tags || ''),
+      author: b.author || 'Nara Andra Tyaga',
+      readingTime: b.readingTime || '3 min read',
+      featured: !!b.featured
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const cancelEdit = () => {
-    setEditingProjectId(null); setEditingCertId(null); setEditingJourneyId(null); setEditingTechSkillId(null);
-    setProjectForm(initialProjectState); setCertForm(initialCertState); setJourneyForm(initialJourneyState); setTechSkillForm(initialTechSkillState);
+    setEditingProjectId(null); setEditingCertId(null); setEditingJourneyId(null); setEditingTechSkillId(null); setEditingBlogId(null);
+    setProjectForm(initialProjectState); setCertForm(initialCertState); setJourneyForm(initialJourneyState); setTechSkillForm(initialTechSkillState); setBlogForm(initialBlogState);
+  };
+
+  const handleLogout = async () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('is_admin');
+    }
+    await signOut(auth);
+    router.push('/');
   };
 
   if (isUserLoading || storeLoading || isAdminLoading) {
@@ -277,7 +352,7 @@ function AdminContent() {
           <ShieldAlert className="h-16 w-16 text-destructive mx-auto" />
           <h2 className="text-3xl font-black  uppercase">Akses Ditolak</h2>
           <p className="text-muted-foreground text-sm font-medium">Akun Anda tidak memiliki otoritas untuk mengakses infrastruktur admin.</p>
-          <Button onClick={() => signOut(auth)} variant="destructive" className="w-full h-14 rounded-2xl font-black uppercase">Keluar Sesi</Button>
+          <Button onClick={handleLogout} variant="destructive" className="w-full h-14 rounded-2xl font-black uppercase">Keluar Sesi</Button>
         </Card>
       </div>
     );
@@ -304,7 +379,7 @@ function AdminContent() {
             <p className="text-[8px] sm:text-[9px] font-bold text-muted-foreground uppercase tracking-[0.15em] sm:tracking-[0.2em] truncate">{user?.email}</p>
           </div>
         </div>
-        <Button variant="ghost" onClick={() => signOut(auth)} className="text-foreground hover:bg-muted rounded-xl h-9 sm:h-10 px-2 sm:px-4 text-[10px] font-black uppercase tracking-widest gap-2 shrink-0">
+        <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-muted rounded-xl h-9 sm:h-10 px-2 sm:px-4 text-[10px] font-black uppercase tracking-widest gap-2 shrink-0">
           <LogOut className="h-4 w-4" /><span className="hidden sm:inline">KELUAR</span>
         </Button>
       </header>
@@ -319,6 +394,7 @@ function AdminContent() {
               <TabsTrigger value="certificates" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Award className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">SERTIFIKAT</span><span className="sm:hidden text-[7px]">SERTIF</span></TabsTrigger>
               <TabsTrigger value="journey" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><History className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">JOURNEY</span><span className="sm:hidden text-[7px]">KARIR</span></TabsTrigger>
               <TabsTrigger value="techstack" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Terminal className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">TECH STACK</span><span className="sm:hidden text-[7px]">TECH</span></TabsTrigger>
+              <TabsTrigger value="blogs" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><BookOpen className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">BLOG</span><span className="sm:hidden text-[7px]">BLOG</span></TabsTrigger>
               <TabsTrigger value="messages" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row relative">
                 <Mail className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">PESAN</span><span className="sm:hidden text-[7px]">PESAN</span>
                 {messages.length > 0 && <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 w-2 h-2 bg-destructive rounded-full animate-pulse" />}
@@ -919,6 +995,254 @@ function AdminContent() {
                    )}
                 </CardContent>
              </Card>
+          </TabsContent>
+
+          {/* ── BLOGS TAB ── */}
+          <TabsContent value="blogs" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
+            <div className="xl:col-span-8">
+              <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
+                <CardHeader className="p-0 pb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="space-y-1">
+                    <CardTitle className="font-black text-3xl uppercase tracking-normal">
+                      {editingBlogId ? 'Ubah Konten Artikel' : 'Tulis Artikel Baru'}
+                    </CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">
+                      Publikasi Insight, Dokumentasi Teknis & Tutorial
+                    </CardDescription>
+                  </div>
+                  <Button 
+                    type="button" 
+                    size="sm" 
+                    onClick={() => handleAITranslate('blogs', blogForm, setBlogForm)} 
+                    className="rounded-xl bg-primary/10 text-primary hover:bg-primary/20 h-12 px-6 font-black uppercase" 
+                    disabled={isTranslating === 'blogs'}
+                  >
+                    {isTranslating === 'blogs' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} 
+                    SINKRONISASI AI (OTOMATIS)
+                  </Button>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <form onSubmit={handleBlogSubmit} className="space-y-10">
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Judul Artikel (ID) *</label>
+                        <Input 
+                          required 
+                          placeholder="Cth: Menguasai Next.js 15 App Router" 
+                          value={blogForm.titleId} 
+                          onChange={e => {
+                            const val = e.target.value;
+                            setBlogForm(prev => ({
+                              ...prev,
+                              titleId: val,
+                              slug: editingBlogId ? prev.slug : val.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')
+                            }));
+                          }} 
+                          className="h-16 rounded-2xl bg-muted/30 border-none px-6" 
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Judul Artikel (EN)</label>
+                        <Input 
+                          placeholder="E.g.: Mastering Next.js 15 App Router" 
+                          value={blogForm.titleEn} 
+                          onChange={e => setBlogForm({...blogForm, titleEn: e.target.value})} 
+                          className="h-16 rounded-2xl bg-muted/30 border-none px-6" 
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Custom Slug (URL) *</label>
+                        <Input 
+                          required 
+                          placeholder="menguasai-nextjs-15" 
+                          value={blogForm.slug} 
+                          onChange={e => setBlogForm({...blogForm, slug: e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')})} 
+                          className="h-16 rounded-2xl bg-muted/30 border-none px-6" 
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Estimasi Waktu Baca</label>
+                        <Input 
+                          placeholder="Cth: 5 min read" 
+                          value={blogForm.readingTime} 
+                          onChange={e => setBlogForm({...blogForm, readingTime: e.target.value})} 
+                          className="h-16 rounded-2xl bg-muted/30 border-none px-6" 
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nama Penulis</label>
+                        <Input 
+                          placeholder="Nara Andra Tyaga" 
+                          value={blogForm.author} 
+                          onChange={e => setBlogForm({...blogForm, author: e.target.value})} 
+                          className="h-16 rounded-2xl bg-muted/30 border-none px-6" 
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tags / Topik (Pisahkan Koma)</label>
+                        <Input 
+                          placeholder="Next.js, React, Architecture, Tutorial" 
+                          value={blogForm.tags} 
+                          onChange={e => setBlogForm({...blogForm, tags: e.target.value})} 
+                          className="h-16 rounded-2xl bg-muted/30 border-none px-6" 
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Gambar Cover (Thumbnail)</label>
+                        <Input 
+                          placeholder="https://example.com/banner.jpg" 
+                          value={blogForm.coverImage} 
+                          onChange={e => setBlogForm({...blogForm, coverImage: e.target.value})} 
+                          className="h-16 rounded-2xl bg-muted/30 border-none px-6" 
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Ringkasan Singkat (ID) *</label>
+                        <Textarea 
+                          required 
+                          placeholder="Ringkasan atau preview pengantar artikel dalam bahasa Indonesia..." 
+                          value={blogForm.summaryId} 
+                          onChange={e => setBlogForm({...blogForm, summaryId: e.target.value})} 
+                          className="h-32 rounded-[2rem] bg-muted/30 border-none p-6" 
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Ringkasan Singkat (EN)</label>
+                        <Textarea 
+                          placeholder="Short summary or article preview in English..." 
+                          value={blogForm.summaryEn} 
+                          onChange={e => setBlogForm({...blogForm, summaryEn: e.target.value})} 
+                          className="h-32 rounded-[2rem] bg-muted/30 border-none p-6" 
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Isi Konten Lengkap (ID) *</label>
+                        <Textarea 
+                          required 
+                          placeholder="Tulis artikel lengkap di sini. Mendukung pemisahan paragraf dan markdown teks..." 
+                          value={blogForm.contentId} 
+                          onChange={e => setBlogForm({...blogForm, contentId: e.target.value})} 
+                          className="h-72 rounded-[2rem] bg-muted/30 border-none p-6 font-mono text-sm" 
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Isi Konten Lengkap (EN)</label>
+                        <Textarea 
+                          placeholder="Full article content in English (or use AI Sync to translate automatically)..." 
+                          value={blogForm.contentEn} 
+                          onChange={e => setBlogForm({...blogForm, contentEn: e.target.value})} 
+                          className="h-72 rounded-[2rem] bg-muted/30 border-none p-6 font-mono text-sm" 
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-muted/30 w-fit cursor-pointer" onClick={() => setBlogForm({...blogForm, featured: !blogForm.featured})}>
+                      <input 
+                        type="checkbox" 
+                        id="blog-featured" 
+                        checked={blogForm.featured} 
+                        onChange={e => setBlogForm({...blogForm, featured: e.target.checked})} 
+                        className="h-5 w-5 accent-primary rounded cursor-pointer" 
+                      />
+                      <label htmlFor="blog-featured" className="text-xs font-black uppercase tracking-wider cursor-pointer select-none">
+                        Tandai sebagai Artikel Unggulan (Featured)
+                      </label>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">
+                        {editingBlogId ? 'SIMPAN PERUBAHAN ARTIKEL' : 'PUBLIKASIKAN ARTIKEL'}
+                      </Button>
+                      {editingBlogId && (
+                        <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase">
+                          <X className="h-4 w-4 mr-2" /> BATALKAN
+                        </Button>
+                      )}
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="xl:col-span-4 space-y-8">
+              <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 text-primary">
+                ARTIKEL TERPUBLIKASI ({blogs.length})
+              </h3>
+              {blogs.length === 0 ? (
+                <div className="text-center py-16 space-y-4 border border-dashed rounded-3xl p-8">
+                  <BookOpen className="h-12 w-12 text-muted-foreground/30 mx-auto" />
+                  <p className="text-sm text-muted-foreground">Belum ada artikel. Publikasikan artikel pertama dari formulir di samping.</p>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {blogs.map(b => (
+                    <Card key={b.id} className="p-5 flex gap-5 items-center group bg-card border-none hover:bg-muted/30 transition-all rounded-2xl shadow-sm overflow-hidden">
+                      <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden shrink-0 flex items-center justify-center">
+                        {b.coverImage ? (
+                          <img src={b.coverImage} className="w-full h-full object-cover" alt={b.titleId} />
+                        ) : (
+                          <BookOpen className="h-6 w-6 text-primary" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="font-black truncate text-sm">{b.titleId}</h4>
+                          {b.featured && <Star className="h-3 w-3 fill-primary text-primary shrink-0" />}
+                        </div>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase flex items-center gap-2 mt-0.5">
+                          <span>{b.readingTime || '3 min'}</span>
+                          <span>•</span>
+                          <span className="truncate">{b.tags?.[0] || 'Article'}</span>
+                        </p>
+                      </div>
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => window.open(`/blog/${b.slug}`, '_blank')} 
+                          className="h-10 w-10 rounded-xl text-muted-foreground hover:text-primary"
+                          title="Lihat Halaman Artikel"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => startEditBlog(b)} 
+                          className="text-primary h-10 w-10 rounded-xl"
+                          title="Edit Artikel"
+                        >
+                          <Edit3 className="h-4 w-4" />
+                        </Button>
+                        {isSuper && (
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => deleteBlog(b.id)} 
+                            className="text-destructive h-10 w-10 rounded-xl"
+                            title="Hapus Artikel"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="system" className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
