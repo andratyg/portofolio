@@ -57,6 +57,12 @@ export type GeneratePortfolioDescriptionSuggestionOutput = z.infer<
 export async function generatePortfolioDescriptionSuggestion(
   input: GeneratePortfolioDescriptionSuggestionInput
 ): Promise<GeneratePortfolioDescriptionSuggestionOutput> {
+  const hasKey = !!(process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_API_KEY);
+  if (!hasKey) {
+    return {
+      descriptionSuggestion: `${input.title} adalah proyek ${input.projectType} yang dikembangkan menggunakan ${input.technologiesUsed.join(', ')}.`
+    };
+  }
   return generatePortfolioDescriptionSuggestionFlow(input);
 }
 

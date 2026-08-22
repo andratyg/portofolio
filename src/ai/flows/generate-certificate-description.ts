@@ -35,6 +35,12 @@ export type GenerateCertificateDescriptionOutput = z.infer<
 export async function generateCertificateDescription(
   input: GenerateCertificateDescriptionInput
 ): Promise<GenerateCertificateDescriptionOutput> {
+  const hasKey = !!(process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_API_KEY);
+  if (!hasKey) {
+    return {
+      descriptionSuggestion: `Sertifikasi ${input.title} yang diterbitkan oleh ${input.issuer} memvalidasi kompetensi profesional dan keahlian teknis terkait.`
+    };
+  }
   return generateCertificateDescriptionFlow(input);
 }
 

@@ -264,6 +264,11 @@ function runHeuristicAudit(input: AnalyzePortfolioRecommendationsInput): Analyze
 export async function analyzePortfolioRecommendations(
   input: AnalyzePortfolioRecommendationsInput
 ): Promise<AnalyzePortfolioRecommendationsOutput> {
+  const hasKey = !!(process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_API_KEY);
+  if (!hasKey) {
+    return runHeuristicAudit(input);
+  }
+
   try {
     const result = await analyzePortfolioRecommendationsFlow(input);
     if (result && result.recommendations && result.recommendations.length > 0) {

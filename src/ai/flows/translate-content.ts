@@ -19,6 +19,10 @@ const TranslateContentOutputSchema = z.object({
 export type TranslateContentOutput = z.infer<typeof TranslateContentOutputSchema>;
 
 export async function translateContent(input: TranslateContentInput): Promise<TranslateContentOutput> {
+  const hasKey = !!(process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_API_KEY);
+  if (!hasKey) {
+    return { translatedText: input.text };
+  }
   return translateContentFlow(input);
 }
 
