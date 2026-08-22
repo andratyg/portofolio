@@ -55,12 +55,18 @@ export default async function ShortLinkPage({ params }: ShortLinkPageProps) {
   // 1. Fetch data short link dari Firestore
   const shortLink = await getShortLinkData(slug);
 
-  // 2. Validasi status dokumen
-  if (!shortLink || !shortLink.isActive) {
+  // 2. Jika shortLink tidak ditemukan sama sekali di database -> 404
+  if (!shortLink) {
     notFound();
   }
 
-  // 3. Ekstraksi metadata click (device, browser, os, lokasi, referer - TANPA IP mentah)
+  // 3. Jika shortLink ditemukan tapi dinonaktifkan (isActive: false),
+  // langsung tampilkan halaman status "Tautan Dinonaktifkan" (tanpa catat klik)
+  if (!shortLink.isActive) {
+    return <ShortLinkPreviewClient shortLink={shortLink} />;
+  }
+
+  // 4. Ekstraksi metadata click (device, browser, os, lokasi, referer - TANPA IP mentah)
   const headersList = await headers();
   const clickMetadata = extractClickMetadata(headersList);
 

@@ -38,7 +38,7 @@ interface ShortLinkPreviewClientProps {
   shortLink: ShortLink;
 }
 
-const COUNTDOWN_SECONDS = 10;
+const COUNTDOWN_SECONDS = 3;
 
 export function ShortLinkPreviewClient({ shortLink }: { shortLink: ShortLink }) {
   const [timeLeft, setTimeLeft] = useState<number>(COUNTDOWN_SECONDS);
@@ -48,6 +48,64 @@ export function ShortLinkPreviewClient({ shortLink }: { shortLink: ShortLink }) 
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Jika link dinonaktifkan (isActive: false), tampilkan status deactivated
+  if (!shortLink.isActive) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 relative overflow-hidden bg-background">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(239,68,68,0.12),rgba(255,255,255,0))]" />
+        
+        <m.div
+          initial={{ opacity: 0, y: 20, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="w-full max-w-xl relative z-10"
+        >
+          <div className="relative rounded-2xl border border-destructive/30 bg-card/90 backdrop-blur-xl shadow-2xl overflow-hidden">
+            <div className="px-5 py-3.5 bg-destructive/10 border-b border-destructive/20 flex items-center justify-between text-xs font-mono">
+              <div className="flex items-center gap-2 text-destructive">
+                <Terminal className="w-4 h-4" />
+                <span className="font-semibold tracking-wider">SYSTEM // LINK_DEACTIVATED</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-destructive"></span>
+                <span className="text-muted-foreground font-mono">NON-AKTIF</span>
+              </div>
+            </div>
+
+            <div className="p-6 sm:p-8 space-y-6 text-center sm:text-left">
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-destructive/10 text-destructive border border-destructive/20 mb-1">
+                  <span>/l/{shortLink.slug}</span>
+                </div>
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground font-heading">
+                  Tautan Sedang Dinonaktifkan
+                </h1>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                  Tautan short link ini telah dinonaktifkan oleh pemilik portofolio dan tidak menerima akses pengalihan saat ini.
+                </p>
+              </div>
+
+              <div className="pt-2">
+                <Link
+                  href="/"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm shadow-lg shadow-primary/25 hover:bg-primary/90 active:scale-[0.98] transition-all"
+                >
+                  <Home className="w-4 h-4" />
+                  <span>Kembali ke Beranda</span>
+                </Link>
+              </div>
+            </div>
+
+            <div className="px-6 py-3 bg-muted/20 border-t border-border/40 text-[11px] font-mono text-muted-foreground flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left">
+              <span>PORTFOLIO_NODE // NARA ANDRA TYAGA</span>
+              <span className="text-destructive/80 font-mono">ACCESS RESTRICTED</span>
+            </div>
+          </div>
+        </m.div>
+      </div>
+    );
+  }
 
   // Fungsi untuk redirect langsung ke URL tujuan
   const handleProceed = () => {
