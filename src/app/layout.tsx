@@ -11,6 +11,7 @@ import { SplashScreen } from '@/components/layout/SplashScreen';
 import { PageTransition } from '@/components/layout/PageTransition';
 import { MotionProvider } from '@/components/providers/MotionProvider';
 import { ClientShell } from '@/components/providers/ClientShell';
+import { Analytics } from '@vercel/analytics/next';
 
 // ─── Fonts ───────────────────────────────────────────────────────────────────
 const plusJakarta = Plus_Jakarta_Sans({
@@ -232,7 +233,7 @@ const jsonLd = [
 ];
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
-// ─── Layout ───────────────────────────────────────────────────────────────────
+// ─── Layout ─────────────────���─────────────────────────────────────────────────
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="id" suppressHydrationWarning>
@@ -260,6 +261,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   </div>
                   <Toaster />
                   <ScrollProgressButton />
+                  <Analytics />
                 </MotionProvider>
               </SecurityProvider>
             </ThemeProvider>
