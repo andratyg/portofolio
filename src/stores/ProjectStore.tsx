@@ -2,7 +2,7 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Project, Certificate, PortfolioStats, ProfileData, Testimonial, Experience, ContactMessage, TechSkill, BlogPost } from '@/lib/types';
+import { Project, Certificate, PortfolioStats, ProfileData, Testimonial, Experience, ContactMessage, TechSkill, BlogPost, ShortLink } from '@/lib/types';
 import { useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
 import { collection, doc, writeBatch, getDocs, getDoc } from 'firebase/firestore';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -17,6 +17,7 @@ interface ProjectStoreType {
   stats: PortfolioStats;
   profile: ProfileData;
   blogs: BlogPost[];
+  shortLinks: ShortLink[];
   isLoading: boolean;
   error: any;
   addProject: (project: Project) => void;
@@ -35,6 +36,8 @@ interface ProjectStoreType {
   deleteTechSkill: (id: string) => void;
   addBlog: (blog: BlogPost) => void;
   deleteBlog: (id: string) => void;
+  addShortLink: (link: ShortLink) => void;
+  deleteShortLink: (slug: string) => void;
   backupData: () => void;
   restoreData: (json: string) => Promise<void>;
 }
@@ -95,6 +98,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const messagesQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'messages') : null), [firestore, isAdmin]);
   const techSkillsQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'techSkills') : null), [firestore, isAdmin]);
   const blogsQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'blogs') : null), [firestore, isAdmin]);
+  const shortLinksQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'shortLinks') : null), [firestore, isAdmin]);
   const profileDocRef = useMemoFirebase(() => (isAdmin ? doc(firestore, 'portfolioOwner', 'profile') : null), [firestore, isAdmin]);
 
   const { data: adminProjects, isLoading: loadingProjects } = useCollection<Project>(projectsQuery);
@@ -104,6 +108,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const { data: adminMessages, isLoading: loadingMessages } = useCollection<ContactMessage>(messagesQuery);
   const { data: adminTechSkills, isLoading: loadingTechSkills } = useCollection<TechSkill>(techSkillsQuery);
   const { data: adminBlogs, isLoading: loadingBlogs } = useCollection<BlogPost>(blogsQuery);
+  const { data: adminShortLinks, isLoading: loadingShortLinks } = useCollection<ShortLink>(shortLinksQuery);
   const { data: adminProfile, isLoading: loadingProfile } = useDoc<any>(profileDocRef);
 
   // State for public one-time fetch
@@ -263,6 +268,19 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     updatedAt: b.updatedAt || '',
   }))) : (publicData?.blogs || []);
 
+  const shortLinks = isAdmin ? ((adminShortLinks || []).map((l: any) => ({
+    id: l.id,
+    slug: l.slug || l.id,
+    originalUrl: l.originalUrl || '',
+    title: l.title || '',
+    description: l.description || '',
+    isActive: l.isActive !== false,
+    clickCount: Number(l.clickCount) || 0,
+    createdAt: l.createdAt || '',
+    updatedAt: l.updatedAt || '',
+    safetyStatus: l.safetyStatus || 'unverified'
+  }))) : [];
+
   const profile: ProfileData = isAdmin ? (adminProfile ? {
     name: adminProfile.name || defaultProfile.name,
     roleId: adminProfile.roleId || defaultProfile.roleId,
@@ -377,6 +395,13 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const addBlog = (blog: BlogPost) => setDocumentNonBlocking(doc(firestore, 'blogs', blog.id), { ...blog, updatedAt: new Date().toISOString() }, { merge: true });
   const deleteBlog = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'blogs', id));
 
+  const addShortLink = (link: ShortLink) => {
+    const cleanSlug = link.slug.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+    const docRef = doc(firestore, 'shortLinks', cleanSlug);
+    setDocumentNonBlocking(docRef, { ...link, slug: cleanSlug, updatedAt: new Date().toISOString() }, { merge: true });
+  };
+  const deleteShortLink = (slug: string) => deleteDocumentNonBlocking(doc(firestore, 'shortLinks', slug));
+
   const updateProfileAndStats = (newProfile: ProfileData, newStats: PortfolioStats) => {
     const dataToUpdate = {
       name: newProfile.name,
@@ -407,10 +432,11 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   return (
     <ProjectStoreContext.Provider value={{ 
-      projects, certificates, testimonials, experiences, messages, stats, profile, techSkills, blogs, isLoading, error,
+      projects, certificates, testimonials, experiences, messages, stats, profile, techSkills, blogs, shortLinks, isLoading, error,
       addProject, deleteProject, setFeaturedProject, addCertificate, deleteCertificate,
       addTestimonial, deleteTestimonial, addExperience, deleteExperience,
-      deleteMessage, updateProfileAndStats, addTechSkill, deleteTechSkill, addBlog, deleteBlog, backupData, restoreData
+      deleteMessage, updateProfileAndStats, addTechSkill, deleteTechSkill, addBlog, deleteBlog,
+      addShortLink, deleteShortLink, backupData, restoreData
     }}>
       {children}
     </ProjectStoreContext.Provider>

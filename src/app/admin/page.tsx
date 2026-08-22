@@ -16,14 +16,14 @@ import {
   UserCircle, Loader2, Camera, Briefcase, History, ShieldAlert, 
   Download, Upload, WifiOff, Edit3, X, Mail, User, CheckCircle2, AlertCircle, 
   Terminal, Image as ImageIcon, Globe, Share2, BarChart3, Zap, FileText, ExternalLink, Star, Edit,
-  BookOpen, Tag, Calendar, Clock, Sparkles
+  BookOpen, Tag, Calendar, Clock, Sparkles, Link as LinkIcon, Check, Copy, MousePointerClick
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-portfolio-description-suggestion';
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
 import { AIAdvisorPanel } from '@/components/admin/AIAdvisorPanel';
 import { useToast } from '@/hooks/use-toast';
-import { ProfileData, Project, Certificate, Experience, PortfolioStats, TechSkill, BlogPost } from '@/lib/types';
+import { ProfileData, Project, Certificate, Experience, PortfolioStats, TechSkill, BlogPost, ShortLink } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -35,6 +35,7 @@ function AdminContent() {
     certificates, addCertificate, deleteCertificate,
     experiences, addExperience, deleteExperience,
     blogs, addBlog, deleteBlog,
+    shortLinks, addShortLink, deleteShortLink,
     messages, deleteMessage,
     profile, updateProfileAndStats,
     stats,
@@ -134,13 +135,24 @@ function AdminContent() {
     featured: false
   };
 
+  const initialShortLinkState = {
+    slug: '',
+    originalUrl: '',
+    title: '',
+    description: '',
+    isActive: true,
+  };
+
   const [projectForm, setProjectForm] = useState(initialProjectState);
   const [certForm, setCertForm] = useState(initialCertState);
   const [journeyForm, setJourneyForm] = useState(initialJourneyState);
   const [techSkillForm, setTechSkillForm] = useState(initialTechSkillState);
   const [blogForm, setBlogForm] = useState(initialBlogState);
+  const [shortLinkForm, setShortLinkForm] = useState(initialShortLinkState);
   const [editingTechSkillId, setEditingTechSkillId] = useState<string | null>(null);
   const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
+  const [editingShortLinkId, setEditingShortLinkId] = useState<string | null>(null);
+  const [copiedShortSlug, setCopiedShortSlug] = useState<string | null>(null);
   const [profileFormData, setProfileFormData] = useState<ProfileData>(profile);
   const [statsFormData, setStatsFormData] = useState<PortfolioStats>(stats);
   const contentStore = useContentStore();
@@ -415,8 +427,58 @@ function AdminContent() {
   };
 
   const cancelEdit = () => {
-    setEditingProjectId(null); setEditingCertId(null); setEditingJourneyId(null); setEditingTechSkillId(null); setEditingBlogId(null);
-    setProjectForm(initialProjectState); setCertForm(initialCertState); setJourneyForm(initialJourneyState); setTechSkillForm(initialTechSkillState); setBlogForm(initialBlogState);
+    setEditingProjectId(null); setEditingCertId(null); setEditingJourneyId(null); setEditingTechSkillId(null); setEditingBlogId(null); setEditingShortLinkId(null);
+    setProjectForm(initialProjectState); setCertForm(initialCertState); setJourneyForm(initialJourneyState); setTechSkillForm(initialTechSkillState); setBlogForm(initialBlogState); setShortLinkForm(initialShortLinkState);
+  };
+
+  const handleShortLinkSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!shortLinkForm.slug || !shortLinkForm.originalUrl) {
+      toast({ variant: 'destructive', title: 'Data Belum Lengkap', description: 'Slug dan URL Tujuan wajib diisi.' });
+      return;
+    }
+    const cleanSlug = shortLinkForm.slug.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+    let finalUrl = shortLinkForm.originalUrl.trim();
+    if (!/^https?:\/\//i.test(finalUrl)) {
+      finalUrl = 'https://' + finalUrl;
+    }
+    addShortLink({
+      id: cleanSlug,
+      slug: cleanSlug,
+      originalUrl: finalUrl,
+      title: shortLinkForm.title.trim(),
+      description: shortLinkForm.description.trim(),
+      isActive: shortLinkForm.isActive,
+      clickCount: editingShortLinkId ? (shortLinks.find(s => s.slug === editingShortLinkId)?.clickCount || 0) : 0,
+      safetyStatus: 'unverified'
+    });
+    toast({ title: editingShortLinkId ? 'Short Link Diperbarui' : 'Short Link Dibuat', description: `/l/${cleanSlug}` });
+    setShortLinkForm(initialShortLinkState);
+    setEditingShortLinkId(null);
+  };
+
+  const startEditShortLink = (link: ShortLink) => {
+    setEditingShortLinkId(link.slug);
+    setShortLinkForm({
+      slug: link.slug,
+      originalUrl: link.originalUrl,
+      title: link.title || '',
+      description: link.description || '',
+      isActive: link.isActive,
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const copyShortLinkUrl = async (slug: string) => {
+    const fullUrl = `${window.location.origin}/l/${slug}`;
+    try {
+      await navigator.clipboard.writeText(fullUrl);
+      setCopiedShortSlug(slug);
+      toast({ title: 'Tautan Disalin', description: fullUrl });
+      setTimeout(() => setCopiedShortSlug(null), 2000);
+    } catch {
+      toast({ variant: 'destructive', title: 'Gagal Menyalin' });
+    }
   };
 
   const handleLogout = async () => {
@@ -482,6 +544,7 @@ function AdminContent() {
               <TabsTrigger value="journey" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><History className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">JOURNEY</span><span className="sm:hidden text-[7px]">KARIR</span></TabsTrigger>
               <TabsTrigger value="techstack" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Terminal className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">TECH STACK</span><span className="sm:hidden text-[7px]">TECH</span></TabsTrigger>
               <TabsTrigger value="blogs" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><BookOpen className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">BLOG</span><span className="sm:hidden text-[7px]">BLOG</span></TabsTrigger>
+              <TabsTrigger value="links" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><LinkIcon className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">SHORT LINK</span><span className="sm:hidden text-[7px]">LINK</span></TabsTrigger>
               <TabsTrigger value="messages" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row relative">
                 <Mail className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">PESAN</span><span className="sm:hidden text-[7px]">PESAN</span>
                 {messages.length > 0 && <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 w-2 h-2 bg-destructive rounded-full animate-pulse" />}
@@ -1348,6 +1411,193 @@ function AdminContent() {
                             onClick={() => deleteBlog(b.id)} 
                             className="text-destructive h-10 w-10 rounded-xl"
                             title="Hapus Artikel"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="links" className="max-w-6xl mx-auto space-y-12 animate-in fade-in duration-500">
+            <Card className="rounded-[2.5rem] p-8 sm:p-12 bg-card border-none shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-cyan-500" />
+              <CardHeader className="p-0 mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                <div className="space-y-1">
+                  <CardTitle className="font-black text-3xl uppercase tracking-normal">
+                    {editingShortLinkId ? 'Ubah Short Link' : 'Buat Short Link Baru'}
+                  </CardTitle>
+                  <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">
+                    URL Shortener & Interstitial Preview Page Gateway (/l/slug)
+                  </CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0">
+                <form onSubmit={handleShortLinkSubmit} className="space-y-8">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Custom Slug *</label>
+                      <div className="flex items-center rounded-2xl bg-muted/30 px-4">
+                        <span className="text-xs font-mono text-muted-foreground">/l/</span>
+                        <Input 
+                          required
+                          placeholder="github" 
+                          value={shortLinkForm.slug} 
+                          onChange={e => setShortLinkForm({...shortLinkForm, slug: e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')})} 
+                          className="h-14 bg-transparent border-none px-2 font-mono" 
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Tujuan (Original URL) *</label>
+                      <Input 
+                        required
+                        type="url"
+                        placeholder="https://github.com/nara-andra-tyaga" 
+                        value={shortLinkForm.originalUrl} 
+                        onChange={e => setShortLinkForm({...shortLinkForm, originalUrl: e.target.value})} 
+                        className="h-14 rounded-2xl bg-muted/30 border-none px-6 font-mono text-sm" 
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Judul / Label Link</label>
+                      <Input 
+                        placeholder="Cth: Profil GitHub Resmi Nara Andra Tyaga" 
+                        value={shortLinkForm.title} 
+                        onChange={e => setShortLinkForm({...shortLinkForm, title: e.target.value})} 
+                        className="h-14 rounded-2xl bg-muted/30 border-none px-6" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Deskripsi (Opsional)</label>
+                      <Input 
+                        placeholder="Cth: Repositori open-source dan portofolio kode" 
+                        value={shortLinkForm.description} 
+                        onChange={e => setShortLinkForm({...shortLinkForm, description: e.target.value})} 
+                        className="h-14 rounded-2xl bg-muted/30 border-none px-6" 
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-border/40">
+                    <div className="flex items-center gap-3">
+                      <input 
+                        type="checkbox" 
+                        id="linkActiveCheck" 
+                        checked={shortLinkForm.isActive} 
+                        onChange={e => setShortLinkForm({...shortLinkForm, isActive: e.target.checked})}
+                        className="w-5 h-5 rounded accent-primary cursor-pointer"
+                      />
+                      <label htmlFor="linkActiveCheck" className="text-xs font-bold uppercase tracking-wider text-muted-foreground cursor-pointer">
+                        Aktifkan Link (Dapat diakses publik)
+                      </label>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      {editingShortLinkId && (
+                        <Button type="button" variant="outline" onClick={cancelEdit} className="h-12 px-6 rounded-2xl font-black uppercase">
+                          Batal
+                        </Button>
+                      )}
+                      <Button type="submit" className="h-12 px-8 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90">
+                        {editingShortLinkId ? 'Simpan Perubahan' : 'Buat Short Link'}
+                      </Button>
+                    </div>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+
+            {/* List Existing Short Links */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between px-2">
+                <h3 className="font-black text-xl uppercase tracking-wider flex items-center gap-2">
+                  <LinkIcon className="h-5 w-5 text-primary" /> Daftar Short Links ({shortLinks.length})
+                </h3>
+              </div>
+
+              {shortLinks.length === 0 ? (
+                <Card className="p-12 rounded-[2.5rem] text-center space-y-4 bg-muted/20 border-dashed">
+                  <LinkIcon className="h-12 w-12 text-muted-foreground mx-auto opacity-50" />
+                  <p className="text-sm font-medium text-muted-foreground">Belum ada short link yang dibuat.</p>
+                </Card>
+              ) : (
+                <div className="grid gap-4">
+                  {shortLinks.map(link => (
+                    <Card key={link.slug} className="p-5 sm:p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group">
+                      <div className="space-y-2 min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono font-bold text-sm text-primary bg-primary/10 px-2.5 py-0.5 rounded-lg border border-primary/20">
+                            /l/{link.slug}
+                          </span>
+                          <Badge variant={link.isActive ? 'default' : 'secondary'} className="text-[10px] font-bold uppercase">
+                            {link.isActive ? 'Aktif' : 'Non-aktif'}
+                          </Badge>
+                          <span className="text-xs font-mono text-muted-foreground flex items-center gap-1">
+                            <MousePointerClick className="w-3.5 h-3.5 text-primary" />
+                            {link.clickCount || 0} Klik
+                          </span>
+                        </div>
+                        {link.title && (
+                          <h4 className="font-bold text-foreground text-sm truncate">{link.title}</h4>
+                        )}
+                        <p className="font-mono text-xs text-muted-foreground truncate max-w-xl">
+                          {link.originalUrl}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0 self-end md:self-center">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => copyShortLinkUrl(link.slug)} 
+                          className="h-10 px-3 rounded-xl text-xs font-mono gap-1.5"
+                          title="Salin Short Link"
+                        >
+                          {copiedShortSlug === link.slug ? (
+                            <>
+                              <Check className="h-4 w-4 text-emerald-500" />
+                              <span className="text-emerald-500 font-sans">Tersalin</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-4 w-4" />
+                              <span className="font-sans">Salin</span>
+                            </>
+                          )}
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => window.open(`/l/${link.slug}`, '_blank')} 
+                          className="h-10 w-10 rounded-xl text-muted-foreground hover:text-primary"
+                          title="Buka Preview Link"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => startEditShortLink(link)} 
+                          className="text-primary h-10 w-10 rounded-xl"
+                          title="Edit Link"
+                        >
+                          <Edit3 className="h-4 w-4" />
+                        </Button>
+                        {isSuper && (
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => deleteShortLink(link.slug)} 
+                            className="text-destructive h-10 w-10 rounded-xl"
+                            title="Hapus Link"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

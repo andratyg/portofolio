@@ -122,3 +122,29 @@ export interface BlogPost {
   featured?: boolean;
   updatedAt?: string;
 }
+
+export interface ShortLink {
+  id: string;
+  slug: string;
+  originalUrl: string;
+  title?: string;
+  description?: string;
+  isActive: boolean;
+  clickCount: number;
+  createdAt?: string;
+  updatedAt?: string;
+  safetyStatus?: 'clean' | 'unsafe' | 'unverified';
+}
+
+export interface ShortLinkClick {
+  id?: string;
+  timestamp: string;
+  deviceType: 'mobile' | 'tablet' | 'desktop' | 'bot' | 'unknown';
+  browser: string;
+  os: string;
+  country: string;
+  city: string;
+  referer: string;
+  userAgent: string;
+  isBot: boolean;
+}

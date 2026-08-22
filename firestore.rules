@@ -35,10 +35,22 @@ service cloud.firestore {
       allow read, list, update, delete: if isAdmin();
     }
 
+    // Short links rules
+    match /shortLinks/{slug} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['clickCount', 'lastClickedAt']));
+
+      match /clicks/{clickId} {
+        allow create: if true;
+        allow read, list, update, delete: if isAdmin();
+      }
+    }
+
     // All other collections (projects, certificates, etc.) can be managed by admins
     match /{collection}/{docId} {
       allow read: if true;
-      allow get, list, create, update, delete: if isAdmin() && (collection != 'admins' && collection != 'portfolioOwner' && collection != 'messages');
+      allow get, list, create, update, delete: if isAdmin() && (collection != 'admins' && collection != 'portfolioOwner' && collection != 'messages' && collection != 'shortLinks');
     }
   }
 }
