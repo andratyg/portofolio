@@ -15,7 +15,7 @@ const defaultShortLinks: Record<string, ShortLink> = {
   'github': {
     id: 'github',
     slug: 'github',
-    originalUrl: 'https://github.com/nara-andra-tyaga',
+    originalUrl: 'https://github.com/andratyg',
     title: 'Profil GitHub Resmi Nara Andra Tyaga',
     description: 'Repositori open-source dan portofolio kode.',
     isActive: true,
@@ -25,7 +25,7 @@ const defaultShortLinks: Record<string, ShortLink> = {
   'instagram': {
     id: 'instagram',
     slug: 'instagram',
-    originalUrl: 'https://instagram.com/nara.dev',
+    originalUrl: 'https://www.instagram.com/andra_tyg',
     title: 'Instagram Resmi Nara Andra Tyaga',
     description: 'Akun Instagram resmi pengembang web.',
     isActive: true,
@@ -35,7 +35,7 @@ const defaultShortLinks: Record<string, ShortLink> = {
   'linkedin': {
     id: 'linkedin',
     slug: 'linkedin',
-    originalUrl: 'https://linkedin.com/in/nara-andra-tyaga',
+    originalUrl: 'https://www.linkedin.com/in/nara-andra-tyaga-657488382',
     title: 'Profil LinkedIn Nara Andra Tyaga',
     description: 'Jaringan profesional dan karir teknologi.',
     isActive: true,
@@ -138,16 +138,16 @@ export function extractClickMetadata(headersList: Headers): ShortLinkClick {
 
   // 5. Geolocation dari Edge/CDN Headers (Vercel, Cloudflare, App Engine, dll)
   const country = headersList.get('x-vercel-ip-country') ||
-                  headersList.get('cf-ipcountry') ||
-                  headersList.get('x-appengine-country') ||
-                  headersList.get('x-country-code') ||
-                  'Unknown';
+    headersList.get('cf-ipcountry') ||
+    headersList.get('x-appengine-country') ||
+    headersList.get('x-country-code') ||
+    'Unknown';
 
   const city = headersList.get('x-vercel-ip-city') ||
-               headersList.get('cf-ipcity') ||
-               headersList.get('x-appengine-city') ||
-               headersList.get('x-city') ||
-               'Unknown';
+    headersList.get('cf-ipcity') ||
+    headersList.get('x-appengine-city') ||
+    headersList.get('x-city') ||
+    'Unknown';
 
   const referer = headersList.get('referer') || headersList.get('referrer') || 'Direct';
 

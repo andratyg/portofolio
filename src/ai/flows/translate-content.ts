@@ -43,10 +43,14 @@ const translateContentFlow = ai.defineFlow(
     outputSchema: TranslateContentOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    if (!output) {
-      return {translatedText: ''};
+    try {
+      const {output} = await prompt(input);
+      if (output) {
+        return output;
+      }
+    } catch (err) {
+      console.warn('[Translation Flow] Error translating content:', err);
     }
-    return output;
+    return {translatedText: input.text};
   }
 );

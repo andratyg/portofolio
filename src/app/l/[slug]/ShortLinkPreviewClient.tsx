@@ -38,7 +38,7 @@ interface ShortLinkPreviewClientProps {
   shortLink: ShortLink;
 }
 
-const COUNTDOWN_SECONDS = 3;
+const COUNTDOWN_SECONDS = 9;
 
 export function ShortLinkPreviewClient({ shortLink }: { shortLink: ShortLink }) {
   const [timeLeft, setTimeLeft] = useState<number>(COUNTDOWN_SECONDS);
@@ -54,7 +54,7 @@ export function ShortLinkPreviewClient({ shortLink }: { shortLink: ShortLink }) 
     return (
       <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 relative overflow-hidden bg-background">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(239,68,68,0.12),rgba(255,255,255,0))]" />
-        
+
         <m.div
           initial={{ opacity: 0, y: 20, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}

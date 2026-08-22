@@ -99,10 +99,182 @@ export const AnalyzePortfolioRecommendationsOutputSchema = z.object({
 });
 export type AnalyzePortfolioRecommendationsOutput = z.infer<typeof AnalyzePortfolioRecommendationsOutputSchema>;
 
+/**
+ * Heuristic fallback audit engine in case Gemini API is offline, rate-limited,
+ * or API key is not configured in production environment variables.
+ */
+function runHeuristicAudit(input: AnalyzePortfolioRecommendationsInput): AnalyzePortfolioRecommendationsOutput {
+  const recommendations: RecommendationItem[] = [];
+  const profile = input.profile;
+  const stats = input.stats;
+  const projects = input.projects || [];
+  const certificates = input.certificates || [];
+  const experiences = input.experiences || [];
+  const techSkills = input.techSkills || [];
+  const blogs = input.blogs || [];
+
+  // 1. Profile Audit
+  if (!profile?.aboutMeEn || profile.aboutMeEn.trim().length < 15) {
+    recommendations.push({
+      id: 'rec-missing-bio-en',
+      category: 'Data Kosong',
+      priority: 'tinggi',
+      title: 'Lengkapi Bio Bahasa Inggris',
+      description: 'Deskripsi profil bahasa Inggris masih kosong atau terlalu singkat. Tambahkan bio profesional dalam bahasa Inggris untuk menarik audiens global.',
+      actionLink: 'profile',
+    });
+  }
+
+  if (profile?.email && (profile.email.includes('karyapro.app') || profile.email.includes('example'))) {
+    recommendations.push({
+      id: 'rec-placeholder-email',
+      category: 'Data Kosong',
+      priority: 'tinggi',
+      title: 'Perbarui Alamat Email Kontak',
+      description: `Email saat ini ('${profile.email}') terdeteksi sebagai placeholder default. Ubah ke email resmi Anda agar pengunjung dapat menghubungi Anda.`,
+      actionLink: 'profile',
+    });
+  }
+
+  if (!profile?.github || !profile?.linkedin) {
+    recommendations.push({
+      id: 'rec-missing-social-links',
+      category: 'Kredensial & Tech',
+      priority: 'sedang',
+      title: 'Tautkan Profil GitHub & LinkedIn',
+      description: 'Pastikan tautan GitHub dan LinkedIn terisi dengan benar pada profil untuk meningkatkan kredibilitas teknis.',
+      actionLink: 'profile',
+    });
+  }
+
+  // 2. Metric Consistency Audit
+  const claimedProjects = parseInt(stats?.completedProjects || '0', 10);
+  if (claimedProjects > 0 && projects.length < claimedProjects) {
+    recommendations.push({
+      id: 'rec-stat-projects-mismatch',
+      category: 'Konsistensi',
+      priority: 'sedang',
+      title: `Statistik Proyek (${claimedProjects}) Belum Sesuai Daftar Riil (${projects.length})`,
+      description: `Anda mengklaim ${claimedProjects} proyek selesai di statistik Hero, namun baru mendaftarkan ${projects.length} proyek di database. Tambahkan portofolio proyek lainnya atau sesuaikan angka statistiknya.`,
+      actionLink: 'projects',
+    });
+  }
+
+  const claimedSkills = parseInt(stats?.techMastered || '0', 10);
+  if (claimedSkills > 0 && techSkills.length < claimedSkills) {
+    recommendations.push({
+      id: 'rec-stat-skills-mismatch',
+      category: 'Konsistensi',
+      priority: 'rendah',
+      title: `Lengkapi Tech Stack (${techSkills.length}/${claimedSkills} Terdaftar)`,
+      description: `Klaim teknologi yang dikuasai (${claimedSkills}) lebih besar dari item yang didaftarkan (${techSkills.length}). Daftarkan skill teknis lainnya ke tab Tech Stack.`,
+      actionLink: 'techstack',
+    });
+  }
+
+  // 3. Projects Audit
+  projects.forEach(p => {
+    if (!p.titleEn || !p.shortDescriptionEn) {
+      recommendations.push({
+        id: `rec-proj-trans-${p.id}`,
+        category: 'Peningkatan Konten',
+        priority: 'tinggi',
+        title: `Terjemahkan Proyek '${p.titleId || 'Tanpa Judul'}' ke Bahasa Inggris`,
+        description: `Proyek '${p.titleId}' belum memiliki ringkasan versi bahasa Inggris. Gunakan fitur terjemahan AI di tab Proyek untuk melengkapinya.`,
+        actionLink: 'projects',
+      });
+    }
+
+    if (!p.demoUrl) {
+      recommendations.push({
+        id: `rec-proj-demo-${p.id}`,
+        category: 'SEO',
+        priority: 'sedang',
+        title: `Tambahkan Demo URL pada '${p.titleId || 'Proyek'}'`,
+        description: 'Tautan demo langsung atau repository proyek sangat meningkatkan kepercayaan klien dan recruiter.',
+        actionLink: 'projects',
+      });
+    }
+
+    if (!p.technologies || p.technologies.length === 0) {
+      recommendations.push({
+        id: `rec-proj-tech-${p.id}`,
+        category: 'Kredensial & Tech',
+        priority: 'sedang',
+        title: `Tambahkan Tag Teknologi pada '${p.titleId || 'Proyek'}'`,
+        description: 'Daftar teknologi yang digunakan pada proyek ini masih kosong. Tambahkan stack seperti Next.js, TypeScript, Firebase, dll.',
+        actionLink: 'projects',
+      });
+    }
+  });
+
+  // 4. Certificates Audit
+  certificates.forEach(c => {
+    if (!c.credentialUrl) {
+      recommendations.push({
+        id: `rec-cert-cred-${c.id}`,
+        category: 'Kredensial & Tech',
+        priority: 'sedang',
+        title: `Sematkan URL Kredensial Resmi '${c.titleId || 'Sertifikat'}'`,
+        description: 'Sertifikat akan memiliki bobot pembuktian lebih tinggi jika menyertakan link verifikasi dari penerbit sertifikat.',
+        actionLink: 'certificates',
+      });
+    }
+  });
+
+  // 5. Blogs Audit
+  blogs.forEach(b => {
+    if (!b.tags || b.tags.length === 0) {
+      recommendations.push({
+        id: `rec-blog-tags-${b.id}`,
+        category: 'SEO',
+        priority: 'rendah',
+        title: `Tambahkan Tag Kategori pada Artikel '${b.titleId || 'Blog'}'`,
+        description: 'Tag kategori memudahkan pembaca menyaring topik artikel yang relevan dan membantu struktur SEO.',
+        actionLink: 'blogs',
+      });
+    }
+  });
+
+  // Hitung Health Score
+  let score = 100;
+  recommendations.forEach(r => {
+    if (r.priority === 'tinggi') score -= 10;
+    else if (r.priority === 'sedang') score -= 5;
+    else score -= 2;
+  });
+  score = Math.max(35, Math.min(100, score));
+
+  let summary = '';
+  if (score >= 85) {
+    summary = `Portofolio Anda dalam kondisi sangat prima (Skor: ${score}/100). Hanya terdapat beberapa optimasi minor untuk menyempurnakan portofolio Anda.`;
+  } else if (score >= 65) {
+    summary = `Portofolio Anda sudah memiliki fondasi yang baik (Skor: ${score}/100). Terdapat ${recommendations.length} poin perbaikan untuk meningkatkan konversi dan daya tarik internasional.`;
+  } else {
+    summary = `Ditemukan ${recommendations.length} poin penting yang perlu dilengkapi (Skor: ${score}/100), terutama terkait kelengkapan bahasa Inggris, email kontak, dan konsistensi metrik.`;
+  }
+
+  return {
+    summary,
+    healthScore: score,
+    recommendations,
+  };
+}
+
 export async function analyzePortfolioRecommendations(
   input: AnalyzePortfolioRecommendationsInput
 ): Promise<AnalyzePortfolioRecommendationsOutput> {
-  return analyzePortfolioRecommendationsFlow(input);
+  try {
+    const result = await analyzePortfolioRecommendationsFlow(input);
+    if (result && result.recommendations && result.recommendations.length > 0) {
+      return result;
+    }
+  } catch (error) {
+    console.warn('[AI Advisor] Gemini flow error, using intelligent heuristic audit fallback:', error);
+  }
+
+  // Fallback selalu berhasil dan tidak pernah memicu 500 error
+  return runHeuristicAudit(input);
 }
 
 const prompt = ai.definePrompt({
@@ -189,14 +361,12 @@ const analyzePortfolioRecommendationsFlow = ai.defineFlow(
     outputSchema: AnalyzePortfolioRecommendationsOutputSchema,
   },
   async input => {
-    const { output } = await prompt(input);
-    if (!output) {
-      return {
-        summary: 'Tidak dapat menganalisis data portofolio saat ini.',
-        healthScore: 50,
-        recommendations: [],
-      };
+    try {
+      const { output } = await prompt(input);
+      if (output) return output;
+    } catch (e) {
+      console.warn('[AI Advisor] Prompt error in flow:', e);
     }
-    return output;
+    return runHeuristicAudit(input);
   }
 );

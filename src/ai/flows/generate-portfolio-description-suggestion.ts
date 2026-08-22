@@ -106,11 +106,17 @@ const generatePortfolioDescriptionSuggestionFlow = ai.defineFlow(
     outputSchema: GeneratePortfolioDescriptionSuggestionOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    if (!output) {
-      return {descriptionSuggestion: ''};
+    try {
+      const {output} = await prompt(input);
+      if (output) {
+        return output;
+      }
+    } catch (err) {
+      console.warn('[Project Desc Gen] Error generating description:', err);
     }
-    return output;
+    return {
+      descriptionSuggestion: `${input.title} adalah proyek ${input.projectType} yang dikembangkan menggunakan ${input.technologiesUsed.join(', ')}.`
+    };
   }
 );
 

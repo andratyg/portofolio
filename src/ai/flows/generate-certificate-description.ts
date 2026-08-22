@@ -73,11 +73,17 @@ const generateCertificateDescriptionFlow = ai.defineFlow(
     outputSchema: GenerateCertificateDescriptionOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    if (!output) {
-      return {descriptionSuggestion: ''};
+    try {
+      const {output} = await prompt(input);
+      if (output) {
+        return output;
+      }
+    } catch (err) {
+      console.warn('[Cert Desc Gen] Error generating certificate description:', err);
     }
-    return output;
+    return {
+      descriptionSuggestion: `Sertifikasi ${input.title} yang diterbitkan oleh ${input.issuer} memvalidasi kompetensi profesional dan keahlian teknis terkait.`
+    };
   }
 );
 
