@@ -12,6 +12,7 @@ import { PageTransition } from '@/components/layout/PageTransition';
 import { MotionProvider } from '@/components/providers/MotionProvider';
 import { ClientShell } from '@/components/providers/ClientShell';
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 // ─── Fonts ───────────────────────────────────────────────────────────────────
 const plusJakarta = Plus_Jakarta_Sans({
@@ -232,7 +233,7 @@ const jsonLd = [
   }
 ];
 
-// ─── Layout ──────────────────────────────────────────────────────────────────
+// ─── Layout ────────────────────────────────────────────────────���─────────────
 // ─── Layout ─────────────────���─────────────────────────────────────────────────
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -262,6 +263,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <Toaster />
                   <ScrollProgressButton />
                   <Analytics />
+                  <SpeedInsights />
                 </MotionProvider>
               </SecurityProvider>
             </ThemeProvider>
