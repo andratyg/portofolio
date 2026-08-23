@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
       "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com",
       ...(!isDev ? [
         "require-trusted-types-for 'script'",
-        "trusted-types default nextjs#bundler next-image-loader",
+        "trusted-types default nextjs#bundler next-image-loader gapi#gapi goog#html",
       ] : []),
       "object-src 'none'",
       "base-uri 'self'",

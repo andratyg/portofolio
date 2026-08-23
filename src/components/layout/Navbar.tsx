@@ -11,7 +11,6 @@ import { Globe, Palette, LogIn, Menu, X, ChevronDown } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { useProjectStore } from '@/stores/ProjectStore';
-import { useUser } from '@/firebase';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
@@ -24,11 +23,7 @@ export const Navbar = () => {
   const { t, language, setLanguage } = useLanguage();
   const { theme, setTheme, isAutoTheme, setAutoTheme } = useTheme();
   const { toast } = useToast();
-  const { user } = useUser();
-  const { messages } = useProjectStore();
   const router = useRouter();
-  // Only show notification badge if user is authenticated (admin logged in)
-  const unreadCount = user ? messages.length : 0;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);

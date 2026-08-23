@@ -151,7 +151,7 @@ export const useFirebase = (): FirebaseServicesAndUser => {
   return {
     firebaseApp: context.firebaseApp,
     firestore: context.firestore,
-    auth: context.auth || (context.firebaseApp ? getAuth(context.firebaseApp) : (null as any)),
+    auth: context.auth as any,
     user: context.user,
     isUserLoading: context.isUserLoading,
     userError: context.userError,
