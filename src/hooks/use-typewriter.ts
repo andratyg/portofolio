@@ -15,7 +15,7 @@ export function useTypewriter({
   deleteSpeed = 50,
   delayBetweenWords = 2000,
 }: UseTypewriterOptions) {
-  const [displayText, setDisplayText] = useState('');
+  const [displayText, setDisplayText] = useState(words[0] || '');
   const [wordIndex, setWordIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 

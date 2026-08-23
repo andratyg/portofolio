@@ -57,11 +57,9 @@ export const AnimateOnScroll = ({
       ref={ref}
       className={className}
       style={{
-        minHeight: isNearViewport ? undefined : minHeight,
+        minHeight,
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0)' : 'translateY(24px)',
-        transition: `opacity ${duration}s ease ${delay}s, transform ${duration}s ease ${delay}s`,
-        contain: isNearViewport ? undefined : 'content',
+        transition: `opacity ${duration}s ease ${delay}s`,
       }}
     >
       {isNearViewport ? children : fallback}
