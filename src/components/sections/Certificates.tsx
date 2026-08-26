@@ -25,11 +25,21 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import { m as motion, AnimatePresence } from "framer-motion";
 
-export const Certificates = () => {
+interface CertificatesProps {
+  /** Injected by Server Component page for SSR / ISR — makes data visible to crawlers. */
+  initialCertificates?: Certificate[];
+}
+
+export const Certificates = ({ initialCertificates }: CertificatesProps) => {
   const { t, language } = useLanguage();
-  const { certificates, isLoading, error } = useProjectStore();
+  const { certificates: storeCertificates, isLoading: storeLoading, error } = useProjectStore();
   const { certificatesTitle, certificatesSubtitle } = useEditableContent(language);
-  
+
+  // Prefer live store data (admin / dynamic updates); fall back to SSR-injected initial data.
+  // When initialCertificates is provided, we never show skeleton on first paint.
+  const certificates = storeCertificates.length > 0 ? storeCertificates : (initialCertificates ?? []);
+  const isLoading = storeLoading && certificates.length === 0;
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIssuers, setSelectedIssuers] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('newest');

@@ -21,10 +21,20 @@ import { m as motion, AnimatePresence } from 'framer-motion';
 const CATEGORIES = ['all', 'web', 'ui', 'backend'] as const;
 const SORT_OPTIONS = ['newest', 'oldest', 'asc', 'desc'] as const;
 
-export const Portfolio = () => {
+interface PortfolioProps {
+  /** Injected by Server Component page for SSR / ISR — makes data visible to crawlers. */
+  initialProjects?: Project[];
+}
+
+export const Portfolio = ({ initialProjects }: PortfolioProps) => {
   const { t, language } = useLanguage();
   const { portfolioTitle, portfolioSubtitle } = useEditableContent(language);
-  const { projects, isLoading, error } = useProjectStore();
+  const { projects: storeProjects, isLoading: storeLoading, error } = useProjectStore();
+
+  // Prefer live store data (admin / dynamic updates); fall back to SSR-injected initial data.
+  // When initialProjects is provided, we never show skeleton on first paint.
+  const projects = storeProjects.length > 0 ? storeProjects : (initialProjects ?? []);
+  const isLoading = storeLoading && projects.length === 0;
   
   const [filter, setFilter] = useState<(typeof CATEGORIES)[number]>('all');
   const [sortBy, setSortBy] = useState<(typeof SORT_OPTIONS)[number]>('newest');
