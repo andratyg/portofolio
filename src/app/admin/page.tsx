@@ -16,7 +16,8 @@ import {
   UserCircle, Loader2, Camera, Briefcase, History, ShieldAlert, 
   Download, Upload, WifiOff, Edit3, X, Mail, User, CheckCircle2, AlertCircle, 
   Terminal, Image as ImageIcon, Globe, Share2, BarChart3, Zap, FileText, ExternalLink, Star, Edit,
-  BookOpen, Tag, Calendar, Clock, Sparkles, Link as LinkIcon, Check, Copy, MousePointerClick
+  BookOpen, Tag, Calendar, Clock, Sparkles, Link as LinkIcon, Check, Copy, MousePointerClick,
+  FileCheck, FileUp, ShieldCheck
 } from 'lucide-react';
 import { translateContent } from '@/ai/flows/translate-content';
 import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-portfolio-description-suggestion';
@@ -25,9 +26,11 @@ import { AIAdvisorPanel } from '@/components/admin/AIAdvisorPanel';
 import { useToast } from '@/hooks/use-toast';
 import { ProfileData, Project, Certificate, Experience, PortfolioStats, TechSkill, BlogPost, ShortLink } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase, useFirebaseApp } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { doc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { revalidatePortfolio } from '@/app/actions/revalidate';
 
 function AdminContent() {
   const { 
@@ -49,15 +52,19 @@ function AdminContent() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const db = useFirestore();
+  const firebaseApp = useFirebaseApp();
   
   const [activeTab, setActiveTab] = useState<string>('advisor');
   const [isGeneratingProjectDesc, setIsGeneratingProjectDesc] = useState(false);
   const [isGeneratingCertDesc, setIsGeneratingCertDesc] = useState(false);
   const [isTranslating, setIsTranslating] = useState<string | null>(null);
+  const [isUploadingCv, setIsUploadingCv] = useState(false);
+  const [isDeletingCv, setIsDeletingCv] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cvFileInputRef = useRef<HTMLInputElement>(null);
 
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editingCertId, setEditingCertId] = useState<string | null>(null);
@@ -386,6 +393,146 @@ function AdminContent() {
     reader.readAsDataURL(file);
   };
 
+  const handleCvUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Reset input value so re-selecting same file triggers change
+    e.target.value = '';
+
+    // 1. Client-side validation: must be PDF
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if (!isPdf) {
+      toast({
+        variant: "destructive",
+        title: "Format Berkas Ditolak",
+        description: "Hanya berkas dokumen PDF (.pdf) yang dapat diunggah.",
+      });
+      return;
+    }
+
+    // 2. Client-side validation: max 5MB (5 * 1024 * 1024 bytes)
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      toast({
+        variant: "destructive",
+        title: "Ukuran Berkas Terlalu Besar",
+        description: `Ukuran berkas (${sizeMB} MB) melebihi batas maksimal 5 MB.`,
+      });
+      return;
+    }
+
+    setIsUploadingCv(true);
+    const oldStoragePath = profile?.cvStoragePath;
+
+    try {
+      const storage = getStorage(firebaseApp);
+      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const newStoragePath = `cv/${Date.now()}_${sanitizedName}`;
+      const storageRef = ref(storage, newStoragePath);
+
+      // Metadata with attachment disposition for direct download
+      const metadata = {
+        contentType: 'application/pdf',
+        contentDisposition: `attachment; filename="${file.name.replace(/"/g, '')}"`,
+      };
+
+      // Step A: Upload new file first
+      await uploadBytes(storageRef, file, metadata);
+      const downloadUrl = await getDownloadURL(storageRef);
+
+      // Step B: Save to Firestore
+      const updatedProfile: ProfileData = {
+        ...profile,
+        cvUrl: downloadUrl,
+        cvFileName: file.name,
+        cvUpdatedAt: new Date().toISOString(),
+        cvStoragePath: newStoragePath,
+      };
+
+      updateProfileAndStats(updatedProfile, stats);
+      setProfileFormData(updatedProfile);
+
+      // Step C: Fail-Safe cleanup - delete old file from Storage only after new one is successfully saved
+      if (oldStoragePath && oldStoragePath !== newStoragePath) {
+        try {
+          await deleteObject(ref(storage, oldStoragePath));
+        } catch (cleanupErr) {
+          console.warn('[Admin] Old CV cleanup warning:', cleanupErr);
+        }
+      }
+
+      // Step D: On-demand ISR revalidation for homepage
+      await revalidatePortfolio('/');
+
+      toast({
+        title: "CV Berhasil Diunggah",
+        description: `Berkas "${file.name}" aktif dan siap diunduh di halaman utama.`,
+      });
+    } catch (err: any) {
+      console.error('[Admin] CV upload error:', err);
+      toast({
+        variant: "destructive",
+        title: "Gagal Mengunggah CV",
+        description: err.message || "Terjadi kesalahan saat mengunggah berkas ke Storage.",
+      });
+    } finally {
+      setIsUploadingCv(false);
+    }
+  };
+
+  const handleDeleteCv = async () => {
+    if (!profile?.cvUrl && !profile?.cvStoragePath) {
+      toast({ variant: "destructive", title: "Tidak Ada CV", description: "Belum ada berkas CV yang tersimpan." });
+      return;
+    }
+
+    setIsDeletingCv(true);
+    const storagePathToDelete = profile?.cvStoragePath;
+
+    try {
+      // Step 1: Delete binary from Firebase Storage if path exists
+      if (storagePathToDelete) {
+        try {
+          const storage = getStorage(firebaseApp);
+          await deleteObject(ref(storage, storagePathToDelete));
+        } catch (storageErr) {
+          console.warn('[Admin] Storage delete warning:', storageErr);
+        }
+      }
+
+      // Step 2: Clear fields in Firestore
+      const updatedProfile: ProfileData = {
+        ...profile,
+        cvUrl: '',
+        cvFileName: '',
+        cvUpdatedAt: '',
+        cvStoragePath: '',
+      };
+
+      updateProfileAndStats(updatedProfile, stats);
+      setProfileFormData(updatedProfile);
+
+      // Step 3: On-demand ISR revalidation for homepage
+      await revalidatePortfolio('/');
+
+      toast({
+        title: "CV Berhasil Dihapus",
+        description: "Berkas CV telah dihapus dari Storage & tombol di halaman utama telah dinonaktifkan.",
+      });
+    } catch (err: any) {
+      console.error('[Admin] Delete CV error:', err);
+      toast({
+        variant: "destructive",
+        title: "Gagal Menghapus CV",
+        description: err.message || "Terjadi kesalahan saat menghapus berkas.",
+      });
+    } finally {
+      setIsDeletingCv(false);
+    }
+  };
+
   const startEditProject = (p: Project) => {
     setEditingProjectId(p.id);
     setProjectForm({ 
@@ -535,9 +682,10 @@ function AdminContent() {
       <div className="container mx-auto px-3 sm:px-6 py-6 sm:py-12">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8 sm:space-y-12">
           <div className={cn("flex justify-center sticky z-40 transition-all duration-500", isHeaderVisible ? "top-[68px] sm:top-24" : "top-4")}>
-            <TabsList className="bg-card border border-border shadow-2xl p-1.5 sm:p-2 rounded-2xl sm:rounded-[2.5rem] w-full max-w-5xl grid grid-cols-5 sm:flex sm:flex-wrap sm:justify-center gap-1 h-auto">
+            <TabsList className="bg-card border border-border shadow-2xl p-1.5 sm:p-2 rounded-2xl sm:rounded-[2.5rem] w-full max-w-5xl grid grid-cols-6 sm:flex sm:flex-wrap sm:justify-center gap-1 h-auto">
               <TabsTrigger value="advisor" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row border-2 border-primary/20 data-[state=active]:border-primary"><Sparkles className="h-4 w-4 text-primary data-[state=active]:text-primary-foreground" /><span className="hidden sm:inline">AI ADVISOR</span><span className="sm:hidden text-[7px]">ADVISOR</span></TabsTrigger>
               <TabsTrigger value="profile" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><UserCircle className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">IDENTITAS</span><span className="sm:hidden text-[7px]">PROFIL</span></TabsTrigger>
+              <TabsTrigger value="resume" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><FileText className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">CV / RESUME</span><span className="sm:hidden text-[7px]">RESUME</span></TabsTrigger>
               <TabsTrigger value="content" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Edit className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">KONTEN</span><span className="sm:hidden text-[7px]">KONTEN</span></TabsTrigger>
               <TabsTrigger value="projects" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Briefcase className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">PROYEK</span><span className="sm:hidden text-[7px]">PROYEK</span></TabsTrigger>
               <TabsTrigger value="certificates" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Award className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">SERTIFIKAT</span><span className="sm:hidden text-[7px]">SERTIF</span></TabsTrigger>
@@ -615,6 +763,36 @@ function AdminContent() {
                             </div>
                          </div>
                       </Card>
+
+                      <Card className="rounded-[2.5rem] border-none bg-muted/30 p-8 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <FileText className="h-5 w-5 text-primary" />
+                            <h3 className="font-black text-xs uppercase tracking-widest">Dokumen CV / Resume</h3>
+                          </div>
+                          <Badge className={cn(
+                            "text-[8px] font-black uppercase px-2 py-0.5",
+                            profile?.cvUrl ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" : "bg-muted text-muted-foreground"
+                          )}>
+                            {profile?.cvUrl ? "Aktif" : "Kosong"}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate" title={profile?.cvFileName || ''}>
+                          {profile?.cvUrl 
+                            ? (profile.cvFileName || 'CV PDF Aktif')
+                            : 'Belum ada CV yang diunggah. Tombol di Hero disembunyikan.'}
+                        </p>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => { setActiveTab('resume'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                          className="w-full h-11 rounded-xl text-[10px] font-black uppercase tracking-wider gap-2 border-border/80 hover:bg-primary/10 hover:text-primary"
+                        >
+                          <FileUp className="h-3.5 w-3.5" />
+                          <span>Kelola di Tab Resume</span>
+                        </Button>
+                      </Card>
                    </div>
 
                    <div className="lg:col-span-8 space-y-10">
@@ -672,6 +850,194 @@ function AdminContent() {
                 </div>
                 <Button type="submit" className="w-full h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-2xl hover:scale-[1.01] transition-all">MUTAKHIRKAN SELURUH IDENTITAS DIGITAL</Button>
              </form>
+           </TabsContent>
+
+          <TabsContent value="resume" className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
+            {/* Hidden native file input specifically for PDF CV */}
+            <input
+              ref={cvFileInputRef}
+              type="file"
+              accept="application/pdf,.pdf"
+              className="hidden"
+              onChange={handleCvUpload}
+            />
+
+            <Card className="rounded-[2.5rem] border border-border bg-card shadow-2xl overflow-hidden relative">
+              <div className="absolute top-0 left-0 w-full h-1.5 sm:h-2 bg-gradient-to-r from-blue-500 via-primary to-purple-600" />
+              <CardHeader className="p-6 sm:p-10 pb-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest mb-2">
+                      <FileText className="h-3.5 w-3.5" />
+                      Firebase Storage · Dokumen Publik
+                    </div>
+                    <CardTitle className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
+                      Manajemen CV & Dokumen Resume
+                    </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">
+                      Unggah dan kelola berkas Curriculum Vitae (PDF) untuk tautan unduh di bagian Hero halaman utama.
+                    </CardDescription>
+                  </div>
+                  <Badge className={cn(
+                    "h-8 px-4 font-black rounded-xl text-[10px] uppercase tracking-wider",
+                    profile?.cvUrl ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30" : "bg-muted text-muted-foreground"
+                  )}>
+                    {profile?.cvUrl ? "CV Aktif Terhubung" : "Belum Ada CV"}
+                  </Badge>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-6 sm:p-10 pt-4 space-y-8">
+                {/* Active CV Card */}
+                {profile?.cvUrl ? (
+                  <div className="p-6 sm:p-8 rounded-3xl bg-muted/40 border border-border/60 space-y-6 relative overflow-hidden">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                      <div className="flex items-center gap-5 min-w-0">
+                        <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 shadow-md">
+                          <FileCheck className="h-8 w-8" />
+                        </div>
+                        <div className="min-w-0 space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge className="bg-primary text-primary-foreground text-[9px] font-black uppercase px-2 py-0.5 rounded-md">
+                              PDF
+                            </Badge>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                              Aktif di Homepage
+                            </span>
+                          </div>
+                          <h4 className="font-black text-base sm:text-lg text-foreground truncate max-w-md" title={profile.cvFileName || 'Curriculum Vitae'}>
+                            {profile.cvFileName || 'Curriculum_Vitae_Nara_Andra_Tyaga.pdf'}
+                          </h4>
+                          {profile.cvUpdatedAt && (
+                            <p className="text-xs text-muted-foreground">
+                              Diperbarui: {new Date(profile.cvUpdatedAt).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' })}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                        <a
+                          href={profile.cvUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 sm:flex-initial"
+                        >
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="w-full h-12 rounded-xl font-black uppercase text-[10px] tracking-wider gap-2 border-border/80 hover:bg-primary/10 hover:text-primary transition-all"
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                            <span>Lihat Dokumen</span>
+                          </Button>
+                        </a>
+
+                        <Button
+                          type="button"
+                          onClick={() => cvFileInputRef.current?.click()}
+                          disabled={isUploadingCv}
+                          className="flex-1 sm:flex-initial h-12 rounded-xl font-black uppercase text-[10px] tracking-wider gap-2 bg-primary text-primary-foreground shadow-md hover:scale-[1.02] transition-all"
+                        >
+                          {isUploadingCv ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              <span>Mengunggah...</span>
+                            </>
+                          ) : (
+                            <>
+                              <FileUp className="h-4 w-4" />
+                              <span>Ganti CV</span>
+                            </>
+                          )}
+                        </Button>
+
+                        {isSuper && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={handleDeleteCv}
+                            disabled={isDeletingCv || isUploadingCv}
+                            className="h-12 px-4 rounded-xl text-destructive hover:bg-destructive/10 font-black uppercase text-[10px] tracking-wider gap-2"
+                            title="Hapus berkas CV dari sistem"
+                          >
+                            {isDeletingCv ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                            <span className="sm:hidden">Hapus</span>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* Upload Dropzone when no CV exists */
+                  <div
+                    onClick={() => !isUploadingCv && cvFileInputRef.current?.click()}
+                    className={cn(
+                      "p-8 sm:p-14 rounded-3xl border-2 border-dashed border-border/70 hover:border-primary/60 bg-muted/20 hover:bg-muted/30 transition-all text-center cursor-pointer space-y-4 group",
+                      isUploadingCv && "pointer-events-none opacity-60"
+                    )}
+                  >
+                    <div className="w-16 h-16 rounded-2xl bg-primary/10 group-hover:bg-primary/20 text-primary flex items-center justify-center mx-auto transition-colors shadow-inner">
+                      {isUploadingCv ? (
+                        <Loader2 className="h-8 w-8 animate-spin" />
+                      ) : (
+                        <FileUp className="h-8 w-8 group-hover:scale-110 transition-transform" />
+                      )}
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="font-black text-base uppercase tracking-wider text-foreground">
+                        {isUploadingCv ? "Sedang Mengunggah CV ke Firebase Storage..." : "Klik atau Seret Berkas PDF ke Sini"}
+                      </h4>
+                      <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                        Format yang didukung: <strong>.PDF saja</strong> (Ukuran maksimal 5MB).
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      disabled={isUploadingCv}
+                      className="h-12 px-6 rounded-xl font-black uppercase text-[10px] tracking-wider gap-2 bg-primary text-primary-foreground shadow-lg pointer-events-none"
+                    >
+                      <Upload className="h-4 w-4" />
+                      <span>Pilih Berkas PDF</span>
+                    </Button>
+                  </div>
+                )}
+
+                {/* Guidelines & Technical Info */}
+                <div className="grid sm:grid-cols-3 gap-4 pt-2">
+                  <div className="p-4 rounded-2xl bg-muted/20 border border-border/40 space-y-1.5">
+                    <div className="flex items-center gap-2 text-primary font-black text-xs uppercase tracking-wider">
+                      <CheckCircle2 className="h-4 w-4" /> Validasi Otomatis
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Tipe file dibatasi khusus PDF dengan batasan ukuran 5MB di level client & Firebase Storage rules.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-muted/20 border border-border/40 space-y-1.5">
+                    <div className="flex items-center gap-2 text-primary font-black text-xs uppercase tracking-wider">
+                      <Zap className="h-4 w-4" /> Sync Instan (ISR)
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Tombol "Unduh CV" di Hero halaman utama langsung aktif seketika setelah upload sukses tanpa delay.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-muted/20 border border-border/40 space-y-1.5">
+                    <div className="flex items-center gap-2 text-primary font-black text-xs uppercase tracking-wider">
+                      <ShieldCheck className="h-4 w-4" /> Fail-Safe Storage
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Berkas lama dibersihkan secara otomatis setelah berkas baru tersimpan aman di Firestore.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
           
           <TabsContent value="content" className="animate-in fade-in slide-in-from-bottom-8 duration-500">

@@ -88,6 +88,10 @@ export interface ProfileData {
   instagram?: string;
   github?: string;
   tiktok?: string;
+  cvUrl?: string;
+  cvFileName?: string;
+  cvUpdatedAt?: string;
+  cvStoragePath?: string;
 }
 
 export interface AdminUser {

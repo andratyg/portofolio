@@ -5,6 +5,7 @@ import { ProjectStoreProvider } from '@/stores/ProjectStore';
 import { SectionErrorBoundary } from '@/components/utils/SectionErrorBoundary';
 import { AnimateOnScroll } from '@/components/AnimateOnScroll';
 import { Footer } from '@/components/layout/Footer';
+import { fetchProfile } from '@/lib/server-firebase';
 
 // --- Skeleton Loaders ---
 import { AboutSkeleton } from '@/components/skeletons/AboutSkeleton';
@@ -71,8 +72,14 @@ async function getFeaturedProject() {
   }
 }
 
+// ISR: revalidasi halaman di background setiap 5 menit (dengan on-demand revalidation instan)
+export const revalidate = 300;
+
 export default async function Home() {
-  const featuredProject = await getFeaturedProject();
+  const [featuredProject, initialProfile] = await Promise.all([
+    getFeaturedProject(),
+    fetchProfile(),
+  ]);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -106,7 +113,7 @@ export default async function Home() {
         {/* --- Above the fold (loaded immediately) --- */}
         <Navbar />
         <SectionErrorBoundary sectionName="Hero">
-          <Hero initialFeaturedProject={featuredProject} />
+          <Hero initialFeaturedProject={featuredProject} initialProfile={initialProfile || undefined} />
         </SectionErrorBoundary>
 
           {/* --- Below the fold (lazy loaded with skeletons & animations) --- */}

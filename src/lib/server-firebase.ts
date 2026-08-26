@@ -10,9 +10,9 @@
  */
 
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { firebaseConfig } from '@/firebase/config';
-import { Certificate, Project, Experience } from '@/lib/types';
+import { Certificate, Project, Experience, ProfileData } from '@/lib/types';
 
 /**
  * Singleton Firestore instance untuk server-side rendering.
@@ -82,3 +82,44 @@ export async function fetchExperiences(): Promise<Experience[]> {
     return [];
   }
 }
+
+/**
+ * Mengambil data profil pemilik portofolio dari Firestore (portfolioOwner/profile).
+ * Digunakan untuk Server-Side Rendering (SSR/ISR) Hero section termasuk cvUrl.
+ *
+ * @returns ProfileData | null — null jika tidak ditemukan / fetch gagal
+ */
+export async function fetchProfile(): Promise<ProfileData | null> {
+  try {
+    const db = getServerDb();
+    const snap = await getDoc(doc(db, 'portfolioOwner', 'profile'));
+    if (!snap.exists()) return null;
+    const d = snap.data();
+    return {
+      name: d.name || '',
+      roleId: d.roleId || '',
+      roleEn: d.roleEn || '',
+      aboutMeId: d.aboutMeId || '',
+      aboutMeEn: d.aboutMeEn || '',
+      profilePictureUrl: d.profilePictureUrl || '',
+      heroTitleId: d.heroTitleId || '',
+      heroTitleEn: d.heroTitleEn || '',
+      heroSubtitleId: d.heroSubtitleId || '',
+      heroSubtitleEn: d.heroSubtitleEn || '',
+      email: d.email || '',
+      whatsapp: d.whatsAppNumber || d.whatsapp || '',
+      linkedin: d.linkedInProfileUrl || d.linkedin || '',
+      instagram: d.instagram || '',
+      github: d.githubProfileUrl || d.github || '',
+      tiktok: d.tiktok || '',
+      cvUrl: d.cvUrl || '',
+      cvFileName: d.cvFileName || '',
+      cvUpdatedAt: d.cvUpdatedAt || '',
+      cvStoragePath: d.cvStoragePath || '',
+    };
+  } catch (error) {
+    console.warn('[server-firebase] fetchProfile failed:', error);
+    return null;
+  }
+}
+

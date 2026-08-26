@@ -65,7 +65,11 @@ const defaultProfile: ProfileData = {
   linkedin: 'https://www.linkedin.com/in/nara-andra-tyaga/',
   instagram: 'https://www.instagram.com/nara.dev/',
   github: 'https://github.com/naradev',
-  tiktok: 'https://www.tiktok.com/@naradev'
+  tiktok: 'https://www.tiktok.com/@naradev',
+  cvUrl: '',
+  cvFileName: '',
+  cvUpdatedAt: '',
+  cvStoragePath: '',
 };
 
 
@@ -149,6 +153,10 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
           instagram: profileSnap.data()?.instagram || defaultProfile.instagram,
           github: profileSnap.data()?.githubProfileUrl || defaultProfile.github,
           tiktok: profileSnap.data()?.tiktok || defaultProfile.tiktok,
+          cvUrl: profileSnap.data()?.cvUrl || '',
+          cvFileName: profileSnap.data()?.cvFileName || '',
+          cvUpdatedAt: profileSnap.data()?.cvUpdatedAt || '',
+          cvStoragePath: profileSnap.data()?.cvStoragePath || '',
         } : defaultProfile;
 
         const sData: PortfolioStats = profileSnap.exists() ? {
@@ -297,7 +305,11 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     linkedin: adminProfile.linkedInProfileUrl || defaultProfile.linkedin,
     instagram: adminProfile.instagram || defaultProfile.instagram,
     github: adminProfile.githubProfileUrl || defaultProfile.github,
-    tiktok: adminProfile.tiktok || defaultProfile.tiktok
+    tiktok: adminProfile.tiktok || defaultProfile.tiktok,
+    cvUrl: adminProfile.cvUrl || '',
+    cvFileName: adminProfile.cvFileName || '',
+    cvUpdatedAt: adminProfile.cvUpdatedAt || '',
+    cvStoragePath: adminProfile.cvStoragePath || ''
   } : defaultProfile) : (publicData?.profile || defaultProfile);
 
   const stats: PortfolioStats = isAdmin ? (adminProfile ? {
@@ -420,6 +432,10 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       instagram: newProfile.instagram,
       githubProfileUrl: newProfile.github,
       tiktok: newProfile.tiktok,
+      cvUrl: newProfile.cvUrl || '',
+      cvFileName: newProfile.cvFileName || '',
+      cvUpdatedAt: newProfile.cvUpdatedAt || '',
+      cvStoragePath: newProfile.cvStoragePath || '',
       totalProjectsCompleted: parseInt(newStats.completedProjects) || 0,
       codingExperienceYears: parseInt(newStats.yearsExperience) || 0,
       totalTechnologiesMastered: parseInt(newStats.techMastered) || 0,

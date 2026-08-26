@@ -12,6 +12,7 @@ import { useTypewriter } from '@/hooks/use-typewriter';
 import { cn } from '@/lib/utils';
 import { m as motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
+import { ProfileData } from '@/lib/types';
 
 // Load ParticleCanvas only after page is idle — prevents it from competing with LCP
 const DynamicParticleCanvas = dynamic(() => import('@/components/features/ParticleCanvas').then(mod => mod.ParticleCanvas), {
@@ -19,7 +20,15 @@ const DynamicParticleCanvas = dynamic(() => import('@/components/features/Partic
   loading: () => null,
 });
 
-export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any }) => {
+export const Hero = ({ 
+  initialFeaturedProject,
+  initialProfile,
+  initialCvUrl,
+}: { 
+  initialFeaturedProject?: any;
+  initialProfile?: ProfileData;
+  initialCvUrl?: string;
+}) => {
   const { t, language } = useLanguage();
   const { projects, profile } = useProjectStore();
   const cardRef = useRef<HTMLDivElement>(null);
@@ -78,8 +87,11 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
 
   const storeFeatured = projects.find(p => p.featured);
   const featuredProject = storeFeatured || initialFeaturedProject;
-  const heroTitle    = (language === 'id' ? profile.heroTitleId    : (profile.heroTitleEn    || profile.heroTitleId))    ?? '';
-  const heroSubtitle = (language === 'id' ? profile.heroSubtitleId : (profile.heroSubtitleEn || profile.heroSubtitleId)) ?? '';
+  const effectiveProfile = (profile && profile.name) ? profile : (initialProfile || profile);
+  const heroTitle    = (language === 'id' ? effectiveProfile.heroTitleId    : (effectiveProfile.heroTitleEn    || effectiveProfile.heroTitleId))    ?? '';
+  const heroSubtitle = (language === 'id' ? effectiveProfile.heroSubtitleId : (effectiveProfile.heroSubtitleEn || effectiveProfile.heroSubtitleId)) ?? '';
+  const activeCvUrl  = (profile?.cvUrl && profile.cvUrl.trim() !== '') ? profile.cvUrl : (initialProfile?.cvUrl || initialCvUrl || '');
+  const activeCvFileName = profile?.cvFileName || initialProfile?.cvFileName || 'CV_Nara_Andra_Tyaga.pdf';
   const isValidImageUrl = (url: string) => url && (url.startsWith('http') || url.startsWith('/'));
 
   return (
@@ -164,19 +176,26 @@ export const Hero = ({ initialFeaturedProject }: { initialFeaturedProject?: any 
                 </Button>
               </motion.div>
             </Link>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => window.print()}
-                className="w-full sm:w-auto h-14 px-8 rounded-full font-semibold gap-3
-                           border-border/40 hover:border-primary/50 hover:bg-primary/5
-                           transition-[border-color,background-color] duration-300 ease-out"
-              >
-                <Download className="h-4 w-4" />
-                {language === 'id' ? 'Unduh CV' : 'Download CV'}
-              </Button>
-            </motion.div>
+            {activeCvUrl ? (
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <a
+                  href={activeCvUrl}
+                  download={activeCvFileName}
+                  className="inline-block w-full sm:w-auto"
+                >
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full sm:w-auto h-14 px-8 rounded-full font-semibold gap-3
+                               border-border/40 hover:border-primary/50 hover:bg-primary/5
+                               transition-[border-color,background-color] duration-300 ease-out"
+                  >
+                    <Download className="h-4 w-4" />
+                    {language === 'id' ? 'Unduh CV' : 'Download CV'}
+                  </Button>
+                </a>
+              </motion.div>
+            ) : null}
           </div>
 
           {/* Tech strip */}

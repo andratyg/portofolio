@@ -7,28 +7,49 @@ service firebase.storage {
       return request.auth != null;
     }
 
-    function isSameUser(userId) {
-      return request.auth.uid == userId;
-    }
-
     function isAdmin() {
       // Check if the user is authenticated and exists in the 'admins' collection in Firestore.
-      // Note: This requires the security rules for Firestore to allow this read.
-      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      return isSignedIn() && exists(/databases/(default)/documents/admins/$(request.auth.uid));
     }
 
-    // Allow public read access for profile images and certificates
+    // 1. CV / Resume: Public read, Admin write with strict validation (PDF only, max 5MB)
+    match /cv/{fileName} {
+      allow read: if true;
+      allow create, update: if isAdmin()
+                            && request.resource.size <= 5 * 1024 * 1024
+                            && request.resource.contentType == 'application/pdf';
+      allow delete: if isAdmin();
+    }
+
+    // 2. Profile Images: Public read, Admin write (Images only, max 2MB)
     match /profile/{allPaths=**} {
       allow read: if true;
+      allow write: if isAdmin()
+                   && request.resource.size <= 2 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
     }
 
+    // 3. Certificates: Public read, Admin write (Images/PDF, max 5MB)
     match /certificates/{allPaths=**} {
       allow read: if true;
+      allow write: if isAdmin()
+                   && request.resource.size <= 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*|application/pdf');
     }
-    
-    // Allow admin write access to all paths
-    match /{allPaths=**} {
-      allow write: if isAdmin();
+
+    // 4. Projects & Blogs: Public read, Admin write (Images, max 5MB)
+    match /projects/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin()
+                   && request.resource.size <= 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    match /blogs/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin()
+                   && request.resource.size <= 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
     }
   }
 }
