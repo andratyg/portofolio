@@ -10,11 +10,11 @@ export const Footer = () => {
 
   const footerLinks = [
     { label: language === 'id' ? 'Beranda' : 'Home', href: '/' },
-    { label: language === 'id' ? 'Portofolio' : 'Portfolio', href: '#portfolio' },
+    { label: language === 'id' ? 'Portofolio' : 'Portfolio', href: '/projects' },
     { label: language === 'id' ? 'Sertifikat' : 'Certificates', href: '/certificates' },
+    { label: language === 'id' ? 'Perjalanan' : 'Experience', href: '/experience' },
     { label: language === 'id' ? 'Blog' : 'Blog', href: '/blog' },
-    { label: language === 'id' ? 'Tentang' : 'About', href: '#about' },
-    { label: language === 'id' ? 'Kontak' : 'Contact', href: '#contact' },
+    { label: language === 'id' ? 'Kontak' : 'Contact', href: '/contact' },
   ];
 
   const socialLinks = [

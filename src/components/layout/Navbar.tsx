@@ -55,7 +55,10 @@ export const Navbar = () => {
               if (element) {
                 const rect = element.getBoundingClientRect();
                 if (rect.top <= 150 && rect.bottom >= 150) {
-                  current = `#${section}`;
+                  // Map section id to nav href
+                  if (section === 'journey') current = '/experience';
+                  else if (section === 'contact') current = '/contact';
+                  else current = `#${section}`;
                 }
               }
             }
@@ -109,9 +112,38 @@ export const Navbar = () => {
     }
   };
 
+  /**
+   * Handles nav link clicks.
+   * - Links starting with '#': smooth scroll on homepage; navigate to dedicated page otherwise.
+   * - Links to /experience: smooth scroll to #journey on homepage; navigate to /experience from other pages.
+   * - Links to /contact: smooth scroll to #contact on homepage; navigate to /contact from other pages.
+   * - Other links: navigate normally.
+   */
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
+    const isHomePage = typeof window !== 'undefined' && window.location.pathname === '/';
+
+    // Map dedicated routes to their homepage anchor equivalents
+    const anchorMap: Record<string, string> = {
+      '/experience': 'journey',
+      '/contact': 'contact',
+    };
+
+    if (anchorMap[href]) {
+      if (isHomePage) {
+        // On homepage: smooth scroll to the anchor instead of navigating
+        e.preventDefault();
+        const element = document.getElementById(anchorMap[href]);
+        if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (isMobileMenuOpen) setIsMobileMenuOpen(false);
+        return;
+      }
+      // On other pages: let Next.js navigate to the dedicated route (href)
+      if (isMobileMenuOpen) setIsMobileMenuOpen(false);
+      return;
+    }
+
     if (href.startsWith('#')) {
-      if (window.location.pathname !== '/') {
+      if (!isHomePage) {
         e.preventDefault();
         router.push('/' + href);
         if (isMobileMenuOpen) setIsMobileMenuOpen(false);
@@ -120,9 +152,7 @@ export const Navbar = () => {
       e.preventDefault();
       const elementId = href.substring(1);
       const element = document.getElementById(elementId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       if (isMobileMenuOpen) setIsMobileMenuOpen(false);
     } else {
       if (isMobileMenuOpen) setIsMobileMenuOpen(false);
@@ -132,9 +162,9 @@ export const Navbar = () => {
   const navItems = [
     { label: t.navHome, href: '/' },
     { label: t.navPortfolio, href: '#portfolio' },
-    { label: t.navJourney, href: '#journey' },
+    { label: t.navJourney, href: '/experience' },
     { label: t.navBlog, href: '/blog' },
-    { label: t.navContact, href: '#contact' },
+    { label: t.navContact, href: '/contact' },
   ];
 
   const getThemeColor = (tName: string) => {

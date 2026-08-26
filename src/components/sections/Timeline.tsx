@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import React from 'react';
 import { useLanguage } from '../providers/LanguageContext';
@@ -9,9 +9,19 @@ import { cn } from '@/lib/utils';
 import { ParticleCanvas } from '../features/ParticleCanvas';
 import { m as motion, useScroll, useTransform } from 'framer-motion';
 
-export const Timeline = () => {
+import { Experience } from '@/lib/types';
+
+interface TimelineProps {
+  /** Injected by Server Component page for SSR / ISR — makes data visible to crawlers. */
+  initialExperiences?: Experience[];
+}
+
+export const Timeline = ({ initialExperiences }: TimelineProps) => {
   const { t, language } = useLanguage();
-  const { experiences } = useProjectStore();
+  const { experiences: storeExperiences } = useProjectStore();
+
+  // Prefer live store data (admin / dynamic updates); fall back to SSR-injected initial data.
+  const experiences = storeExperiences.length > 0 ? storeExperiences : (initialExperiences ?? []);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,

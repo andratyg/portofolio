@@ -12,7 +12,7 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { firebaseConfig } from '@/firebase/config';
-import { Certificate, Project } from '@/lib/types';
+import { Certificate, Project, Experience } from '@/lib/types';
 
 /**
  * Singleton Firestore instance untuk server-side rendering.
@@ -59,6 +59,26 @@ export async function fetchProjects(): Promise<Project[]> {
     }));
   } catch (error) {
     console.warn('[server-firebase] fetchProjects failed:', error);
+    return [];
+  }
+}
+
+/**
+ * Mengambil semua entri perjalanan karir dari koleksi Firestore.
+ * Aman dipanggil di Server Component (async/await, tidak blocking UI).
+ *
+ * @returns Array<Experience> — kosong jika fetch gagal (graceful fallback)
+ */
+export async function fetchExperiences(): Promise<Experience[]> {
+  try {
+    const db = getServerDb();
+    const snap = await getDocs(collection(db, 'careerTimelineEntries'));
+    return snap.docs.map((d) => ({
+      ...(d.data() as Experience),
+      id: d.id,
+    }));
+  } catch (error) {
+    console.warn('[server-firebase] fetchExperiences failed:', error);
     return [];
   }
 }
