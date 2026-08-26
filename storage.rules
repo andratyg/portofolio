@@ -13,7 +13,7 @@ service firebase.storage {
     }
 
     // 1. CV / Resume: Public read, Admin write with strict validation (PDF only, max 5MB)
-    match /cv/{fileName} {
+    match /cv/{allPaths=**} {
       allow read: if true;
       allow create, update: if isAdmin()
                             && request.resource.size <= 5 * 1024 * 1024
@@ -24,32 +24,46 @@ service firebase.storage {
     // 2. Profile Images: Public read, Admin write (Images only, max 2MB)
     match /profile/{allPaths=**} {
       allow read: if true;
-      allow write: if isAdmin()
-                   && request.resource.size <= 2 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
+      allow create, update: if isAdmin()
+                            && request.resource.size <= 2 * 1024 * 1024
+                            && request.resource.contentType.matches('image/.*');
+      allow delete: if isAdmin();
     }
 
     // 3. Certificates: Public read, Admin write (Images/PDF, max 5MB)
     match /certificates/{allPaths=**} {
       allow read: if true;
-      allow write: if isAdmin()
-                   && request.resource.size <= 5 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*|application/pdf');
+      allow create, update: if isAdmin()
+                            && request.resource.size <= 5 * 1024 * 1024
+                            && request.resource.contentType.matches('image/.*|application/pdf');
+      allow delete: if isAdmin();
     }
 
-    // 4. Projects & Blogs: Public read, Admin write (Images, max 5MB)
+    // 4. Projects: Public read, Admin write (Images, max 5MB)
     match /projects/{allPaths=**} {
       allow read: if true;
-      allow write: if isAdmin()
-                   && request.resource.size <= 5 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
+      allow create, update: if isAdmin()
+                            && request.resource.size <= 5 * 1024 * 1024
+                            && request.resource.contentType.matches('image/.*');
+      allow delete: if isAdmin();
     }
 
+    // 5. Blogs: Public read, Admin write (Images, max 5MB)
     match /blogs/{allPaths=**} {
       allow read: if true;
-      allow write: if isAdmin()
-                   && request.resource.size <= 5 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
+      allow create, update: if isAdmin()
+                            && request.resource.size <= 5 * 1024 * 1024
+                            && request.resource.contentType.matches('image/.*');
+      allow delete: if isAdmin();
+    }
+
+    // 6. Testimonials: Public read, Admin write (Images, max 2MB)
+    match /testimonials/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isAdmin()
+                            && request.resource.size <= 2 * 1024 * 1024
+                            && request.resource.contentType.matches('image/.*');
+      allow delete: if isAdmin();
     }
   }
 }
