@@ -60,6 +60,10 @@ function AdminContent() {
   const [isTranslating, setIsTranslating] = useState<string | null>(null);
   const [isUploadingCv, setIsUploadingCv] = useState(false);
   const [isDeletingCv, setIsDeletingCv] = useState(false);
+  const [isSavingCvLink, setIsSavingCvLink] = useState(false);
+  const [cvLinkInput, setCvLinkInput] = useState('');
+  const [cvFileNameInput, setCvFileNameInput] = useState('');
+  const [cvInputMode, setCvInputMode] = useState<'link' | 'upload'>('link');
   const [isOnline, setIsOnline] = useState(true);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -174,7 +178,15 @@ function AdminContent() {
     certificatesSubtitleEn: contentStore.certificatesSubtitleEn
   });
 
-  useEffect(() => { if (profile) setProfileFormData(profile); }, [profile]);
+  useEffect(() => { 
+    if (profile) {
+      setProfileFormData(profile);
+      if (profile.cvUrl) {
+        setCvLinkInput(profile.cvUrl);
+        setCvFileNameInput(profile.cvFileName || '');
+      }
+    }
+  }, [profile]);
   useEffect(() => { if (stats) setStatsFormData(stats); }, [stats]);
   useEffect(() => {
     setContentFormData({
@@ -453,6 +465,8 @@ function AdminContent() {
 
       updateProfileAndStats(updatedProfile, stats);
       setProfileFormData(updatedProfile);
+      setCvLinkInput(downloadUrl);
+      setCvFileNameInput(file.name);
 
       // Step C: Fail-Safe cleanup - delete old file from Storage only after new one is successfully saved
       if (oldStoragePath && oldStoragePath !== newStoragePath) {
@@ -472,19 +486,83 @@ function AdminContent() {
       });
     } catch (err: any) {
       console.error('[Admin] CV upload error:', err);
+      const isCorsOrNotFound = err?.message?.includes('CORS') || err?.message?.includes('preflight') || err?.message?.includes('404') || err?.code === 'storage/unknown' || err?.code === 'storage/bucket-not-found';
       toast({
         variant: "destructive",
-        title: "Gagal Mengunggah CV",
-        description: err.message || "Terjadi kesalahan saat mengunggah berkas ke Storage.",
+        title: isCorsOrNotFound ? "Storage Belum Siap / CORS" : "Gagal Mengunggah CV",
+        description: isCorsOrNotFound 
+          ? "Bucket Firebase Storage belum aktif di Firebase Console. Gunakan tab 'Tautan / Link (Instan)' untuk memasukkan link Google Drive Anda."
+          : (err.message || "Terjadi kesalahan saat mengunggah berkas ke Storage."),
       });
     } finally {
       setIsUploadingCv(false);
     }
   };
 
+  const handleSaveCvLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!cvLinkInput.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Tautan Wajib Diisi",
+        description: "Harap masukkan URL tautan CV yang valid (cth: link Google Drive atau URL berkas PDF).",
+      });
+      return;
+    }
+
+    let finalUrl = cvLinkInput.trim();
+    if (!/^https?:\/\//i.test(finalUrl)) {
+      finalUrl = 'https://' + finalUrl;
+    }
+
+    const finalName = cvFileNameInput.trim() || 'Curriculum_Vitae_Nara_Andra_Tyaga.pdf';
+    setIsSavingCvLink(true);
+    const oldStoragePath = profile?.cvStoragePath;
+
+    try {
+      const updatedProfile: ProfileData = {
+        ...profile,
+        cvUrl: finalUrl,
+        cvFileName: finalName,
+        cvUpdatedAt: new Date().toISOString(),
+        cvStoragePath: '', // Non-storage link
+      };
+
+      updateProfileAndStats(updatedProfile, stats);
+      setProfileFormData(updatedProfile);
+
+      // Clean up old Storage file if it existed
+      if (oldStoragePath) {
+        try {
+          const storage = getStorage(firebaseApp);
+          await deleteObject(ref(storage, oldStoragePath));
+        } catch (cleanupErr) {
+          console.warn('[Admin] Old Storage cleanup warning:', cleanupErr);
+        }
+      }
+
+      // Trigger instant on-demand revalidation for homepage
+      await revalidatePortfolio('/');
+
+      toast({
+        title: "Tautan CV Berhasil Disimpan",
+        description: `Tautan "${finalName}" berhasil disimpan dan aktif di halaman utama.`,
+      });
+    } catch (err: any) {
+      console.error('[Admin] Save CV link error:', err);
+      toast({
+        variant: "destructive",
+        title: "Gagal Menyimpan Tautan CV",
+        description: err.message || "Terjadi kesalahan saat menyimpan ke Firestore.",
+      });
+    } finally {
+      setIsSavingCvLink(false);
+    }
+  };
+
   const handleDeleteCv = async () => {
     if (!profile?.cvUrl && !profile?.cvStoragePath) {
-      toast({ variant: "destructive", title: "Tidak Ada CV", description: "Belum ada berkas CV yang tersimpan." });
+      toast({ variant: "destructive", title: "Tidak Ada CV", description: "Belum ada berkas atau tautan CV yang tersimpan." });
       return;
     }
 
@@ -513,20 +591,22 @@ function AdminContent() {
 
       updateProfileAndStats(updatedProfile, stats);
       setProfileFormData(updatedProfile);
+      setCvLinkInput('');
+      setCvFileNameInput('');
 
       // Step 3: On-demand ISR revalidation for homepage
       await revalidatePortfolio('/');
 
       toast({
         title: "CV Berhasil Dihapus",
-        description: "Berkas CV telah dihapus dari Storage & tombol di halaman utama telah dinonaktifkan.",
+        description: "Tautan/berkas CV telah dihapus dari sistem & tombol di halaman utama telah dinonaktifkan.",
       });
     } catch (err: any) {
       console.error('[Admin] Delete CV error:', err);
       toast({
         variant: "destructive",
         title: "Gagal Menghapus CV",
-        description: err.message || "Terjadi kesalahan saat menghapus berkas.",
+        description: err.message || "Terjadi kesalahan saat menghapus berkas/tautan.",
       });
     } finally {
       setIsDeletingCv(false);
@@ -779,8 +859,8 @@ function AdminContent() {
                         </div>
                         <p className="text-xs text-muted-foreground truncate" title={profile?.cvFileName || ''}>
                           {profile?.cvUrl 
-                            ? (profile.cvFileName || 'CV PDF Aktif')
-                            : 'Belum ada CV yang diunggah. Tombol di Hero disembunyikan.'}
+                            ? (profile.cvFileName || (profile.cvStoragePath ? 'CV PDF Storage' : 'Tautan CV Aktif'))
+                            : 'Belum ada CV yang dipasang. Tombol di Hero disembunyikan.'}
                         </p>
                         <Button
                           type="button"
@@ -869,13 +949,13 @@ function AdminContent() {
                   <div className="space-y-1">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest mb-2">
                       <FileText className="h-3.5 w-3.5" />
-                      Firebase Storage · Dokumen Publik
+                      Pengaturan Dokumen CV · Homepage
                     </div>
                     <CardTitle className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
                       Manajemen CV & Dokumen Resume
                     </CardTitle>
                     <CardDescription className="text-xs sm:text-sm">
-                      Unggah dan kelola berkas Curriculum Vitae (PDF) untuk tautan unduh di bagian Hero halaman utama.
+                      Kelola tautan Google Drive / Cloud atau unggah berkas PDF untuk tombol &quot;Unduh CV&quot; di bagian Hero.
                     </CardDescription>
                   </div>
                   <Badge className={cn(
@@ -888,28 +968,31 @@ function AdminContent() {
               </CardHeader>
 
               <CardContent className="p-6 sm:p-10 pt-4 space-y-8">
-                {/* Active CV Card */}
-                {profile?.cvUrl ? (
+                {/* Active CV Card if CV exists */}
+                {profile?.cvUrl && (
                   <div className="p-6 sm:p-8 rounded-3xl bg-muted/40 border border-border/60 space-y-6 relative overflow-hidden">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                       <div className="flex items-center gap-5 min-w-0">
                         <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 shadow-md">
-                          <FileCheck className="h-8 w-8" />
+                          {profile.cvStoragePath ? <FileCheck className="h-8 w-8" /> : <LinkIcon className="h-8 w-8" />}
                         </div>
                         <div className="min-w-0 space-y-1">
                           <div className="flex items-center gap-2 flex-wrap">
                             <Badge className="bg-primary text-primary-foreground text-[9px] font-black uppercase px-2 py-0.5 rounded-md">
-                              PDF
+                              {profile.cvStoragePath ? "PDF Storage" : "Tautan Cloud"}
                             </Badge>
                             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                              Aktif di Homepage
+                              Aktif di Hero
                             </span>
                           </div>
                           <h4 className="font-black text-base sm:text-lg text-foreground truncate max-w-md" title={profile.cvFileName || 'Curriculum Vitae'}>
                             {profile.cvFileName || 'Curriculum_Vitae_Nara_Andra_Tyaga.pdf'}
                           </h4>
+                          <p className="text-xs text-muted-foreground truncate max-w-md font-mono" title={profile.cvUrl}>
+                            {profile.cvUrl}
+                          </p>
                           {profile.cvUpdatedAt && (
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-[11px] text-muted-foreground">
                               Diperbarui: {new Date(profile.cvUpdatedAt).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' })}
                             </p>
                           )}
@@ -929,37 +1012,18 @@ function AdminContent() {
                             className="w-full h-12 rounded-xl font-black uppercase text-[10px] tracking-wider gap-2 border-border/80 hover:bg-primary/10 hover:text-primary transition-all"
                           >
                             <ExternalLink className="h-4 w-4" />
-                            <span>Lihat Dokumen</span>
+                            <span>Buka Dokumen</span>
                           </Button>
                         </a>
-
-                        <Button
-                          type="button"
-                          onClick={() => cvFileInputRef.current?.click()}
-                          disabled={isUploadingCv}
-                          className="flex-1 sm:flex-initial h-12 rounded-xl font-black uppercase text-[10px] tracking-wider gap-2 bg-primary text-primary-foreground shadow-md hover:scale-[1.02] transition-all"
-                        >
-                          {isUploadingCv ? (
-                            <>
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                              <span>Mengunggah...</span>
-                            </>
-                          ) : (
-                            <>
-                              <FileUp className="h-4 w-4" />
-                              <span>Ganti CV</span>
-                            </>
-                          )}
-                        </Button>
 
                         {isSuper && (
                           <Button
                             type="button"
                             variant="ghost"
                             onClick={handleDeleteCv}
-                            disabled={isDeletingCv || isUploadingCv}
+                            disabled={isDeletingCv || isUploadingCv || isSavingCvLink}
                             className="h-12 px-4 rounded-xl text-destructive hover:bg-destructive/10 font-black uppercase text-[10px] tracking-wider gap-2"
-                            title="Hapus berkas CV dari sistem"
+                            title="Hapus berkas/tautan CV dari sistem"
                           >
                             {isDeletingCv ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -972,49 +1036,165 @@ function AdminContent() {
                       </div>
                     </div>
                   </div>
-                ) : (
-                  /* Upload Dropzone when no CV exists */
-                  <div
-                    onClick={() => !isUploadingCv && cvFileInputRef.current?.click()}
-                    className={cn(
-                      "p-8 sm:p-14 rounded-3xl border-2 border-dashed border-border/70 hover:border-primary/60 bg-muted/20 hover:bg-muted/30 transition-all text-center cursor-pointer space-y-4 group",
-                      isUploadingCv && "pointer-events-none opacity-60"
-                    )}
-                  >
-                    <div className="w-16 h-16 rounded-2xl bg-primary/10 group-hover:bg-primary/20 text-primary flex items-center justify-center mx-auto transition-colors shadow-inner">
-                      {isUploadingCv ? (
-                        <Loader2 className="h-8 w-8 animate-spin" />
-                      ) : (
-                        <FileUp className="h-8 w-8 group-hover:scale-110 transition-transform" />
-                      )}
-                    </div>
-                    <div className="space-y-1">
-                      <h4 className="font-black text-base uppercase tracking-wider text-foreground">
-                        {isUploadingCv ? "Sedang Mengunggah CV ke Firebase Storage..." : "Klik atau Seret Berkas PDF ke Sini"}
+                )}
+
+                {/* Method Selection Tabs (Link vs Upload) */}
+                <div className="space-y-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-border/60 pb-4">
+                    <div>
+                      <h4 className="text-sm sm:text-base font-black uppercase tracking-wider text-foreground">
+                        Pilih Metode Pemasangan CV
                       </h4>
-                      <p className="text-xs text-muted-foreground max-w-md mx-auto">
-                        Format yang didukung: <strong>.PDF saja</strong> (Ukuran maksimal 5MB).
+                      <p className="text-xs text-muted-foreground">
+                        Gunakan tautan Google Drive / Cloud untuk proses instan tanpa kendala CORS.
                       </p>
                     </div>
-                    <Button
-                      type="button"
-                      disabled={isUploadingCv}
-                      className="h-12 px-6 rounded-xl font-black uppercase text-[10px] tracking-wider gap-2 bg-primary text-primary-foreground shadow-lg pointer-events-none"
-                    >
-                      <Upload className="h-4 w-4" />
-                      <span>Pilih Berkas PDF</span>
-                    </Button>
+                    <div className="flex bg-muted p-1 rounded-2xl border border-border/60 shrink-0 w-full sm:w-auto justify-center">
+                      <Button
+                        type="button"
+                        variant={cvInputMode === 'link' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setCvInputMode('link')}
+                        className="rounded-xl text-[10px] font-black uppercase tracking-wider gap-1.5 h-9 flex-1 sm:flex-initial"
+                      >
+                        <LinkIcon className="h-3.5 w-3.5" />
+                        <span>Tautan / Link (Instan)</span>
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={cvInputMode === 'upload' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setCvInputMode('upload')}
+                        className="rounded-xl text-[10px] font-black uppercase tracking-wider gap-1.5 h-9 flex-1 sm:flex-initial"
+                      >
+                        <Upload className="h-3.5 w-3.5" />
+                        <span>Upload File PDF</span>
+                      </Button>
+                    </div>
                   </div>
-                )}
+
+                  {/* Mode 1: Tautan / Link Langsung (Google Drive, Cloud, External URL) */}
+                  {cvInputMode === 'link' ? (
+                    <form onSubmit={handleSaveCvLink} className="space-y-6 p-6 sm:p-8 rounded-3xl bg-muted/20 border border-border/60 animate-in fade-in duration-300">
+                      <div className="flex items-center gap-3 text-primary">
+                        <Globe className="h-5 w-5" />
+                        <h4 className="text-xs font-black uppercase tracking-widest text-foreground">
+                          Pemasangan via Tautan Eksternal / Google Drive
+                        </h4>
+                      </div>
+
+                      <div className="grid gap-6">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                            <span>URL Tautan CV / Resume (Wajib)</span>
+                            <span className="text-[9px] text-primary font-normal">cth: link Google Drive, Dropbox, Notion, Direct PDF</span>
+                          </label>
+                          <Input
+                            value={cvLinkInput}
+                            onChange={(e) => setCvLinkInput(e.target.value)}
+                            placeholder="https://drive.google.com/file/d/1a2b3c4d5e.../view?usp=sharing"
+                            className="h-14 rounded-2xl bg-background/80 border-border/80 px-6 font-mono text-xs"
+                            required
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">
+                            Nama Dokumen Tampilan (Opsional)
+                          </label>
+                          <Input
+                            value={cvFileNameInput}
+                            onChange={(e) => setCvFileNameInput(e.target.value)}
+                            placeholder="Curriculum_Vitae_Nara_Andra_Tyaga.pdf"
+                            className="h-14 rounded-2xl bg-background/80 border-border/80 px-6 text-xs"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 space-y-2 text-xs text-muted-foreground">
+                        <p className="font-bold text-foreground flex items-center gap-2">
+                          <Sparkles className="h-4 w-4 text-primary" /> Tips Penggunaan Google Drive:
+                        </p>
+                        <ul className="list-disc list-inside space-y-1 pl-1 text-[11px] leading-relaxed">
+                          <li>Unggah berkas CV Anda ke <strong>Google Drive</strong>.</li>
+                          <li>Klik kanan file &gt; pilih <strong>Bagikan (Share)</strong> &gt; ubah Akses Umum menjadi <strong>&quot;Siapa saja yang memiliki link&quot; (Anyone with the link)</strong>.</li>
+                          <li>Salin link tersebut dan tempelkan pada kolom URL di atas.</li>
+                        </ul>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        disabled={isSavingCvLink}
+                        className="w-full h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl hover:scale-[1.01] transition-all gap-2"
+                      >
+                        {isSavingCvLink ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>Menyimpan Tautan CV...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Check className="h-4 w-4" />
+                            <span>Simpan Tautan CV ke Homepage</span>
+                          </>
+                        )}
+                      </Button>
+                    </form>
+                  ) : (
+                    /* Mode 2: Upload File PDF ke Firebase Storage */
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                      <div
+                        onClick={() => !isUploadingCv && cvFileInputRef.current?.click()}
+                        className={cn(
+                          "p-8 sm:p-14 rounded-3xl border-2 border-dashed border-border/70 hover:border-primary/60 bg-muted/20 hover:bg-muted/30 transition-all text-center cursor-pointer space-y-4 group",
+                          isUploadingCv && "pointer-events-none opacity-60"
+                        )}
+                      >
+                        <div className="w-16 h-16 rounded-2xl bg-primary/10 group-hover:bg-primary/20 text-primary flex items-center justify-center mx-auto transition-colors shadow-inner">
+                          {isUploadingCv ? (
+                            <Loader2 className="h-8 w-8 animate-spin" />
+                          ) : (
+                            <FileUp className="h-8 w-8 group-hover:scale-110 transition-transform" />
+                          )}
+                        </div>
+                        <div className="space-y-1">
+                          <h4 className="font-black text-base uppercase tracking-wider text-foreground">
+                            {isUploadingCv ? "Sedang Mengunggah CV ke Firebase Storage..." : "Klik atau Seret Berkas PDF ke Sini"}
+                          </h4>
+                          <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                            Format yang didukung: <strong>.PDF saja</strong> (Ukuran maksimal 5MB).
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          disabled={isUploadingCv}
+                          className="h-12 px-6 rounded-xl font-black uppercase text-[10px] tracking-wider gap-2 bg-primary text-primary-foreground shadow-lg pointer-events-none"
+                        >
+                          <Upload className="h-4 w-4" />
+                          <span>Pilih Berkas PDF</span>
+                        </Button>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-600 dark:text-amber-400 space-y-1">
+                        <p className="font-bold flex items-center gap-2">
+                          <AlertCircle className="h-4 w-4" /> Catatan Firebase Storage:
+                        </p>
+                        <p className="text-[11px] leading-relaxed">
+                          Metode upload biner ini memerlukan <strong>Cloud Storage aktif</strong> di Firebase Console dan konfigurasi CORS untuk domain Anda. Jika Anda menemui kendala jaringan/CORS, gunakan tab <strong>&quot;Tautan / Link (Instan)&quot;</strong> di atas.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 {/* Guidelines & Technical Info */}
                 <div className="grid sm:grid-cols-3 gap-4 pt-2">
                   <div className="p-4 rounded-2xl bg-muted/20 border border-border/40 space-y-1.5">
                     <div className="flex items-center gap-2 text-primary font-black text-xs uppercase tracking-wider">
-                      <CheckCircle2 className="h-4 w-4" /> Validasi Otomatis
+                      <CheckCircle2 className="h-4 w-4" /> Fleksibel 2 Metode
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      Tipe file dibatasi khusus PDF dengan batasan ukuran 5MB di level client & Firebase Storage rules.
+                      Mendukung tautan Google Drive / Cloud publik atau upload langsung berkas PDF ke Firebase Storage.
                     </p>
                   </div>
 
@@ -1023,16 +1203,16 @@ function AdminContent() {
                       <Zap className="h-4 w-4" /> Sync Instan (ISR)
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      Tombol "Unduh CV" di Hero halaman utama langsung aktif seketika setelah upload sukses tanpa delay.
+                      Tombol &quot;Unduh CV&quot; di Hero halaman utama langsung aktif seketika setelah disimpan tanpa delay.
                     </p>
                   </div>
 
                   <div className="p-4 rounded-2xl bg-muted/20 border border-border/40 space-y-1.5">
                     <div className="flex items-center gap-2 text-primary font-black text-xs uppercase tracking-wider">
-                      <ShieldCheck className="h-4 w-4" /> Fail-Safe Storage
+                      <ShieldCheck className="h-4 w-4" /> Aman &amp; Otomatis
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      Berkas lama dibersihkan secara otomatis setelah berkas baru tersimpan aman di Firestore.
+                      Tombol di homepage disembunyikan otomatis jika CV kosong, dan terbuka rapi di tab baru untuk link web.
                     </p>
                   </div>
                 </div>

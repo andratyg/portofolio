@@ -1,0 +1,20 @@
+[
+  {
+    "origin": [
+      "https://www.naraandratyaga.my.id",
+      "https://naraandratyaga.my.id",
+      "http://localhost:3000",
+      "http://localhost:3001"
+    ],
+    "method": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"],
+    "responseHeader": [
+      "Content-Type",
+      "Authorization",
+      "Content-Length",
+      "User-Agent",
+      "x-goog-resumable",
+      "x-goog-upload-protocol"
+    ],
+    "maxAgeSeconds": 3600
+  }
+]

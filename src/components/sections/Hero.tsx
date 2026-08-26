@@ -180,7 +180,9 @@ export const Hero = ({
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <a
                   href={activeCvUrl}
-                  download={activeCvFileName}
+                  target={activeCvUrl.includes('firebasestorage.googleapis.com') ? undefined : "_blank"}
+                  rel={activeCvUrl.includes('firebasestorage.googleapis.com') ? undefined : "noopener noreferrer"}
+                  download={activeCvUrl.includes('firebasestorage.googleapis.com') || activeCvUrl.toLowerCase().endsWith('.pdf') ? activeCvFileName : undefined}
                   className="inline-block w-full sm:w-auto"
                 >
                   <Button
