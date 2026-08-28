@@ -47,7 +47,7 @@ const Contact = dynamic(() => import('@/components/sections/Contact').then(mod =
 async function getFeaturedProject() {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2s max
+    const timeoutId = setTimeout(() => controller.abort(), 800); // 800ms max timeout to not penalize SSR LCP
     const res = await fetch(
       'https://firestore.googleapis.com/v1/projects/studio-6743233958-ba96d/databases/(default)/documents/projects',
       { next: { revalidate: 3600 }, signal: controller.signal }

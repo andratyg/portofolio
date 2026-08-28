@@ -14,17 +14,25 @@ export const ScrollProgressButton = () => {
   };
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    let ticking = false;
 
-      if (docHeight > 0) {
-        // This calculation ensures the progress is linear from 0 to 1
-        const scrollProgress = scrollTop / docHeight;
-        setProgress(scrollProgress);
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollTop = window.scrollY;
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+
+          if (docHeight > 0) {
+            // This calculation ensures the progress is linear from 0 to 1
+            const scrollProgress = scrollTop / docHeight;
+            setProgress(scrollProgress);
+          }
+          
+          setIsVisible(scrollTop > 300);
+          ticking = false;
+        });
+        ticking = true;
       }
-      
-      setIsVisible(scrollTop > 300);
     };
 
     // We add a listener for load and resize to handle dynamic content
