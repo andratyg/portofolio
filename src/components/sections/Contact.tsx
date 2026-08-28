@@ -57,6 +57,9 @@ export const Contact = () => {
     setIsSubmitting(true);
     setIsSuccess(false);
     try {
+      if (!db) {
+        throw new Error("Database not connected");
+      }
       await addDoc(collection(db, 'messages'), {
         name,
         email,

@@ -94,6 +94,9 @@ export const metadata: Metadata = {
       'id-ID': BASE_URL,
       'en-US': `${BASE_URL}?lang=en`,
     },
+    types: {
+      'application/rss+xml': '/feed.xml',
+    },
   },
 
   // ── Open Graph (WhatsApp, Discord, Facebook, LINE, dll)
@@ -239,6 +242,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={`${plusJakarta.variable} ${outfit.variable} font-body antialiased theme-transition`} suppressHydrationWarning>
+        <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossOrigin="anonymous" />
         <script
           dangerouslySetInnerHTML={{
             __html: `if(typeof window!=='undefined'&&window.trustedTypes&&window.trustedTypes.createPolicy){try{window.trustedTypes.createPolicy('default',{createHTML:function(s){return s},createScriptURL:function(s){return s},createScript:function(s){return s}})}catch(e){}}`

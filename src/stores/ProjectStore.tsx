@@ -3,9 +3,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Project, Certificate, PortfolioStats, ProfileData, Testimonial, Experience, ContactMessage, TechSkill, BlogPost, ShortLink } from '@/lib/types';
-import { useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
-import { collection, doc, writeBatch, getDocs, getDoc } from 'firebase/firestore';
-import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { useFirestore, useCollection, useDoc } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 
 interface ProjectStoreType {
@@ -94,44 +92,43 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const isAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
 
-  // Real-time queries for Admin dashboard only
-  const projectsQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'projects') : null), [firestore, isAdmin]);
-  const certsQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'certificates') : null), [firestore, isAdmin]);
-  const testsQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'testimonials') : null), [firestore, isAdmin]);
-  const journeyQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'careerTimelineEntries') : null), [firestore, isAdmin]);
-  const messagesQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'messages') : null), [firestore, isAdmin]);
-  const techSkillsQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'techSkills') : null), [firestore, isAdmin]);
-  const blogsQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'blogs') : null), [firestore, isAdmin]);
-  const shortLinksQuery = useMemoFirebase(() => (isAdmin ? collection(firestore, 'shortLinks') : null), [firestore, isAdmin]);
-  const profileDocRef = useMemoFirebase(() => (isAdmin ? doc(firestore, 'portfolioOwner', 'profile') : null), [firestore, isAdmin]);
+  const projectsPath = isAdmin ? 'projects' : null;
+  const certsPath = isAdmin ? 'certificates' : null;
+  const testsPath = isAdmin ? 'testimonials' : null;
+  const journeyPath = isAdmin ? 'careerTimelineEntries' : null;
+  const messagesPath = isAdmin ? 'messages' : null;
+  const techSkillsPath = isAdmin ? 'techSkills' : null;
+  const blogsPath = isAdmin ? 'blogs' : null;
+  const shortLinksPath = isAdmin ? 'shortLinks' : null;
+  const profileDocPath = isAdmin ? 'portfolioOwner/profile' : null;
 
-  const { data: adminProjects, isLoading: loadingProjects } = useCollection<Project>(projectsQuery);
-  const { data: adminCerts, isLoading: loadingCerts } = useCollection<Certificate>(certsQuery);
-  const { data: adminTests, isLoading: loadingTests } = useCollection<Testimonial>(testsQuery);
-  const { data: adminJourney, isLoading: loadingJourney } = useCollection<Experience>(journeyQuery);
-  const { data: adminMessages, isLoading: loadingMessages } = useCollection<ContactMessage>(messagesQuery);
-  const { data: adminTechSkills, isLoading: loadingTechSkills } = useCollection<TechSkill>(techSkillsQuery);
-  const { data: adminBlogs, isLoading: loadingBlogs } = useCollection<BlogPost>(blogsQuery);
-  const { data: adminShortLinks, isLoading: loadingShortLinks } = useCollection<ShortLink>(shortLinksQuery);
-  const { data: adminProfile, isLoading: loadingProfile } = useDoc<any>(profileDocRef);
+  const { data: adminProjects, isLoading: loadingProjects } = useCollection<Project>(projectsPath);
+  const { data: adminCerts, isLoading: loadingCerts } = useCollection<Certificate>(certsPath);
+  const { data: adminTests, isLoading: loadingTests } = useCollection<Testimonial>(testsPath);
+  const { data: adminJourney, isLoading: loadingJourney } = useCollection<Experience>(journeyPath);
+  const { data: adminMessages, isLoading: loadingMessages } = useCollection<ContactMessage>(messagesPath);
+  const { data: adminTechSkills, isLoading: loadingTechSkills } = useCollection<TechSkill>(techSkillsPath);
+  const { data: adminBlogs, isLoading: loadingBlogs } = useCollection<BlogPost>(blogsPath);
+  const { data: adminShortLinks, isLoading: loadingShortLinks } = useCollection<ShortLink>(shortLinksPath);
+  const { data: adminProfile, isLoading: loadingProfile } = useDoc<any>(profileDocPath);
 
-  // State for public one-time fetch
   const [publicData, setPublicData] = useState<typeof cachedStoreState>(cachedStoreState);
   const [isPublicLoading, setIsPublicLoading] = useState(!cachedStoreState && !isAdmin);
   const [publicError, setPublicError] = useState<any>(null);
 
-  // One-time fetch for public pages to avoid persistent WebSockets & enable bfcache
   useEffect(() => {
-    if (isAdmin || cachedStoreState) return;
+    if (isAdmin || cachedStoreState || !firestore) return;
+    const db = firestore;
 
     let isMounted = true;
 
     async function fetchPublicData() {
       try {
+        const { getDoc, getDocs, doc, collection } = await import('firebase/firestore');
         // Critical Tier 1: Fetch Profile & Projects for instantaneous Hero LCP
         const [profileSnap, projectsSnap] = await Promise.all([
-          getDoc(doc(firestore, 'portfolioOwner', 'profile')),
-          getDocs(collection(firestore, 'projects')),
+          getDoc(doc(db, 'portfolioOwner', 'profile')),
+          getDocs(collection(db, 'projects')),
         ]);
 
         if (!isMounted) return;
@@ -153,10 +150,10 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
           instagram: profileSnap.data()?.instagram || defaultProfile.instagram,
           github: profileSnap.data()?.githubProfileUrl || defaultProfile.github,
           tiktok: profileSnap.data()?.tiktok || defaultProfile.tiktok,
-          cvUrl: profileSnap.data()?.cvUrl || '',
-          cvFileName: profileSnap.data()?.cvFileName || '',
-          cvUpdatedAt: profileSnap.data()?.cvUpdatedAt || '',
-          cvStoragePath: profileSnap.data()?.cvStoragePath || '',
+          cvUrl: profileSnap.data()?.cvUrl || defaultProfile.cvUrl,
+          cvFileName: profileSnap.data()?.cvFileName || defaultProfile.cvFileName,
+          cvUpdatedAt: profileSnap.data()?.cvUpdatedAt || defaultProfile.cvUpdatedAt,
+          cvStoragePath: profileSnap.data()?.cvStoragePath || defaultProfile.cvStoragePath,
         } : defaultProfile;
 
         const sData: PortfolioStats = profileSnap.exists() ? {
@@ -166,7 +163,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
           clientSatisfaction: profileSnap.data()?.clientSatisfaction || defaultStats.clientSatisfaction,
         } : defaultStats;
 
-        const loadedProjects = projectsSnap.docs.map(d => ({ ...(d.data() as Project), id: d.id }));
+        const loadedProjects = projectsSnap.docs.map((d: any) => ({ ...(d.data() as Project), id: d.id }));
 
         // Unblock initial Hero LCP immediately
         setPublicData(prev => ({
@@ -195,11 +192,11 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
           skillsSnap,
           blogsSnap,
         ] = await Promise.all([
-          getDocs(collection(firestore, 'certificates')),
-          getDocs(collection(firestore, 'testimonials')),
-          getDocs(collection(firestore, 'careerTimelineEntries')),
-          getDocs(collection(firestore, 'techSkills')),
-          getDocs(collection(firestore, 'blogs')),
+          getDocs(collection(db, 'certificates')),
+          getDocs(collection(db, 'testimonials')),
+          getDocs(collection(db, 'careerTimelineEntries')),
+          getDocs(collection(db, 'techSkills')),
+          getDocs(collection(db, 'blogs')),
         ]);
 
         if (!isMounted) return;
@@ -231,6 +228,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
               updatedAt: b.updatedAt || '',
             };
           }),
+          shortLinks: [],
           profile: pData,
           stats: sData,
         };
@@ -251,7 +249,6 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     };
   }, [firestore, isAdmin]);
 
-  // Derived values
   const projects = isAdmin ? (adminProjects || []) : (publicData?.projects || []);
   const certificates = isAdmin ? (adminCerts || []) : (publicData?.certificates || []);
   const testimonials = isAdmin ? (adminTests || []) : (publicData?.testimonials || []);
@@ -325,7 +322,7 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const error = isAdmin ? null : publicError;
 
-  const backupData = () => {
+  const backupData = async () => {
     const data = {
       projects,
       certificates,
@@ -348,7 +345,9 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const restoreData = async (json: string) => {
+    if (!firestore) return;
     try {
+      const { doc, writeBatch } = await import('firebase/firestore');
       const data = JSON.parse(json);
       const batch = writeBatch(firestore);
       if (!data.projects || !data.certificates) throw new Error("Invalid format");
@@ -365,13 +364,17 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   };
 
-  const addProject = (project: Project) => {
+  const addProject = async (project: Project) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
     const docRef = doc(firestore, 'projects', project.id);
     setDocumentNonBlocking(docRef, { ...project, updatedAt: new Date().toISOString() }, { merge: true });
   };
   
   const setFeaturedProject = async (projectId: string) => {
     if (!firestore || projects.length === 0) return;
+    const { doc, writeBatch } = await import('firebase/firestore');
     const batch = writeBatch(firestore);
     projects.forEach(p => {
         const projectRef = doc(firestore, 'projects', p.id);
@@ -394,27 +397,98 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   };
 
-  const deleteProject = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'projects', id));
-  const addCertificate = (cert: Certificate) => setDocumentNonBlocking(doc(firestore, 'certificates', cert.id), { ...cert, updatedAt: new Date().toISOString() }, { merge: true });
-  const deleteCertificate = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'certificates', id));
-  const addTestimonial = (test: Testimonial) => setDocumentNonBlocking(doc(firestore, 'testimonials', test.id), test, { merge: true });
-  const deleteTestimonial = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'testimonials', id));
-  const addExperience = (exp: Experience) => setDocumentNonBlocking(doc(firestore, 'careerTimelineEntries', exp.id), exp, { merge: true });
-  const deleteExperience = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'careerTimelineEntries', id));
-  const deleteMessage = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'messages', id));
-  const addTechSkill = (skill: TechSkill) => setDocumentNonBlocking(doc(firestore, 'techSkills', skill.id), { ...skill, updatedAt: new Date().toISOString() }, { merge: true });
-  const deleteTechSkill = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'techSkills', id));
-  const addBlog = (blog: BlogPost) => setDocumentNonBlocking(doc(firestore, 'blogs', blog.id), { ...blog, updatedAt: new Date().toISOString() }, { merge: true });
-  const deleteBlog = (id: string) => deleteDocumentNonBlocking(doc(firestore, 'blogs', id));
+  const deleteProject = async (id: string) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+    deleteDocumentNonBlocking(doc(firestore, 'projects', id));
+  };
+  const addCertificate = async (cert: Certificate) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+    setDocumentNonBlocking(doc(firestore, 'certificates', cert.id), { ...cert, updatedAt: new Date().toISOString() }, { merge: true });
+  };
+  const deleteCertificate = async (id: string) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+    deleteDocumentNonBlocking(doc(firestore, 'certificates', id));
+  };
+  const addTestimonial = async (test: Testimonial) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+    setDocumentNonBlocking(doc(firestore, 'testimonials', test.id), test, { merge: true });
+  };
+  const deleteTestimonial = async (id: string) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+    deleteDocumentNonBlocking(doc(firestore, 'testimonials', id));
+  };
+  const addExperience = async (exp: Experience) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+    setDocumentNonBlocking(doc(firestore, 'careerTimelineEntries', exp.id), exp, { merge: true });
+  };
+  const deleteExperience = async (id: string) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+    deleteDocumentNonBlocking(doc(firestore, 'careerTimelineEntries', id));
+  };
+  const deleteMessage = async (id: string) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+    deleteDocumentNonBlocking(doc(firestore, 'messages', id));
+  };
+  const addTechSkill = async (skill: TechSkill) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+    setDocumentNonBlocking(doc(firestore, 'techSkills', skill.id), { ...skill, updatedAt: new Date().toISOString() }, { merge: true });
+  };
+  const deleteTechSkill = async (id: string) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+    deleteDocumentNonBlocking(doc(firestore, 'techSkills', id));
+  };
+  const addBlog = async (blog: BlogPost) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+    setDocumentNonBlocking(doc(firestore, 'blogs', blog.id), { ...blog, updatedAt: new Date().toISOString() }, { merge: true });
+  };
+  const deleteBlog = async (id: string) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+    deleteDocumentNonBlocking(doc(firestore, 'blogs', id));
+  };
 
-  const addShortLink = (link: ShortLink) => {
+  const addShortLink = async (link: ShortLink) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
     const cleanSlug = link.slug.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
     const docRef = doc(firestore, 'shortLinks', cleanSlug);
     setDocumentNonBlocking(docRef, { ...link, slug: cleanSlug, updatedAt: new Date().toISOString() }, { merge: true });
   };
-  const deleteShortLink = (slug: string) => deleteDocumentNonBlocking(doc(firestore, 'shortLinks', slug));
+  const deleteShortLink = async (slug: string) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+    deleteDocumentNonBlocking(doc(firestore, 'shortLinks', slug));
+  };
 
-  const updateProfileAndStats = (newProfile: ProfileData, newStats: PortfolioStats) => {
+  const updateProfileAndStats = async (newProfile: ProfileData, newStats: PortfolioStats) => {
+    if (!firestore) return;
+    const { doc } = await import('firebase/firestore');
+    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
     const dataToUpdate = {
       name: newProfile.name,
       roleId: newProfile.roleId,

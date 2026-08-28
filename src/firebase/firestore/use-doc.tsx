@@ -1,44 +1,29 @@
 'use client';
     
 import { useState, useEffect } from 'react';
-import {
-  DocumentReference,
-  onSnapshot,
-  DocumentData,
-  FirestoreError,
-  DocumentSnapshot,
-} from 'firebase/firestore';
+import type { FirestoreError } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { useFirestore } from '@/firebase/provider';
 
-/** Utility type to add an 'id' field to a given type T. */
 type WithId<T> = T & { id: string };
 
-/**
- * Interface for the return value of the useDoc hook.
- * @template T Type of the document data.
- */
 export interface UseDocResult<T> {
-  data: WithId<T> | null; // Document data with ID, or null.
-  isLoading: boolean;       // True if loading.
-  error: FirestoreError | Error | null; // Error object, or null.
+  data: WithId<T> | null;
+  isLoading: boolean;
+  error: FirestoreError | Error | null;
 }
 
-/**
- * React hook to subscribe to a single Firestore document in real-time.
- * Handles nullable references.
- */
 export function useDoc<T = any>(
-  memoizedDocRef: DocumentReference<DocumentData> | null | undefined,
+  path: string | null | undefined,
 ): UseDocResult<T> {
-  type StateDataType = WithId<T> | null;
-
-  const [data, setData] = useState<StateDataType>(null);
+  const firestore = useFirestore();
+  const [data, setData] = useState<WithId<T> | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<FirestoreError | Error | null>(null);
 
   useEffect(() => {
-    if (!memoizedDocRef) {
+    if (!path || !firestore) {
       setData(null);
       setIsLoading(false);
       setError(null);
@@ -51,12 +36,16 @@ export function useDoc<T = any>(
     let unsubscribe: (() => void) | undefined;
     let isCancelled = false;
 
-    const startListener = () => {
+    const startListener = async () => {
       if (isCancelled) return;
       try {
+        const { onSnapshot, doc } = await import('firebase/firestore');
+        if (isCancelled) return;
+
+        const docRef = doc(firestore, path);
         unsubscribe = onSnapshot(
-          memoizedDocRef,
-          (snapshot: DocumentSnapshot<DocumentData>) => {
+          docRef,
+          (snapshot: any) => {
             if (snapshot.exists()) {
               setData({ ...(snapshot.data() as T), id: snapshot.id });
             } else {
@@ -65,10 +54,10 @@ export function useDoc<T = any>(
             setError(null);
             setIsLoading(false);
           },
-          (error: FirestoreError) => {
+          (err: any) => {
             const contextualError = new FirestorePermissionError({
               operation: 'get',
-              path: memoizedDocRef.path,
+              path,
             });
 
             setError(contextualError);
@@ -98,7 +87,7 @@ export function useDoc<T = any>(
       }
       if (unsubscribe) unsubscribe();
     };
-  }, [memoizedDocRef]);
+  }, [path, firestore]);
 
   return { data, isLoading, error };
 }

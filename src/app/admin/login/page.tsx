@@ -62,7 +62,7 @@ export default function AdminLogin() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password || lockoutTime) return;
+    if (!email || !password || lockoutTime || !auth) return;
 
     setIsLoggingIn(true);
     try {

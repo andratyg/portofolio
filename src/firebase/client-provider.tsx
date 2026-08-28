@@ -9,16 +9,24 @@ interface FirebaseClientProviderProps {
 }
 
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
+  const [firestoreInstance, setFirestoreInstance] = React.useState<any>(null);
+
   const firebaseServices = useMemo(() => {
-    // Initialize Firebase on the client side, once per component mount.
     return initializeFirebase();
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
+
+  React.useEffect(() => {
+    // Lazily load firestore to save JS payload size
+    import('firebase/firestore').then(({ getFirestore }) => {
+      setFirestoreInstance(getFirestore(firebaseServices.firebaseApp));
+    });
+  }, [firebaseServices.firebaseApp]);
 
   return (
     <FirebaseProvider
       firebaseApp={firebaseServices.firebaseApp}
       auth={firebaseServices.auth}
-      firestore={firebaseServices.firestore}
+      firestore={firestoreInstance} // Initially null, populates later
     >
       {children}
     </FirebaseProvider>

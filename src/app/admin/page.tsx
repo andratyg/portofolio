@@ -98,12 +98,8 @@ function AdminContent() {
     };
   }, []);
 
-  const adminDocRef = useMemoFirebase(() => {
-    if (!db || !user) return null;
-    return doc(db, 'admins', user.uid);
-  }, [db, user]);
-
-  const { data: adminData, isLoading: isAdminLoading } = useDoc(adminDocRef);
+  const adminPath = user ? `admins/${user.uid}` : null;
+  const { data: adminData, isLoading: isAdminLoading } = useDoc(adminPath);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -712,7 +708,9 @@ function AdminContent() {
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('is_admin');
     }
-    await signOut(auth);
+    if (auth) {
+      await signOut(auth);
+    }
     router.push('/');
   };
 
