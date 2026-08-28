@@ -69,23 +69,19 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
   // Effect to subscribe to Firebase auth state changes
   useEffect(() => {
-    if (!auth) { // If no Auth service instance, cannot determine user state
-      setUserAuthState({ user: null, isUserLoading: false, userError: null });
-      return;
-    }
-
-    setUserAuthState({ user: null, isUserLoading: true, userError: null }); // Reset on auth instance change
-
     let unsubscribe: (() => void) | undefined;
     let isCancelled = false;
 
     const startAuthListener = async () => {
       if (isCancelled) return;
       try {
-        const { onAuthStateChanged } = await import('firebase/auth');
+        const { getAuth, onAuthStateChanged } = await import('firebase/auth');
         if (isCancelled) return;
+        
+        const authInstance = getAuth(firebaseApp);
+        
         unsubscribe = onAuthStateChanged(
-          auth,
+          authInstance,
           (firebaseUser) => { // Auth state determined
             setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
           },
@@ -106,6 +102,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
     );
 
     if (isAdmin) {
+      setUserAuthState({ user: null, isUserLoading: true, userError: null });
       startAuthListener();
     } else {
       setUserAuthState({ user: null, isUserLoading: false, userError: null });
@@ -115,7 +112,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
       isCancelled = true;
       if (unsubscribe) unsubscribe();
     };
-  }, [auth]); // Depends on the auth instance
+  }, [firebaseApp]); // Depends on the firebaseApp instance
 
   // Memoize the context value
   const contextValue = useMemo((): FirebaseContextState => {
@@ -162,9 +159,14 @@ export const useFirebase = (): FirebaseServicesAndUser => {
 
 /** Hook to access Firebase Auth instance. */
 export const useAuth = (): Auth | null => {
-  const { auth, firebaseApp } = useFirebase();
-  if (auth) return auth;
-  return null;
+  const { firebaseApp } = useFirebase();
+  // Provide a safe way to get Auth without throwing errors if used properly
+  try {
+    const { getAuth } = require('firebase/auth');
+    return getAuth(firebaseApp);
+  } catch {
+    return null;
+  }
 };
 
 /** Hook to access Firestore instance. */
