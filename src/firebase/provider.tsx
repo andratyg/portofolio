@@ -1,15 +1,15 @@
 'use client';
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
-import { FirebaseApp } from 'firebase/app';
-import { Firestore } from 'firebase/firestore';
-import { Auth, User, onAuthStateChanged, getAuth } from 'firebase/auth';
+import type { FirebaseApp } from 'firebase/app';
+import type { Firestore } from 'firebase/firestore';
+import type { Auth, User } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/utils/FirebaseErrorListener'
 
 interface FirebaseProviderProps {
   children: ReactNode;
   firebaseApp: FirebaseApp;
-  firestore: Firestore;
+  firestore?: Firestore | null;
   auth?: Auth | null;
 }
 
@@ -70,7 +70,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
   // Effect to subscribe to Firebase auth state changes
   useEffect(() => {
     if (!auth) { // If no Auth service instance, cannot determine user state
-      setUserAuthState({ user: null, isUserLoading: false, userError: new Error("Auth service not provided.") });
+      setUserAuthState({ user: null, isUserLoading: false, userError: null });
       return;
     }
 
@@ -79,18 +79,24 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
     let unsubscribe: (() => void) | undefined;
     let isCancelled = false;
 
-    const startAuthListener = () => {
+    const startAuthListener = async () => {
       if (isCancelled) return;
-      unsubscribe = onAuthStateChanged(
-        auth,
-        (firebaseUser) => { // Auth state determined
-          setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
-        },
-        (error) => { // Auth listener error
-          console.error("FirebaseProvider: onAuthStateChanged error:", error);
-          setUserAuthState({ user: null, isUserLoading: false, userError: error });
-        }
-      );
+      try {
+        const { onAuthStateChanged } = await import('firebase/auth');
+        if (isCancelled) return;
+        unsubscribe = onAuthStateChanged(
+          auth,
+          (firebaseUser) => { // Auth state determined
+            setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
+          },
+          (error) => { // Auth listener error
+            console.error("FirebaseProvider: onAuthStateChanged error:", error);
+            setUserAuthState({ user: null, isUserLoading: false, userError: error });
+          }
+        );
+      } catch (err: any) {
+        setUserAuthState({ user: null, isUserLoading: false, userError: err });
+      }
     };
 
     // If on admin route or admin session exists, start auth listener; otherwise skip to prevent iframe overhead

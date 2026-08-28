@@ -88,9 +88,9 @@ export const Hero = ({
   const storeFeatured = projects.find(p => p.featured);
   const featuredProject = storeFeatured || initialFeaturedProject;
   const effectiveProfile = (profile && profile.name) ? profile : (initialProfile || profile);
-  const heroTitle    = (language === 'id' ? effectiveProfile.heroTitleId    : (effectiveProfile.heroTitleEn    || effectiveProfile.heroTitleId))    ?? '';
-  const heroSubtitle = (language === 'id' ? effectiveProfile.heroSubtitleId : (effectiveProfile.heroSubtitleEn || effectiveProfile.heroSubtitleId)) ?? '';
-  const activeCvUrl  = (profile?.cvUrl && profile.cvUrl.trim() !== '') ? profile.cvUrl : (initialProfile?.cvUrl || initialCvUrl || '');
+  const heroTitle = (language === 'id' ? effectiveProfile.heroTitleId : (effectiveProfile.heroTitleEn || effectiveProfile.heroTitleId)) || (language === 'id' ? 'Rekayasa Dampak Digital' : 'Engineering Digital Impact');
+  const heroSubtitle = (language === 'id' ? effectiveProfile.heroSubtitleId : (effectiveProfile.heroSubtitleEn || effectiveProfile.heroSubtitleId)) || (language === 'id' ? 'Saya merancang dan mengembangkan solusi perangkat lunak yang andal, dapat diskalakan, dan berpusat pada pengguna, mengubah ide-ide kompleks menjadi kenyataan digital.' : 'I design and develop robust, scalable, and user-centric software solutions, turning complex ideas into digital realities.');
+  const activeCvUrl = (profile?.cvUrl && profile.cvUrl.trim() !== '') ? profile.cvUrl : (initialProfile?.cvUrl || initialCvUrl || '');
   const activeCvFileName = profile?.cvFileName || initialProfile?.cvFileName || 'CV_Nara_Andra_Tyaga.pdf';
   const isValidImageUrl = (url: string) => url && (url.startsWith('http') || url.startsWith('/'));
 
@@ -138,7 +138,7 @@ export const Hero = ({
 
           {/* Name + Typewriter role */}
           <p className="text-base sm:text-lg font-semibold text-muted-foreground mb-1 tracking-wide">
-            {profile.name || "Nara Andra Tyaga"}
+            {effectiveProfile.name || "Nara Andra Tyaga"}
           </p>
           <div className="flex items-center text-sm sm:text-base font-medium text-primary mb-3 h-6 leading-none">
             <span>{displayText}</span>
@@ -149,7 +149,7 @@ export const Hero = ({
           <h1
             className="text-[clamp(2.8rem,7.5vw,7rem)] font-black leading-[0.9] mb-7 tracking-tight text-foreground"
           >
-            {heroTitle || 'Nara Andra Tyaga'}
+            {heroTitle}
           </h1>
 
           {/* Subtitle */}
@@ -161,7 +161,7 @@ export const Hero = ({
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 no-print">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 no-print min-h-[3.5rem]">
             <Link href="#portfolio" className="w-full sm:w-auto">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button

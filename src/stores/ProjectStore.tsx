@@ -2,7 +2,20 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Project, Certificate, PortfolioStats, ProfileData, Testimonial, Experience, ContactMessage, TechSkill, BlogPost, ShortLink } from '@/lib/types';
+import { 
+  Project, 
+  Certificate, 
+  PortfolioStats, 
+  ProfileData, 
+  Testimonial, 
+  Experience, 
+  ContactMessage, 
+  TechSkill, 
+  BlogPost, 
+  ShortLink,
+  DEFAULT_PROFILE,
+  DEFAULT_STATS
+} from '@/lib/types';
 import { useFirestore, useCollection, useDoc } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 
@@ -40,36 +53,8 @@ interface ProjectStoreType {
   restoreData: (json: string) => Promise<void>;
 }
 
-const defaultStats: PortfolioStats = {
-  completedProjects: '12',
-  yearsExperience: '5',
-  techMastered: '20',
-  clientSatisfaction: '100%'
-};
-
-const defaultProfile: ProfileData = {
-  name: 'Nara Andra Tyaga',
-  roleId: 'Pengembang Full-Stack',
-  roleEn: 'Full-Stack Developer',
-  aboutMeId: 'Saya seorang pengembang full-stack dengan hasrat untuk membangun aplikasi web yang indah dan fungsional.',
-  aboutMeEn: 'I am a full-stack developer with a passion for building beautiful and functional web applications.',
-  profilePictureUrl: '/profile-fallback.jpg',
-  heroTitleId: 'Rekayasa Dampak Digital',
-  heroTitleEn: 'Engineering Digital Impact',
-  heroSubtitleId: 'Saya merancang dan mengembangkan solusi perangkat lunak yang andal, dapat diskalakan, dan berpusat pada pengguna, mengubah ide-ide kompleks menjadi kenyataan digital.',
-  heroSubtitleEn: 'I design and develop robust, scalable, and user-centric software solutions, turning complex ideas into digital realities.',
-  email: 'admin@karyapro.app',
-  whatsapp: '6281234567890',
-  linkedin: 'https://www.linkedin.com/in/nara-andra-tyaga/',
-  instagram: 'https://www.instagram.com/nara.dev/',
-  github: 'https://github.com/naradev',
-  tiktok: 'https://www.tiktok.com/@naradev',
-  cvUrl: '',
-  cvFileName: '',
-  cvUpdatedAt: '',
-  cvStoragePath: '',
-};
-
+const defaultStats = DEFAULT_STATS;
+const defaultProfile = DEFAULT_PROFILE;
 
 const ProjectStoreContext = createContext<ProjectStoreType | undefined>(undefined);
 
@@ -117,124 +102,21 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [publicError, setPublicError] = useState<any>(null);
 
   useEffect(() => {
-    if (isAdmin || cachedStoreState || !firestore) return;
-    const db = firestore;
+    if (isAdmin || cachedStoreState) return;
 
     let isMounted = true;
 
     async function fetchPublicData() {
       try {
-        const { getDoc, getDocs, doc, collection } = await import('firebase/firestore');
-        // Critical Tier 1: Fetch Profile & Projects for instantaneous Hero LCP
-        const [profileSnap, projectsSnap] = await Promise.all([
-          getDoc(doc(db, 'portfolioOwner', 'profile')),
-          getDocs(collection(db, 'projects')),
-        ]);
+        const res = await fetch('/api/public-data');
+        if (!res.ok) throw new Error('Failed to fetch public data');
+        const fullState = await res.json();
 
         if (!isMounted) return;
-
-        const pData: ProfileData = profileSnap.exists() ? {
-          name: profileSnap.data()?.name || defaultProfile.name,
-          roleId: profileSnap.data()?.roleId || defaultProfile.roleId,
-          roleEn: profileSnap.data()?.roleEn || defaultProfile.roleEn,
-          aboutMeId: profileSnap.data()?.aboutMeId || defaultProfile.aboutMeId,
-          aboutMeEn: profileSnap.data()?.aboutMeEn || defaultProfile.aboutMeEn,
-          profilePictureUrl: profileSnap.data()?.profilePictureUrl || defaultProfile.profilePictureUrl,
-          heroTitleId: profileSnap.data()?.heroTitleId || defaultProfile.heroTitleId,
-          heroTitleEn: profileSnap.data()?.heroTitleEn || defaultProfile.heroTitleEn,
-          heroSubtitleId: profileSnap.data()?.heroSubtitleId || defaultProfile.heroSubtitleId,
-          heroSubtitleEn: profileSnap.data()?.heroSubtitleEn || defaultProfile.heroSubtitleEn,
-          email: profileSnap.data()?.email || defaultProfile.email,
-          whatsapp: profileSnap.data()?.whatsAppNumber || defaultProfile.whatsapp,
-          linkedin: profileSnap.data()?.linkedInProfileUrl || defaultProfile.linkedin,
-          instagram: profileSnap.data()?.instagram || defaultProfile.instagram,
-          github: profileSnap.data()?.githubProfileUrl || defaultProfile.github,
-          tiktok: profileSnap.data()?.tiktok || defaultProfile.tiktok,
-          cvUrl: profileSnap.data()?.cvUrl || defaultProfile.cvUrl,
-          cvFileName: profileSnap.data()?.cvFileName || defaultProfile.cvFileName,
-          cvUpdatedAt: profileSnap.data()?.cvUpdatedAt || defaultProfile.cvUpdatedAt,
-          cvStoragePath: profileSnap.data()?.cvStoragePath || defaultProfile.cvStoragePath,
-        } : defaultProfile;
-
-        const sData: PortfolioStats = profileSnap.exists() ? {
-          completedProjects: String(profileSnap.data()?.totalProjectsCompleted || defaultStats.completedProjects),
-          yearsExperience: String(profileSnap.data()?.codingExperienceYears || defaultStats.yearsExperience),
-          techMastered: String(profileSnap.data()?.totalTechnologiesMastered || defaultStats.techMastered),
-          clientSatisfaction: profileSnap.data()?.clientSatisfaction || defaultStats.clientSatisfaction,
-        } : defaultStats;
-
-        const loadedProjects = projectsSnap.docs.map((d: any) => ({ ...(d.data() as Project), id: d.id }));
-
-        // Unblock initial Hero LCP immediately
-        setPublicData(prev => ({
-          ...(prev || {
-            projects: loadedProjects,
-            certificates: [],
-            testimonials: [],
-            experiences: [],
-            messages: [],
-            techSkills: [],
-            blogs: [],
-            profile: pData,
-            stats: sData,
-          }),
-          projects: loadedProjects,
-          profile: pData,
-          stats: sData,
-        }));
-        setIsPublicLoading(false);
-
-        // Secondary Tier 2: Fetch below-the-fold collections concurrently
-        const [
-          certsSnap,
-          testsSnap,
-          journeySnap,
-          skillsSnap,
-          blogsSnap,
-        ] = await Promise.all([
-          getDocs(collection(db, 'certificates')),
-          getDocs(collection(db, 'testimonials')),
-          getDocs(collection(db, 'careerTimelineEntries')),
-          getDocs(collection(db, 'techSkills')),
-          getDocs(collection(db, 'blogs')),
-        ]);
-
-        if (!isMounted) return;
-
-        const fullState = {
-          projects: loadedProjects,
-          certificates: certsSnap.docs.map(d => ({ ...(d.data() as Certificate), id: d.id })),
-          testimonials: testsSnap.docs.map(d => ({ ...(d.data() as Testimonial), id: d.id })),
-          experiences: journeySnap.docs.map(d => ({ ...(d.data() as Experience), id: d.id })),
-          messages: [],
-          techSkills: skillsSnap.docs.map(d => ({ ...(d.data() as TechSkill), id: d.id })),
-          blogs: blogsSnap.docs.map(d => {
-            const b = d.data() as any;
-            return {
-              id: d.id,
-              slug: b.slug || d.id,
-              titleId: b.titleId || '',
-              titleEn: b.titleEn || '',
-              summaryId: b.summaryId || '',
-              summaryEn: b.summaryEn || '',
-              contentId: b.contentId || '',
-              contentEn: b.contentEn || '',
-              coverImage: b.coverImage || '',
-              tags: Array.isArray(b.tags) ? b.tags : (b.tags ? b.tags.split(',').map((t: string) => t.trim()) : []),
-              author: b.author || 'Nara Andra Tyaga',
-              publishedAt: b.publishedAt || new Date().toISOString(),
-              readingTime: b.readingTime || '3 min read',
-              featured: !!b.featured,
-              updatedAt: b.updatedAt || '',
-            };
-          }),
-          shortLinks: [],
-          profile: pData,
-          stats: sData,
-        };
 
         cachedStoreState = fullState;
         setPublicData(fullState);
+        setIsPublicLoading(false);
       } catch (err: any) {
         if (!isMounted) return;
         setPublicError(err);
@@ -247,7 +129,8 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     return () => {
       isMounted = false;
     };
-  }, [firestore, isAdmin]);
+  }, [isAdmin]);
+
 
   const projects = isAdmin ? (adminProjects || []) : (publicData?.projects || []);
   const certificates = isAdmin ? (adminCerts || []) : (publicData?.certificates || []);

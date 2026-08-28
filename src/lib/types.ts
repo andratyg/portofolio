@@ -151,4 +151,35 @@ export interface ShortLinkClick {
   referer: string;
   userAgent: string;
   isBot: boolean;
-}
+}
+
+export const DEFAULT_STATS: PortfolioStats = {
+  completedProjects: '12',
+  yearsExperience: '5',
+  techMastered: '20',
+  clientSatisfaction: '100%'
+};
+
+export const DEFAULT_PROFILE: ProfileData = {
+  name: 'Nara Andra Tyaga',
+  roleId: 'Pengembang Full-Stack',
+  roleEn: 'Full-Stack Developer',
+  aboutMeId: 'Saya seorang pengembang full-stack dengan hasrat untuk membangun aplikasi web yang indah dan fungsional.',
+  aboutMeEn: 'I am a full-stack developer with a passion for building beautiful and functional web applications.',
+  profilePictureUrl: '/profile-fallback.jpg',
+  heroTitleId: 'Rekayasa Dampak Digital',
+  heroTitleEn: 'Engineering Digital Impact',
+  heroSubtitleId: 'Saya merancang dan mengembangkan solusi perangkat lunak yang andal, dapat diskalakan, dan berpusat pada pengguna, mengubah ide-ide kompleks menjadi kenyataan digital.',
+  heroSubtitleEn: 'I design and develop robust, scalable, and user-centric software solutions, turning complex ideas into digital realities.',
+  email: 'admin@karyapro.app',
+  whatsapp: '6281234567890',
+  linkedin: 'https://www.linkedin.com/in/nara-andra-tyaga/',
+  instagram: 'https://www.instagram.com/nara.dev/',
+  github: 'https://github.com/naradev',
+  tiktok: 'https://www.tiktok.com/@naradev',
+  cvUrl: '',
+  cvFileName: '',
+  cvUpdatedAt: '',
+  cvStoragePath: '',
+};
+
