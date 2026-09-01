@@ -21,7 +21,10 @@ export function CommandPalette() {
   const [copiedLink, setCopiedLink] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { projects, blogs, profile } = useProjectStore();
+  const store = useProjectStore();
+  const projects = store?.projects || [];
+  const blogs = store?.blogs || [];
+  const profile = store?.profile;
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
   const inputRef = useRef<HTMLInputElement>(null);

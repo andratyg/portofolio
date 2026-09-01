@@ -418,6 +418,41 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
 export const useProjectStore = () => {
   const context = useContext(ProjectStoreContext);
-  if (!context) throw new Error('useProjectStore error');
+  if (!context) {
+    return {
+      projects: [],
+      certificates: [],
+      testimonials: [],
+      experiences: [],
+      messages: [],
+      stats: defaultStats,
+      profile: defaultProfile,
+      blogs: [],
+      shortLinks: [],
+      isLoading: false,
+      error: null,
+      addProject: () => {},
+      deleteProject: () => {},
+      setFeaturedProject: () => {},
+      addCertificate: () => {},
+      deleteCertificate: () => {},
+      addTestimonial: () => {},
+      deleteTestimonial: () => {},
+      addExperience: () => {},
+      deleteExperience: () => {},
+      deleteMessage: () => {},
+      updateProfileAndStats: () => {},
+      techSkills: [],
+      addTechSkill: () => {},
+      deleteTechSkill: () => {},
+      addBlog: () => {},
+      deleteBlog: () => {},
+      addShortLink: () => {},
+      deleteShortLink: () => {},
+      backupData: () => {},
+      restoreData: async () => {},
+    };
+  }
   return context;
 };
+

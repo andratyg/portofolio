@@ -10,6 +10,7 @@ import { ScrollProgressButton } from '@/components/layout/ScrollProgressButton';
 import { SplashScreen } from '@/components/layout/SplashScreen';
 import { PageTransition } from '@/components/layout/PageTransition';
 import { MotionProvider } from '@/components/providers/MotionProvider';
+import { ProjectStoreProvider } from '@/stores/ProjectStore';
 import { ClientShell } from '@/components/providers/ClientShell';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -258,15 +259,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <ThemeProvider>
               <SecurityProvider>
                 <MotionProvider>
-                  <SplashScreen />
-                  <ClientShell />
-                  <div className="overflow-x-hidden w-full">
-                    <PageTransition>{children}</PageTransition>
-                  </div>
-                  <Toaster />
-                  <ScrollProgressButton />
-                  <Analytics />
-                  <SpeedInsights />
+                  <ProjectStoreProvider>
+                    <SplashScreen />
+                    <ClientShell />
+                    <div className="overflow-x-hidden w-full">
+                      <PageTransition>{children}</PageTransition>
+                    </div>
+                    <Toaster />
+                    <ScrollProgressButton />
+                    <Analytics />
+                    <SpeedInsights />
+                  </ProjectStoreProvider>
                 </MotionProvider>
               </SecurityProvider>
             </ThemeProvider>
