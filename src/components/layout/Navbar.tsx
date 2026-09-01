@@ -262,7 +262,7 @@ export const Navbar = () => {
                   <ChevronDown className="h-3 w-3 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80 p-3.5 rounded-3xl border border-border/80 shadow-2xl bg-card/95 backdrop-blur-xl space-y-3">
+              <DropdownMenuContent align="end" className="w-80 max-h-[85vh] overflow-y-auto p-3.5 rounded-3xl border border-border/80 shadow-2xl bg-card/95 backdrop-blur-xl space-y-3 no-scrollbar">
                 {/* Header */}
                 <div className="flex items-center justify-between px-2 pt-1 pb-0.5 border-b border-border/40">
                   <span className="text-[11px] font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -297,13 +297,51 @@ export const Navbar = () => {
                           )}
                         >
                           <div className="flex items-center justify-between w-full">
-                            {/* 3-Color Swatch Pill */}
                             <div className="flex items-center -space-x-1 p-0.5 rounded-full bg-background/80 border border-border/60">
                               <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.bg }} />
                               <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.primary }} />
                               <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.accent }} />
                             </div>
                             {isCurrent && <Check className="h-3.5 w-3.5 text-primary" />}
+                          </div>
+                          <div className="text-left w-full">
+                            <p className="text-xs font-bold leading-none">{cfg.name[language]}</p>
+                            <p className="text-[9px] text-muted-foreground line-clamp-1 mt-0.5">{cfg.description[language]}</p>
+                          </div>
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Anime & Gaming Universe */}
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-primary/90 px-2 mb-1.5 flex items-center justify-between">
+                    <span>{language === 'id' ? 'Anime & Gaming Universe' : 'Anime & Gaming Universe'}</span>
+                    <span className="text-xs">🎮</span>
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {(['sakura', 'arcade', 'astral', 'mecha'] as Theme[]).map((tName) => {
+                      const cfg = THEME_CONFIGS[tName];
+                      const isCurrent = theme === tName;
+                      return (
+                        <DropdownMenuItem
+                          key={tName}
+                          onClick={() => setTheme(tName, true)}
+                          className={cn(
+                            "rounded-2xl p-2.5 cursor-pointer transition-all outline-none border flex flex-col items-start gap-1.5",
+                            isCurrent
+                              ? "bg-primary/15 border-primary/40 text-primary font-bold shadow-sm"
+                              : "hover:bg-muted/60 border-transparent text-foreground"
+                          )}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center -space-x-1 p-0.5 rounded-full bg-background/80 border border-border/60">
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.bg }} />
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.primary }} />
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.accent }} />
+                            </div>
+                            <span className="text-xs">{cfg.emoji}</span>
                           </div>
                           <div className="text-left w-full">
                             <p className="text-xs font-bold leading-none">{cfg.name[language]}</p>
@@ -424,7 +462,7 @@ export const Navbar = () => {
                     <Palette className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-72 sm:w-80 p-3.5 rounded-3xl border border-border/80 shadow-2xl bg-card/95 backdrop-blur-xl space-y-2.5">
+                <DropdownMenuContent align="end" className="w-72 sm:w-80 max-h-[75vh] overflow-y-auto p-3.5 rounded-3xl border border-border/80 shadow-2xl bg-card/95 backdrop-blur-xl space-y-2.5 no-scrollbar">
                   <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground px-2">
                     {language === 'id' ? 'Pilih Tema' : 'Select Theme'}
                   </p>
@@ -452,7 +490,7 @@ export const Navbar = () => {
                               <span className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: cfg.colors.primary }} />
                               <span className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: cfg.colors.accent }} />
                             </div>
-                            {isCurrent && <Check className="h-3.5 w-3.5 text-primary" />}
+                            {cfg.emoji ? <span className="text-xs">{cfg.emoji}</span> : (isCurrent && <Check className="h-3.5 w-3.5 text-primary" />)}
                           </div>
                           <span className="text-xs font-bold leading-tight truncate">{cfg.name[language]}</span>
                         </DropdownMenuItem>

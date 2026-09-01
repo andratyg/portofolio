@@ -2,8 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
-export type Theme = 'light' | 'dark' | 'ramadan' | 'imlek' | 'natal';
-export type ThemeCategory = 'standard' | 'seasonal';
+export type Theme = 'light' | 'dark' | 'sakura' | 'arcade' | 'astral' | 'mecha' | 'ramadan' | 'imlek' | 'natal';
+export type ThemeCategory = 'standard' | 'anime-gaming' | 'seasonal';
 
 export interface ThemeConfig {
   id: Theme;
@@ -47,11 +47,59 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
       accent: '#60a5fa',
     },
   },
+  sakura: {
+    id: 'sakura',
+    name: { id: 'Sakura Anime', en: 'Sakura Anime' },
+    category: 'anime-gaming',
+    description: { id: 'Senja twilight dreamy & kelopak sakura', en: 'Dreamy twilight & soft sakura petals' },
+    colors: {
+      bg: '#13101c',
+      primary: '#ff7597',
+      accent: '#fdcb6e',
+    },
+    emoji: '🌸',
+  },
+  arcade: {
+    id: 'arcade',
+    name: { id: 'Retro Arcade', en: 'Retro Arcade' },
+    category: 'anime-gaming',
+    description: { id: 'Cyber neon 80s & nostalgia game retro', en: '80s cyber neon & retro arcade nostalgia' },
+    colors: {
+      bg: '#0a0b16',
+      primary: '#ff007f',
+      accent: '#00f0ff',
+    },
+    emoji: '👾',
+  },
+  astral: {
+    id: 'astral',
+    name: { id: 'Astral Galaxy', en: 'Astral Galaxy' },
+    category: 'anime-gaming',
+    description: { id: 'Cosmic space navy & bintang gacha', en: 'Cosmic space navy & 5-star astral stardust' },
+    colors: {
+      bg: '#070d1e',
+      primary: '#ffd166',
+      accent: '#4cc9f0',
+    },
+    emoji: '✨',
+  },
+  mecha: {
+    id: 'mecha',
+    name: { id: 'Mecha Eva-01', en: 'Mecha Eva-01' },
+    category: 'anime-gaming',
+    description: { id: 'Deep purple & neon lime berserk', en: 'Evangelion purple & fluorescent neon lime' },
+    colors: {
+      bg: '#0e0b16',
+      primary: '#a855f7',
+      accent: '#22c55e',
+    },
+    emoji: '⚡',
+  },
   ramadan: {
     id: 'ramadan',
     name: { id: 'Ramadan', en: 'Ramadan' },
     category: 'seasonal',
-    description: { id: 'Emerald tenang & aksen emas berkilau', en: 'Serene emerald & gleaming gold' },
+    description: { id: 'Emerald tenang & emas berkilau', en: 'Serene emerald & gleaming gold' },
     colors: {
       bg: '#064e3b',
       primary: '#eab308',
@@ -63,7 +111,7 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
     id: 'imlek',
     name: { id: 'Imlek', en: 'Lunar New Year' },
     category: 'seasonal',
-    description: { id: 'Merah oriental & ornamen emas kemakmuran', en: 'Oriental crimson & golden prosperity' },
+    description: { id: 'Merah oriental & emas kemakmuran', en: 'Oriental crimson & golden prosperity' },
     colors: {
       bg: '#7f1d1d',
       primary: '#eab308',
@@ -75,7 +123,7 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
     id: 'natal',
     name: { id: 'Natal', en: 'Christmas & Winter' },
     category: 'seasonal',
-    description: { id: 'Midnight navy & merah ceria bertabur salju', en: 'Midnight navy & festive crimson snow' },
+    description: { id: 'Midnight navy & merah bersalju', en: 'Midnight navy & festive crimson snow' },
     colors: {
       bg: '#0c2340',
       primary: '#dc2626',
@@ -85,7 +133,7 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
   },
 };
 
-export const themes: Theme[] = ['light', 'dark', 'ramadan', 'imlek', 'natal'];
+export const themes: Theme[] = ['light', 'dark', 'sakura', 'arcade', 'astral', 'mecha', 'ramadan', 'imlek', 'natal'];
 
 interface ThemeContextType {
   theme: Theme;

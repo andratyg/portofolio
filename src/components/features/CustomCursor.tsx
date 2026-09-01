@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useTheme } from '@/components/providers/ThemeContext';
@@ -120,17 +120,21 @@ export const CustomCursor = () => {
           if (theme === 'imlek') color = `rgba(255, 215, 0, ${Math.random()})`; // Gold sparks
           else if (theme === 'ramadan') color = `rgba(158, 255, 158, ${Math.random()})`; // Green/Gold glow
           else if (theme === 'natal') color = `rgba(255, 255, 255, ${Math.random()})`; // White snow
+          else if (theme === 'sakura') color = Math.random() > 0.3 ? `rgba(255, 117, 151, ${Math.random() * 0.7 + 0.3})` : `rgba(253, 203, 110, ${Math.random() * 0.7 + 0.3})`; // Sakura pink & sunset amber
+          else if (theme === 'arcade') color = Math.random() > 0.5 ? `rgba(255, 0, 127, ${Math.random() * 0.8 + 0.2})` : `rgba(0, 240, 255, ${Math.random() * 0.8 + 0.2})`; // Neon pink & cyan
+          else if (theme === 'astral') color = Math.random() > 0.4 ? `rgba(255, 209, 102, ${Math.random() * 0.8 + 0.2})` : `rgba(76, 201, 240, ${Math.random() * 0.8 + 0.2})`; // Golden stardust & cyan
+          else if (theme === 'mecha') color = Math.random() > 0.5 ? `rgba(168, 85, 247, ${Math.random() * 0.8 + 0.2})` : `rgba(34, 197, 94, ${Math.random() * 0.8 + 0.2})`; // Purple & lime
           
           // Spawn 1-2 particles per frame when moving
           for (let i = 0; i < (Math.random() > 0.5 ? 1 : 2); i++) {
             particles.push({
               x: x + (Math.random() - 0.5) * 10,
               y: y + (Math.random() - 0.5) * 10,
-              vx: (Math.random() - 0.5) * (theme === 'imlek' ? 4 : 2),
-              vy: (Math.random() - 0.5) * 2 + (theme === 'natal' ? 1 : 0), // Snow falls down slightly
+              vx: (Math.random() - 0.5) * (theme === 'imlek' || theme === 'mecha' ? 4 : 2),
+              vy: (Math.random() - 0.5) * 2 + (theme === 'natal' || theme === 'sakura' ? 1 : 0), // Snow & petals fall down slightly
               life: 1,
-              maxLife: theme === 'imlek' ? 30 : 50,
-              size: Math.random() * (theme === 'imlek' ? 2 : 3) + 1,
+              maxLife: theme === 'imlek' || theme === 'arcade' ? 30 : 50,
+              size: Math.random() * (theme === 'sakura' || theme === 'astral' ? 3 : 2) + 1,
               color
             });
           }
@@ -144,7 +148,7 @@ export const CustomCursor = () => {
           
           // Spawn if mouse moved sufficiently to avoid clumping
           const dist = Math.hypot(mouseX - lastSpawnX, mouseY - lastSpawnY);
-          if (dist > 5 && (theme === 'imlek' || theme === 'ramadan' || theme === 'natal')) {
+          if (dist > 5 && theme !== 'light' && theme !== 'dark') {
             spawnParticles(mouseX, mouseY);
             lastSpawnX = mouseX;
             lastSpawnY = mouseY;
@@ -156,11 +160,14 @@ export const CustomCursor = () => {
             p.y += p.vy;
             p.life++;
             
-            if (theme === 'imlek') {
+            if (theme === 'imlek' || theme === 'mecha') {
               p.vy += 0.05; // Gravity for sparks
-            } else if (theme === 'ramadan') {
-              p.vy -= 0.02; // Float up for magic glow
+            } else if (theme === 'ramadan' || theme === 'astral') {
+              p.vy -= 0.02; // Float up for magic stardust glow
               p.x += Math.sin(p.life * 0.1) * 0.5;
+            } else if (theme === 'sakura') {
+              p.vy += 0.03; // Gentle flutter for petals
+              p.x += Math.sin(p.life * 0.08) * 0.6;
             }
 
             const opacity = 1 - (p.life / p.maxLife);

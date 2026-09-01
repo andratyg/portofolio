@@ -61,10 +61,21 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-      if (currentTheme !== 'light' && currentTheme !== 'dark') return;
+      
+      const themeParticleColorMap: Record<string, string> = {
+        light: '34, 38, 42',
+        dark: '255, 255, 255',
+        sakura: '255, 117, 151',
+        arcade: '0, 240, 255',
+        astral: '255, 209, 102',
+        mecha: '168, 85, 247',
+        ramadan: '234, 179, 8',
+        imlek: '255, 215, 0',
+        natal: '255, 255, 255',
+      };
 
-      const isDarkTheme = currentTheme === 'dark';
-      const rgbArgs = isDarkTheme ? '255, 255, 255' : '34, 38, 42';
+      const isLight = currentTheme === 'light';
+      const rgbArgs = themeParticleColorMap[currentTheme] || '255, 255, 255';
 
       particles.forEach((p, i) => {
         p.x += p.vx;
@@ -74,7 +85,7 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${rgbArgs}, ${p.opacity * (isDarkTheme ? 1.0 : 0.8)})`;
+        ctx.fillStyle = `rgba(${rgbArgs}, ${p.opacity * (isLight ? 0.7 : 0.95)})`;
         ctx.fill();
 
         for (let j = i + 1; j < particles.length; j++) {

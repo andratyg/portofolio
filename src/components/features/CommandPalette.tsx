@@ -124,15 +124,16 @@ export function CommandPalette() {
   // Themes Search Filter
   const filteredThemes = useMemo(() => {
     const themeList = Object.values(THEME_CONFIGS);
-    const isThemeQuery = ['theme', 'tema', 'warna', 'color', 'mode', 'tampilan', 'gelap', 'terang', 'dark', 'light'].some(k => q.includes(k));
-    if (!q) return themeList.slice(0, 4);
+    const isThemeQuery = ['theme', 'tema', 'warna', 'color', 'mode', 'tampilan', 'gelap', 'terang', 'dark', 'light', 'anime', 'game', 'gaming', 'gacha', 'pixel', 'retro', 'mecha'].some(k => q.includes(k));
+    if (!q) return themeList.slice(0, 6);
     if (isThemeQuery) return themeList;
     return themeList.filter(tItem => {
       const nameId = tItem.name.id.toLowerCase();
       const nameEn = tItem.name.en.toLowerCase();
       const idStr = tItem.id.toLowerCase();
+      const category = tItem.category.toLowerCase();
       const desc = (language === 'id' ? tItem.description.id : tItem.description.en).toLowerCase();
-      return nameId.includes(q) || nameEn.includes(q) || idStr.includes(q) || desc.includes(q);
+      return nameId.includes(q) || nameEn.includes(q) || idStr.includes(q) || category.includes(q) || desc.includes(q);
     });
   }, [q, language]);
 
