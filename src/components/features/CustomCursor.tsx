@@ -120,10 +120,10 @@ export const CustomCursor = () => {
           if (theme === 'imlek') color = `rgba(255, 215, 0, ${Math.random()})`; // Gold sparks
           else if (theme === 'ramadan') color = `rgba(158, 255, 158, ${Math.random()})`; // Green/Gold glow
           else if (theme === 'natal') color = `rgba(255, 255, 255, ${Math.random()})`; // White snow
-          else if (theme === 'sakura') color = Math.random() > 0.3 ? `rgba(255, 117, 151, ${Math.random() * 0.7 + 0.3})` : `rgba(253, 203, 110, ${Math.random() * 0.7 + 0.3})`; // Sakura pink & sunset amber
-          else if (theme === 'arcade') color = Math.random() > 0.5 ? `rgba(255, 0, 127, ${Math.random() * 0.8 + 0.2})` : `rgba(0, 240, 255, ${Math.random() * 0.8 + 0.2})`; // Neon pink & cyan
-          else if (theme === 'astral') color = Math.random() > 0.4 ? `rgba(255, 209, 102, ${Math.random() * 0.8 + 0.2})` : `rgba(76, 201, 240, ${Math.random() * 0.8 + 0.2})`; // Golden stardust & cyan
-          else if (theme === 'mecha') color = Math.random() > 0.5 ? `rgba(168, 85, 247, ${Math.random() * 0.8 + 0.2})` : `rgba(34, 197, 94, ${Math.random() * 0.8 + 0.2})`; // Purple & lime
+          else if (theme === 'sakura') color = Math.random() > 0.3 ? `rgba(255, 92, 138, ${Math.random() * 0.7 + 0.3})` : `rgba(255, 209, 102, ${Math.random() * 0.7 + 0.3})`; // Sakura Pink & Sunset Gold
+          else if (theme === 'arcade') color = Math.random() > 0.5 ? `rgba(0, 240, 255, ${Math.random() * 0.8 + 0.2})` : `rgba(255, 30, 138, ${Math.random() * 0.8 + 0.2})`; // Laser Cyan & Hot Magenta
+          else if (theme === 'astral') color = Math.random() > 0.4 ? `rgba(255, 192, 30, ${Math.random() * 0.8 + 0.2})` : `rgba(42, 209, 255, ${Math.random() * 0.8 + 0.2})`; // 5-Star Gold & Supernova Cyan
+          else if (theme === 'mecha') color = Math.random() > 0.5 ? `rgba(168, 85, 247, ${Math.random() * 0.8 + 0.2})` : `rgba(0, 255, 102, ${Math.random() * 0.8 + 0.2})`; // Eva Purple & Berserk Lime
           
           // Spawn 1-2 particles per frame when moving
           for (let i = 0; i < (Math.random() > 0.5 ? 1 : 2); i++) {

@@ -54,23 +54,38 @@ export default function SakuraDecorations() {
       opacity: number;
       swing: number;
       swingSpeed: number;
+      flip: number;
+      flipSpeed: number;
+      color: string;
+      colorGrad: string;
     }
 
     const petals: Petal[] = [];
-    const count = Math.min(30, Math.floor(window.innerWidth * window.innerHeight / 35000));
+    const count = Math.min(32, Math.floor(window.innerWidth * window.innerHeight / 32000));
+    const petalColors = [
+      { base: '255, 140, 175', grad: '255, 200, 220' }, // Vibrant Sakura
+      { base: '255, 110, 155', grad: '255, 180, 205' }, // Deep Rose Pink
+      { base: '255, 175, 195', grad: '255, 230, 240' }, // Pale Blossom
+      { base: '250, 160, 185', grad: '255, 215, 230' }, // Soft Twilight Petal
+    ];
     
     for (let i = 0; i < count; i++) {
+      const col = petalColors[i % petalColors.length];
       petals.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: Math.random() * 7 + 5,
-        vx: Math.random() * 0.6 + 0.2,
-        vy: Math.random() * 1.0 + 0.6,
+        size: Math.random() * 8 + 6,
+        vx: Math.random() * 0.7 + 0.3,
+        vy: Math.random() * 1.1 + 0.7,
         rotation: Math.random() * Math.PI * 2,
-        rotationSpeed: (Math.random() - 0.5) * 0.02,
-        opacity: Math.random() * 0.35 + 0.35,
+        rotationSpeed: (Math.random() - 0.5) * 0.025,
+        opacity: Math.random() * 0.4 + 0.45,
         swing: Math.random() * Math.PI * 2,
-        swingSpeed: Math.random() * 0.02 + 0.01,
+        swingSpeed: Math.random() * 0.025 + 0.015,
+        flip: Math.random() * Math.PI * 2,
+        flipSpeed: Math.random() * 0.03 + 0.02,
+        color: col.base,
+        colorGrad: col.grad,
       });
     }
 
@@ -78,12 +93,31 @@ export default function SakuraDecorations() {
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(p.rotation);
-      ctx.fillStyle = `rgba(255, 183, 197, ${p.opacity})`;
+      // Realistic 3D tumbling by scaling along the local axis
+      const flipScale = Math.cos(p.flip);
+      ctx.scale(1, Math.max(0.15, Math.abs(flipScale)));
+
+      const grad = ctx.createLinearGradient(0, -p.size, 0, p.size);
+      grad.addColorStop(0, `rgba(${p.colorGrad}, ${p.opacity})`);
+      grad.addColorStop(1, `rgba(${p.color}, ${p.opacity * 0.85})`);
+      ctx.fillStyle = grad;
+
       ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.bezierCurveTo(p.size / 2, -p.size / 2, p.size, 0, 0, p.size);
-      ctx.bezierCurveTo(-p.size, 0, -p.size / 2, -p.size / 2, 0, 0);
+      ctx.moveTo(0, -p.size);
+      // Left curve with subtle notch
+      ctx.bezierCurveTo(p.size * 0.8, -p.size * 0.6, p.size * 0.9, p.size * 0.4, 0, p.size);
+      // Right curve
+      ctx.bezierCurveTo(-p.size * 0.9, p.size * 0.4, -p.size * 0.8, -p.size * 0.6, 0, -p.size);
       ctx.fill();
+
+      // Subtle translucent vein line
+      ctx.strokeStyle = `rgba(255, 255, 255, ${p.opacity * 0.35})`;
+      ctx.lineWidth = 0.6;
+      ctx.beginPath();
+      ctx.moveTo(0, -p.size * 0.8);
+      ctx.lineTo(0, p.size * 0.6);
+      ctx.stroke();
+
       ctx.restore();
     };
 
@@ -103,23 +137,24 @@ export default function SakuraDecorations() {
         const dy = mouseY - p.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         
-        if (dist < 90) {
-          const force = (90 - dist) / 90;
-          p.x -= (dx / dist) * force * 1.5;
-          p.y -= (dy / dist) * force * 1.5;
+        if (dist < 100) {
+          const force = (100 - dist) / 100;
+          p.x -= (dx / dist) * force * 2;
+          p.y -= (dy / dist) * force * 2;
         }
 
         p.swing += p.swingSpeed;
-        p.x += p.vx + Math.sin(p.swing) * 0.6;
+        p.flip += p.flipSpeed;
+        p.x += p.vx + Math.sin(p.swing) * 0.9;
         p.y += p.vy;
         p.rotation += p.rotationSpeed;
         
-        if (p.y > canvas.height + 20) {
-          p.y = -20;
+        if (p.y > canvas.height + 25) {
+          p.y = -25;
           p.x = Math.random() * canvas.width;
         }
-        if (p.x > canvas.width + 20) p.x = -20;
-        if (p.x < -20) p.x = canvas.width + 20;
+        if (p.x > canvas.width + 25) p.x = -25;
+        if (p.x < -25) p.x = canvas.width + 25;
 
         drawPetal(p);
       });

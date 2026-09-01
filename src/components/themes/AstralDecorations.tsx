@@ -41,22 +41,59 @@ export default function AstralDecorations() {
       alpha: number;
       alphaSpeed: number;
       color: string;
+      isCross: boolean;
+      rot: number;
+      rotSpeed: number;
     }
 
     const stars: Star[] = [];
-    const count = Math.min(45, Math.floor(window.innerWidth * window.innerHeight / 28000));
+    const count = Math.min(50, Math.floor(window.innerWidth * window.innerHeight / 24000));
     
     for (let i = 0; i < count; i++) {
-      const isGold = Math.random() > 0.4;
+      const isGold = Math.random() > 0.45;
+      const isCross = Math.random() > 0.65; // 35% are 4-point sparkling stars
       stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: Math.random() * 1.8 + 1,
+        size: isCross ? Math.random() * 5 + 4 : Math.random() * 2 + 1,
         alpha: Math.random() * 0.7 + 0.2,
-        alphaSpeed: (Math.random() * 0.015 + 0.005) * (Math.random() > 0.5 ? 1 : -1),
-        color: isGold ? '255, 209, 102' : '76, 201, 240',
+        alphaSpeed: (Math.random() * 0.02 + 0.008) * (Math.random() > 0.5 ? 1 : -1),
+        color: isGold ? '255, 209, 60' : '42, 209, 255',
+        isCross,
+        rot: Math.random() * Math.PI,
+        rotSpeed: (Math.random() - 0.5) * 0.01,
       });
     }
+
+    const drawCrossStar = (s: Star) => {
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      ctx.rotate(s.rot);
+      ctx.fillStyle = `rgba(${s.color}, ${s.alpha})`;
+
+      // 4-point star diamond path
+      ctx.beginPath();
+      const r = s.size;
+      const inner = r * 0.2;
+      ctx.moveTo(0, -r);
+      ctx.lineTo(inner, -inner);
+      ctx.lineTo(r, 0);
+      ctx.lineTo(inner, inner);
+      ctx.lineTo(0, r);
+      ctx.lineTo(-inner, inner);
+      ctx.lineTo(-r, 0);
+      ctx.lineTo(-inner, -inner);
+      ctx.closePath();
+      ctx.fill();
+
+      // Soft center glowing core
+      ctx.beginPath();
+      ctx.arc(0, 0, inner, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${s.alpha * 0.9})`;
+      ctx.fill();
+
+      ctx.restore();
+    };
 
     const animate = (timestamp: number) => {
       rafId = requestAnimationFrame(animate);
@@ -71,14 +108,19 @@ export default function AstralDecorations() {
       
       stars.forEach(s => {
         s.alpha += s.alphaSpeed;
-        if (s.alpha > 0.9 || s.alpha < 0.15) {
+        if (s.alpha > 0.95 || s.alpha < 0.1) {
           s.alphaSpeed *= -1;
         }
+        s.rot += s.rotSpeed;
 
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${s.color}, ${s.alpha})`;
-        ctx.fill();
+        if (s.isCross) {
+          drawCrossStar(s);
+        } else {
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${s.color}, ${s.alpha})`;
+          ctx.fill();
+        }
       });
     };
     
