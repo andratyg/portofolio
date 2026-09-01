@@ -4,21 +4,20 @@ import React, { useEffect, useState, useRef } from 'react';
 import { m as motion } from 'framer-motion';
 
 export default function NatalDecorations() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [isEligible, setIsEligible] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(mediaQuery.matches);
-    const listener = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener('change', listener);
-      return () => mediaQuery.removeEventListener('change', listener);
+    if (typeof window === 'undefined') return;
+    const isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!isMobile && !prefersReducedMotion) {
+      setIsEligible(true);
     }
   }, []);
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    if (!isEligible) return;
     
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -26,6 +25,8 @@ export default function NatalDecorations() {
     if (!ctx) return;
 
     let rafId: number;
+    let lastTime = 0;
+    const fpsInterval = 1000 / 30; // 30 FPS cap
     let mouseX = -1000;
     let mouseY = -1000;
 
@@ -39,42 +40,48 @@ export default function NatalDecorations() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', resize, { passive: true });
     resize();
 
     const particles: {x: number, y: number, r: number, vx: number, vy: number, opacity: number}[] = [];
-    const count = Math.min(100, Math.floor(window.innerWidth * window.innerHeight / 12000));
+    const count = Math.min(60, Math.floor(window.innerWidth * window.innerHeight / 20000));
     
     for(let i=0; i<count; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        r: Math.random() * 2.5 + 1,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: Math.random() * 1 + 0.5,
-        opacity: Math.random() * 0.5 + 0.3
+        r: Math.random() * 2 + 1,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: Math.random() * 0.8 + 0.4,
+        opacity: Math.random() * 0.4 + 0.3
       });
     }
 
-    const animate = () => {
+    const animate = (timestamp: number) => {
+      rafId = requestAnimationFrame(animate);
+
+      const elapsed = timestamp - lastTime;
+      if (elapsed < fpsInterval) return;
+      lastTime = timestamp - (elapsed % fpsInterval);
+
+      if (document.hidden) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       particles.forEach(p => {
-        // Repulsion logic (mouse repel)
         const dx = mouseX - p.x;
         const dy = mouseY - p.y;
         const dist = Math.sqrt(dx*dx + dy*dy);
         
-        if (dist < 120) {
-          const force = (120 - dist) / 120;
-          p.x -= (dx / dist) * force * 3;
-          p.y -= (dy / dist) * force * 3;
+        if (dist < 100) {
+          const force = (100 - dist) / 100;
+          p.x -= (dx / dist) * force * 2;
+          p.y -= (dy / dist) * force * 2;
         }
 
         p.x += p.vx;
         p.y += p.vy;
         
-        // Reset if out of bounds
         if (p.y > canvas.height) {
           p.y = -10;
           p.x = Math.random() * canvas.width;
@@ -85,30 +92,25 @@ export default function NatalDecorations() {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255,255,255,${p.opacity})`;
-        ctx.shadowBlur = 5;
-        ctx.shadowColor = 'rgba(255,255,255,0.8)';
         ctx.fill();
-        ctx.shadowBlur = 0; // reset
       });
-
-      rafId = requestAnimationFrame(animate);
     };
     
-    animate();
+    rafId = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(rafId);
     };
-  }, [prefersReducedMotion]);
+  }, [isEligible]);
 
   // String Lights
   const StringLight = ({ left, color, delay }: { left: string; color: string; delay: number }) => (
     <motion.div
       className="absolute top-0 flex flex-col items-center pointer-events-none"
       style={{ left }}
-      animate={prefersReducedMotion ? {} : { opacity: [0.6, 1, 0.6] }}
+      animate={!isEligible ? {} : { opacity: [0.6, 1, 0.6] }}
       transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay }}
     >
       <div className="w-0.5 h-6 bg-green-900/50" />
@@ -142,7 +144,7 @@ export default function NatalDecorations() {
       <StringLight delay={0.4} left="90%" color="#ef4444" />
       
       {/* Snowfall (Canvas) */}
-      {!prefersReducedMotion && (
+      {isEligible && (
         <canvas
           ref={canvasRef}
           className="absolute inset-0 pointer-events-none"

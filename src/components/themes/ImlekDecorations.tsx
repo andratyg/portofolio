@@ -4,21 +4,20 @@ import React, { useEffect, useState, useRef } from 'react';
 import { m as motion } from 'framer-motion';
 
 export default function ImlekDecorations() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [isEligible, setIsEligible] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(mediaQuery.matches);
-    const listener = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener('change', listener);
-      return () => mediaQuery.removeEventListener('change', listener);
+    if (typeof window === 'undefined') return;
+    const isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!isMobile && !prefersReducedMotion) {
+      setIsEligible(true);
     }
   }, []);
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    if (!isEligible) return;
     
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -26,6 +25,8 @@ export default function ImlekDecorations() {
     if (!ctx) return;
 
     let rafId: number;
+    let lastTime = 0;
+    const fpsInterval = 1000 / 30; // 30 FPS cap
     let mouseX = -1000;
     let mouseY = -1000;
 
@@ -39,44 +40,50 @@ export default function ImlekDecorations() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', resize, { passive: true });
     resize();
 
     const particles: {x: number, y: number, size: number, vx: number, vy: number, angle: number, rotSpeed: number}[] = [];
-    const count = Math.min(30, Math.floor(window.innerWidth * window.innerHeight / 20000));
+    const count = Math.min(25, Math.floor(window.innerWidth * window.innerHeight / 25000));
     
     for(let i=0; i<count; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: Math.random() * 4 + 3,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: Math.random() * 1.5 + 1,
+        size: Math.random() * 3 + 2,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: Math.random() * 1.2 + 0.8,
         angle: Math.random() * Math.PI * 2,
-        rotSpeed: (Math.random() - 0.5) * 0.1
+        rotSpeed: (Math.random() - 0.5) * 0.08
       });
     }
 
-    const animate = () => {
+    const animate = (timestamp: number) => {
+      rafId = requestAnimationFrame(animate);
+
+      const elapsed = timestamp - lastTime;
+      if (elapsed < fpsInterval) return;
+      lastTime = timestamp - (elapsed % fpsInterval);
+
+      if (document.hidden) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       particles.forEach(p => {
-        // Repulsion logic (mouse repel)
         const dx = mouseX - p.x;
         const dy = mouseY - p.y;
         const dist = Math.sqrt(dx*dx + dy*dy);
         
-        if (dist < 120) {
-          const force = (120 - dist) / 120;
-          p.x -= (dx / dist) * force * 3;
-          p.y -= (dy / dist) * force * 3;
+        if (dist < 100) {
+          const force = (100 - dist) / 100;
+          p.x -= (dx / dist) * force * 2;
+          p.y -= (dy / dist) * force * 2;
         }
 
         p.x += p.vx;
         p.y += p.vy;
         p.angle += p.rotSpeed;
         
-        // Reset if out of bounds
         if (p.y > canvas.height) {
           p.y = -10;
           p.x = Math.random() * canvas.width;
@@ -88,30 +95,26 @@ export default function ImlekDecorations() {
         ctx.translate(p.x, p.y);
         ctx.rotate(p.angle);
         ctx.fillStyle = 'rgba(250, 204, 21, 0.8)';
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = 'rgba(250, 204, 21, 0.6)';
         ctx.fillRect(-p.size/2, -p.size, p.size, p.size * 2);
         ctx.restore();
       });
-
-      rafId = requestAnimationFrame(animate);
     };
     
-    animate();
+    rafId = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(rafId);
     };
-  }, [prefersReducedMotion]);
+  }, [isEligible]);
 
   // Lantern component
   const Lantern = ({ delay, left, scale }: { delay: number; left: string; scale: number }) => (
     <motion.div
       className="absolute top-0 flex flex-col items-center z-0 origin-top pointer-events-none"
       style={{ left, transform: `scale(${scale})` }}
-      animate={prefersReducedMotion ? {} : { rotate: [-3, 3, -3] }}
+      animate={!isEligible ? {} : { rotate: [-3, 3, -3] }}
       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay }}
     >
       <div className="w-0.5 h-12 bg-yellow-600/80" />
@@ -145,7 +148,7 @@ export default function ImlekDecorations() {
       <Lantern delay={2} left="70%" scale={0.6} />
 
       {/* Gold Particles (Canvas) */}
-      {!prefersReducedMotion && (
+      {isEligible && (
         <canvas
           ref={canvasRef}
           className="absolute inset-0 pointer-events-none"
