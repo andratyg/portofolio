@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useLanguage } from '@/components/providers/LanguageContext';
-import { useTheme, themes } from '@/components/providers/ThemeContext';
+import { useTheme, themes, THEME_CONFIGS, Theme } from '@/components/providers/ThemeContext';
 import { 
   Search, FileText, Globe, Palette, ArrowRight, 
   BookOpen, Briefcase, Award, History, Mail, User, 
@@ -99,6 +99,15 @@ export function CommandPalette() {
     }
   };
 
+  const handleSelectTheme = (tId: Theme) => {
+    setTheme(tId, true);
+    toast({
+      title: language === 'id' ? 'Tema Diperbarui' : 'Theme Updated',
+      description: `${language === 'id' ? 'Tema aktif:' : 'Active theme:'} ${THEME_CONFIGS[tId].name[language]}`,
+    });
+    setOpen(false);
+  };
+
   const q = query.toLowerCase().trim();
 
   // Navigation Items
@@ -111,6 +120,21 @@ export function CommandPalette() {
     { label: language === 'id' ? 'Tentang Saya' : 'About Me', href: '/about', icon: User, section: 'Navigasi' },
     { label: language === 'id' ? 'Hubungi Saya' : 'Contact Me', href: '/contact', icon: Mail, section: 'Navigasi' },
   ].filter(item => !q || item.label.toLowerCase().includes(q));
+
+  // Themes Search Filter
+  const filteredThemes = useMemo(() => {
+    const themeList = Object.values(THEME_CONFIGS);
+    const isThemeQuery = ['theme', 'tema', 'warna', 'color', 'mode', 'tampilan', 'gelap', 'terang', 'dark', 'light'].some(k => q.includes(k));
+    if (!q) return themeList.slice(0, 4);
+    if (isThemeQuery) return themeList;
+    return themeList.filter(tItem => {
+      const nameId = tItem.name.id.toLowerCase();
+      const nameEn = tItem.name.en.toLowerCase();
+      const idStr = tItem.id.toLowerCase();
+      const desc = (language === 'id' ? tItem.description.id : tItem.description.en).toLowerCase();
+      return nameId.includes(q) || nameEn.includes(q) || idStr.includes(q) || desc.includes(q);
+    });
+  }, [q, language]);
 
   // Projects Search
   const filteredProjects = useMemo(() => {
@@ -154,7 +178,7 @@ export function CommandPalette() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={language === 'id' ? "Cari halaman, proyek, artikel, atau aksi..." : "Search pages, projects, articles, or actions..."}
+            placeholder={language === 'id' ? "Cari halaman, proyek, artikel, tema tampilan..." : "Search pages, projects, articles, theme appearance..."}
             className="w-full bg-transparent text-sm sm:text-base outline-none text-foreground placeholder:text-muted-foreground font-medium"
           />
           {query && (
@@ -214,6 +238,58 @@ export function CommandPalette() {
               </button>
             </div>
           </div>
+
+          {/* Themes Section */}
+          {filteredThemes.length > 0 && (
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-3 mb-1.5 flex items-center justify-between">
+                <span>{language === 'id' ? 'Tema & Tampilan' : 'Themes & Appearance'}</span>
+                <Palette className="h-3 w-3 text-primary" />
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                {filteredThemes.map((tItem) => {
+                  const isCurrent = theme === tItem.id;
+                  return (
+                    <button
+                      key={tItem.id}
+                      onClick={() => handleSelectTheme(tItem.id)}
+                      className={cn(
+                        "flex items-center justify-between p-2.5 rounded-xl transition-all text-left group w-full border",
+                        isCurrent 
+                          ? "bg-primary/15 border-primary/40 text-primary" 
+                          : "hover:bg-muted/60 border-border/40 text-foreground"
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        {/* 3-Color Swatch Pill */}
+                        <div className="flex items-center -space-x-1 p-0.5 rounded-full bg-background border border-border/60 shrink-0">
+                          <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: tItem.colors.bg }} />
+                          <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: tItem.colors.primary }} />
+                          <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: tItem.colors.accent }} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold leading-tight truncate flex items-center gap-1.5">
+                            <span>{tItem.name[language]}</span>
+                            {tItem.emoji && <span className="text-xs">{tItem.emoji}</span>}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground truncate">
+                            {tItem.description[language]}
+                          </p>
+                        </div>
+                      </div>
+                      {isCurrent ? (
+                        <Badge variant="secondary" className="text-[9px] font-mono shrink-0 ml-2 bg-primary/20 text-primary border-none">
+                          {language === 'id' ? 'Aktif' : 'Active'}
+                        </Badge>
+                      ) : (
+                        <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Navigation Section */}
           {navItems.length > 0 && (

@@ -1,33 +1,120 @@
-"use client"
+"use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
 export type Theme = 'light' | 'dark' | 'ramadan' | 'imlek' | 'natal';
+export type ThemeCategory = 'standard' | 'seasonal';
+
+export interface ThemeConfig {
+  id: Theme;
+  name: {
+    id: string;
+    en: string;
+  };
+  category: ThemeCategory;
+  description: {
+    id: string;
+    en: string;
+  };
+  colors: {
+    bg: string;
+    primary: string;
+    accent: string;
+  };
+  emoji?: string;
+}
+
+export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
+  light: {
+    id: 'light',
+    name: { id: 'Terang', en: 'Light' },
+    category: 'standard',
+    description: { id: 'Bersih, kontras tinggi & cerah', en: 'Clean, high-contrast & bright' },
+    colors: {
+      bg: '#f8fafc',
+      primary: '#0284c7',
+      accent: '#38bdf8',
+    },
+  },
+  dark: {
+    id: 'dark',
+    name: { id: 'Gelap', en: 'Dark' },
+    category: 'standard',
+    description: { id: 'Slate elegan & ramah di mata', en: 'Elegant slate & easy on the eyes' },
+    colors: {
+      bg: '#0b0f19',
+      primary: '#3b82f6',
+      accent: '#60a5fa',
+    },
+  },
+  ramadan: {
+    id: 'ramadan',
+    name: { id: 'Ramadan', en: 'Ramadan' },
+    category: 'seasonal',
+    description: { id: 'Emerald tenang & aksen emas berkilau', en: 'Serene emerald & gleaming gold' },
+    colors: {
+      bg: '#064e3b',
+      primary: '#eab308',
+      accent: '#fde047',
+    },
+    emoji: '🌙',
+  },
+  imlek: {
+    id: 'imlek',
+    name: { id: 'Imlek', en: 'Lunar New Year' },
+    category: 'seasonal',
+    description: { id: 'Merah oriental & ornamen emas kemakmuran', en: 'Oriental crimson & golden prosperity' },
+    colors: {
+      bg: '#7f1d1d',
+      primary: '#eab308',
+      accent: '#facc15',
+    },
+    emoji: '🏮',
+  },
+  natal: {
+    id: 'natal',
+    name: { id: 'Natal', en: 'Christmas & Winter' },
+    category: 'seasonal',
+    description: { id: 'Midnight navy & merah ceria bertabur salju', en: 'Midnight navy & festive crimson snow' },
+    colors: {
+      bg: '#0c2340',
+      primary: '#dc2626',
+      accent: '#e2e8f0',
+    },
+    emoji: '🎄',
+  },
+};
+
+export const themes: Theme[] = ['light', 'dark', 'ramadan', 'imlek', 'natal'];
 
 interface ThemeContextType {
   theme: Theme;
   setTheme: (theme: Theme, manual?: boolean) => void;
   themes: Theme[];
+  themeConfigs: Record<Theme, ThemeConfig>;
   isAutoTheme: boolean;
   setAutoTheme: (value: boolean) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const themes: Theme[] = ['light', 'dark', 'ramadan', 'imlek', 'natal'];
-
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>('light');
   const [isAutoTheme, setIsAutoTheme] = useState<boolean>(true);
 
-  // Helper to determine seasonal theme
-  const getSeasonalTheme = (): Theme => {
+  // Helper to determine seasonal or system OS theme
+  const getAutoTheme = useCallback((): Theme => {
     const month = new Date().getMonth();
     if (month === 11) return 'natal'; // Dec
     if (month === 0 || month === 1) return 'imlek'; // Jan, Feb
     if (month === 2 || month === 3) return 'ramadan'; // Mar, Apr (approximate)
-    return 'light'; // Default
-  };
+
+    // Outside seasonal months: automatically respect system/OS dark mode preference
+    if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  }, []);
 
   useEffect(() => {
     // 1. Theme Initialization
@@ -36,40 +123,48 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     let activeTheme: Theme;
     if (!autoDisabled) {
-      activeTheme = getSeasonalTheme();
+      activeTheme = getAutoTheme();
     } else {
       const savedTheme = localStorage.getItem('karyapro-theme') as Theme;
       activeTheme = savedTheme && themes.includes(savedTheme) ? savedTheme : 'light';
     }
-    
+
     setThemeState(activeTheme);
     document.documentElement.setAttribute('data-theme', activeTheme);
-  }, []);
+  }, [getAutoTheme]);
 
+  // System OS media query listener when auto-theme is enabled
   useEffect(() => {
-    // 2. Dynamic Favicon Injection
-    const faviconMap: Record<Theme, string> = {
-      light: '', // Uses default if empty
-      dark: '',
-      imlek: 'ðŸ®',
-      ramadan: '🌙',
-      natal: 'â„ï¸'
+    if (!isAutoTheme || typeof window === 'undefined' || !window.matchMedia) return;
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemChange = () => {
+      if (isAutoTheme) {
+        const newTheme = getAutoTheme();
+        setThemeState(newTheme);
+        document.documentElement.setAttribute('data-theme', newTheme);
+      }
     };
-    
-    const emoji = faviconMap[theme];
+
+    mediaQuery.addEventListener('change', handleSystemChange);
+    return () => mediaQuery.removeEventListener('change', handleSystemChange);
+  }, [isAutoTheme, getAutoTheme]);
+
+  // 2. Dynamic Favicon Injection with clean emojis
+  useEffect(() => {
+    const emoji = THEME_CONFIGS[theme]?.emoji;
     let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-    
+
     if (!link) {
       link = document.createElement('link');
       link.rel = 'icon';
       document.head.appendChild(link);
     }
-    
+
     if (emoji) {
-      // SVG emoji as favicon
       link.href = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${emoji}</text></svg>`;
     } else {
-      link.href = '/favicon.ico'; // Fallback to default
+      link.href = '/favicon.ico';
     }
   }, [theme]);
 
@@ -78,16 +173,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setThemeState(newTheme);
       localStorage.setItem('karyapro-theme', newTheme);
       document.documentElement.setAttribute('data-theme', newTheme);
-      
-      // If user manually clicked a theme, disable auto-detect
+
       if (manual) {
         setIsAutoTheme(false);
         localStorage.setItem('karyapro-theme-autodisabled', 'true');
       }
     };
 
-    // Use native View Transitions API for buttery smooth theme switching
-    if (document.startViewTransition) {
+    if (typeof document !== 'undefined' && document.startViewTransition) {
       document.startViewTransition(() => applyTheme());
     } else {
       applyTheme();
@@ -98,14 +191,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setIsAutoTheme(value);
     if (value) {
       localStorage.removeItem('karyapro-theme-autodisabled');
-      setTheme(getSeasonalTheme(), false); // Re-evaluate and apply seasonal
+      setTheme(getAutoTheme(), false);
     } else {
       localStorage.setItem('karyapro-theme-autodisabled', 'true');
     }
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, themes, isAutoTheme, setAutoTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, themes, themeConfigs: THEME_CONFIGS, isAutoTheme, setAutoTheme }}>
       <div className="theme-transition min-h-screen">
         {children}
       </div>

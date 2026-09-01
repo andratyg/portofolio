@@ -5,9 +5,9 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { m as motion } from 'framer-motion';
 import { useLanguage } from '@/components/providers/LanguageContext';
-import { useTheme, themes } from '@/components/providers/ThemeContext';
+import { useTheme, themes, THEME_CONFIGS, Theme } from '@/components/providers/ThemeContext';
 import { Button } from '@/components/ui/button';
-import { Globe, Palette, LogIn, Menu, X, ChevronDown, Search } from 'lucide-react';
+import { Globe, Palette, LogIn, Menu, X, ChevronDown, Search, Sparkles, Check } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { useProjectStore } from '@/stores/ProjectStore';
@@ -167,16 +167,6 @@ export const Navbar = () => {
     { label: t.navContact, href: '/contact' },
   ];
 
-  const getThemeColor = (tName: string) => {
-    switch(tName) {
-      case 'dark': return 'bg-[#1a1c23]';
-      case 'ramadan': return 'bg-[#15803d]';
-      case 'imlek': return 'bg-[#dc2626]';
-      case 'natal': return 'bg-[#ef4444]';
-      default: return 'bg-[#f1f5f9]';
-    }
-  };
-
   return (
     <nav className={cn(
       "fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b transition-transform duration-700 ease-in-out",
@@ -187,7 +177,7 @@ export const Navbar = () => {
           <motion.a 
             href="/" 
             onClick={handleLogoClick}
-            className="text-3xl font-black  text-primary cursor-pointer tracking-normal"
+            className="text-3xl font-black text-primary cursor-pointer tracking-normal"
             whileHover={{ scale: 1.1, rotate: -5 }}
             whileTap={{ scale: 0.95, rotate: 10, y: -5 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -267,54 +257,135 @@ export const Navbar = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest px-4 hover:bg-primary/10" aria-label="Change theme">
-                  <Palette className="h-4 w-4" />
-                  <span className="hidden lg:inline">{theme}</span>
+                  <Palette className="h-4 w-4 text-primary" />
+                  <span className="hidden lg:inline">{THEME_CONFIGS[theme]?.name[language] || theme}</span>
                   <ChevronDown className="h-3 w-3 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="grid grid-cols-2 gap-1 w-80 p-4 rounded-[2.5rem] border-none shadow-2xl bg-[#0a0b0e]/95 backdrop-blur-sm">
-                {themes.map((tName) => (
-                  <DropdownMenuItem 
-                    key={tName} 
-                    onClick={() => setTheme(tName, true)}
-                    className={cn(
-                      "capitalize rounded-[1.5rem] gap-4 p-3.5 cursor-pointer transition-[background-color,color,box-shadow] duration-200 outline-none focus:outline-none focus:ring-0",
-                      theme === tName 
-                        ? "bg-[#3b82f6] text-white font-black shadow-lg shadow-blue-500/20 focus:bg-[#3b82f6] focus:text-white" 
-                        : "text-muted-foreground hover:bg-white/5 hover:text-white focus:bg-white/5 focus:text-white"
-                    )}
-                  >
-                    <div className={cn("w-7 h-7 rounded-full shadow-inner border border-white/10 shrink-0", getThemeColor(tName))} />
-                    <span className="text-[11px] font-black uppercase tracking-[0.15em] truncate">{tName}</span>
-                    {theme === tName && <span className="ml-auto opacity-70">✓</span>}
-                  </DropdownMenuItem>
-                ))}
-                
-                <div className="my-2 border-t border-white/10 col-span-2" />
-                
-                <div className="col-span-2 flex items-center justify-between p-3.5 rounded-[1.5rem] hover:bg-white/5 transition-colors cursor-pointer outline-none select-none" onClick={(e) => {
-                  e.preventDefault();
-                  setAutoTheme(!isAutoTheme);
-                }}>
-                  <div className="flex flex-col">
-                    <span className="text-sm text-white font-semibold">Auto-Detect</span>
-                    <span className="text-[10px] text-muted-foreground">Sesuaikan tema dengan bulan</span>
+              <DropdownMenuContent align="end" className="w-80 p-3.5 rounded-3xl border border-border/80 shadow-2xl bg-card/95 backdrop-blur-xl space-y-3">
+                {/* Header */}
+                <div className="flex items-center justify-between px-2 pt-1 pb-0.5 border-b border-border/40">
+                  <span className="text-[11px] font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                    <Palette className="h-3.5 w-3.5 text-primary" />
+                    {language === 'id' ? 'Tema Tampilan' : 'Appearance'}
+                  </span>
+                  {isAutoTheme && (
+                    <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                      Auto Mode
+                    </span>
+                  )}
+                </div>
+
+                {/* Standard Themes */}
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/80 px-2 mb-1.5">
+                    {language === 'id' ? 'Koleksi Standar' : 'Standard Collection'}
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {(['light', 'dark'] as Theme[]).map((tName) => {
+                      const cfg = THEME_CONFIGS[tName];
+                      const isCurrent = theme === tName;
+                      return (
+                        <DropdownMenuItem
+                          key={tName}
+                          onClick={() => setTheme(tName, true)}
+                          className={cn(
+                            "rounded-2xl p-2.5 cursor-pointer transition-all outline-none border flex flex-col items-start gap-1.5",
+                            isCurrent
+                              ? "bg-primary/15 border-primary/40 text-primary font-bold shadow-sm"
+                              : "hover:bg-muted/60 border-transparent text-foreground"
+                          )}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            {/* 3-Color Swatch Pill */}
+                            <div className="flex items-center -space-x-1 p-0.5 rounded-full bg-background/80 border border-border/60">
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.bg }} />
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.primary }} />
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.accent }} />
+                            </div>
+                            {isCurrent && <Check className="h-3.5 w-3.5 text-primary" />}
+                          </div>
+                          <div className="text-left w-full">
+                            <p className="text-xs font-bold leading-none">{cfg.name[language]}</p>
+                            <p className="text-[9px] text-muted-foreground line-clamp-1 mt-0.5">{cfg.description[language]}</p>
+                          </div>
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Seasonal Themes */}
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/80 px-2 mb-1.5">
+                    {language === 'id' ? 'Edisi Musiman & Hari Raya' : 'Seasonal & Holidays'}
+                  </p>
+                  <div className="space-y-1.5">
+                    {(['ramadan', 'imlek', 'natal'] as Theme[]).map((tName) => {
+                      const cfg = THEME_CONFIGS[tName];
+                      const isCurrent = theme === tName;
+                      return (
+                        <DropdownMenuItem
+                          key={tName}
+                          onClick={() => setTheme(tName, true)}
+                          className={cn(
+                            "rounded-2xl p-2.5 cursor-pointer transition-all outline-none border flex items-center justify-between gap-2.5",
+                            isCurrent
+                              ? "bg-primary/15 border-primary/40 text-primary font-bold shadow-sm"
+                              : "hover:bg-muted/60 border-transparent text-foreground"
+                          )}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="flex items-center -space-x-1 p-0.5 rounded-full bg-background/80 border border-border/60 shrink-0">
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.bg }} />
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.primary }} />
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.accent }} />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold leading-none flex items-center gap-1.5 truncate">
+                                <span>{cfg.name[language]}</span>
+                                {cfg.emoji && <span className="text-xs">{cfg.emoji}</span>}
+                              </p>
+                              <p className="text-[9px] text-muted-foreground truncate mt-0.5">{cfg.description[language]}</p>
+                            </div>
+                          </div>
+                          {isCurrent && <Check className="h-3.5 w-3.5 text-primary shrink-0" />}
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Auto-Detect Switch */}
+                <div 
+                  className="flex items-center justify-between p-2.5 rounded-2xl bg-muted/40 hover:bg-muted/70 transition-colors cursor-pointer border border-border/50" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setAutoTheme(!isAutoTheme);
+                  }}
+                >
+                  <div className="flex flex-col pr-2">
+                    <span className="text-xs text-foreground font-bold flex items-center gap-1.5">
+                      <Sparkles className="h-3.5 w-3.5 text-primary" />
+                      {language === 'id' ? 'Auto-Detect Cerdas' : 'Smart Auto-Detect'}
+                    </span>
+                    <span className="text-[9px] text-muted-foreground">
+                      {language === 'id' ? 'Sesuaikan musiman & mode gelap OS' : 'Match seasonal events & OS dark mode'}
+                    </span>
                   </div>
                   <div className={cn(
-                    "w-10 h-5 rounded-full transition-colors relative",
-                    isAutoTheme ? "bg-primary" : "bg-white/10"
+                    "w-9 h-5 rounded-full transition-colors relative shrink-0",
+                    isAutoTheme ? "bg-primary" : "bg-muted-foreground/30"
                   )}>
                     <div className={cn(
-                      "absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm",
-                      isAutoTheme ? "left-[22px]" : "left-1"
+                      "absolute top-0.5 w-4 h-4 rounded-full bg-background shadow-md transition-all",
+                      isAutoTheme ? "left-[18px]" : "left-0.5"
                     )} />
                   </div>
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-
-
 
           <Button 
             variant="ghost" 
@@ -350,32 +421,46 @@ export const Navbar = () => {
                <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-xl h-12 w-12 sm:h-14 sm:w-14 bg-muted/50" aria-label="Toggle theme">
-                    <Palette className="h-5 w-5 sm:h-6 sm:w-6" />
+                    <Palette className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="grid grid-cols-2 gap-1 w-72 sm:w-80 p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] border-none shadow-2xl bg-[#0a0b0e]/95 backdrop-blur-sm">
-                  {themes.map((tName) => (
-                    <DropdownMenuItem 
-                      key={tName} 
-                      onClick={() => {
-                        setTheme(tName);
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={cn(
-                        "capitalize rounded-[1.5rem] gap-3 p-3 cursor-pointer transition-[background-color,color,box-shadow] duration-200",
-                        theme === tName 
-                          ? "bg-[#3b82f6] text-white font-black shadow-lg shadow-blue-500/20" 
-                          : "hover:bg-white/5 text-muted-foreground hover:text-white"
-                      )}
-                    >
-                      <div className={cn("w-6 h-6 sm:w-7 sm:h-7 rounded-full shadow-inner border border-white/10 shrink-0", getThemeColor(tName))} />
-                      <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.15em] truncate">{tName}</span>
-                    </DropdownMenuItem>
-                  ))}
+                <DropdownMenuContent align="end" className="w-72 sm:w-80 p-3.5 rounded-3xl border border-border/80 shadow-2xl bg-card/95 backdrop-blur-xl space-y-2.5">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground px-2">
+                    {language === 'id' ? 'Pilih Tema' : 'Select Theme'}
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {themes.map((tName) => {
+                      const cfg = THEME_CONFIGS[tName];
+                      const isCurrent = theme === tName;
+                      return (
+                        <DropdownMenuItem 
+                          key={tName} 
+                          onClick={() => {
+                            setTheme(tName, true);
+                            setIsMobileMenuOpen(false);
+                          }}
+                          className={cn(
+                            "rounded-2xl p-2.5 cursor-pointer transition-all border flex flex-col items-start gap-1.5",
+                            isCurrent 
+                              ? "bg-primary/15 border-primary/40 text-primary font-bold" 
+                              : "hover:bg-muted/60 border-transparent text-foreground"
+                          )}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center -space-x-1 p-0.5 rounded-full bg-background/80 border border-border/60">
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: cfg.colors.bg }} />
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: cfg.colors.primary }} />
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: cfg.colors.accent }} />
+                            </div>
+                            {isCurrent && <Check className="h-3.5 w-3.5 text-primary" />}
+                          </div>
+                          <span className="text-xs font-bold leading-tight truncate">{cfg.name[language]}</span>
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </div>
                 </DropdownMenuContent>
               </DropdownMenu>
-
-
             </div>
           </div>
         </div>
