@@ -24,7 +24,7 @@ import { generatePortfolioDescriptionSuggestion } from '@/ai/flows/generate-port
 import { generateCertificateDescription } from '@/ai/flows/generate-certificate-description';
 import { AIAdvisorPanel } from '@/components/admin/AIAdvisorPanel';
 import { useToast } from '@/hooks/use-toast';
-import { ProfileData, Project, Certificate, Experience, PortfolioStats, TechSkill, BlogPost, ShortLink } from '@/lib/types';
+import { ProfileData, Project, Certificate, Experience, PortfolioStats, TechSkill, BlogPost, ShortLink, Testimonial } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { useUser, useAuth, useFirestore, useDoc, useMemoFirebase, useFirebaseApp } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -36,6 +36,7 @@ function AdminContent() {
   const { 
     projects, addProject, deleteProject, setFeaturedProject, 
     certificates, addCertificate, deleteCertificate,
+    testimonials, addTestimonial, deleteTestimonial,
     experiences, addExperience, deleteExperience,
     blogs, addBlog, deleteBlog,
     shortLinks, addShortLink, deleteShortLink,
@@ -142,6 +143,15 @@ function AdminContent() {
     featured: false
   };
 
+  const initialTestimonialState = {
+    name: '',
+    roleId: '',
+    roleEn: '',
+    contentId: '',
+    contentEn: '',
+    avatarUrl: ''
+  };
+
   const initialShortLinkState = {
     slug: '',
     originalUrl: '',
@@ -155,9 +165,11 @@ function AdminContent() {
   const [journeyForm, setJourneyForm] = useState(initialJourneyState);
   const [techSkillForm, setTechSkillForm] = useState(initialTechSkillState);
   const [blogForm, setBlogForm] = useState(initialBlogState);
+  const [testimonialForm, setTestimonialForm] = useState(initialTestimonialState);
   const [shortLinkForm, setShortLinkForm] = useState(initialShortLinkState);
   const [editingTechSkillId, setEditingTechSkillId] = useState<string | null>(null);
   const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
+  const [editingTestimonialId, setEditingTestimonialId] = useState<string | null>(null);
   const [editingShortLinkId, setEditingShortLinkId] = useState<string | null>(null);
   const [copiedShortSlug, setCopiedShortSlug] = useState<string | null>(null);
   const [profileFormData, setProfileFormData] = useState<ProfileData>(profile);
@@ -649,9 +661,45 @@ function AdminContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const startEditTestimonial = (t: Testimonial) => {
+    setEditingTestimonialId(t.id);
+    setTestimonialForm({
+      name: t.name || '',
+      roleId: t.roleId || '',
+      roleEn: t.roleEn || '',
+      contentId: t.contentId || '',
+      contentEn: t.contentEn || '',
+      avatarUrl: t.avatarUrl || ''
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleTestimonialSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!testimonialForm.name.trim() || !testimonialForm.contentId.trim()) {
+      toast({ variant: 'destructive', title: 'Data Belum Lengkap', description: 'Nama dan Isi Testimoni (ID) wajib diisi.' });
+      return;
+    }
+    addTestimonial({
+      id: editingTestimonialId || Date.now().toString(),
+      name: testimonialForm.name.trim(),
+      roleId: testimonialForm.roleId.trim() || 'Klien / Rekan',
+      roleEn: testimonialForm.roleEn.trim() || testimonialForm.roleId.trim() || 'Client / Colleague',
+      contentId: testimonialForm.contentId.trim(),
+      contentEn: testimonialForm.contentEn.trim() || testimonialForm.contentId.trim(),
+      avatarUrl: testimonialForm.avatarUrl.trim()
+    });
+    toast({
+      title: editingTestimonialId ? 'Testimoni Diperbarui' : 'Testimoni Ditambahkan',
+      description: `Testimoni dari "${testimonialForm.name}" berhasil disimpan.`,
+    });
+    setTestimonialForm(initialTestimonialState);
+    setEditingTestimonialId(null);
+  };
+
   const cancelEdit = () => {
-    setEditingProjectId(null); setEditingCertId(null); setEditingJourneyId(null); setEditingTechSkillId(null); setEditingBlogId(null); setEditingShortLinkId(null);
-    setProjectForm(initialProjectState); setCertForm(initialCertState); setJourneyForm(initialJourneyState); setTechSkillForm(initialTechSkillState); setBlogForm(initialBlogState); setShortLinkForm(initialShortLinkState);
+    setEditingProjectId(null); setEditingCertId(null); setEditingJourneyId(null); setEditingTechSkillId(null); setEditingBlogId(null); setEditingShortLinkId(null); setEditingTestimonialId(null);
+    setProjectForm(initialProjectState); setCertForm(initialCertState); setJourneyForm(initialJourneyState); setTechSkillForm(initialTechSkillState); setBlogForm(initialBlogState); setShortLinkForm(initialShortLinkState); setTestimonialForm(initialTestimonialState);
   };
 
   const handleShortLinkSubmit = (e: React.FormEvent) => {
@@ -770,6 +818,7 @@ function AdminContent() {
               <TabsTrigger value="journey" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><History className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">JOURNEY</span><span className="sm:hidden text-[7px]">KARIR</span></TabsTrigger>
               <TabsTrigger value="techstack" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Terminal className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">TECH STACK</span><span className="sm:hidden text-[7px]">TECH</span></TabsTrigger>
               <TabsTrigger value="blogs" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><BookOpen className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">BLOG</span><span className="sm:hidden text-[7px]">BLOG</span></TabsTrigger>
+              <TabsTrigger value="testimonials" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><Star className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">TESTIMONI</span><span className="sm:hidden text-[7px]">TESTI</span></TabsTrigger>
               <TabsTrigger value="links" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row"><LinkIcon className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">SHORT LINK</span><span className="sm:hidden text-[7px]">LINK</span></TabsTrigger>
               <TabsTrigger value="messages" className="rounded-xl sm:rounded-[1.8rem] font-black uppercase text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest gap-1 sm:gap-2 px-2 sm:px-5 py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all flex-col sm:flex-row relative">
                 <Mail className="h-4 w-4 sm:h-4 sm:w-4" /><span className="hidden sm:inline">PESAN</span><span className="sm:hidden text-[7px]">PESAN</span>
@@ -1960,6 +2009,176 @@ function AdminContent() {
                           </Button>
                         )}
                       </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* ── TESTIMONIALS TAB ── */}
+          <TabsContent value="testimonials" className="grid xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-8 duration-500">
+            <div className="xl:col-span-8">
+              <Card className="rounded-[2.5rem] shadow-none border-none bg-transparent">
+                <CardHeader className="p-0 pb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="space-y-1">
+                    <CardTitle className="font-black text-3xl uppercase tracking-normal">
+                      {editingTestimonialId ? 'Ubah Testimoni' : 'Tambah Testimoni Baru'}
+                    </CardTitle>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-[0.3em]">
+                      Social Proof & Ulasan dari Klien / Rekan / Mentor
+                    </CardDescription>
+                  </div>
+                  <Button 
+                    type="button" 
+                    size="sm" 
+                    onClick={() => handleAITranslate('testimonials', testimonialForm, setTestimonialForm)} 
+                    className="rounded-xl bg-primary/10 text-primary hover:bg-primary/20 h-12 px-6 font-black uppercase" 
+                    disabled={isTranslating === 'testimonials'}
+                  >
+                    {isTranslating === 'testimonials' ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} 
+                    SINKRONISASI AI (OTOMATIS)
+                  </Button>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <form onSubmit={handleTestimonialSubmit} className="space-y-8">
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nama Pemberi Testimoni *</label>
+                        <Input 
+                          required 
+                          placeholder="Cth: Budi Santoso" 
+                          value={testimonialForm.name} 
+                          onChange={e => setTestimonialForm({...testimonialForm, name: e.target.value})} 
+                          className="h-16 rounded-2xl bg-muted/30 border-none px-6" 
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Foto Profil / Avatar</label>
+                        <div className="flex gap-2">
+                          <Input 
+                            placeholder="https://example.com/avatar.jpg" 
+                            value={testimonialForm.avatarUrl} 
+                            onChange={e => setTestimonialForm({...testimonialForm, avatarUrl: e.target.value})} 
+                            className="h-16 rounded-2xl bg-muted/30 border-none px-6 flex-1" 
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Posisi / Peran (ID) *</label>
+                        <Input 
+                          required
+                          placeholder="Cth: Product Manager di Tech Corp" 
+                          value={testimonialForm.roleId} 
+                          onChange={e => setTestimonialForm({...testimonialForm, roleId: e.target.value})} 
+                          className="h-16 rounded-2xl bg-muted/30 border-none px-6" 
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Posisi / Peran (EN)</label>
+                        <Input 
+                          placeholder="E.g.: Product Manager at Tech Corp" 
+                          value={testimonialForm.roleEn} 
+                          onChange={e => setTestimonialForm({...testimonialForm, roleEn: e.target.value})} 
+                          className="h-16 rounded-2xl bg-muted/30 border-none px-6" 
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Isi Testimoni (ID) *</label>
+                        <Textarea 
+                          required 
+                          placeholder="Tulis ulasan/testimoni dalam bahasa Indonesia..." 
+                          value={testimonialForm.contentId} 
+                          onChange={e => setTestimonialForm({...testimonialForm, contentId: e.target.value})} 
+                          className="h-36 rounded-[2rem] bg-muted/30 border-none p-6" 
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Isi Testimoni (EN)</label>
+                        <Textarea 
+                          placeholder="Write testimonial review in English..." 
+                          value={testimonialForm.contentEn} 
+                          onChange={e => setTestimonialForm({...testimonialForm, contentEn: e.target.value})} 
+                          className="h-36 rounded-[2rem] bg-muted/30 border-none p-6" 
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4 pt-4">
+                      {editingTestimonialId && (
+                        <Button type="button" variant="outline" onClick={cancelEdit} className="h-16 rounded-2xl px-8 font-black uppercase text-xs">
+                          Batal
+                        </Button>
+                      )}
+                      <Button type="submit" className="h-16 flex-1 rounded-2xl font-black uppercase text-xs tracking-widest gap-2 shadow-xl shadow-primary/10">
+                        {editingTestimonialId ? <Edit3 className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                        {editingTestimonialId ? 'Perbarui Testimoni' : 'Simpan Testimoni'}
+                      </Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="xl:col-span-4 space-y-8">
+              <h3 className="font-black text-[11px] uppercase tracking-[0.4em] px-4 text-primary">
+                DAFTAR TESTIMONI ({testimonials.length})
+              </h3>
+              {testimonials.length === 0 ? (
+                <div className="text-center py-16 space-y-4 border border-dashed rounded-3xl p-8">
+                  <Star className="h-12 w-12 text-muted-foreground/30 mx-auto" />
+                  <p className="text-sm text-muted-foreground">Belum ada testimoni. Tambahkan testimoni dari formulir di samping.</p>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {testimonials.map(test => (
+                    <Card key={test.id} className="p-6 bg-card border-none hover:bg-muted/30 transition-all rounded-2xl shadow-sm overflow-hidden group space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-black text-primary overflow-hidden">
+                            {test.avatarUrl ? (
+                              <img src={test.avatarUrl} alt={test.name} className="w-full h-full object-cover" />
+                            ) : (
+                              test.name ? test.name[0].toUpperCase() : 'U'
+                            )}
+                          </div>
+                          <div>
+                            <h4 className="font-black text-sm">{test.name}</h4>
+                            <p className="text-[10px] text-muted-foreground font-semibold">{test.roleId}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => startEditTestimonial(test)} 
+                            className="text-primary h-8 w-8 rounded-lg"
+                            title="Edit Testimoni"
+                          >
+                            <Edit3 className="h-4 w-4" />
+                          </Button>
+                          {isSuper && (
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => deleteTestimonial(test.id)} 
+                              className="text-destructive h-8 w-8 rounded-lg"
+                              title="Hapus Testimoni"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground italic leading-relaxed line-clamp-3">
+                        "{test.contentId}"
+                      </p>
                     </Card>
                   ))}
                 </div>

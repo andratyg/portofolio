@@ -7,7 +7,7 @@ import { m as motion } from 'framer-motion';
 import { useLanguage } from '@/components/providers/LanguageContext';
 import { useTheme, themes } from '@/components/providers/ThemeContext';
 import { Button } from '@/components/ui/button';
-import { Globe, Palette, LogIn, Menu, X, ChevronDown } from 'lucide-react';
+import { Globe, Palette, LogIn, Menu, X, ChevronDown, Search } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { useProjectStore } from '@/stores/ProjectStore';
@@ -223,6 +223,32 @@ export const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4">
+          {/* Spotlight Search / Command Palette Trigger */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
+            className="hidden sm:inline-flex items-center gap-2 rounded-xl h-9 px-3 text-xs text-muted-foreground hover:text-foreground border-border/60 glass-card hover:border-primary/40 transition-all"
+            aria-label="Buka Pencarian Cepat"
+          >
+            <Search className="h-3.5 w-3.5 text-primary" />
+            <span className="hidden xl:inline text-[11px] font-medium">Cari...</span>
+            <kbd className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono text-muted-foreground border border-border/60">
+              <span className="text-xs">⌘</span>K
+            </kbd>
+          </Button>
+
+          {/* Mobile search trigger */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
+            className="rounded-xl sm:hidden h-9 w-9 text-muted-foreground hover:text-primary"
+            aria-label="Buka Pencarian Cepat"
+          >
+            <Search className="h-4 w-4" />
+          </Button>
+
           <div className="hidden sm:flex items-center gap-2">
             {/* Language Toggle */}
             <DropdownMenu>

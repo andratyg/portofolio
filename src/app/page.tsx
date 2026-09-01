@@ -88,7 +88,7 @@ export default async function Home() {
         '@type': 'Person',
         name: 'Nara Andra Tyaga',
         jobTitle: 'Full-Stack Developer & UI/UX Designer',
-        url: 'https://naraandratyaga.my.id',
+        url: 'https://www.naraandratyaga.my.id',
         sameAs: [
           'https://linkedin.com/in/nara-andra-tyaga',
           'https://github.com/naradev',
@@ -98,7 +98,7 @@ export default async function Home() {
       {
         '@type': 'WebSite',
         name: 'Nara Andra Tyaga - Portfolio',
-        url: 'https://naraandratyaga.my.id'
+        url: 'https://www.naraandratyaga.my.id'
       }
     ]
   };

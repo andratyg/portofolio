@@ -11,6 +11,7 @@ import { Badge } from '../ui/badge';
 import { Search, Globe, Eye, ArrowRight, AlertCircle, CheckCircle2, Terminal } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { cn } from '@/lib/utils';
 import { Project } from '@/lib/types';
@@ -303,6 +304,13 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
               <div className="p-8 rounded-[2rem] bg-card border border-border/5 shadow-sm">
                 <h3 className="text-lg font-black  uppercase flex items-center gap-3 mb-6"><Terminal className="h-5 w-5 text-primary" /> {t.systemStack}</h3>
                 <div className="flex flex-wrap gap-3">{(project.technologies || []).map(t => <Badge key={t} variant="outline" className="px-4 py-2 rounded-xl border-primary/20 text-sm font-semibold bg-primary/5">{t}</Badge>)}</div>
+              </div>
+              <div className="flex justify-end pt-4">
+                <Link href={`/projects/${project.id}`} className="w-full sm:w-auto">
+                  <Button className="w-full sm:w-auto rounded-2xl font-black uppercase text-xs tracking-wider gap-2 px-8 h-12 shadow-lg shadow-primary/20">
+                    Buka Halaman Studi Kasus Lengkap <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

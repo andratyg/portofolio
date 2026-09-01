@@ -53,12 +53,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  let blogRoutes: MetadataRoute.Sitemap = [];
+  let dynamicRoutes: MetadataRoute.Sitemap = [];
   try {
     const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
     const db = getFirestore(app);
-    const snap = await getDocs(collection(db, 'blogs'));
-    blogRoutes = snap.docs.map(doc => {
+    const [blogsSnap, projectsSnap] = await Promise.all([
+      getDocs(collection(db, 'blogs')),
+      getDocs(collection(db, 'projects')),
+    ]);
+
+    const blogRoutes: MetadataRoute.Sitemap = blogsSnap.docs.map(doc => {
       const data = doc.data();
       const slug = data.slug || doc.id;
       return {
@@ -68,9 +72,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
       };
     });
+
+    const projectRoutes: MetadataRoute.Sitemap = projectsSnap.docs.map(doc => {
+      const data = doc.data();
+      return {
+        url: `${BASE_URL}/projects/${doc.id}`,
+        lastModified: data.updatedAt ? new Date(data.updatedAt) : now,
+        changeFrequency: 'monthly' as const,
+        priority: 0.8,
+      };
+    });
+
+    dynamicRoutes = [...blogRoutes, ...projectRoutes];
   } catch (e) {
     // Graceful fallback to static routes if database is unreachable during build
   }
 
-  return [...staticRoutes, ...blogRoutes];
+  return [...staticRoutes, ...dynamicRoutes];
 }

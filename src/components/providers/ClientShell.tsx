@@ -25,6 +25,10 @@ const ThemeDecorations = dynamic(
   () => import('@/components/themes/ThemeDecorations'),
   { ssr: false, loading: () => null }
 );
+const CommandPalette = dynamic(
+  () => import('@/components/features/CommandPalette').then(m => ({ default: m.CommandPalette })),
+  { ssr: false, loading: () => null }
+);
 
 export function ClientShell() {
   const [isIdle, setIsIdle] = useState(false);
@@ -43,6 +47,7 @@ export function ClientShell() {
     <>
       <ThemeDecorations />
       <CustomCursor />
+      <CommandPalette />
       {isIdle && (
         <>
           <WebVitalsReporter />

@@ -10,7 +10,17 @@ import { revalidatePath } from 'next/cache';
  */
 export async function revalidatePortfolio(path: string = '/') {
   try {
-    revalidatePath(path);
+    if (path === '/' || path === 'all') {
+      revalidatePath('/');
+      revalidatePath('/about');
+      revalidatePath('/projects');
+      revalidatePath('/certificates');
+      revalidatePath('/experience');
+      revalidatePath('/blog');
+      revalidatePath('/api/public-data');
+    } else {
+      revalidatePath(path);
+    }
     return { success: true };
   } catch (error) {
     console.error('[revalidatePortfolio] Failed to revalidate path:', path, error);

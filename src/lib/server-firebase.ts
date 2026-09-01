@@ -245,4 +245,145 @@ export async function fetchPublicDataFromServer() {
   }
 }
 
+/**
+ * Mengambil semua postingan blog dari Firestore secara server-side.
+ */
+export async function fetchBlogs(): Promise<BlogPost[]> {
+  try {
+    const db = getServerDb();
+    const snap = await getDocs(collection(db, 'blogs'));
+    return snap.docs.map((d) => {
+      const b = d.data() as any;
+      return {
+        id: d.id,
+        slug: b.slug || d.id,
+        titleId: b.titleId || '',
+        titleEn: b.titleEn || '',
+        summaryId: b.summaryId || '',
+        summaryEn: b.summaryEn || '',
+        contentId: b.contentId || '',
+        contentEn: b.contentEn || '',
+        coverImage: b.coverImage || '',
+        tags: Array.isArray(b.tags) ? b.tags : (b.tags ? b.tags.split(',').map((t: string) => t.trim()) : []),
+        author: b.author || 'Nara Andra Tyaga',
+        publishedAt: b.publishedAt || new Date().toISOString(),
+        readingTime: b.readingTime || '3 min read',
+        featured: !!b.featured,
+        updatedAt: b.updatedAt || '',
+      };
+    }).sort((a, b) => new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime());
+  } catch (error) {
+    console.warn('[server-firebase] fetchBlogs failed:', error);
+    return [];
+  }
+}
+
+/**
+ * Mengambil satu artikel blog berdasarkan slug atau ID di server.
+ */
+export async function fetchBlogBySlug(slug: string): Promise<BlogPost | null> {
+  try {
+    const db = getServerDb();
+    // 1. Cek langsung via doc ID
+    const directDoc = await getDoc(doc(db, 'blogs', slug));
+    if (directDoc.exists()) {
+      const b = directDoc.data() as any;
+      return {
+        id: directDoc.id,
+        slug: b.slug || directDoc.id,
+        titleId: b.titleId || '',
+        titleEn: b.titleEn || '',
+        summaryId: b.summaryId || '',
+        summaryEn: b.summaryEn || '',
+        contentId: b.contentId || '',
+        contentEn: b.contentEn || '',
+        coverImage: b.coverImage || '',
+        tags: Array.isArray(b.tags) ? b.tags : (b.tags ? b.tags.split(',').map((t: string) => t.trim()) : []),
+        author: b.author || 'Nara Andra Tyaga',
+        publishedAt: b.publishedAt || new Date().toISOString(),
+        readingTime: b.readingTime || '3 min read',
+        featured: !!b.featured,
+        updatedAt: b.updatedAt || '',
+      };
+    }
+
+    // 2. Fallback: cari di seluruh collection
+    const snap = await getDocs(collection(db, 'blogs'));
+    const matched = snap.docs.find(d => {
+      const data = d.data();
+      return data.slug === slug || d.id === slug;
+    });
+
+    if (!matched) return null;
+    const b = matched.data() as any;
+    return {
+      id: matched.id,
+      slug: b.slug || matched.id,
+      titleId: b.titleId || '',
+      titleEn: b.titleEn || '',
+      summaryId: b.summaryId || '',
+      summaryEn: b.summaryEn || '',
+      contentId: b.contentId || '',
+      contentEn: b.contentEn || '',
+      coverImage: b.coverImage || '',
+      tags: Array.isArray(b.tags) ? b.tags : (b.tags ? b.tags.split(',').map((t: string) => t.trim()) : []),
+      author: b.author || 'Nara Andra Tyaga',
+      publishedAt: b.publishedAt || new Date().toISOString(),
+      readingTime: b.readingTime || '3 min read',
+      featured: !!b.featured,
+      updatedAt: b.updatedAt || '',
+    };
+  } catch (error) {
+    console.warn('[server-firebase] fetchBlogBySlug failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Mengambil satu proyek berdasarkan ID atau slug di server.
+ */
+export async function fetchProjectByIdOrSlug(slugOrId: string): Promise<Project | null> {
+  try {
+    const db = getServerDb();
+    // 1. Coba getDoc direct ID
+    const directDoc = await getDoc(doc(db, 'projects', slugOrId));
+    if (directDoc.exists()) {
+      return { ...(directDoc.data() as Project), id: directDoc.id };
+    }
+
+    // 2. Fallback: match by title slug
+    const snap = await getDocs(collection(db, 'projects'));
+    const matched = snap.docs.find(d => {
+      const p = d.data() as Project;
+      const slugTitleEn = (p.titleEn || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const slugTitleId = (p.titleId || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return d.id === slugOrId || slugTitleEn === slugOrId || slugTitleId === slugOrId;
+    });
+
+    if (!matched) return null;
+    return { ...(matched.data() as Project), id: matched.id };
+  } catch (error) {
+    console.warn('[server-firebase] fetchProjectByIdOrSlug failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Mengambil semua testimonial dari Firestore di server.
+ */
+export async function fetchTestimonials(): Promise<Testimonial[]> {
+  try {
+    const db = getServerDb();
+    const snap = await getDocs(collection(db, 'testimonials'));
+    return snap.docs.map((d) => ({
+      ...(d.data() as Testimonial),
+      id: d.id,
+    }));
+  } catch (error) {
+    console.warn('[server-firebase] fetchTestimonials failed:', error);
+    return [];
+  }
+}
+
+
 
