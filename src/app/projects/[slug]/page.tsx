@@ -8,19 +8,18 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ProjectStoreProvider } from '@/stores/ProjectStore';
 import { fetchProjectByIdOrSlug, fetchProjects } from '@/lib/server-firebase';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Breadcrumbs } from '@/components/ui/Breadcrumb';
 import { ProjectCaseStudyClient } from '@/components/features/ProjectCaseStudyClient';
 import { 
-  ArrowLeft, Globe, ExternalLink, AlertCircle, 
-  CheckCircle2, Terminal, Sparkles, Layers, ArrowRight, Zap 
+  ArrowLeft, AlertCircle, 
+  CheckCircle2, Terminal, Sparkles, ArrowRight, Zap 
 } from 'lucide-react';
 
 const BASE_URL = 'https://www.naraandratyaga.my.id';

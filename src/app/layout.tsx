@@ -8,6 +8,7 @@ import { FirebaseClientProvider } from '@/firebase';
 import { SecurityProvider } from '@/components/providers/SecurityProvider';
 import { ScrollProgressButton } from '@/components/layout/ScrollProgressButton';
 import { SplashScreen } from '@/components/layout/SplashScreen';
+import { RouteProgressBar } from '@/components/layout/RouteProgressBar';
 import { PageTransition } from '@/components/layout/PageTransition';
 import { MotionProvider } from '@/components/providers/MotionProvider';
 import { ProjectStoreProvider } from '@/stores/ProjectStore';
@@ -266,6 +267,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <SecurityProvider>
                 <MotionProvider>
                   <ProjectStoreProvider>
+                    <RouteProgressBar />
                     <SplashScreen />
                     <ClientShell />
                     <div className="overflow-x-hidden w-full">

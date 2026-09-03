@@ -16,6 +16,15 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [language, setLanguageState] = useState<Language>('id');
 
   useEffect(() => {
+    // Language detection priority: URL prefix (/en/...) → localStorage → browser
+    const pathSegments = window.location.pathname.split('/').filter(Boolean);
+    const urlLang = pathSegments[0]?.toLowerCase();
+    if (urlLang === 'en' || urlLang === 'id') {
+      setLanguageState(urlLang as Language);
+      localStorage.setItem('karyapro-lang', urlLang as Language);
+      return;
+    }
+
     const savedLang = localStorage.getItem('karyapro-lang') as Language;
     if (savedLang === 'en' || savedLang === 'id') {
       setLanguageState(savedLang);
