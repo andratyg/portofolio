@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../providers/LanguageContext';
 import { useProjectStore } from '@/stores/ProjectStore';
-import { Briefcase, ShieldCheck, Activity, Terminal } from 'lucide-react';
+import { Briefcase, ShieldCheck, Activity, Terminal, type LucideIcon } from 'lucide-react';
 import { ParticleCanvas } from '../features/ParticleCanvas';
 
 import { m as motion, useInView, useSpring, useTransform } from 'framer-motion';
@@ -26,7 +26,7 @@ type StatItem = {
   label: string;
   value: number;
   suffix: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   description: string;
   size: 'large' | 'small' | 'wide';
 };

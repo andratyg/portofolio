@@ -51,7 +51,7 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
     id: 'minecraft',
     name: { id: 'Minecraft', en: 'Minecraft' },
     category: 'anime-gaming',
-    description: { id: 'Steve, Creeper & petualangan voxel', en: 'Steve, Creeper & blocky voxel adventure' },
+    description: { id: 'Dunia voxel & petualangan balok', en: 'Voxel world & blocky adventure' },
     colors: {
       bg: '#1a2e0a',
       primary: '#5D8C3F',
@@ -63,7 +63,7 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
     id: 'onepiece',
     name: { id: 'One Piece', en: 'One Piece' },
     category: 'anime-gaming',
-    description: { id: 'Luffy Topi Jerami, Sunny & harta karun', en: 'Luffy Straw Hat, Sunny & ocean treasure' },
+    description: { id: 'Petualangan samudra & kapten bajak laut', en: 'Ocean adventure & pirate captain' },
     colors: {
       bg: '#0a1628',
       primary: '#FFD700',
@@ -75,7 +75,7 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
     id: 'naruto',
     name: { id: 'Naruto', en: 'Naruto' },
     category: 'anime-gaming',
-    description: { id: 'Naruto Uzumaki, Kurama & chakra ninja', en: 'Naruto Uzumaki, Kurama & ninja chakra' },
+    description: { id: 'Semangat shinobi & chakra ninja', en: 'Shinobi spirit & ninja chakra' },
     colors: {
       bg: '#1a0e05',
       primary: '#FF6B2B',
