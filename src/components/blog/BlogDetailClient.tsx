@@ -15,6 +15,8 @@ import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { BlogPost, ProfileData } from '@/lib/types';
 import { m as motion, useScroll, useSpring } from 'framer-motion';
+import { Breadcrumbs } from '@/components/ui/Breadcrumb';
+import { NewsletterForm } from '@/components/blog/NewsletterForm';
 
 interface BlogDetailClientProps {
   initialBlog: BlogPost | null;
