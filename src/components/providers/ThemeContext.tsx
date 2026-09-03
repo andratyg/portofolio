@@ -233,6 +233,29 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Keyboard shortcut listener: Pressing 'D' toggles light/dark mode
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger when user is typing in form inputs, textareas, or editable elements
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable ||
+        target.tagName === 'SELECT'
+      ) {
+        return;
+      }
+      if (e.key === 'd' || e.key === 'D') {
+        // Toggle between dark and light
+        setTheme(theme === 'dark' ? 'light' : 'dark', true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [theme]);
+
   return (
     <ThemeContext.Provider value={{ theme, setTheme, themes, themeConfigs: THEME_CONFIGS, isAutoTheme, setAutoTheme }}>
       <div className="theme-transition min-h-screen">

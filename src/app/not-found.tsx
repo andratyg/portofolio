@@ -11,6 +11,8 @@ import {
   ArrowRight,
 } from 'lucide-react';
 
+import { NotFoundSuggestion } from '@/components/ui/NotFoundSuggestion';
+
 export const metadata: Metadata = {
   title: '404 - Halaman Tidak Ditemukan | Nara Andra Tyaga',
   description: 'Halaman yang Anda tuju tidak ditemukan atau telah dipindahkan.',
@@ -85,6 +87,8 @@ export default function NotFound() {
             </div>
 
             {/* Primary Action Button */}
+            <NotFoundSuggestion />
+
             <div className="pt-1">
               <Link
                 href="/"

@@ -143,6 +143,13 @@ export function BlogDetailClient({ initialBlog, slug, initialProfile }: BlogDeta
         <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
           
           {/* Navigation back & Quick Actions */}
+          <Breadcrumbs
+            items={[
+              { label: 'Blog', href: '/blog' },
+              { label: title || 'Artikel' },
+            ]}
+          />
+
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
             <Link 
               href="/blog" 
@@ -378,6 +385,9 @@ export function BlogDetailClient({ initialBlog, slug, initialProfile }: BlogDeta
               </p>
             </div>
           </div>
+
+          {/* Newsletter Subscription */}
+          <NewsletterForm />
 
           {/* Related Articles */}
           {relatedBlogs.length > 0 && (

@@ -38,11 +38,19 @@ export const Portfolio = ({ initialProjects }: PortfolioProps) => {
   const isLoading = storeLoading && projects.length === 0;
   
   const [filter, setFilter] = useState<(typeof CATEGORIES)[number]>('all');
+  const [selectedTech, setSelectedTech] = useState<string>('all');
   const [sortBy, setSortBy] = useState<(typeof SORT_OPTIONS)[number]>('newest');
   const [search, setSearch] = useState('');
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => { setIsVisible(true); }, []);
+
+  // Extract all unique tech tags from projects
+  const uniqueTechs = useMemo(() => {
+    const set = new Set<string>();
+    projects.forEach(p => (p.technologies || []).forEach(t => set.add(t)));
+    return Array.from(set).sort();
+  }, [projects]);
 
   const processedProjects = useMemo(() => {
     const getTitle = (p: Project) => language === 'id' ? (p.titleId || p.titleEn || '') : (p.titleEn || p.titleId || '');
@@ -51,8 +59,9 @@ export const Portfolio = ({ initialProjects }: PortfolioProps) => {
       const title = getTitle(p);
       const safeSearch = search.toLowerCase();
       const matchesFilter = filter === 'all' || p.type === filter;
+      const matchesTech = selectedTech === 'all' || (p.technologies || []).includes(selectedTech);
       const matchesSearch = title.toLowerCase().includes(safeSearch) || (p.technologies || []).some(tech => tech.toLowerCase().includes(safeSearch));
-      return matchesFilter && matchesSearch;
+      return matchesFilter && matchesTech && matchesSearch;
     });
 
     const sorted = [...filtered];
@@ -153,6 +162,24 @@ export const Portfolio = ({ initialProjects }: PortfolioProps) => {
                 onChange={(e) => setSearch(e.target.value)} 
               />
             </div>
+            {/* Tech Filter Dropdown */}
+            {uniqueTechs.length > 0 && (
+              <Select value={selectedTech} onValueChange={(val) => setSelectedTech(val)}>
+                <SelectTrigger aria-label="Filter Teknologi" className="w-full sm:w-auto h-12 sm:h-14 rounded-full bg-card/50 border-border/20 backdrop-blur-sm px-4 sm:px-5 font-bold text-sm text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground whitespace-nowrap">Tech:</span>
+                    <SelectValue placeholder="Semua Tech" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="font-semibold text-sm">Semua Teknologi</SelectItem>
+                  {uniqueTechs.map(tech => (
+                    <SelectItem key={tech} value={tech} className="font-semibold text-sm">{tech}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
             <Select value={sortBy} onValueChange={(value) => setSortBy(value as (typeof SORT_OPTIONS)[number])}>
               <SelectTrigger aria-label={`${t.sortBy} proyek`} className="w-full sm:w-auto h-12 sm:h-14 rounded-full bg-card/50 border-border/20 backdrop-blur-sm px-4 sm:px-5 font-bold text-sm text-left">
                 <div className="flex items-center gap-2">

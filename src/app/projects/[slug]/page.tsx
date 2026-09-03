@@ -16,6 +16,8 @@ import { fetchProjectByIdOrSlug, fetchProjects } from '@/lib/server-firebase';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Breadcrumbs } from '@/components/ui/Breadcrumb';
+import { ProjectCaseStudyClient } from '@/components/features/ProjectCaseStudyClient';
 import { 
   ArrowLeft, Globe, ExternalLink, AlertCircle, 
   CheckCircle2, Terminal, Sparkles, Layers, ArrowRight, Zap 
@@ -145,6 +147,13 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
             
             {/* Back to projects */}
+            <Breadcrumbs
+              items={[
+                { label: 'Proyek', href: '/projects' },
+                { label: title || 'Studi Kasus' },
+              ]}
+            />
+
             <div className="flex items-center justify-between mb-8">
               <Link
                 href="/projects"
@@ -186,32 +195,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
               )}
             </div>
 
-            {/* Main Project Hero Media */}
-            <div className="relative aspect-[16/9] sm:aspect-[21/9] rounded-[2.5rem] overflow-hidden bg-muted border border-border/80 shadow-2xl mb-12 group">
-              <Image
-                src={project.imageUrl || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80'}
-                alt={title}
-                fill
-                priority
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                sizes="(max-width: 1024px) 95vw, 1000px"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              
-              {hasDemoUrl && (
-                <div className="absolute bottom-6 right-6 z-10">
-                  <a
-                    href={project.demoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button className="rounded-2xl font-black uppercase text-xs tracking-wider gap-2 px-6 h-12 shadow-2xl bg-white text-black hover:bg-primary hover:text-primary-foreground transition-all">
-                      <Globe className="h-4 w-4" /> Kunjungi Live Demo <ExternalLink className="h-3.5 w-3.5" />
-                    </Button>
-                  </a>
-                </div>
-              )}
-            </div>
+            {/* Main Project Hero Media with Lightbox & Embed */}
+            <ProjectCaseStudyClient
+              imageUrl={project.imageUrl || ''}
+              title={title}
+              demoUrl={project.demoUrl}
+            />
 
             {/* Deep-Dive Case Study Grid */}
             <div className="grid md:grid-cols-2 gap-8 mb-12">

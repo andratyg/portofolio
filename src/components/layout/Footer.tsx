@@ -15,6 +15,8 @@ export const Footer = () => {
     { label: language === 'id' ? 'Perjalanan' : 'Experience', href: '/experience' },
     { label: language === 'id' ? 'Blog' : 'Blog', href: '/blog' },
     { label: language === 'id' ? 'Kontak' : 'Contact', href: '/contact' },
+    { label: language === 'id' ? 'Privasi' : 'Privacy', href: '/privacy' },
+    { label: language === 'id' ? 'Syarat' : 'Terms', href: '/terms' },
   ];
 
   const socialLinks = [
