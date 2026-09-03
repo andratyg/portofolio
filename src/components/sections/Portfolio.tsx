@@ -83,7 +83,7 @@ export const Portfolio = ({ initialProjects }: PortfolioProps) => {
     }
 
     return sorted;
-  }, [projects, language, search, filter, sortBy]);
+  }, [projects, language, search, filter, selectedTech, sortBy]);
 
   // ─── JSON-LD Structured Data for Projects (AI/SEO Optimization) ───────────
   const projectSchema = useMemo(() => {

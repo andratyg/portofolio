@@ -236,13 +236,19 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Keyboard shortcut listener: Pressing 'D' toggles light/dark mode
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore combination shortcuts like Ctrl+D (bookmark), Cmd+D, Alt+D
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
       // Don't trigger when user is typing in form inputs, textareas, or editable elements
       const target = e.target as HTMLElement;
       if (
         target.tagName === 'INPUT' ||
         target.tagName === 'TEXTAREA' ||
         target.isContentEditable ||
-        target.tagName === 'SELECT'
+        target.tagName === 'SELECT' ||
+        target.closest('[role="dialog"]') ||
+        target.closest('input') ||
+        target.closest('textarea')
       ) {
         return;
       }

@@ -1,8 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-const SUPPORTED_LANGUAGES = ['id', 'en'] as const;
-const DEFAULT_LANG = 'id';
-
 // Assets & special routes to skip middleware entirely
 const SKIP_PATTERNS = [
   /^\/_next\//,
@@ -10,20 +7,18 @@ const SKIP_PATTERNS = [
   /^\/admin(\/|$)/,
   /^\/l\//,
   /^\/feed\.xml(\/|$)/,
-  /^\/favicon\.ico$/,
-  /^\/og-image\.png$/,
-  /^\/icon\.svg$/,
-  /^\/apple-touch-icon\.png$/,
-  /^\/manifest\.json$/,
+  /^\/sitemap\.xml$/,
   /^\/robots\.txt$/,
   /^\/sw\.js$/,
   /^\/llms\.txt$/,
+  /^\/manifest\.json$/,
+  /\.(png|jpg|jpeg|svg|webp|avif|ico|txt|xml|json)$/i,
 ];
 
 export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
-  // Skip middleware for system routes
+  // Skip middleware for system routes and static files
   if (SKIP_PATTERNS.some(pattern => pattern.test(pathname))) {
     return NextResponse.next();
   }
@@ -31,22 +26,25 @@ export function middleware(request: NextRequest) {
   const segments = pathname.split('/').filter(Boolean);
   const firstSegment = segments[0]?.toLowerCase();
 
-  // Check if path already has a language prefix (e.g. /en/blog -> strip to /blog internally)
-  if (SUPPORTED_LANGUAGES.includes(firstSegment as typeof SUPPORTED_LANGUAGES[number])) {
-    const lang = firstSegment;
-    const urlWithoutLang = '/' + segments.slice(1).join('/') + (search ? `?${search}` : '');
-    // Invisible rewrite: URL bar keeps /en/* prefix, but route resolves to /*
+  // If path is prefixed with /id (default language), redirect 301 to strip prefix (SEO best practice)
+  if (firstSegment === 'id') {
+    const cleanPath = '/' + segments.slice(1).join('/') + (search || '');
+    return NextResponse.redirect(new URL(cleanPath || '/', request.url), 301);
+  }
+
+  // Check if path has English language prefix (/en/...)
+  if (firstSegment === 'en') {
+    const remainingPath = '/' + segments.slice(1).join('/');
     const url = request.nextUrl.clone();
-    url.pathname = urlWithoutLang === '/' ? '/' : urlWithoutLang.replace(/\?[^?]*/, '');
+    url.pathname = remainingPath === '/' ? '/' : remainingPath;
     url.search = search || '';
     const response = NextResponse.rewrite(url);
-    response.cookies.set('lang', lang, { maxAge: 60 * 60 * 24 * 365, path: '/' });
-    response.headers.set('x-language', lang);
+    response.cookies.set('lang', 'en', { maxAge: 60 * 60 * 24 * 365, path: '/' });
+    response.headers.set('x-language', 'en');
     return response;
   }
 
-  // No prefix: just pass through normally (Indonesian default)
-  // No redirect needed — pure prefix-based progressive enhancement
+  // No prefix: standard pass-through (Indonesian default)
   return NextResponse.next();
 }
 

@@ -16,6 +16,23 @@ export function ProjectCaseStudyClient({ imageUrl, title, demoUrl }: ProjectCase
   const [demoMode, setDemoMode] = useState<'image' | 'embed'>('image');
   const [iframeLoaded, setIframeLoaded] = useState(false);
 
+  // Lock body scroll and listen to Escape key when lightbox is open
+  React.useEffect(() => {
+    if (!lightboxOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxOpen(false);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [lightboxOpen]);
+
   const hasDemoUrl = typeof demoUrl === 'string' && demoUrl.trim().startsWith('http');
   const fallbackImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80';
   const src = imageUrl || fallbackImage;
