@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
-export type Theme = 'light' | 'dark' | 'sakura' | 'arcade' | 'astral' | 'mecha' | 'ramadan' | 'imlek' | 'natal';
+export type Theme = 'light' | 'dark' | 'minecraft' | 'onepiece' | 'naruto' | 'ramadan' | 'imlek' | 'natal';
 export type ThemeCategory = 'standard' | 'anime-gaming' | 'seasonal';
 
 export interface ThemeConfig {
@@ -47,53 +47,41 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
       accent: '#60a5fa',
     },
   },
-  sakura: {
-    id: 'sakura',
-    name: { id: 'Sakura Anime', en: 'Sakura Anime' },
+  minecraft: {
+    id: 'minecraft',
+    name: { id: 'Minecraft', en: 'Minecraft' },
     category: 'anime-gaming',
-    description: { id: 'Lo-Fi twilight sky & sakura dreamy', en: 'Dreamy anime sunset & cherry blossoms' },
+    description: { id: 'Steve, Creeper & petualangan voxel', en: 'Steve, Creeper & blocky voxel adventure' },
     colors: {
-      bg: '#0e0a1a',
-      primary: '#ff5c8a',
-      accent: '#ffd166',
+      bg: '#1a2e0a',
+      primary: '#5D8C3F',
+      accent: '#4FC3F7',
     },
-    emoji: '🌸',
+    emoji: '🟩',
   },
-  arcade: {
-    id: 'arcade',
-    name: { id: 'Retro Arcade', en: 'Retro Arcade' },
+  onepiece: {
+    id: 'onepiece',
+    name: { id: 'One Piece', en: 'One Piece' },
     category: 'anime-gaming',
-    description: { id: '80s synthwave & laser cyber neon', en: 'Electric cyber cyan & hot neon synthwave' },
+    description: { id: 'Luffy Topi Jerami, Sunny & harta karun', en: 'Luffy Straw Hat, Sunny & ocean treasure' },
     colors: {
-      bg: '#050711',
-      primary: '#00f0ff',
-      accent: '#ff1e8a',
+      bg: '#0a1628',
+      primary: '#FFD700',
+      accent: '#DC3545',
     },
-    emoji: '👾',
+    emoji: '🏴‍☠️',
   },
-  astral: {
-    id: 'astral',
-    name: { id: 'Astral Galaxy', en: 'Astral Galaxy' },
+  naruto: {
+    id: 'naruto',
+    name: { id: 'Naruto', en: 'Naruto' },
     category: 'anime-gaming',
-    description: { id: 'Nebula cosmic & bintang gacha 5-star', en: 'Deep nebula void & 5-star golden stardust' },
+    description: { id: 'Naruto Uzumaki, Kurama & chakra ninja', en: 'Naruto Uzumaki, Kurama & ninja chakra' },
     colors: {
-      bg: '#050b18',
-      primary: '#ffc01e',
-      accent: '#2ad1ff',
+      bg: '#1a0e05',
+      primary: '#FF6B2B',
+      accent: '#22C55E',
     },
-    emoji: '✨',
-  },
-  mecha: {
-    id: 'mecha',
-    name: { id: 'Mecha Eva-01', en: 'Mecha Eva-01' },
-    category: 'anime-gaming',
-    description: { id: 'Tactical HUD & neon berserk sync', en: 'Evangelion tactical purple & berserk lime' },
-    colors: {
-      bg: '#090514',
-      primary: '#a855f7',
-      accent: '#00ff66',
-    },
-    emoji: '⚡',
+    emoji: '🍥',
   },
   ramadan: {
     id: 'ramadan',
@@ -133,7 +121,7 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
   },
 };
 
-export const themes: Theme[] = ['light', 'dark', 'sakura', 'arcade', 'astral', 'mecha', 'ramadan', 'imlek', 'natal'];
+export const themes: Theme[] = ['light', 'dark', 'minecraft', 'onepiece', 'naruto', 'ramadan', 'imlek', 'natal'];
 
 interface ThemeContextType {
   theme: Theme;

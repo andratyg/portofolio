@@ -5,8 +5,9 @@ import { useTheme } from '../providers/ThemeContext';
 import ImlekDecorations from './ImlekDecorations';
 import RamadanDecorations from './RamadanDecorations';
 import NatalDecorations from './NatalDecorations';
-import SakuraDecorations from './SakuraDecorations';
-import AstralDecorations from './AstralDecorations';
+import MinecraftDecorations from './MinecraftDecorations';
+import OnePieceDecorations from './OnePieceDecorations';
+import NarutoDecorations from './NarutoDecorations';
 
 export default function ThemeDecorations() {
   const { theme } = useTheme();
@@ -23,8 +24,9 @@ export default function ThemeDecorations() {
       {theme === 'imlek' && <ImlekDecorations />}
       {theme === 'ramadan' && <RamadanDecorations />}
       {theme === 'natal' && <NatalDecorations />}
-      {theme === 'sakura' && <SakuraDecorations />}
-      {theme === 'astral' && <AstralDecorations />}
+      {theme === 'minecraft' && <MinecraftDecorations />}
+      {theme === 'onepiece' && <OnePieceDecorations />}
+      {theme === 'naruto' && <NarutoDecorations />}
     </>
   );
 }

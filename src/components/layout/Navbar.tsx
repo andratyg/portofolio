@@ -321,7 +321,7 @@ export const Navbar = () => {
                     <span className="text-xs">🎮</span>
                   </p>
                   <div className="grid grid-cols-2 gap-1.5">
-                    {(['sakura', 'arcade', 'astral', 'mecha'] as Theme[]).map((tName) => {
+                    {(['minecraft', 'onepiece', 'naruto'] as Theme[]).map((tName) => {
                       const cfg = THEME_CONFIGS[tName];
                       const isCurrent = theme === tName;
                       return (

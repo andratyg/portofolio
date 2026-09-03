@@ -153,115 +153,87 @@
     --glass-blur: 10px;
   }
 
-  /* --- Sakura Theme (Lo-Fi Anime Twilight) --- */
-  [data-theme='sakura'] {
-    --background: 255 35% 8%; /* Deep Twilight Velvet #0e0a1a */
-    --foreground: 330 40% 97%;
-    --card: 255 30% 12%;
-    --card-foreground: 330 40% 97%;
-    --popover: 255 35% 8%;
-    --popover-foreground: 330 40% 97%;
-    --primary: 340 95% 68%; /* Vibrant Sakura Bloom #ff5c8a */
-    --primary-foreground: 255 35% 8%;
-    --secondary: 260 30% 18%;
-    --secondary-foreground: 330 40% 97%;
-    --muted: 260 25% 16%;
-    --muted-foreground: 280 20% 75%; /* Soft Lilac Gray */
-    --accent: 38 100% 72%; /* Sunset Gold #ffd166 */
-    --accent-foreground: 255 35% 8%;
+  /* --- Minecraft Theme (Voxel Blocky World) --- */
+  [data-theme='minecraft'] {
+    --background: 100 52% 7%; /* Deep Forest Night #1a2e0a */
+    --foreground: 90 30% 95%;
+    --card: 100 40% 11%;
+    --card-foreground: 90 30% 95%;
+    --popover: 100 52% 7%;
+    --popover-foreground: 90 30% 95%;
+    --primary: 100 38% 40%; /* Grass Block Green #5D8C3F */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 100 30% 16%;
+    --secondary-foreground: 90 30% 95%;
+    --muted: 100 25% 14%;
+    --muted-foreground: 90 15% 70%;
+    --accent: 199 92% 64%; /* Diamond Blue #4FC3F7 */
+    --accent-foreground: 100 52% 7%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 340 40% 24%;
-    --input: 340 40% 24%;
-    --ring: 340 95% 68%;
+    --border: 100 30% 22%;
+    --input: 100 30% 22%;
+    --ring: 100 38% 40%;
 
     /* Glassmorphism */
-    --glass-bg: rgba(255, 92, 138, 0.08);
-    --glass-border: rgba(255, 112, 150, 0.3);
+    --glass-bg: rgba(93, 140, 63, 0.08);
+    --glass-border: rgba(79, 195, 247, 0.3);
     --glass-blur: 16px;
   }
 
-  /* --- Retro Arcade Theme (Synthwave & Cyberpunk) --- */
-  [data-theme='arcade'] {
-    --background: 235 55% 5%; /* Inky Cyber Abyss #050711 */
-    --foreground: 180 100% 97%; /* Laser Frost White */
-    --card: 235 45% 9%;
-    --card-foreground: 180 100% 97%;
-    --popover: 235 55% 5%;
-    --popover-foreground: 180 100% 97%;
-    --primary: 184 100% 50%; /* Electric Laser Cyan #00f0ff */
-    --primary-foreground: 235 55% 5%;
-    --secondary: 235 45% 15%;
-    --secondary-foreground: 180 100% 97%;
-    --muted: 235 40% 14%;
-    --muted-foreground: 215 35% 72%;
-    --accent: 325 100% 56%; /* Hot Neon Synthwave Magenta #ff1e8a */
+  /* --- One Piece Theme (Pirate Ocean Adventure) --- */
+  [data-theme='onepiece'] {
+    --background: 218 58% 10%; /* Deep Ocean Abyss #0a1628 */
+    --foreground: 40 30% 96%;
+    --card: 218 48% 14%;
+    --card-foreground: 40 30% 96%;
+    --popover: 218 58% 10%;
+    --popover-foreground: 40 30% 96%;
+    --primary: 51 100% 50%; /* Treasure Gold #FFD700 */
+    --primary-foreground: 218 58% 10%;
+    --secondary: 218 45% 18%;
+    --secondary-foreground: 40 30% 96%;
+    --muted: 218 40% 16%;
+    --muted-foreground: 210 30% 72%;
+    --accent: 354 70% 54%; /* Crimson Straw Hat #DC3545 */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 184 75% 26%;
-    --input: 184 75% 26%;
-    --ring: 184 100% 50%;
+    --border: 51 60% 26%;
+    --input: 51 60% 26%;
+    --ring: 51 100% 50%;
 
     /* Glassmorphism */
-    --glass-bg: rgba(0, 240, 255, 0.06);
-    --glass-border: rgba(0, 240, 255, 0.32);
+    --glass-bg: rgba(255, 215, 0, 0.07);
+    --glass-border: rgba(220, 53, 69, 0.32);
     --glass-blur: 16px;
   }
 
-  /* --- Astral Galaxy Theme (Cosmic Void & 5-Star Gold) --- */
-  [data-theme='astral'] {
-    --background: 224 64% 6%; /* Deep Cosmic Abyss #050b18 */
-    --foreground: 210 60% 97%; /* Starlight Diamond */
-    --card: 224 55% 10%;
-    --card-foreground: 210 60% 97%;
-    --popover: 224 64% 6%;
-    --popover-foreground: 210 60% 97%;
-    --primary: 45 100% 60%; /* 5-Star Starlight Gold #ffc01e */
-    --primary-foreground: 224 64% 6%;
-    --secondary: 224 50% 16%;
-    --secondary-foreground: 210 60% 97%;
-    --muted: 224 45% 15%;
-    --muted-foreground: 215 40% 75%;
-    --accent: 195 95% 58%; /* Supernova Cyan Blue #2ad1ff */
-    --accent-foreground: 224 64% 6%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 224 50% 26%;
-    --input: 224 50% 26%;
-    --ring: 45 100% 60%;
-
-    /* Glassmorphism */
-    --glass-bg: rgba(255, 192, 30, 0.07);
-    --glass-border: rgba(42, 209, 255, 0.32);
-    --glass-blur: 16px;
-  }
-
-  /* --- Mecha Eva-01 Theme (Tactical Bio-Armor & Berserk Lime) --- */
-  [data-theme='mecha'] {
-    --background: 265 48% 6%; /* Tactical Carbon Hull #090514 */
-    --foreground: 270 40% 97%; /* Cockpit HUD White */
-    --card: 265 40% 10%;
-    --card-foreground: 270 40% 97%;
-    --popover: 265 48% 6%;
-    --popover-foreground: 270 40% 97%;
-    --primary: 270 95% 66%; /* Evangelion Core Purple #a855f7 */
+  /* --- Naruto Theme (Ninja Hidden Village) --- */
+  [data-theme='naruto'] {
+    --background: 25 55% 6%; /* Dusk Village #1a0e05 */
+    --foreground: 30 40% 96%;
+    --card: 25 45% 10%;
+    --card-foreground: 30 40% 96%;
+    --popover: 25 55% 6%;
+    --popover-foreground: 30 40% 96%;
+    --primary: 20 100% 58%; /* Chakra Orange #FF6B2B */
     --primary-foreground: 0 0% 100%;
-    --secondary: 265 40% 16%;
-    --secondary-foreground: 270 40% 97%;
-    --muted: 265 35% 15%;
-    --muted-foreground: 270 25% 74%;
-    --accent: 144 100% 50%; /* Berserk Sync Lime #00ff66 */
-    --accent-foreground: 265 48% 6%;
+    --secondary: 25 40% 16%;
+    --secondary-foreground: 30 40% 96%;
+    --muted: 25 35% 14%;
+    --muted-foreground: 30 20% 72%;
+    --accent: 142 72% 46%; /* Konoha Leaf Green #22C55E */
+    --accent-foreground: 25 55% 6%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 270 65% 28%;
-    --input: 270 65% 28%;
-    --ring: 144 100% 50%;
+    --border: 20 50% 24%;
+    --input: 20 50% 24%;
+    --ring: 20 100% 58%;
 
     /* Glassmorphism */
-    --glass-bg: rgba(168, 85, 247, 0.08);
-    --glass-border: rgba(0, 255, 102, 0.34);
+    --glass-bg: rgba(255, 107, 43, 0.08);
+    --glass-border: rgba(34, 197, 94, 0.32);
     --glass-blur: 16px;
   }
 
@@ -282,30 +254,24 @@
                       radial-gradient(ellipse 60% 40% at 85% 90%, hsl(var(--accent) / 0.08), transparent 70%);
     background-attachment: fixed;
   }
-  [data-theme='sakura'] body {
-    background-image: radial-gradient(ellipse 80% 60% at 85% 0%, rgba(255, 92, 138, 0.2), transparent 60%),
-                      radial-gradient(ellipse 70% 60% at 15% 95%, rgba(157, 78, 221, 0.18), transparent 60%),
-                      radial-gradient(ellipse 50% 50% at 50% 45%, rgba(255, 209, 102, 0.08), transparent 50%);
+  [data-theme='minecraft'] body {
+    background-image: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(93, 140, 63, 0.2), transparent 60%),
+                      radial-gradient(ellipse 70% 50% at 85% 85%, rgba(79, 195, 247, 0.12), transparent 55%),
+                      linear-gradient(rgba(93, 140, 63, 0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(93, 140, 63, 0.03) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
     background-attachment: fixed;
   }
-  [data-theme='arcade'] body {
-    background-image: radial-gradient(ellipse 70% 50% at 15% 0%, rgba(0, 240, 255, 0.22), transparent 55%),
-                      radial-gradient(ellipse 70% 50% at 85% 85%, rgba(255, 30, 138, 0.22), transparent 55%),
-                      linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+  [data-theme='onepiece'] body {
+    background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 215, 0, 0.18), transparent 60%),
+                      radial-gradient(ellipse 70% 50% at 85% 85%, rgba(10, 22, 40, 0.3), transparent 55%),
+                      radial-gradient(ellipse 60% 50% at 15% 90%, rgba(220, 53, 69, 0.12), transparent 50%);
     background-attachment: fixed;
   }
-  [data-theme='astral'] body {
-    background-image: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(255, 192, 30, 0.18), transparent 60%),
-                      radial-gradient(ellipse 70% 50% at 90% 65%, rgba(42, 209, 255, 0.18), transparent 55%),
-                      radial-gradient(ellipse 60% 50% at 10% 85%, rgba(136, 84, 208, 0.16), transparent 50%);
-    background-attachment: fixed;
-  }
-  [data-theme='mecha'] body {
-    background-image: radial-gradient(ellipse 80% 55% at 20% 0%, rgba(168, 85, 247, 0.25), transparent 55%),
-                      radial-gradient(ellipse 70% 50% at 85% 85%, rgba(0, 255, 102, 0.18), transparent 50%),
-                      radial-gradient(ellipse 60% 60% at 50% 45%, rgba(99, 102, 241, 0.1), transparent 60%);
+  [data-theme='naruto'] body {
+    background-image: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(255, 107, 43, 0.22), transparent 60%),
+                      radial-gradient(ellipse 70% 50% at 85% 85%, rgba(34, 197, 94, 0.14), transparent 55%),
+                      radial-gradient(ellipse 60% 60% at 10% 90%, rgba(26, 14, 5, 0.3), transparent 50%);
     background-attachment: fixed;
   }
   [data-theme='ramadan'] body {

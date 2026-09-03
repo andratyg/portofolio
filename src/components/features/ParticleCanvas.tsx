@@ -65,10 +65,9 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
       const themeParticleColorMap: Record<string, string> = {
         light: '34, 38, 42',
         dark: '255, 255, 255',
-        sakura: '255, 117, 151',
-        arcade: '0, 240, 255',
-        astral: '255, 209, 102',
-        mecha: '168, 85, 247',
+        minecraft: '93, 140, 63',
+        onepiece: '255, 215, 0',
+        naruto: '255, 107, 43',
         ramadan: '234, 179, 8',
         imlek: '255, 215, 0',
         natal: '255, 255, 255',
