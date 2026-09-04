@@ -17,6 +17,7 @@ export interface Project {
   technologies: string[];
   imageUrl: string;
   demoUrl?: string;
+  githubUrl?: string;
   featured?: boolean;
   updatedAt?: string;
 }
@@ -162,24 +163,24 @@ export const DEFAULT_STATS: PortfolioStats = {
 
 export const DEFAULT_PROFILE: ProfileData = {
   name: 'Nara Andra Tyaga',
-  roleId: 'Pengembang Full-Stack',
-  roleEn: 'Full-Stack Developer',
-  aboutMeId: 'Saya seorang pengembang full-stack dengan hasrat untuk membangun aplikasi web yang indah dan fungsional.',
-  aboutMeEn: 'I am a full-stack developer with a passion for building beautiful and functional web applications.',
+  roleId: 'Siswa PPLG & Web Developer',
+  roleEn: 'PPLG Student & Web Developer',
+  aboutMeId: 'Saya siswa jurusan Pengembangan Perangkat Lunak & Gim di SMK Wikrama Bogor dengan fokus membangun aplikasi web modern dan interaktif.',
+  aboutMeEn: 'I am a Software Engineering student at SMK Wikrama Bogor focused on building modern and interactive web applications.',
   profilePictureUrl: '/profile-fallback.jpg',
-  heroTitleId: 'Rekayasa Dampak Digital',
-  heroTitleEn: 'Engineering Digital Impact',
-  heroSubtitleId: 'Saya merancang dan mengembangkan solusi perangkat lunak yang andal, dapat diskalakan, dan berpusat pada pengguna, mengubah ide-ide kompleks menjadi kenyataan digital.',
-  heroSubtitleEn: 'I design and develop robust, scalable, and user-centric software solutions, turning complex ideas into digital realities.',
-  email: 'admin@karyapro.app',
-  whatsapp: '6281234567890',
+  heroTitleId: 'Membangun Web Masa Depan',
+  heroTitleEn: 'Building The Future Web',
+  heroSubtitleId: 'Saya senang mengeksplorasi teknologi web modern, mendesain UI/UX yang intuitif, dan membangun sistem yang handal menggunakan Next.js dan Firebase.',
+  heroSubtitleEn: 'I enjoy exploring modern web technologies, designing intuitive UI/UX, and building reliable systems using Next.js and Firebase.',
+  email: 'indraandra545@gmail.com',
+  whatsapp: '6283120155099',
   linkedin: 'https://www.linkedin.com/in/nara-andra-tyaga/',
   instagram: 'https://www.instagram.com/nara.dev/',
-  github: 'https://github.com/naradev',
+  github: 'https://github.com/andratyg',
   tiktok: 'https://www.tiktok.com/@naradev',
   cvUrl: '',
   cvFileName: '',
   cvUpdatedAt: '',
   cvStoragePath: '',
 };
-
+

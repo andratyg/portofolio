@@ -20,7 +20,7 @@ export const Footer = () => {
   ];
 
   const socialLinks = [
-    { icon: Github, href: 'https://github.com/naradev', label: 'GitHub' },
+    { icon: Github, href: 'https://github.com/andratyg', label: 'GitHub' },
     { icon: Linkedin, href: 'https://linkedin.com/in/nara-andra-tyaga', label: 'LinkedIn' },
     { icon: Instagram, href: 'https://instagram.com/nara.dev', label: 'Instagram' },
     { icon: TikTokIcon, href: 'https://www.tiktok.com/@naradev', label: 'TikTok' },

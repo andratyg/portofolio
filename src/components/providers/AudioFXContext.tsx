@@ -16,7 +16,7 @@ export const AudioFXProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
-  // Initialize from localStorage
+  // Initialize from localStorage and unlock Web Audio Context on first user interaction
   useEffect(() => {
     try {
       const saved = localStorage.getItem('karyapro-sound');
@@ -26,6 +26,31 @@ export const AudioFXProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } catch (e) {
       // Ignore if localStorage unavailable
     }
+
+    // Modern browsers require physical user gesture before allowing audio playback
+    const unlockAudio = () => {
+      try {
+        if (!audioCtxRef.current) {
+          const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+          if (AudioCtx) {
+            audioCtxRef.current = new AudioCtx();
+          }
+        }
+        if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+          audioCtxRef.current.resume().catch(() => {});
+        }
+      } catch (err) {}
+    };
+
+    window.addEventListener('pointerdown', unlockAudio, { once: true, passive: true });
+    window.addEventListener('keydown', unlockAudio, { once: true, passive: true });
+    window.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
+
+    return () => {
+      window.removeEventListener('pointerdown', unlockAudio);
+      window.removeEventListener('keydown', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+    };
   }, []);
 
   const getAudioContext = useCallback(() => {

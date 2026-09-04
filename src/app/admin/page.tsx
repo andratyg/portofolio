@@ -116,7 +116,7 @@ function AdminContent() {
     shortDescriptionId: '', shortDescriptionEn: '', 
     fullDescriptionId: '', fullDescriptionEn: '',
     problemId: '', problemEn: '', solutionId: '', solutionEn: '',
-    impactStats: '', technologies: '', imageUrl: '', demoUrl: '', featured: false
+    impactStats: '', technologies: '', imageUrl: '', demoUrl: '', githubUrl: '', featured: false
   };
 
   const initialCertState = {
@@ -622,13 +622,14 @@ function AdminContent() {
   };
 
   const startEditProject = (p: Project) => {
-    setEditingProjectId(p.id);
-    setProjectForm({ 
-      ...p, 
-      technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : (p.technologies || '') 
-    } as any);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+      setEditingProjectId(p.id);
+      setProjectForm({
+        ...p,
+        githubUrl: p.githubUrl || undefined,
+        technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : (p.technologies || '')
+      } as any);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
   const startEditCert = (c: Certificate) => {
     setEditingCertId(c.id);
@@ -1369,8 +1370,9 @@ function AdminContent() {
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><AlertCircle className="h-3 w-3" /> Tantangan Utama (ID)</label><Textarea value={projectForm.problemId} onChange={e => setProjectForm({...projectForm, problemId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Solusi Strategis (ID)</label><Textarea value={projectForm.solutionId} onChange={e => setProjectForm({...projectForm, solutionId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-8">
-                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Live Protocol</label><Input value={projectForm.demoUrl} onChange={e => setProjectForm({...projectForm, demoUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                    <div className="grid md:grid-cols-3 gap-8">
+                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Live Protocol (Demo)</label><Input value={projectForm.demoUrl} onChange={e => setProjectForm({...projectForm, demoUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">GitHub Repo URL</label><Input placeholder="https://github.com/andratyg/..." value={projectForm.githubUrl} onChange={e => setProjectForm({...projectForm, githubUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                        <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Visual Utama (Cover)</label><Input value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                     </div>
                     <div className="flex gap-4">

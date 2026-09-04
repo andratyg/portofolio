@@ -87,7 +87,7 @@ const jsonLd = {
       },
     ],
     sameAs: [
-      'https://github.com/nara-andra-tyaga',
+      'https://github.com/andratyg',
       'https://linkedin.com/in/nara-andra-tyaga',
       'https://instagram.com/nara.dev',
       'https://www.tiktok.com/@naradev',

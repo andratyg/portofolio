@@ -91,7 +91,7 @@ export default async function Home() {
         url: 'https://www.naraandratyaga.my.id',
         sameAs: [
           'https://linkedin.com/in/nara-andra-tyaga',
-          'https://github.com/naradev',
+          'https://github.com/andratyg',
           'https://instagram.com/nara.dev'
         ]
       },

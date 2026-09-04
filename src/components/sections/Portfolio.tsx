@@ -286,7 +286,20 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
               </CardContent>
               <CardFooter className="px-7 pb-7 flex justify-between items-center pt-4 border-t border-border/10">
                 <span className="text-xs font-black text-primary tracking-normal flex items-center gap-1.5 capitalize">{t.viewSpecs.toLowerCase()} <ArrowRight className="h-3 w-3 group-hover:translate-x-1.5 transition-transform duration-300" /></span>
-                {project.impactStats && <div className="text-xs font-black px-3 py-1 bg-primary/10 text-primary rounded-full capitalize">{project.impactStats.toLowerCase()}</div>}
+                <div className="flex items-center gap-2">
+                  {project.githubUrl && (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); window.open(project.githubUrl, '_blank', 'noopener,noreferrer'); }}
+                      className="p-1.5 rounded-full bg-muted/50 border border-border/50 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors shrink-0"
+                      title="View source code on GitHub"
+                      aria-label={`Source code of ${title}`}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+                    </button>
+                  )}
+                  {project.impactStats && <div className="text-xs font-black px-3 py-1 bg-primary/10 text-primary rounded-full capitalize">{project.impactStats.toLowerCase()}</div>}
+                </div>
               </CardFooter>
             </Card>
           </button>
@@ -298,22 +311,38 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
               <div className="absolute bottom-4 sm:bottom-8 left-5 sm:left-10 right-5 sm:right-10">
                 <div className="flex items-end justify-between gap-3 sm:gap-4">
-                  <div className='space-y-1 sm:space-y-2'>
-                    <Badge className="bg-primary text-primary-foreground px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs font-bold">{t.projectCategories[project.type as keyof typeof t.projectCategories]}</Badge>
-                    <DialogTitle className="text-xl sm:text-3xl md:text-4xl font-black  text-white tracking-normal leading-tight">{title}</DialogTitle>
-                  </div>
-                  {hasDemoUrl && (
-                    <Button 
-                      onClick={(e) => { 
-                        e.stopPropagation(); 
-                        window.open(project.demoUrl, '_blank', 'noopener,noreferrer');
+                <div className='space-y-1 sm:space-y-2'>
+                  <Badge className="bg-primary text-primary-foreground px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs font-bold">{t.projectCategories[project.type as keyof typeof t.projectCategories]}</Badge>
+                  <DialogTitle className="text-xl sm:text-3xl md:text-4xl font-black  text-white tracking-normal leading-tight">{title}</DialogTitle>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  {project.githubUrl && (
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open(project.githubUrl, '_blank', 'noopener,noreferrer');
                       }}
                       variant="secondary"
-                      className="rounded-full h-16 w-16 p-0 shrink-0 gap-2 text-xs font-bold uppercase tracking-wider shadow-xl hover:scale-110 hover:bg-primary hover:text-primary-foreground active:scale-95 transition-all bg-white text-black flex items-center justify-center"
+                      className="rounded-full h-12 w-12 sm:h-16 sm:w-16 p-0 shrink-0 gap-2 text-xs font-bold uppercase tracking-wider shadow-xl hover:scale-110 hover:bg-primary hover:text-primary-foreground active:scale-95 transition-all bg-white/15 text-white border border-white/30 backdrop-blur-sm flex items-center justify-center"
+                      title="View source code on GitHub"
+                      aria-label={`Source code of ${title}`}
                     >
-                      <Globe className="h-7 w-7" />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
                     </Button>
                   )}
+                  {hasDemoUrl && (
+                  <Button 
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      window.open(project.demoUrl, '_blank', 'noopener,noreferrer');
+                    }}
+                    variant="secondary"
+                    className="rounded-full h-12 w-12 sm:h-16 sm:w-16 p-0 shrink-0 gap-2 text-xs font-bold uppercase tracking-wider shadow-xl hover:scale-110 hover:bg-primary hover:text-primary-foreground active:scale-95 transition-all bg-white text-black flex items-center justify-center"
+                  >
+                    <Globe className="h-6 w-6 sm:h-7 sm:w-7" />
+                  </Button>
+                )}
+                </div>
                 </div>
               </div>
             </div>

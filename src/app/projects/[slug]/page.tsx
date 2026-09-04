@@ -199,6 +199,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
               imageUrl={project.imageUrl || ''}
               title={title}
               demoUrl={project.demoUrl}
+              githubUrl={project.githubUrl}
             />
 
             {/* Deep-Dive Case Study Grid */}
