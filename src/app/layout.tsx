@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Outfit, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/providers/ThemeContext';
 import { LanguageProvider } from '@/components/providers/LanguageContext';
+import { AudioFXProvider } from '@/components/providers/AudioFXContext';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
 import { SecurityProvider } from '@/components/providers/SecurityProvider';
@@ -264,22 +265,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <FirebaseClientProvider>
           <LanguageProvider>
             <ThemeProvider>
-              <SecurityProvider>
-                <MotionProvider>
-                  <ProjectStoreProvider>
-                    <RouteProgressBar />
-                    <SplashScreen />
-                    <ClientShell />
-                    <div className="overflow-x-hidden w-full">
-                      <PageTransition>{children}</PageTransition>
-                    </div>
-                    <Toaster />
-                    <ScrollProgressButton />
-                    <Analytics />
-                    <SpeedInsights />
-                  </ProjectStoreProvider>
-                </MotionProvider>
-              </SecurityProvider>
+              <AudioFXProvider>
+                <SecurityProvider>
+                  <MotionProvider>
+                    <ProjectStoreProvider>
+                      <RouteProgressBar />
+                      <SplashScreen />
+                      <ClientShell />
+                      <div className="overflow-x-hidden w-full">
+                        <PageTransition>{children}</PageTransition>
+                      </div>
+                      <Toaster />
+                      <ScrollProgressButton />
+                      <Analytics />
+                      <SpeedInsights />
+                    </ProjectStoreProvider>
+                  </MotionProvider>
+                </SecurityProvider>
+              </AudioFXProvider>
             </ThemeProvider>
           </LanguageProvider>
         </FirebaseClientProvider>

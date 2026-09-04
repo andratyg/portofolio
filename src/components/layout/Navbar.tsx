@@ -7,9 +7,10 @@ import { m as motion } from 'framer-motion';
 import { useLanguage } from '@/components/providers/LanguageContext';
 import { useTheme, themes, THEME_CONFIGS, Theme } from '@/components/providers/ThemeContext';
 import { Button } from '@/components/ui/button';
-import { Globe, Palette, LogIn, Menu, X, ChevronDown, Search, Sparkles, Check } from 'lucide-react';
+import { Globe, Palette, LogIn, Menu, X, ChevronDown, Search, Sparkles, Check, Volume2, VolumeX } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
+import { useAudioFX } from '@/components/providers/AudioFXContext';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -22,6 +23,7 @@ const MotionLink = motion.create(Link);
 export const Navbar = () => {
   const { t, language, setLanguage } = useLanguage();
   const { theme, setTheme, isAutoTheme, setAutoTheme } = useTheme();
+  const { soundEnabled, toggleSound, play } = useAudioFX();
   const { toast } = useToast();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -192,7 +194,11 @@ export const Navbar = () => {
                 <Link 
                   key={item.label} 
                   href={item.href}
-                  onClick={(e) => handleSmoothScroll(e, item.href)}
+                  onClick={(e) => {
+                    play('tab');
+                    handleSmoothScroll(e, item.href);
+                  }}
+                  onMouseEnter={() => play('hover')}
                   className={cn(
                     "relative text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-200 py-2",
                     isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
@@ -240,6 +246,27 @@ export const Navbar = () => {
           </Button>
 
           <div className="hidden sm:flex items-center gap-2">
+            {/* Sound FX Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-xl relative"
+              onClick={() => {
+                toggleSound();
+                if (!soundEnabled) {
+                  setTimeout(() => play('success'), 50);
+                }
+              }}
+              title={soundEnabled ? (language === 'id' ? 'Matikan Suara UI (M)' : 'Mute UI Sound (M)') : (language === 'id' ? 'Nyalakan Suara UI (M)' : 'Unmute UI Sound (M)')}
+              aria-label={soundEnabled ? 'Mute sound FX' : 'Unmute sound FX'}
+            >
+              {soundEnabled ? (
+                <Volume2 className="h-4 w-4 text-primary" />
+              ) : (
+                <VolumeX className="h-4 w-4 text-muted-foreground opacity-60" />
+              )}
+            </Button>
+
             {/* Language Toggle */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -248,8 +275,8 @@ export const Navbar = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="rounded-2xl border-none shadow-2xl bg-card/95 backdrop-blur-sm p-2">
-                <DropdownMenuItem onClick={() => setLanguage('en')} className="rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-2.5">English {language === 'en' && '✓'}</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage('id')} className="rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-2.5">Indonesia {language === 'id' && '✓'}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { play('click'); setLanguage('en'); }} className="rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-2.5">English {language === 'en' && '✓'}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { play('click'); setLanguage('id'); }} className="rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-2.5">Indonesia {language === 'id' && '✓'}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -288,7 +315,7 @@ export const Navbar = () => {
                       return (
                         <DropdownMenuItem
                           key={tName}
-                          onClick={() => setTheme(tName, true)}
+                          onClick={() => { play('toggle'); setTheme(tName, true); }}
                           className={cn(
                             "rounded-2xl p-2.5 cursor-pointer transition-all outline-none border flex flex-col items-start gap-1.5",
                             isCurrent
@@ -314,45 +341,6 @@ export const Navbar = () => {
                   </div>
                 </div>
 
-                {/* Anime & Gaming Universe */}
-                <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-primary/90 px-2 mb-1.5 flex items-center justify-between">
-                    <span>{language === 'id' ? 'Anime & Gaming Universe' : 'Anime & Gaming Universe'}</span>
-                    <span className="text-xs">🎮</span>
-                  </p>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {(['minecraft', 'onepiece', 'naruto'] as Theme[]).map((tName) => {
-                      const cfg = THEME_CONFIGS[tName];
-                      const isCurrent = theme === tName;
-                      return (
-                        <DropdownMenuItem
-                          key={tName}
-                          onClick={() => setTheme(tName, true)}
-                          className={cn(
-                            "rounded-2xl p-2.5 cursor-pointer transition-all outline-none border flex flex-col items-start gap-1.5",
-                            isCurrent
-                              ? "bg-primary/15 border-primary/40 text-primary font-bold shadow-sm"
-                              : "hover:bg-muted/60 border-transparent text-foreground"
-                          )}
-                        >
-                          <div className="flex items-center justify-between w-full">
-                            <div className="flex items-center -space-x-1 p-0.5 rounded-full bg-background/80 border border-border/60">
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.bg }} />
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.primary }} />
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.accent }} />
-                            </div>
-                            <span className="text-xs">{cfg.emoji}</span>
-                          </div>
-                          <div className="text-left w-full">
-                            <p className="text-xs font-bold leading-none">{cfg.name[language]}</p>
-                            <p className="text-[9px] text-muted-foreground line-clamp-1 mt-0.5">{cfg.description[language]}</p>
-                          </div>
-                        </DropdownMenuItem>
-                      );
-                    })}
-                  </div>
-                </div>
-
                 {/* Seasonal Themes */}
                 <div>
                   <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/80 px-2 mb-1.5">
@@ -365,7 +353,7 @@ export const Navbar = () => {
                       return (
                         <DropdownMenuItem
                           key={tName}
-                          onClick={() => setTheme(tName, true)}
+                          onClick={() => { play('toggle'); setTheme(tName, true); }}
                           className={cn(
                             "rounded-2xl p-2.5 cursor-pointer transition-all outline-none border flex items-center justify-between gap-2.5",
                             isCurrent
@@ -445,15 +433,34 @@ export const Navbar = () => {
               <Link 
                 key={item.label} 
                 href={item.href}
-                onClick={(e) => handleSmoothScroll(e, item.href)}
+                onClick={(e) => { play('tab'); handleSmoothScroll(e, item.href); }}
                 className="text-xl sm:text-2xl font-black uppercase tracking-tight p-2 hover:text-primary transition-colors duration-200"
               >
                 {item.label}
               </Link>
             ))}
             <div className="flex items-center gap-3 sm:gap-4 py-4 border-t border-border/10 flex-wrap">
-               <Button variant="ghost" size="icon" onClick={() => setLanguage(language === 'id' ? 'en' : 'id')} className="rounded-xl h-12 w-12 sm:h-14 sm:w-14 bg-muted/50" aria-label="Toggle language">
+               <Button variant="ghost" size="icon" onClick={() => { play('click'); setLanguage(language === 'id' ? 'en' : 'id'); }} className="rounded-xl h-12 w-12 sm:h-14 sm:w-14 bg-muted/50" aria-label="Toggle language">
                   <Globe className="h-5 w-5 sm:h-6 sm:w-6" />
+               </Button>
+
+               <Button
+                 variant="ghost"
+                 size="icon"
+                 onClick={() => {
+                   toggleSound();
+                   if (!soundEnabled) {
+                     setTimeout(() => play('success'), 50);
+                   }
+                 }}
+                 className="rounded-xl h-12 w-12 sm:h-14 sm:w-14 bg-muted/50"
+                 aria-label={soundEnabled ? 'Mute sound FX' : 'Unmute sound FX'}
+               >
+                 {soundEnabled ? (
+                   <Volume2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                 ) : (
+                   <VolumeX className="h-5 w-5 sm:h-6 sm:w-6 opacity-60" />
+                 )}
                </Button>
 
                <DropdownMenu>

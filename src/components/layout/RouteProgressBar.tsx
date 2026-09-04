@@ -1,21 +1,30 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { useAudioFX } from '@/components/providers/AudioFXContext';
 
 export function RouteProgressBar() {
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
+  const { play } = useAudioFX();
+  const firstRenderRef = useRef(true);
 
   useEffect(() => {
-    // Flash a quick transition bar whenever pathname changes
+    if (firstRenderRef.current) {
+      firstRenderRef.current = false;
+      return;
+    }
+
+    // Play subtle navigation feedback and flash progress bar
+    play('tab');
     setLoading(true);
     const timer = setTimeout(() => {
       setLoading(false);
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [pathname]);
+  }, [pathname, play]);
 
   if (!loading) return null;
 

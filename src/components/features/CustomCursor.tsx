@@ -120,20 +120,17 @@ export const CustomCursor = () => {
           if (theme === 'imlek') color = `rgba(255, 215, 0, ${Math.random()})`;
           else if (theme === 'ramadan') color = `rgba(158, 255, 158, ${Math.random()})`;
           else if (theme === 'natal') color = `rgba(255, 255, 255, ${Math.random()})`;
-          else if (theme === 'minecraft') color = Math.random() > 0.4 ? `rgba(93, 140, 63, ${Math.random() * 0.7 + 0.3})` : `rgba(139, 105, 20, ${Math.random() * 0.7 + 0.3})`; // Grass Green & Dirt Brown
-          else if (theme === 'onepiece') color = Math.random() > 0.4 ? `rgba(255, 215, 0, ${Math.random() * 0.8 + 0.2})` : `rgba(79, 195, 247, ${Math.random() * 0.8 + 0.2})`; // Treasure Gold & Ocean Blue
-          else if (theme === 'naruto') color = Math.random() > 0.4 ? `rgba(255, 107, 43, ${Math.random() * 0.8 + 0.2})` : `rgba(255, 200, 60, ${Math.random() * 0.8 + 0.2})`; // Chakra Orange & Yellow
           
           // Spawn 1-2 particles per frame when moving
           for (let i = 0; i < (Math.random() > 0.5 ? 1 : 2); i++) {
             particles.push({
               x: x + (Math.random() - 0.5) * 10,
               y: y + (Math.random() - 0.5) * 10,
-              vx: (Math.random() - 0.5) * (theme === 'imlek' || theme === 'minecraft' ? 4 : 2),
-              vy: (Math.random() - 0.5) * 2 + (theme === 'natal' || theme === 'minecraft' ? 1 : 0), // Blocks & snow fall down
+              vx: (Math.random() - 0.5) * (theme === 'imlek' ? 4 : 2),
+              vy: (Math.random() - 0.5) * 2 + (theme === 'natal' ? 1 : 0),
               life: 1,
               maxLife: theme === 'imlek' ? 30 : 50,
-              size: Math.random() * (theme === 'naruto' || theme === 'onepiece' ? 3 : 2) + 1,
+              size: Math.random() * 2 + 1,
               color
             });
           }
@@ -159,14 +156,11 @@ export const CustomCursor = () => {
             p.y += p.vy;
             p.life++;
             
-            if (theme === 'imlek' || theme === 'minecraft') {
-              p.vy += 0.05; // Gravity for sparks & voxel dust
-            } else if (theme === 'ramadan' || theme === 'onepiece') {
-              p.vy -= 0.02; // Float up for magic glow & ocean bubbles
+            if (theme === 'imlek') {
+              p.vy += 0.05; // Gravity for sparks
+            } else if (theme === 'ramadan') {
+              p.vy -= 0.02; // Float up for magic glow
               p.x += Math.sin(p.life * 0.1) * 0.5;
-            } else if (theme === 'naruto') {
-              p.vy += 0.02; // Gentle flutter for leaves
-              p.x += Math.sin(p.life * 0.08) * 0.6;
             }
 
             const opacity = 1 - (p.life / p.maxLife);
@@ -178,14 +172,9 @@ export const CustomCursor = () => {
             ctx.globalAlpha = opacity;
             ctx.fillStyle = p.color;
             
-            if (theme === 'minecraft') {
-              // Square pixel particles for minecraft
-              ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
-            } else {
-              ctx.beginPath();
-              ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-              ctx.fill();
-            }
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
           }
           ctx.globalAlpha = 1;
           particlesRaf = requestAnimationFrame(animateParticles);

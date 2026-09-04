@@ -2,8 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
-export type Theme = 'light' | 'dark' | 'minecraft' | 'onepiece' | 'naruto' | 'ramadan' | 'imlek' | 'natal';
-export type ThemeCategory = 'standard' | 'anime-gaming' | 'seasonal';
+export type Theme = 'light' | 'dark' | 'ramadan' | 'imlek' | 'natal';
+export type ThemeCategory = 'standard' | 'seasonal';
 
 export interface ThemeConfig {
   id: Theme;
@@ -47,42 +47,6 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
       accent: '#60a5fa',
     },
   },
-  minecraft: {
-    id: 'minecraft',
-    name: { id: 'Minecraft', en: 'Minecraft' },
-    category: 'anime-gaming',
-    description: { id: 'Dunia voxel & petualangan balok', en: 'Voxel world & blocky adventure' },
-    colors: {
-      bg: '#1a2e0a',
-      primary: '#5D8C3F',
-      accent: '#4FC3F7',
-    },
-    emoji: '🟩',
-  },
-  onepiece: {
-    id: 'onepiece',
-    name: { id: 'One Piece', en: 'One Piece' },
-    category: 'anime-gaming',
-    description: { id: 'Petualangan samudra & kapten bajak laut', en: 'Ocean adventure & pirate captain' },
-    colors: {
-      bg: '#0a1628',
-      primary: '#FFD700',
-      accent: '#DC3545',
-    },
-    emoji: '🏴‍☠️',
-  },
-  naruto: {
-    id: 'naruto',
-    name: { id: 'Naruto', en: 'Naruto' },
-    category: 'anime-gaming',
-    description: { id: 'Semangat shinobi & chakra ninja', en: 'Shinobi spirit & ninja chakra' },
-    colors: {
-      bg: '#1a0e05',
-      primary: '#FF6B2B',
-      accent: '#22C55E',
-    },
-    emoji: '🍥',
-  },
   ramadan: {
     id: 'ramadan',
     name: { id: 'Ramadan', en: 'Ramadan' },
@@ -121,7 +85,7 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
   },
 };
 
-export const themes: Theme[] = ['light', 'dark', 'minecraft', 'onepiece', 'naruto', 'ramadan', 'imlek', 'natal'];
+export const themes: Theme[] = ['light', 'dark', 'ramadan', 'imlek', 'natal'];
 
 interface ThemeContextType {
   theme: Theme;

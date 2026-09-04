@@ -8,11 +8,12 @@ import { useTheme, themes, THEME_CONFIGS, Theme } from '@/components/providers/T
 import { 
   Search, FileText, Globe, Palette, ArrowRight, 
   BookOpen, Briefcase, Award, History, Mail, User, 
-  Sparkles, ExternalLink, X, Command, Download, Copy, Check
+  Sparkles, ExternalLink, X, Command, Download, Copy, Check, Volume2, VolumeX
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useAudioFX } from '@/components/providers/AudioFXContext';
 import { cn } from '@/lib/utils';
 
 export function CommandPalette() {
@@ -27,6 +28,7 @@ export function CommandPalette() {
   const profile = store?.profile;
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
+  const { soundEnabled, toggleSound, play } = useAudioFX();
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Toggle on Cmd+K / Ctrl+K
@@ -34,7 +36,11 @@ export function CommandPalette() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
         e.preventDefault();
-        setOpen((prev) => !prev);
+        setOpen((prev) => {
+          const next = !prev;
+          if (next) play('modal');
+          return next;
+        });
       }
       if (e.key === 'Escape' && open) {
         setOpen(false);
@@ -42,7 +48,10 @@ export function CommandPalette() {
     };
 
     // Custom event listener so Navbar or other components can open CommandPalette
-    const handleOpenCommandPalette = () => setOpen(true);
+    const handleOpenCommandPalette = () => {
+      play('modal');
+      setOpen(true);
+    };
     window.addEventListener('open-command-palette', handleOpenCommandPalette);
     window.addEventListener('keydown', handleKeyDown);
 
@@ -61,6 +70,7 @@ export function CommandPalette() {
   }, [open]);
 
   const handleNavigate = (url: string) => {
+    play('click');
     setOpen(false);
     if (url.startsWith('http')) {
       window.open(url, '_blank', 'noopener,noreferrer');
@@ -77,6 +87,7 @@ export function CommandPalette() {
   };
 
   const handleCopyPortfolioUrl = () => {
+    play('success');
     navigator.clipboard.writeText('https://www.naraandratyaga.my.id');
     setCopiedLink(true);
     toast({
@@ -87,6 +98,7 @@ export function CommandPalette() {
   };
 
   const handleDownloadCv = () => {
+    play('click');
     if (profile?.cvUrl) {
       window.open(profile.cvUrl, '_blank');
       setOpen(false);
@@ -100,6 +112,7 @@ export function CommandPalette() {
   };
 
   const handleSelectTheme = (tId: Theme) => {
+    play('toggle');
     setTheme(tId, true);
     toast({
       title: language === 'id' ? 'Tema Diperbarui' : 'Theme Updated',
@@ -124,7 +137,7 @@ export function CommandPalette() {
   // Themes Search Filter
   const filteredThemes = useMemo(() => {
     const themeList = Object.values(THEME_CONFIGS);
-    const isThemeQuery = ['theme', 'tema', 'warna', 'color', 'mode', 'tampilan', 'gelap', 'terang', 'dark', 'light', 'anime', 'game', 'gaming', 'minecraft', 'voxel', 'block', 'one piece', 'pirate', 'naruto', 'ninja', 'chakra'].some(k => q.includes(k));
+    const isThemeQuery = ['theme', 'tema', 'warna', 'color', 'mode', 'tampilan', 'gelap', 'terang', 'dark', 'light', 'ramadan', 'imlek', 'natal'].some(k => q.includes(k));
     if (!q) return themeList.slice(0, 6);
     if (isThemeQuery) return themeList;
     return themeList.filter(tItem => {
@@ -234,6 +247,36 @@ export function CommandPalette() {
                   </p>
                   <p className="text-[10px] text-muted-foreground truncate">
                     naraandratyaga.my.id
+                  </p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  toggleSound();
+                  if (!soundEnabled) {
+                    setTimeout(() => play('success'), 50);
+                  }
+                  toast({
+                    title: !soundEnabled ? (language === 'id' ? 'Suara UI Aktif' : 'UI Sound Enabled') : (language === 'id' ? 'Suara UI Dimatikan' : 'UI Sound Muted'),
+                    description: language === 'id' ? 'Tekan M di keyboard untuk toggle cepat.' : 'Press M on your keyboard for quick toggle.',
+                  });
+                }}
+                className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-primary/10 hover:text-primary transition-colors text-left group w-full sm:col-span-2"
+              >
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                  {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold leading-tight truncate">
+                    {soundEnabled
+                      ? (language === 'id' ? 'Matikan Suara UI (M)' : 'Mute UI Sound (M)')
+                      : (language === 'id' ? 'Nyalakan Suara UI (M)' : 'Enable UI Sound (M)')}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground truncate">
+                    {soundEnabled
+                      ? (language === 'id' ? 'Efek audio sintetis Web Audio aktif' : 'Synthesized Web Audio FX active')
+                      : (language === 'id' ? 'Efek audio saat ini dibisukan' : 'Audio effects currently muted')}
                   </p>
                 </div>
               </button>
