@@ -6,7 +6,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-export const RecommendationItemSchema = z.object({
+const RecommendationItemSchema = z.object({
   id: z.string().describe('Unique identifier for this recommendation (e.g., rec-missing-en-proj-1 or rec-stat-mismatch).'),
   category: z.enum(['Data Kosong', 'SEO', 'Konsistensi', 'Peningkatan Konten', 'Kredensial & Tech']).describe('Category of the recommendation.'),
   priority: z.enum(['tinggi', 'sedang', 'rendah']).describe('Priority level: tinggi (high), sedang (medium), or rendah (low).'),
@@ -16,7 +16,7 @@ export const RecommendationItemSchema = z.object({
 });
 export type RecommendationItem = z.infer<typeof RecommendationItemSchema>;
 
-export const AnalyzePortfolioRecommendationsInputSchema = z.object({
+const AnalyzePortfolioRecommendationsInputSchema = z.object({
   profile: z.object({
     name: z.string().optional(),
     roleId: z.string().optional(),
@@ -39,7 +39,7 @@ export const AnalyzePortfolioRecommendationsInputSchema = z.object({
     clientSatisfaction: z.string().optional(),
   }).optional(),
   projects: z.array(z.object({
-    id: z.string(),
+    id: z.string().optional(),
     titleId: z.string().optional(),
     titleEn: z.string().optional(),
     shortDescriptionId: z.string().optional(),
@@ -53,7 +53,7 @@ export const AnalyzePortfolioRecommendationsInputSchema = z.object({
     featured: z.boolean().optional(),
   })).optional(),
   certificates: z.array(z.object({
-    id: z.string(),
+    id: z.string().optional(),
     titleId: z.string().optional(),
     titleEn: z.string().optional(),
     shortDescriptionId: z.string().optional(),
@@ -66,7 +66,7 @@ export const AnalyzePortfolioRecommendationsInputSchema = z.object({
     credentialUrl: z.string().optional(),
   })).optional(),
   experiences: z.array(z.object({
-    id: z.string(),
+    id: z.string().optional(),
     titleId: z.string().optional(),
     titleEn: z.string().optional(),
     company: z.string().optional(),
@@ -75,13 +75,13 @@ export const AnalyzePortfolioRecommendationsInputSchema = z.object({
     descriptionEn: z.string().optional(),
   })).optional(),
   techSkills: z.array(z.object({
-    id: z.string(),
-    name: z.string(),
+    id: z.string().optional(),
+    name: z.string().optional(),
     category: z.string().optional(),
     level: z.number().optional(),
   })).optional(),
   blogs: z.array(z.object({
-    id: z.string(),
+    id: z.string().optional(),
     titleId: z.string().optional(),
     titleEn: z.string().optional(),
     summaryId: z.string().optional(),
@@ -92,7 +92,7 @@ export const AnalyzePortfolioRecommendationsInputSchema = z.object({
 });
 export type AnalyzePortfolioRecommendationsInput = z.infer<typeof AnalyzePortfolioRecommendationsInputSchema>;
 
-export const AnalyzePortfolioRecommendationsOutputSchema = z.object({
+const AnalyzePortfolioRecommendationsOutputSchema = z.object({
   summary: z.string().describe('Overall assessment summary of the portfolio health and readiness.'),
   healthScore: z.number().describe('Calculated overall portfolio completeness/quality score between 0 and 100.'),
   recommendations: z.array(RecommendationItemSchema).describe('List of actionable, prioritized recommendations.'),

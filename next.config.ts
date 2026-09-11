@@ -1,6 +1,7 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ['genkit', '@genkit-ai/google-genai'],
   // Remove console.log in production to reduce JS overhead
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,

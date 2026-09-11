@@ -13,8 +13,8 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { 
   analyzePortfolioRecommendations, 
-  RecommendationItem, 
-  AnalyzePortfolioRecommendationsOutput 
+  type RecommendationItem, 
+  type AnalyzePortfolioRecommendationsOutput 
 } from '@/ai/flows/analyze-portfolio-recommendations';
 import { Project, Certificate, Experience, TechSkill, BlogPost, ProfileData, PortfolioStats } from '@/lib/types';
 import { useFirestore } from '@/firebase';
