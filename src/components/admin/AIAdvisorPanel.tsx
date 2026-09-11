@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -253,9 +253,30 @@ export function AIAdvisorPanel({
     toast({ title: "Seluruh Rekomendasi Dipulihkan" });
   };
 
+  // Live updated recommendations based on current store state
+  const liveRecommendations = useMemo(() => {
+    const claimedSkills = Number.parseInt(stats?.techMastered || '0', 10) || 0;
+    return recommendations
+      .map(r => {
+        if (r.id === 'tech-stack-count-mismatch') {
+          // If the user already met or exceeded claimed skills, mark auto-resolved
+          if (claimedSkills > 0 && techSkills.length >= claimedSkills) {
+            return null;
+          }
+          return {
+            ...r,
+            title: `Lengkapi Tech Stack (${techSkills.length}/${claimedSkills} Terdaftar)`,
+            description: `Klaim teknologi yang dikuasai (${claimedSkills}) lebih besar dari item yang didaftarkan (${techSkills.length}). Daftarkan skill teknis lainnya ke tab Tech Stack.`,
+          };
+        }
+        return r;
+      })
+      .filter(Boolean) as RecommendationItem[];
+  }, [recommendations, techSkills.length, stats?.techMastered]);
+
   // Filter recommendations
-  const activeRecs = recommendations.filter(r => !dismissedIds.includes(r.id));
-  const dismissedRecs = recommendations.filter(r => dismissedIds.includes(r.id));
+  const activeRecs = liveRecommendations.filter(r => !dismissedIds.includes(r.id));
+  const dismissedRecs = liveRecommendations.filter(r => dismissedIds.includes(r.id));
 
   const listToRender = (showDismissed ? dismissedRecs : activeRecs).filter(r => {
     const matchCategory = filterCategory === 'all' || r.category === filterCategory;

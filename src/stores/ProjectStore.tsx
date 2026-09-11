@@ -2,16 +2,16 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  Project, 
-  Certificate, 
-  PortfolioStats, 
-  ProfileData, 
-  Testimonial, 
-  Experience, 
-  ContactMessage, 
-  TechSkill, 
-  BlogPost, 
+import {
+  Project,
+  Certificate,
+  PortfolioStats,
+  ProfileData,
+  Testimonial,
+  Experience,
+  ContactMessage,
+  TechSkill,
+  BlogPost,
   ShortLink,
   DEFAULT_PROFILE,
   DEFAULT_STATS
@@ -45,6 +45,7 @@ interface ProjectStoreType {
   techSkills: TechSkill[];
   addTechSkill: (skill: TechSkill) => void;
   deleteTechSkill: (id: string) => void;
+  seedDefaultTechSkills: () => Promise<void>;
   addBlog: (blog: BlogPost) => void;
   deleteBlog: (id: string) => void;
   addShortLink: (link: ShortLink) => void;
@@ -254,29 +255,29 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const docRef = doc(firestore, 'projects', project.id);
     setDocumentNonBlocking(docRef, { ...project, updatedAt: new Date().toISOString() }, { merge: true });
   };
-  
+
   const setFeaturedProject = async (projectId: string) => {
     if (!firestore || projects.length === 0) return;
     const { doc, writeBatch } = await import('firebase/firestore');
     const batch = writeBatch(firestore);
     projects.forEach(p => {
-        const projectRef = doc(firestore, 'projects', p.id);
-        const isTarget = p.id === projectId;
-        batch.update(projectRef, { featured: isTarget });
+      const projectRef = doc(firestore, 'projects', p.id);
+      const isTarget = p.id === projectId;
+      batch.update(projectRef, { featured: isTarget });
     });
     try {
-        await batch.commit();
-        toast({
-            title: "Proyek Unggulan Diperbarui",
-            description: "Proyek pilihan Anda kini akan tampil di halaman utama.",
-        });
+      await batch.commit();
+      toast({
+        title: "Proyek Unggulan Diperbarui",
+        description: "Proyek pilihan Anda kini akan tampil di halaman utama.",
+      });
     } catch (e) {
-        console.error("Gagal mengatur proyek unggulan:", e);
-        toast({
-            variant: "destructive",
-            title: "Gagal Memperbarui",
-            description: "Terjadi kesalahan saat memilih proyek unggulan.",
-        });
+      console.error("Gagal mengatur proyek unggulan:", e);
+      toast({
+        variant: "destructive",
+        title: "Gagal Memperbarui",
+        description: "Terjadi kesalahan saat memilih proyek unggulan.",
+      });
     }
   };
 
@@ -333,12 +334,41 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const { doc } = await import('firebase/firestore');
     const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
     setDocumentNonBlocking(doc(firestore, 'techSkills', skill.id), { ...skill, updatedAt: new Date().toISOString() }, { merge: true });
+    try {
+      const { revalidatePortfolio } = await import('@/app/actions/revalidate');
+      await revalidatePortfolio('/');
+    } catch (e) {
+      console.warn('Revalidate error:', e);
+    }
   };
   const deleteTechSkill = async (id: string) => {
     if (!firestore) return;
     const { doc } = await import('firebase/firestore');
     const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
     deleteDocumentNonBlocking(doc(firestore, 'techSkills', id));
+    try {
+      const { revalidatePortfolio } = await import('@/app/actions/revalidate');
+      await revalidatePortfolio('/');
+    } catch (e) {
+      console.warn('Revalidate error:', e);
+    }
+  };
+  const seedDefaultTechSkills = async () => {
+    if (!firestore) return;
+    const { doc, writeBatch } = await import('firebase/firestore');
+    const { defaultTechStack } = await import('@/components/sections/TechStack');
+    const batch = writeBatch(firestore);
+    defaultTechStack.forEach(skill => {
+      const ref = doc(firestore, 'techSkills', skill.id);
+      batch.set(ref, { ...skill, updatedAt: new Date().toISOString() }, { merge: true });
+    });
+    await batch.commit();
+    try {
+      const { revalidatePortfolio } = await import('@/app/actions/revalidate');
+      await revalidatePortfolio('/');
+    } catch (e) {
+      console.warn('Revalidate error:', e);
+    }
   };
   const addBlog = async (blog: BlogPost) => {
     if (!firestore) return;
@@ -404,11 +434,11 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   return (
-    <ProjectStoreContext.Provider value={{ 
+    <ProjectStoreContext.Provider value={{
       projects, certificates, testimonials, experiences, messages, stats, profile, techSkills, blogs, shortLinks, isLoading, error,
       addProject, deleteProject, setFeaturedProject, addCertificate, deleteCertificate,
       addTestimonial, deleteTestimonial, addExperience, deleteExperience,
-      deleteMessage, updateProfileAndStats, addTechSkill, deleteTechSkill, addBlog, deleteBlog,
+      deleteMessage, updateProfileAndStats, addTechSkill, deleteTechSkill, seedDefaultTechSkills, addBlog, deleteBlog,
       addShortLink, deleteShortLink, backupData, restoreData
     }}>
       {children}
@@ -431,26 +461,27 @@ export const useProjectStore = () => {
       shortLinks: [],
       isLoading: false,
       error: null,
-      addProject: () => {},
-      deleteProject: () => {},
-      setFeaturedProject: () => {},
-      addCertificate: () => {},
-      deleteCertificate: () => {},
-      addTestimonial: () => {},
-      deleteTestimonial: () => {},
-      addExperience: () => {},
-      deleteExperience: () => {},
-      deleteMessage: () => {},
-      updateProfileAndStats: () => {},
+      addProject: () => { },
+      deleteProject: () => { },
+      setFeaturedProject: () => { },
+      addCertificate: () => { },
+      deleteCertificate: () => { },
+      addTestimonial: () => { },
+      deleteTestimonial: () => { },
+      addExperience: () => { },
+      deleteExperience: () => { },
+      deleteMessage: () => { },
+      updateProfileAndStats: () => { },
       techSkills: [],
-      addTechSkill: () => {},
-      deleteTechSkill: () => {},
-      addBlog: () => {},
-      deleteBlog: () => {},
-      addShortLink: () => {},
-      deleteShortLink: () => {},
-      backupData: () => {},
-      restoreData: async () => {},
+      addTechSkill: () => { },
+      deleteTechSkill: () => { },
+      seedDefaultTechSkills: async () => { },
+      addBlog: () => { },
+      deleteBlog: () => { },
+      addShortLink: () => { },
+      deleteShortLink: () => { },
+      backupData: () => { },
+      restoreData: async () => { },
     };
   }
   return context;

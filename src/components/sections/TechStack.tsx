@@ -7,28 +7,52 @@ import { cn } from '@/lib/utils';
 import { TechSkill } from '@/lib/types';
 import { m as motion } from 'framer-motion';
 
-const defaultTechStack: TechSkill[] = [
-  { id: 'nextjs', name: 'Next.js', icon: '▲', level: 0, color: 'from-white to-gray-400', category: 'Daily Driver' },
-  { id: 'react', name: 'React', icon: '⚛', level: 0, color: 'from-cyan-400 to-blue-500', category: 'Daily Driver' },
-  { id: 'typescript', name: 'TypeScript', icon: 'TS', level: 0, color: 'from-blue-400 to-blue-600', category: 'Daily Driver' },
-  { id: 'tailwindcss', name: 'Tailwind CSS', icon: '🎨', level: 0, color: 'from-teal-400 to-cyan-500', category: 'Daily Driver' },
-  { id: 'firebase', name: 'Firebase', icon: '🔥', level: 0, color: 'from-amber-400 to-orange-500', category: 'Daily Driver' },
-  { id: 'javascript', name: 'JavaScript', icon: 'JS', level: 0, color: 'from-yellow-400 to-yellow-500', category: 'Working Knowledge' },
-  { id: 'nodejs', name: 'Node.js', icon: '🟢', level: 0, color: 'from-green-400 to-emerald-600', category: 'Working Knowledge' },
-  { id: 'htmlcss', name: 'HTML & CSS', icon: '🌐', level: 0, color: 'from-orange-400 to-red-500', category: 'Working Knowledge' },
-  { id: 'git', name: 'Git & GitHub', icon: '⌘', level: 0, color: 'from-red-400 to-orange-500', category: 'Tools & Ecosystem' },
-  { id: 'figma', name: 'Figma', icon: '✦', level: 0, color: 'from-purple-400 to-pink-500', category: 'Tools & Ecosystem' },
-  { id: 'vercel', name: 'Vercel', icon: '▲', level: 0, color: 'from-gray-300 to-gray-500', category: 'Tools & Ecosystem' },
-  { id: 'framermotion', name: 'Framer Motion', icon: '✨', level: 0, color: 'from-pink-400 to-purple-500', category: 'Tools & Ecosystem' },
+export const defaultTechStack: TechSkill[] = [
+  { id: 'nextjs', name: 'Next.js', icon: '▲', level: 90, color: 'from-white to-gray-400', category: 'Daily Driver' },
+  { id: 'react', name: 'React', icon: '⚛', level: 90, color: 'from-cyan-400 to-blue-500', category: 'Daily Driver' },
+  { id: 'typescript', name: 'TypeScript', icon: 'TS', level: 85, color: 'from-blue-400 to-blue-600', category: 'Daily Driver' },
+  { id: 'tailwindcss', name: 'Tailwind CSS', icon: '🎨', level: 95, color: 'from-teal-400 to-cyan-500', category: 'Daily Driver' },
+  { id: 'firebase', name: 'Firebase', icon: '🔥', level: 85, color: 'from-amber-400 to-orange-500', category: 'Daily Driver' },
+  { id: 'javascript', name: 'JavaScript', icon: 'JS', level: 90, color: 'from-yellow-400 to-yellow-500', category: 'Working Knowledge' },
+  { id: 'nodejs', name: 'Node.js', icon: '🟢', level: 80, color: 'from-green-400 to-emerald-600', category: 'Working Knowledge' },
+  { id: 'htmlcss', name: 'HTML & CSS', icon: '🌐', level: 95, color: 'from-orange-400 to-red-500', category: 'Working Knowledge' },
+  { id: 'git', name: 'Git & GitHub', icon: '⌘', level: 85, color: 'from-red-400 to-orange-500', category: 'Tools & Ecosystem' },
+  { id: 'figma', name: 'Figma', icon: '✦', level: 75, color: 'from-purple-400 to-pink-500', category: 'Tools & Ecosystem' },
+  { id: 'vercel', name: 'Vercel', icon: '▲', level: 85, color: 'from-gray-300 to-gray-500', category: 'Tools & Ecosystem' },
+  { id: 'framermotion', name: 'Framer Motion', icon: '✨', level: 80, color: 'from-pink-400 to-purple-500', category: 'Tools & Ecosystem' },
 ];
 
-const categoryOrder = ['Daily Driver', 'Working Knowledge', 'Tools & Ecosystem'];
+const preferredCategoryOrder = [
+  'Daily Driver',
+  'Working Knowledge',
+  'Frontend',
+  'Backend',
+  'Database',
+  'Mobile',
+  'Tools & Ecosystem',
+  'Tools',
+  'Design',
+  'Other',
+];
 
 function categoryLabel(category: string, language: string) {
-  if (language !== 'id') return category;
-  if (category === 'Daily Driver') return 'Teknologi Utama';
-  if (category === 'Working Knowledge') return 'Pengalaman Praktis';
-  return 'Tools & Ekosistem';
+  const dict: Record<string, { id: string; en: string }> = {
+    'Daily Driver': { id: 'Teknologi Utama', en: 'Core Stack' },
+    'Working Knowledge': { id: 'Pengalaman Praktis', en: 'Working Knowledge' },
+    'Frontend': { id: 'Frontend & Antarmuka', en: 'Frontend & UI' },
+    'Backend': { id: 'Backend & Server', en: 'Backend & APIs' },
+    'Database': { id: 'Basis Data & Penyimpanan', en: 'Databases & Storage' },
+    'Mobile': { id: 'Pengembangan Mobile', en: 'Mobile Development' },
+    'Tools & Ecosystem': { id: 'Tools & Ekosistem', en: 'Tools & Ecosystem' },
+    'Tools': { id: 'Tools & DevOps', en: 'Tools & DevOps' },
+    'Design': { id: 'Desain & UI/UX', en: 'Design & UI/UX' },
+    'Other': { id: 'Teknologi Lainnya', en: 'Other Technologies' },
+  };
+
+  if (dict[category]) {
+    return language === 'id' ? dict[category].id : dict[category].en;
+  }
+  return category;
 }
 
 function SkillBadge({ tech, index }: { tech: TechSkill; index: number }) {
@@ -68,10 +92,30 @@ export const TechStack = () => {
   const skills = techSkills.length > 0 ? techSkills : defaultTechStack;
 
   const groupedSkills = useMemo(() => {
-    return categoryOrder.map((category) => ({
-      category,
-      skills: skills.filter((skill) => skill.category === category),
-    })).filter((group) => group.skills.length > 0);
+    // Gather all categories present in the skills array
+    const categoriesSet = new Set<string>();
+    skills.forEach((skill) => {
+      categoriesSet.add(skill.category || 'Other');
+    });
+
+    const presentCategories = Array.from(categoriesSet);
+
+    // Sort: preferred order first, then alphabetically for custom ones
+    presentCategories.sort((a, b) => {
+      const idxA = preferredCategoryOrder.indexOf(a);
+      const idxB = preferredCategoryOrder.indexOf(b);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.localeCompare(b);
+    });
+
+    return presentCategories
+      .map((category) => ({
+        category,
+        skills: skills.filter((skill) => (skill.category || 'Other') === category),
+      }))
+      .filter((group) => group.skills.length > 0);
   }, [skills]);
 
   return (

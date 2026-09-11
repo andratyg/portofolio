@@ -43,7 +43,7 @@ function AdminContent() {
     messages, deleteMessage,
     profile, updateProfileAndStats,
     stats,
-    techSkills, addTechSkill, deleteTechSkill,
+    techSkills, addTechSkill, deleteTechSkill, seedDefaultTechSkills,
     backupData, restoreData,
     isLoading: storeLoading
   } = useProjectStore();
@@ -901,7 +901,21 @@ function AdminContent() {
                                <Input value={statsFormData.yearsExperience} onChange={e => setStatsFormData({...statsFormData, yearsExperience: e.target.value})} className="rounded-xl border-none bg-background/50 h-12" />
                             </div>
                             <div className="space-y-1">
-                               <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Teknologi Terapan</label>
+                               <div className="flex items-center justify-between">
+                                 <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Teknologi Terapan</label>
+                                 {techSkills.length > 0 && (
+                                   <button 
+                                     type="button" 
+                                     onClick={() => {
+                                       setStatsFormData(prev => ({ ...prev, techMastered: String(techSkills.length) }));
+                                       toast({ title: "Metrik Disinkronkan", description: `Nilai disesuaikan dengan ${techSkills.length} skill yang ada di Tech Stack.` });
+                                     }}
+                                     className="text-[9px] text-primary hover:underline font-bold uppercase"
+                                   >
+                                     Sinkron ({techSkills.length})
+                                   </button>
+                                 )}
+                               </div>
                                <Input value={statsFormData.techMastered} onChange={e => setStatsFormData({...statsFormData, techMastered: e.target.value})} className="rounded-xl border-none bg-background/50 h-12" />
                             </div>
                             <div className="space-y-1">
@@ -1663,9 +1677,23 @@ function AdminContent() {
                       <CardTitle className="text-2xl sm:text-3xl font-black uppercase tracking-tight">Katalog Teknologi</CardTitle>
                       <CardDescription className="mt-1">Manajemen skill dan teknologi yang dikuasai.</CardDescription>
                     </div>
-                    <Badge className="h-8 px-4 rounded-full text-xs font-black bg-primary/10 text-primary border-primary/20">
-                      {techSkills.length} Skill{techSkills.length !== 1 ? 's' : ''}
-                    </Badge>
+                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                      <Badge className="h-8 px-4 rounded-full text-xs font-black bg-primary/10 text-primary border-primary/20">
+                        {techSkills.length} Skill{techSkills.length !== 1 ? 's' : ''}
+                      </Badge>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={async () => {
+                          await seedDefaultTechSkills();
+                          toast({ title: "12 Skill Bawaan Dimuat", description: "Skill bawaan portofolio berhasil dimasukkan ke basis data." });
+                        }}
+                        className="rounded-xl text-xs font-black uppercase tracking-wider h-8 border-primary/30 text-primary hover:bg-primary/10"
+                      >
+                        <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Muat 12 Skill Bawaan
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="px-0 pt-6 space-y-10">
@@ -1704,13 +1732,16 @@ function AdminContent() {
                                  <SelectValue placeholder="Pilih Kategori" />
                               </SelectTrigger>
                               <SelectContent>
-                                 <SelectItem value="Frontend">Frontend</SelectItem>
-                                 <SelectItem value="Backend">Backend</SelectItem>
-                                 <SelectItem value="Tools">Tools/DevOps</SelectItem>
-                                 <SelectItem value="Design">Design</SelectItem>
-                                 <SelectItem value="Database">Database</SelectItem>
-                                 <SelectItem value="Mobile">Mobile</SelectItem>
-                                 <SelectItem value="Other">Lainnya</SelectItem>
+                                  <SelectItem value="Daily Driver">Teknologi Utama (Daily Driver)</SelectItem>
+                                  <SelectItem value="Working Knowledge">Pengalaman Praktis (Working Knowledge)</SelectItem>
+                                  <SelectItem value="Frontend">Frontend & Antarmuka</SelectItem>
+                                  <SelectItem value="Backend">Backend & Server</SelectItem>
+                                  <SelectItem value="Database">Basis Data (Database)</SelectItem>
+                                  <SelectItem value="Mobile">Pengembangan Mobile</SelectItem>
+                                  <SelectItem value="Tools & Ecosystem">Tools & Ekosistem</SelectItem>
+                                  <SelectItem value="Tools">Tools/DevOps</SelectItem>
+                                  <SelectItem value="Design">Desain UI/UX</SelectItem>
+                                  <SelectItem value="Other">Lainnya</SelectItem>
                               </SelectContent>
                            </Select>
                          </div>
@@ -1786,7 +1817,17 @@ function AdminContent() {
                    {techSkills.length === 0 ? (
                      <div className="text-center py-16 space-y-4">
                        <Terminal className="h-12 w-12 text-muted-foreground/30 mx-auto" />
-                       <p className="text-sm text-muted-foreground">Belum ada skill. Tambahkan dari form di atas.</p>
+                       <p className="text-sm text-muted-foreground">Belum ada skill tersimpan di database. Tambahkan dari form di atas atau muat 12 skill bawaan.</p>
+                       <Button
+                         type="button"
+                         onClick={async () => {
+                           await seedDefaultTechSkills();
+                           toast({ title: "12 Skill Bawaan Dimuat", description: "12 skill bawaan portofolio berhasil dimasukkan ke basis data." });
+                         }}
+                         className="rounded-xl font-black uppercase tracking-wider gap-2 h-11"
+                       >
+                         <Sparkles className="h-4 w-4" /> Muat 12 Skill Bawaan Portofolio
+                       </Button>
                      </div>
                    ) : (
                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
