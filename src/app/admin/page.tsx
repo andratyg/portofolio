@@ -1719,12 +1719,36 @@ function AdminContent() {
                            <Input required value={techSkillForm.icon} onChange={e => setTechSkillForm({...techSkillForm, icon: e.target.value})} placeholder="URL (https://...) atau Emoji (🔥)" className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background border-none px-4 sm:px-6" />
                          </div>
                          <div className="space-y-2">
-                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Tingkat Penguasaan: {techSkillForm.level}%</label>
-                           <div className="flex items-center gap-3 px-1">
-                             <input type="range" min="1" max="100" value={techSkillForm.level} onChange={e => setTechSkillForm({...techSkillForm, level: parseInt(e.target.value) || 0})} className="flex-1 accent-primary h-2 cursor-pointer" />
-                             <span className="text-sm font-black text-primary tabular-nums w-10 text-right">{techSkillForm.level}%</span>
-                           </div>
-                         </div>
+                            <div className="flex items-center justify-between px-1">
+                              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tingkat Penguasaan (%) *</label>
+                              <span className="text-[10px] font-black text-primary tabular-nums">{techSkillForm.level}%</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <input 
+                                type="range" 
+                                min="1" 
+                                max="100" 
+                                value={techSkillForm.level || 0} 
+                                onChange={e => setTechSkillForm({ ...techSkillForm, level: Math.min(100, Math.max(0, parseInt(e.target.value) || 0)) })} 
+                                className="flex-1 accent-primary h-2 cursor-pointer" 
+                              />
+                              <div className="relative w-28 shrink-0">
+                                <Input 
+                                  type="number" 
+                                  min="0" 
+                                  max="100" 
+                                  value={techSkillForm.level === 0 ? '0' : (techSkillForm.level || '')} 
+                                  onChange={e => {
+                                    const val = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
+                                    setTechSkillForm({ ...techSkillForm, level: isNaN(val) ? 0 : Math.min(100, Math.max(0, val)) });
+                                  }} 
+                                  placeholder="0-100"
+                                  className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-background border-none px-3 text-center font-bold text-sm pr-7" 
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground pointer-events-none">%</span>
+                              </div>
+                            </div>
+                          </div>
                          <div className="space-y-2">
                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Kategori *</label>
                            <Select value={techSkillForm.category} onValueChange={v => setTechSkillForm({...techSkillForm, category: v})}>
