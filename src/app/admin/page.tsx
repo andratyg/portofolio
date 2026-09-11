@@ -216,15 +216,22 @@ function AdminContent() {
       const sourceSuffix = direction === 'id-to-en' ? 'Id' : 'En';
       const targetSuffix = direction === 'id-to-en' ? 'En' : 'Id';
       const targetLang = direction === 'id-to-en' ? 'en' : 'id' as 'en' | 'id';
+
+      // Auto-fallback: If shortDescriptionId is empty for projects, derive from problem/solution/title
+      if (formType === 'projects' && !updated.shortDescriptionId?.trim()) {
+        const fallbackText = updated.solutionId || updated.problemId || `${updated.titleId || 'Proyek'} adalah aplikasi web modern.`;
+        const firstSentence = fallbackText.split('.')[0] + '.';
+        updated.shortDescriptionId = firstSentence.length > 15 ? firstSentence : fallbackText.slice(0, 150);
+      }
       
-      const fieldsToTranslate = Object.keys(data).filter(key => key.endsWith(sourceSuffix));
+      const fieldsToTranslate = Object.keys(updated).filter(key => key.endsWith(sourceSuffix));
       
       const translationResults = await Promise.all(
         fieldsToTranslate.map(async (sourceField) => {
           const targetField = sourceField.replace(sourceSuffix, targetSuffix);
-          if (data[sourceField] && typeof data[sourceField] === 'string' && data[sourceField].trim() !== '') {
+          if (updated[sourceField] && typeof updated[sourceField] === 'string' && updated[sourceField].trim() !== '') {
             try {
-              const res = await translateContent({ text: data[sourceField], targetLang });
+              const res = await translateContent({ text: updated[sourceField], targetLang });
               return { field: targetField, text: res.translatedText };
             } catch (err) {
               console.error(`Gagal menerjemahkan kolom ${sourceField}:`, err);
@@ -240,7 +247,7 @@ function AdminContent() {
       });
 
       setter(updated);
-      toast({ title: "Sinkronisasi AI Berhasil", description: "Seluruh konten telah diterjemahkan secara paralel." });
+      toast({ title: "Sinkronisasi AI Berhasil", description: "Seluruh konten bahasa Inggris telah diterjemahkan secara otomatis." });
     } catch (e) {
       console.error("AI Sync Error:", e);
       toast({ variant: "destructive", title: "Gagal Sinkronisasi AI", description: "Terjadi kesalahan pada layanan kecerdasan buatan." });
@@ -280,9 +287,10 @@ function AdminContent() {
       if (res.descriptionSuggestion) {
         setProjectForm(prev => ({
           ...prev,
-          solutionId: prev.solutionId ? `${prev.solutionId}\n\n${res.descriptionSuggestion}` : res.descriptionSuggestion
+          solutionId: prev.solutionId ? `${prev.solutionId}\n\n${res.descriptionSuggestion}` : res.descriptionSuggestion,
+          shortDescriptionId: prev.shortDescriptionId || res.descriptionSuggestion.split('.')[0] + '.'
         }));
-        toast({ title: "Saran Deskripsi AI Berhasil", description: "Deskripsi konsisten telah disisipkan ke solusi strategis proyek." });
+        toast({ title: "Saran Deskripsi AI Berhasil", description: "Deskripsi telah disisipkan ke solusi strategis & ringkasan proyek." });
       }
     } catch (err: any) {
       console.error("Generate project desc error:", err);
@@ -622,14 +630,25 @@ function AdminContent() {
   };
 
   const startEditProject = (p: Project) => {
-      setEditingProjectId(p.id);
-      setProjectForm({
-        ...p,
-        githubUrl: p.githubUrl || undefined,
-        technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : (p.technologies || '')
-      } as any);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+    setEditingProjectId(p.id);
+    setProjectForm({
+      ...p,
+      titleId: p.titleId || '',
+      titleEn: p.titleEn || '',
+      shortDescriptionId: p.shortDescriptionId || '',
+      shortDescriptionEn: p.shortDescriptionEn || '',
+      problemId: p.problemId || '',
+      problemEn: p.problemEn || '',
+      solutionId: p.solutionId || '',
+      solutionEn: p.solutionEn || '',
+      impactStats: p.impactStats || '',
+      demoUrl: p.demoUrl || '',
+      imageUrl: p.imageUrl || '',
+      githubUrl: p.githubUrl || undefined,
+      technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : (p.technologies || '')
+    } as any);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const startEditCert = (c: Certificate) => {
     setEditingCertId(c.id);
@@ -1358,17 +1377,53 @@ function AdminContent() {
                     toast({ title: "Unit Proyek Berhasil Disimpan" });
                   }} className="space-y-12">
                     <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nama Proyek (ID)</label><Input required value={projectForm.titleId} onChange={e => setProjectForm({...projectForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nama Proyek (EN)</label><Input value={projectForm.titleEn} onChange={e => setProjectForm({...projectForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded-md bg-primary/20 text-primary text-[9px] font-black">ID</span>
+                          Nama Proyek (Indonesia) *
+                        </label>
+                        <Input required value={projectForm.titleId} onChange={e => setProjectForm({...projectForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" placeholder="Contoh: Portofolio Pribadi" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded-md bg-primary/20 text-primary text-[9px] font-black">EN</span>
+                          Project Name (English)
+                        </label>
+                        <Input value={projectForm.titleEn} onChange={e => setProjectForm({...projectForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" placeholder="Example: Personal Portfolio Website" />
+                      </div>
                     </div>
+
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded-md bg-primary/20 text-primary text-[9px] font-black">ID</span>
+                          Ringkasan Singkat (Indonesia) — Tampil di Kartu Proyek
+                        </label>
+                        <Textarea placeholder="Deskripsi ringkas 1-2 kalimat untuk kartu portofolio..." value={projectForm.shortDescriptionId} onChange={e => setProjectForm({...projectForm, shortDescriptionId: e.target.value})} className="h-28 rounded-2xl bg-muted/30 border-none p-5" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded-md bg-primary/20 text-primary text-[9px] font-black">EN</span>
+                          Short Summary (English) — Displayed on Project Cards
+                        </label>
+                        <Textarea placeholder="Brief 1-2 sentence overview for portfolio cards..." value={projectForm.shortDescriptionEn} onChange={e => setProjectForm({...projectForm, shortDescriptionEn: e.target.value})} className="h-28 rounded-2xl bg-muted/30 border-none p-5" />
+                      </div>
+                    </div>
+
                     <div className="grid md:grid-cols-3 gap-8">
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Ranah Sistem</label><Select value={projectForm.type} onValueChange={(val: any) => setProjectForm({...projectForm, type: val})}><SelectTrigger className="h-16 rounded-2xl bg-muted/30 border-none px-6"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="web">Platform Web</SelectItem><SelectItem value="ui">Arsitektur UI/UX</SelectItem><SelectItem value="backend">Layanan Backend</SelectItem></SelectContent></Select></div>
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Metrik Dampak</label><Input placeholder="Cth: +30% Efisiensi" value={projectForm.impactStats} onChange={e => setProjectForm({...projectForm, impactStats: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Stack Teknis (Koma)</label><Input placeholder="Next.js, Tailwind, Firebase" value={projectForm.technologies} onChange={e => setProjectForm({...projectForm, technologies: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                     </div>
+
                     <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><AlertCircle className="h-3 w-3" /> Tantangan Utama (ID)</label><Textarea value={projectForm.problemId} onChange={e => setProjectForm({...projectForm, problemId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
-                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Solusi Strategis (ID)</label><Textarea value={projectForm.solutionId} onChange={e => setProjectForm({...projectForm, solutionId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><AlertCircle className="h-3 w-3" /> Tantangan Utama (ID)</label><Textarea placeholder="Tantangan teknis atau bisnis..." value={projectForm.problemId} onChange={e => setProjectForm({...projectForm, problemId: e.target.value})} className="h-36 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><AlertCircle className="h-3 w-3" /> Key Challenges (EN)</label><Textarea placeholder="Key technical challenges in English..." value={projectForm.problemEn} onChange={e => setProjectForm({...projectForm, problemEn: e.target.value})} className="h-36 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Solusi Strategis (ID)</label><Textarea placeholder="Solusi dan fitur utama..." value={projectForm.solutionId} onChange={e => setProjectForm({...projectForm, solutionId: e.target.value})} className="h-36 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><CheckCircle2 className="h-3 w-3" /> Strategic Solution (EN)</label><Textarea placeholder="Technical solution and features in English..." value={projectForm.solutionEn} onChange={e => setProjectForm({...projectForm, solutionEn: e.target.value})} className="h-36 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
                     </div>
                     <div className="grid md:grid-cols-3 gap-8">
                        <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Live Protocol (Demo)</label><Input value={projectForm.demoUrl} onChange={e => setProjectForm({...projectForm, demoUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
@@ -1457,7 +1512,10 @@ function AdminContent() {
                     <div className="grid grid-cols-1 gap-8">
                         <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Verifikasi</label><Input value={certForm.credentialUrl} onChange={e => setCertForm({...certForm, credentialUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                     </div>
-                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Narasi Validasi (ID)</label><Textarea value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Narasi Validasi (ID)</label><Textarea placeholder="Uraian kompetensi dan materi sertifikasi..." value={certForm.fullDescriptionId} onChange={e => setCertForm({...certForm, fullDescriptionId: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Validation Narrative (EN)</label><Textarea placeholder="Certification competencies and syllabus in English..." value={certForm.fullDescriptionEn} onChange={e => setCertForm({...certForm, fullDescriptionEn: e.target.value})} className="h-40 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                    </div>
                     <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Gambar Sertifikat</label><Input value={certForm.imageUrl || ''} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" placeholder="https://example.com/sertifikat.jpg" /></div>
                     <div className="flex gap-4">
                       <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">SIMPAN KREDENSIAL</Button>
@@ -1517,7 +1575,10 @@ function AdminContent() {
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Posisi / Jabatan (ID)</label><Input required value={journeyForm.titleId} onChange={e => setJourneyForm({...journeyForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Posisi / Jabatan (EN)</label><Input value={journeyForm.titleEn} onChange={e => setJourneyForm({...journeyForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                     </div>
-                    <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Uraian Tanggung Jawab (ID)</label><Textarea value={journeyForm.descriptionId} onChange={e => setJourneyForm({...journeyForm, descriptionId: e.target.value})} className="h-32 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Uraian Tanggung Jawab (ID)</label><Textarea placeholder="Uraian peran dan tanggung jawab..." value={journeyForm.descriptionId} onChange={e => setJourneyForm({...journeyForm, descriptionId: e.target.value})} className="h-32 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                      <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Role & Responsibilities (EN)</label><Textarea placeholder="Key responsibilities and achievements in English..." value={journeyForm.descriptionEn} onChange={e => setJourneyForm({...journeyForm, descriptionEn: e.target.value})} className="h-32 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
+                    </div>
                     <div className="flex gap-4">
                       <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">CATAT MILESTONE</Button>
                       {editingJourneyId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> BATAL</Button>}
