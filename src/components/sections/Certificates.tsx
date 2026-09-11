@@ -170,7 +170,7 @@ export const Certificates = ({ initialCertificates }: CertificatesProps) => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="h-11 sm:h-14 rounded-xl sm:rounded-2xl px-3 sm:px-6 flex-1 justify-between gap-1 sm:gap-2 border-dashed bg-transparent">
-                  <span className="text-muted-foreground font-bold text-[10px] sm:text-xs truncate">{t.filterByIssuer} ({selectedIssuers.length})</span>
+                  <span className="text-muted-foreground font-bold text-xs truncate">{t.filterByIssuer} ({selectedIssuers.length})</span>
                   <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
                 </Button>
               </DropdownMenuTrigger>
@@ -281,7 +281,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                 </div>
               )}
               <div className="absolute top-4 left-4 z-10">
-                <Badge className="bg-zinc-900/90 backdrop-blur-md text-white font-black text-[10px] uppercase px-3 py-1 rounded-full shadow-sm border-none">
+                <Badge className="bg-zinc-900/90 backdrop-blur-md text-white font-bold text-xs uppercase px-3 py-1 rounded-full shadow-sm border-none">
                   {cert.year}
                 </Badge>
               </div>
@@ -311,7 +311,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
            {hasCredentialUrl && (
              <Button 
                onClick={() => window.open(cert.credentialUrl, '_blank', 'noopener,noreferrer')}
-               className="rounded-2xl h-12 gap-2 font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all bg-primary text-primary-foreground"
+               className="rounded-2xl h-12 gap-2 font-bold uppercase text-xs tracking-wider shadow-xl hover:scale-105 active:scale-95 transition-all bg-primary text-primary-foreground"
              >
                Buka Dokumen Asli <ExternalLink className="h-3 w-3" />
              </Button>
@@ -337,11 +337,11 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
            )}
            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-card p-6 rounded-3xl border shadow-sm text-center">
-                <p className="text-[8px] font-black text-muted-foreground uppercase mb-1">Tahun Terbit</p>
+                <p className="text-xs font-bold text-muted-foreground uppercase mb-1">Tahun Terbit</p>
                 <p className="text-sm font-black">{cert.year}</p>
               </div>
               <div className="bg-card p-6 rounded-3xl border shadow-sm text-center">
-                <p className="text-[8px] font-black text-muted-foreground uppercase mb-1">Masa Berlaku</p>
+                <p className="text-xs font-bold text-muted-foreground uppercase mb-1">Masa Berlaku</p>
                 <p className="text-sm font-black">{cert.validUntil || 'Seumur Hidup'}</p>
               </div>
               <div className="bg-card p-6 rounded-3xl border shadow-sm text-center col-span-2">

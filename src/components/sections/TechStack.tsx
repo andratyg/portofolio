@@ -123,7 +123,7 @@ export const TechStack = () => {
       <div className="section-divider absolute inset-x-0 top-0" />
       <div className="container mx-auto px-4 sm:px-6">
         <div className="mb-10 space-y-4 text-center md:mb-16">
-          <div className="glass-card inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+          <div className="glass-card inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-primary">
             <span>⚡</span> Tech Arsenal
           </div>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">

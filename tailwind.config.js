@@ -20,8 +20,8 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        body: ['var(--font-plus-jakarta)', ...fontFamily.sans],
-        headline: ['var(--font-outfit)', ...fontFamily.sans],
+        body: ['var(--font-outfit)', ...fontFamily.sans],
+        headline: ['var(--font-space-grotesk)', ...fontFamily.sans],
       },
       colors: {
         border: "hsl(var(--border))",

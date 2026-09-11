@@ -1,4 +1,4 @@
-﻿
+
 "use client"
 
 import React from 'react';
@@ -26,7 +26,7 @@ export const Testimonials = () => {
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Section header */}
         <div className="text-center mb-14 md:mb-20 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card text-primary text-[10px] font-bold tracking-wider uppercase">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card text-primary text-xs font-bold tracking-wider uppercase">
             <Star className="h-3 w-3 fill-primary" />
             Social Proof
           </div>

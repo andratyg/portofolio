@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../providers/LanguageContext';
@@ -51,7 +51,7 @@ const StatCard = ({ stat, delay }: { stat: StatItem; delay: number }) => {
           >
             <Icon className="h-7 w-7 text-primary" />
           </motion.div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground mb-3">{stat.label}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground mb-3">{stat.label}</p>
           <div className="flex items-end gap-1 mb-3">
             <span className="text-7xl sm:text-8xl font-black font-headline tracking-tight leading-none text-foreground tabular-nums">
               <AnimatedCounter value={stat.value} />
@@ -88,7 +88,7 @@ const StatCard = ({ stat, delay }: { stat: StatItem; delay: number }) => {
             <Icon className="h-6 w-6 text-primary" />
           </motion.div>
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{stat.label}</p>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">{stat.label}</p>
             <p className="text-sm text-muted-foreground/70 mt-0.5">{stat.description}</p>
           </div>
         </div>
@@ -118,7 +118,7 @@ const StatCard = ({ stat, delay }: { stat: StatItem; delay: number }) => {
         >
           <Icon className="h-5 w-5 text-primary" />
         </motion.div>
-        <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/50">{stat.label}</span>
+        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/70">{stat.label}</span>
       </div>
       <div>
         <div className="flex items-end gap-0.5 mb-1">

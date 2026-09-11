@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useLanguage } from '@/components/providers/LanguageContext';
 import { useTheme, themes, THEME_CONFIGS, Theme } from '@/components/providers/ThemeContext';
-import { 
-  Search, FileText, Globe, Palette, ArrowRight, 
-  BookOpen, Briefcase, Award, History, Mail, User, 
+import {
+  Search, FileText, Globe, Palette, ArrowRight,
+  BookOpen, Briefcase, Award, History, Mail, User,
   Sparkles, ExternalLink, X, Command, Download, Copy, Check, Volume2, VolumeX
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -183,7 +183,7 @@ export function CommandPalette() {
       <DialogContent className="max-w-2xl p-0 overflow-hidden bg-card/95 backdrop-blur-xl border border-border/80 shadow-2xl rounded-3xl gap-0">
         <DialogTitle className="sr-only">Command Palette Navigation</DialogTitle>
         <DialogDescription className="sr-only">Navigasi cepat dan pencarian instan portofolio</DialogDescription>
-        
+
         {/* Search Input Bar */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-border/60 bg-muted/20">
           <Search className="h-5 w-5 text-muted-foreground shrink-0" />
@@ -196,7 +196,7 @@ export function CommandPalette() {
             className="w-full bg-transparent text-sm sm:text-base outline-none text-foreground placeholder:text-muted-foreground font-medium"
           />
           {query && (
-            <button 
+            <button
               onClick={() => setQuery('')}
               className="p-1 rounded-md text-muted-foreground hover:text-foreground"
             >
@@ -210,7 +210,7 @@ export function CommandPalette() {
 
         {/* Results Container */}
         <div className="max-h-[60vh] overflow-y-auto p-3 sm:p-4 space-y-4 no-scrollbar">
-          
+
           {/* Quick Actions */}
           <div>
             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-3 mb-1.5">
@@ -299,8 +299,8 @@ export function CommandPalette() {
                       onClick={() => handleSelectTheme(tItem.id)}
                       className={cn(
                         "flex items-center justify-between p-2.5 rounded-xl transition-all text-left group w-full border",
-                        isCurrent 
-                          ? "bg-primary/15 border-primary/40 text-primary" 
+                        isCurrent
+                          ? "bg-primary/15 border-primary/40 text-primary"
                           : "hover:bg-muted/60 border-border/40 text-foreground"
                       )}
                     >

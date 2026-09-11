@@ -51,14 +51,14 @@ export const About = () => {
             </div>
           </ScrollReveal>
           <ScrollReveal direction="left" delay={0.2} className="space-y-4 sm:space-y-6 overflow-hidden">
-            <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-black tracking-wider uppercase">
+            <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase">
               {t.aboutMeTitle}
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
               {profile.name} <br />
               <span className="text-primary">{role}</span>
             </h2>
-            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-prose break-words">
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl break-words">
               {aboutText}
             </p>
           </ScrollReveal>

@@ -204,7 +204,7 @@ export const Hero = ({
           <div className="mt-12 flex items-center gap-3 text-xs text-muted-foreground/50">
             <div className="flex -space-x-2">
               {['bg-blue-700', 'bg-purple-700', 'bg-emerald-700'].map((c, i) => (
-                <div key={i} className={`w-7 h-7 rounded-full border-2 border-background ${c} flex items-center justify-center text-white text-[9px] font-bold`}>
+                <div key={i} className={`w-7 h-7 rounded-full border-2 border-background ${c} flex items-center justify-center text-white text-xs font-bold`}>
                   {['N', 'A', 'T'][i]}
                 </div>
               ))}
@@ -264,8 +264,8 @@ export const Hero = ({
 
                     {/* Card content */}
                     <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-7 text-white">
-                      <div className="w-fit mb-3 px-3 py-1 rounded-full bg-primary/90 text-primary-foreground text-[9px] font-bold uppercase tracking-wider">
-                        <Sparkles className="inline h-2.5 w-2.5 mr-1" />
+                      <div className="w-fit mb-3 px-3 py-1 rounded-full bg-primary/90 text-primary-foreground text-xs font-bold uppercase tracking-wider">
+                        <Sparkles className="inline h-3 w-3 mr-1" />
                         Proyek Unggulan
                       </div>
                       <h2 className="text-xl sm:text-2xl font-black mb-3 leading-tight">
@@ -273,8 +273,8 @@ export const Hero = ({
                       </h2>
                       <div className="flex flex-wrap gap-1.5">
                         {featuredProject.technologies.slice(0, 3).map((tech: string) => (
-                          <div key={tech} className="flex items-center gap-1.5 text-[9px] font-semibold bg-white/10 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
-                            <Code2 className="h-2.5 w-2.5 text-primary" />
+                          <div key={tech} className="flex items-center gap-1.5 text-xs font-semibold bg-white/10 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
+                            <Code2 className="h-3 w-3 text-primary" />
                             {tech}
                           </div>
                         ))}
@@ -285,7 +285,7 @@ export const Hero = ({
                   <div className="w-full h-full flex flex-col items-center justify-center gap-4 p-8 text-center bg-muted/10">
                     <Globe2 className="h-14 w-14 text-primary animate-pulse" />
                     <div className="space-y-1">
-                      <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-primary">System Online</p>
+                      <p className="text-xs font-bold uppercase tracking-wider text-primary">System Online</p>
                       <p className="text-muted-foreground text-xs">Proyek sedang disiapkan...</p>
                     </div>
                   </div>
@@ -298,7 +298,7 @@ export const Hero = ({
 
       {/* ── Scroll indicator ──────────────────────────────────────── */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500 fill-mode-both opacity-35">
-        <span className="text-[8px] uppercase tracking-[0.35em] text-muted-foreground">Scroll</span>
+        <span className="text-xs font-bold uppercase tracking-[0.25em] text-muted-foreground">Scroll</span>
         <div className="w-px h-10 bg-gradient-to-b from-muted-foreground/60 to-transparent animate-pulse" />
       </div>
     </section>

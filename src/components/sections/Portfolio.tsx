@@ -122,8 +122,8 @@ export const Portfolio = ({ initialProjects }: PortfolioProps) => {
       )}
       <div className="container mx-auto px-4 sm:px-6">
         <div className="mb-10 md:mb-16 text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black  tracking-normal leading-tight text-foreground mb-4">{portfolioTitle}</h2>
-          <p className="text-base sm:text-lg text-muted-foreground max-w-prose mx-auto">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-normal leading-tight text-foreground mb-4">{portfolioTitle}</h2>
+          <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
             {portfolioSubtitle}
           </p>
         </div>
@@ -253,37 +253,40 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
   const hasDemoUrl = typeof project.demoUrl === 'string' && project.demoUrl.trim().length > 5 && project.demoUrl.trim().startsWith('http');
 
   return (
-    <div className={cn("group transition-all duration-1000 h-full", isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16")} style={{ transitionDelay: `${index * 100}ms` }}>
+    <div className={cn("group transition-[opacity,transform] duration-700 ease-out h-full", isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16")} style={{ transitionDelay: `${index * 100}ms` }}>
       <Dialog>
         <DialogTrigger asChild>
           <button type="button" className="cursor-pointer group h-full w-full text-left">
             {/* interactive-card handles: border-radius, overflow-hidden, hover lift, glow — NO clipPath */}
-            <Card className="interactive-card h-full border-border/20 bg-card/70 backdrop-blur-sm flex flex-col">
-              <div className="relative aspect-[16/10] bg-muted">
-                <div className="relative h-56 sm:h-64 w-full overflow-hidden bg-muted">
-                  <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-700 ease-out">
-                    <Image
-                      src={project.imageUrl || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80'}
-                      alt={title || 'Project image'}
-                      fill
-                      loading="lazy"
-                      className="object-cover"
-                      sizes="(max-width: 640px) 92vw, (max-width: 1024px) 48vw, 380px"
-                      quality={75}
-                    />
+            <Card className="interactive-card h-full border-border/20 bg-card/70 backdrop-blur-sm flex flex-col justify-between">
+              <div>
+                <div className="relative aspect-[16/10] bg-muted">
+                  <div className="relative h-56 sm:h-64 w-full overflow-hidden bg-muted">
+                    <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-700 ease-out">
+                      <Image
+                        src={project.imageUrl || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80'}
+                        alt={title || 'Project image'}
+                        fill
+                        loading="lazy"
+                        className="object-cover"
+                        sizes="(max-width: 640px) 92vw, (max-width: 1024px) 48vw, 380px"
+                        quality={75}
+                      />
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-400" />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="p-4 bg-white/10 backdrop-blur-md rounded-full border border-white/20 scale-90 group-hover:scale-100 transition-transform duration-300">
+                         <Eye className="h-6 w-6 text-white" />
+                      </div>
                   </div>
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-400" />
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="p-4 bg-white/10 backdrop-blur-md rounded-full border border-white/20 scale-90 group-hover:scale-100 transition-transform duration-300">
-                       <Eye className="h-6 w-6 text-white" />
-                    </div>
-                </div>
+                <CardContent className="pt-8 px-5 sm:px-7 pb-4">
+                  <h3 className="text-xl font-black mb-2.5 text-foreground group-hover:text-primary transition-colors duration-300 leading-snug">{title}</h3>
+                  <p className="text-muted-foreground line-clamp-2 text-sm font-medium leading-relaxed">{description}</p>
+                </CardContent>
               </div>
-              <CardContent className="pt-6 px-5 sm:px-7 pb-4 flex-1">
-                <h3 className="text-xl font-black mb-3 text-foreground group-hover:text-primary transition-colors duration-300">{title}</h3>
-                <p className="text-muted-foreground line-clamp-2 text-sm font-medium">{description}</p>
-              </CardContent>
+              <div className="flex-1" />
               <CardFooter className="px-7 pb-7 flex justify-between items-center pt-4 border-t border-border/10">
                 <span className="text-xs font-black text-primary tracking-normal flex items-center gap-1.5 capitalize">{t.viewSpecs.toLowerCase()} <ArrowRight className="h-3 w-3 group-hover:translate-x-1.5 transition-transform duration-300" /></span>
                 <div className="flex items-center gap-2">

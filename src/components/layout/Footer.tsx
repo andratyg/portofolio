@@ -37,7 +37,7 @@ export const Footer = () => {
           {/* Brand column */}
           <div className="space-y-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-[10px] font-black">N</div>
+              <div className="w-8 h-8 rounded-xl bg-blue-600 dark:bg-blue-500 text-white flex items-center justify-center text-xs font-black shadow-sm">N</div>
               <span className="text-lg font-black">Nara Andra Tyaga</span>
             </div>
             <p className="text-sm text-foreground/80 leading-relaxed max-w-xs">
@@ -49,7 +49,7 @@ export const Footer = () => {
 
           {/* Quick links */}
           <div className="space-y-4">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/90">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground/90">
               {language === 'id' ? 'Tautan Cepat' : 'Quick Links'}
             </h3>
             <nav className="flex flex-col gap-2">
@@ -67,7 +67,7 @@ export const Footer = () => {
 
           {/* Social */}
           <div className="space-y-4">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/90">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground/90">
               {language === 'id' ? 'Ikuti Saya' : 'Follow Me'}
             </h3>
             <div className="flex gap-3">
@@ -98,7 +98,7 @@ export const Footer = () => {
           {/* Tech stack badges */}
           <div className="flex flex-wrap justify-center gap-2">
             {['Next.js 15', 'React', 'TypeScript', 'Tailwind CSS', 'Firebase'].map(tech => (
-              <span key={tech} className="text-[8px] font-semibold px-2 py-0.5 rounded-full border border-border/40 text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors cursor-default">
+              <span key={tech} className="text-xs font-medium px-2.5 py-1 rounded-full border border-border/40 text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors cursor-default">
                 {tech}
               </span>
             ))}

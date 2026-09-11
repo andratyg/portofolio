@@ -88,7 +88,7 @@ export const Timeline = ({ initialExperiences }: TimelineProps) => {
                     {/* Content */}
                     <div className="w-[calc(100%-3.5rem)] md:w-[45%] p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border bg-card shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:border-primary/40 hover:-translate-y-1 transition-all duration-400 ease-out z-10">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-[9px] sm:text-[10px] font-black text-primary bg-primary/10 px-2.5 sm:px-3 py-1 rounded-full uppercase tracking-widest">{exp.year}</span>
+                        <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full uppercase tracking-wider">{exp.year}</span>
                       </div>
                       <h3 className="text-lg sm:text-xl font-bold ">{title}</h3>
                       <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-2 sm:mb-3">{exp.company}</p>

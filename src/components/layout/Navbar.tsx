@@ -200,7 +200,7 @@ export const Navbar = () => {
                   }}
                   onMouseEnter={() => play('hover')}
                   className={cn(
-                    "relative text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-200 py-2",
+                    "relative text-xs font-bold uppercase tracking-[0.16em] transition-colors duration-200 py-2",
                     isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -275,15 +275,15 @@ export const Navbar = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="rounded-2xl border-none shadow-2xl bg-card/95 backdrop-blur-sm p-2">
-                <DropdownMenuItem onClick={() => { play('click'); setLanguage('en'); }} className="rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-2.5">English {language === 'en' && '✓'}</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => { play('click'); setLanguage('id'); }} className="rounded-xl font-black uppercase text-[10px] tracking-widest px-4 py-2.5">Indonesia {language === 'id' && '✓'}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { play('click'); setLanguage('en'); }} className="rounded-xl font-bold uppercase text-xs tracking-wider px-4 py-2.5">English {language === 'en' && '✓'}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { play('click'); setLanguage('id'); }} className="rounded-xl font-bold uppercase text-xs tracking-wider px-4 py-2.5">Indonesia {language === 'id' && '✓'}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
             {/* Theme Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest px-4 hover:bg-primary/10" aria-label="Change theme">
+                <Button variant="ghost" className="rounded-xl gap-2 font-bold uppercase text-xs tracking-wider px-4 hover:bg-primary/10" aria-label="Change theme">
                   <Palette className="h-4 w-4 text-primary" />
                   <span className="hidden lg:inline">{THEME_CONFIGS[theme]?.name[language] || theme}</span>
                   <ChevronDown className="h-3 w-3 opacity-50" />
@@ -297,7 +297,7 @@ export const Navbar = () => {
                     {language === 'id' ? 'Tema Tampilan' : 'Appearance'}
                   </span>
                   {isAutoTheme && (
-                    <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                    <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                       Auto Mode
                     </span>
                   )}
@@ -305,7 +305,7 @@ export const Navbar = () => {
 
                 {/* Standard Themes */}
                 <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/80 px-2 mb-1.5">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 px-2 mb-1.5">
                     {language === 'id' ? 'Koleksi Standar' : 'Standard Collection'}
                   </p>
                   <div className="grid grid-cols-2 gap-1.5">
@@ -333,7 +333,7 @@ export const Navbar = () => {
                           </div>
                           <div className="text-left w-full">
                             <p className="text-xs font-bold leading-none">{cfg.name[language]}</p>
-                            <p className="text-[9px] text-muted-foreground line-clamp-1 mt-0.5">{cfg.description[language]}</p>
+                            <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">{cfg.description[language]}</p>
                           </div>
                         </DropdownMenuItem>
                       );
@@ -343,7 +343,7 @@ export const Navbar = () => {
 
                 {/* Seasonal Themes */}
                 <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/80 px-2 mb-1.5">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 px-2 mb-1.5">
                     {language === 'id' ? 'Edisi Musiman & Hari Raya' : 'Seasonal & Holidays'}
                   </p>
                   <div className="space-y-1.5">
@@ -372,7 +372,7 @@ export const Navbar = () => {
                                 <span>{cfg.name[language]}</span>
                                 {cfg.emoji && <span className="text-xs">{cfg.emoji}</span>}
                               </p>
-                              <p className="text-[9px] text-muted-foreground truncate mt-0.5">{cfg.description[language]}</p>
+                              <p className="text-[11px] text-muted-foreground truncate mt-0.5">{cfg.description[language]}</p>
                             </div>
                           </div>
                           {isCurrent && <Check className="h-3.5 w-3.5 text-primary shrink-0" />}
@@ -395,7 +395,7 @@ export const Navbar = () => {
                       <Sparkles className="h-3.5 w-3.5 text-primary" />
                       {language === 'id' ? 'Auto-Detect Cerdas' : 'Smart Auto-Detect'}
                     </span>
-                    <span className="text-[9px] text-muted-foreground">
+                    <span className="text-[11px] text-muted-foreground">
                       {language === 'id' ? 'Sesuaikan musiman & mode gelap OS' : 'Match seasonal events & OS dark mode'}
                     </span>
                   </div>
@@ -470,7 +470,7 @@ export const Navbar = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-72 sm:w-80 max-h-[75vh] overflow-y-auto p-3.5 rounded-3xl border border-border/80 shadow-2xl bg-card/95 backdrop-blur-xl space-y-2.5 no-scrollbar">
-                  <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground px-2">
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground px-2">
                     {language === 'id' ? 'Pilih Tema' : 'Select Theme'}
                   </p>
                   <div className="grid grid-cols-2 gap-1.5">
