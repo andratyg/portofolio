@@ -90,8 +90,8 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
     description: { id: 'Coklat muda hangat, perpaduan susu krim, latte & roasted espresso', en: 'Warm light brown coffee vibes, creamy latte & roasted espresso' },
     colors: {
       bg: '#ebdccb',
-      primary: '#8c532b',
-      accent: '#c47d44',
+      primary: '#b34d0e',
+      accent: '#cd611e',
     },
     emoji: '☕',
   },

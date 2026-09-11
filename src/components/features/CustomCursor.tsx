@@ -130,10 +130,10 @@ export const CustomCursor = () => {
             color = `rgba(255, 255, 255, ${Math.random()})`;
             maxLife = 50;
           } else if (theme === 'catppuccin') {
-            // Warm roasted coffee and dark caramel specks
+            // Warm roasted espresso and radiant golden caramel specks
             color = Math.random() > 0.4
-              ? `rgba(140, 83, 43, ${Math.random() * 0.7 + 0.3})`
-              : `rgba(180, 115, 65, ${Math.random() * 0.6 + 0.3})`;
+              ? `rgba(179, 77, 14, ${Math.random() * 0.75 + 0.25})`
+              : `rgba(95, 63, 39, ${Math.random() * 0.65 + 0.25})`;
             maxLife = 32;
             vyBoost = -0.5; // Micro-steam upward lift
           } else {

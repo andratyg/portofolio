@@ -47,9 +47,9 @@ export default function CoffeeDecorations() {
 
     // ~25 warm micro-particles (cinnamon & roasted coffee bean specks)
     const dustColors = [
-      'rgba(140, 83, 43, ',  // Roasted coffee bean
-      'rgba(112, 60, 28, ',  // Dark espresso
-      'rgba(175, 115, 65, ', // Cinnamon caramel
+      'rgba(179, 77, 14, ',  // Golden caramel
+      'rgba(95, 63, 39, ',   // Deep cocoa espresso
+      'rgba(205, 97, 30, ',  // Spiced cinnamon
     ];
 
     interface DustParticle {
@@ -143,7 +143,7 @@ export default function CoffeeDecorations() {
       />
 
       {/* 2. Watermark Latte Art Rosette: Elegant fine-line SVG watermark on the left side */}
-      <div className="fixed top-1/4 -left-10 md:left-4 w-52 md:w-72 h-auto text-[#7c4422] opacity-[0.06] pointer-events-none select-none z-0">
+      <div className="fixed top-1/4 -left-10 md:left-4 w-52 md:w-72 h-auto text-[#b34d0e] opacity-[0.07] pointer-events-none select-none z-0">
         <svg
           viewBox="0 0 200 240"
           fill="none"
@@ -182,7 +182,7 @@ export default function CoffeeDecorations() {
 
       {/* 3. Kepulan Uap SVG: Minimalist subtle rising coffee steam wisps at bottom */}
       <div
-        className="fixed bottom-0 left-6 md:left-14 w-28 md:w-36 h-40 text-[#d4a373] pointer-events-none select-none z-0"
+        className="fixed bottom-0 left-6 md:left-14 w-28 md:w-36 h-40 text-[#b34d0e] opacity-25 pointer-events-none select-none z-0"
         style={{
           animation: 'steamFlow 9s ease-in-out infinite alternate',
         }}

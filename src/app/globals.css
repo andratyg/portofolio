@@ -166,36 +166,36 @@
   [data-theme='catppuccin'] {
     --background: 33 43% 88%;
     /* Warm Light Brown / Creamy Latte #eee2d3 */
-    --foreground: 22 40% 12%;
-    /* Deep Dark Roast Espresso #2b1b12 */
-    --card: 33 50% 94%;
-    /* Velvety Light Froth Surface #f8f1e9 */
-    --card-foreground: 22 40% 12%;
-    --popover: 33 50% 94%;
-    --popover-foreground: 22 40% 12%;
-    --primary: 24 53% 36%;
-    /* Roasted Mocha & Dark Caramel #8c532b */
-    --primary-foreground: 40 50% 98%;
-    /* Creamy Milk White #fdfbf7 */
-    --secondary: 32 38% 82%;
-    /* Biscuit Latte Foam #e2d2bf */
-    --secondary-foreground: 22 40% 12%;
-    --muted: 32 38% 82%;
-    --muted-foreground: 25 25% 36%;
-    /* Warm Roasted Hazelnut #725745 */
-    --accent: 26 50% 51%;
-    /* Cinnamon Caramel #bf7b47 */
-    --accent-foreground: 40 50% 98%;
+    --foreground: 24 45% 10%;
+    /* Deep Velvet Cocoa Espresso #25150c - Bold, rich, high contrast */
+    --card: 33 50% 95%;
+    /* Creamy Milk Froth Surface #f8f2eb */
+    --card-foreground: 24 45% 10%;
+    --popover: 33 50% 95%;
+    --popover-foreground: 24 45% 10%;
+    --primary: 24 85% 38%;
+    /* Radiant Golden Caramel Crema #b34d0e - Pops with warm vibrant energy */
+    --primary-foreground: 30 100% 98%;
+    /* Crisp Vanilla Milk White #fffaf5 */
+    --secondary: 31 38% 82%;
+    /* Biscuit Latte Foam #e4d2bf */
+    --secondary-foreground: 24 45% 10%;
+    --muted: 31 38% 82%;
+    --muted-foreground: 24 38% 27%;
+    /* Rich Roasted Hazelnut Mocha #5f3f27 - Crisp, warm, easy to read */
+    --accent: 24 75% 46%;
+    /* Spiced Cinnamon Crema #cd611e */
+    --accent-foreground: 30 100% 98%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 32 35% 76%;
-    /* Warm Coffee Brown Border #d8c4ad */
-    --input: 32 35% 76%;
-    --ring: 24 53% 36%;
+    --border: 32 30% 72%;
+    /* Warm Cafe Latte Rim #cbbaa7 */
+    --input: 32 30% 72%;
+    --ring: 24 85% 38%;
 
     /* Glassmorphism */
-    --glass-bg: rgba(255, 255, 255, 0.45);
-    --glass-border: rgba(140, 83, 43, 0.16);
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(179, 77, 14, 0.16);
     --glass-blur: 16px;
   }
 
@@ -268,6 +268,11 @@
 
 .theme-transition {
   transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+[data-theme='catppuccin'] ::selection {
+  background-color: rgba(179, 77, 14, 0.24);
+  color: hsl(24 45% 10%);
 }
 
 .no-scrollbar::-webkit-scrollbar {
