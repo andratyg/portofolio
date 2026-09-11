@@ -2,8 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
-export type Theme = 'light' | 'dark' | 'ramadan' | 'imlek' | 'natal';
-export type ThemeCategory = 'standard' | 'seasonal';
+export type Theme = 'light' | 'dark' | 'catppuccin' | 'ramadan' | 'imlek' | 'natal';
+export type ThemeCategory = 'standard' | 'modern' | 'seasonal';
 
 export interface ThemeConfig {
   id: Theme;
@@ -83,9 +83,21 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
     },
     emoji: '🎄',
   },
+  catppuccin: {
+    id: 'catppuccin',
+    name: { id: 'Cappuccino Mocha', en: 'Cappuccino Mocha' },
+    category: 'modern',
+    description: { id: 'Coklat muda hangat, perpaduan susu krim, latte & roasted espresso', en: 'Warm light brown coffee vibes, creamy latte & roasted espresso' },
+    colors: {
+      bg: '#ebdccb',
+      primary: '#8c532b',
+      accent: '#c47d44',
+    },
+    emoji: '☕',
+  },
 };
 
-export const themes: Theme[] = ['light', 'dark', 'ramadan', 'imlek', 'natal'];
+export const themes: Theme[] = ['light', 'dark', 'catppuccin', 'ramadan', 'imlek', 'natal'];
 
 interface ThemeContextType {
   theme: Theme;
@@ -177,6 +189,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (manual) {
         setIsAutoTheme(false);
         localStorage.setItem('karyapro-theme-autodisabled', 'true');
+      }
+
+      if (typeof window !== 'undefined' && newTheme === 'catppuccin') {
+        window.dispatchEvent(new CustomEvent('unlock-achievement', { detail: 'midnight-coder' }));
       }
     };
 

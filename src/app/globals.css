@@ -162,6 +162,44 @@
     --glass-blur: 10px;
   }
 
+  /* --- Cappuccino Mocha Theme (Warm Light Brown Cafe Latte & Roasted Espresso) --- */
+  [data-theme='catppuccin'] {
+    --background: 33 43% 88%;
+    /* Warm Light Brown / Creamy Latte #eee2d3 */
+    --foreground: 22 40% 12%;
+    /* Deep Dark Roast Espresso #2b1b12 */
+    --card: 33 50% 94%;
+    /* Velvety Light Froth Surface #f8f1e9 */
+    --card-foreground: 22 40% 12%;
+    --popover: 33 50% 94%;
+    --popover-foreground: 22 40% 12%;
+    --primary: 24 53% 36%;
+    /* Roasted Mocha & Dark Caramel #8c532b */
+    --primary-foreground: 40 50% 98%;
+    /* Creamy Milk White #fdfbf7 */
+    --secondary: 32 38% 82%;
+    /* Biscuit Latte Foam #e2d2bf */
+    --secondary-foreground: 22 40% 12%;
+    --muted: 32 38% 82%;
+    --muted-foreground: 25 25% 36%;
+    /* Warm Roasted Hazelnut #725745 */
+    --accent: 26 50% 51%;
+    /* Cinnamon Caramel #bf7b47 */
+    --accent-foreground: 40 50% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 32 35% 76%;
+    /* Warm Coffee Brown Border #d8c4ad */
+    --input: 32 35% 76%;
+    --ring: 24 53% 36%;
+
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(140, 83, 43, 0.16);
+    --glass-blur: 16px;
+  }
+
+
   * {
     border-color: hsl(var(--border));
   }
@@ -202,6 +240,14 @@
       radial-gradient(ellipse at bottom right, hsl(var(--primary) / 0.14), transparent 60%);
     background-attachment: fixed;
   }
+
+  [data-theme='catppuccin'] body {
+    background-image: radial-gradient(ellipse 85% 55% at 50% -10%, rgba(200, 155, 110, 0.22), transparent 70%),
+      radial-gradient(ellipse 65% 45% at 85% 90%, rgba(160, 110, 70, 0.16), transparent 65%),
+      radial-gradient(ellipse 50% 40% at 15% 70%, rgba(140, 85, 48, 0.10), transparent 70%);
+    background-attachment: fixed;
+  }
+
 }
 
 /* =============================================
@@ -500,6 +546,24 @@ body {
   .container {
     padding-left: max(1rem, env(safe-area-inset-left));
     padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* =============================================
+ * == AMBIENT THEME ANIMATIONS
+ * ============================================= */
+@keyframes steamFlow {
+  0% {
+    transform: translateY(0px) scale(0.98);
+    opacity: 0.08;
+  }
+  50% {
+    transform: translateY(-14px) scale(1.02);
+    opacity: 0.16;
+  }
+  100% {
+    transform: translateY(-28px) scale(1.04);
+    opacity: 0;
   }
 }
 

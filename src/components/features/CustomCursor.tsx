@@ -117,9 +117,28 @@ export const CustomCursor = () => {
           if (theme === 'light' || theme === 'dark') return; // No particles
           
           let color = '';
-          if (theme === 'imlek') color = `rgba(255, 215, 0, ${Math.random()})`;
-          else if (theme === 'ramadan') color = `rgba(158, 255, 158, ${Math.random()})`;
-          else if (theme === 'natal') color = `rgba(255, 255, 255, ${Math.random()})`;
+          let maxLife = 40;
+          let vyBoost = 0;
+
+          if (theme === 'imlek') {
+            color = `rgba(255, 215, 0, ${Math.random()})`;
+            maxLife = 30;
+          } else if (theme === 'ramadan') {
+            color = `rgba(158, 255, 158, ${Math.random()})`;
+            maxLife = 50;
+          } else if (theme === 'natal') {
+            color = `rgba(255, 255, 255, ${Math.random()})`;
+            maxLife = 50;
+          } else if (theme === 'catppuccin') {
+            // Warm roasted coffee and dark caramel specks
+            color = Math.random() > 0.4
+              ? `rgba(140, 83, 43, ${Math.random() * 0.7 + 0.3})`
+              : `rgba(180, 115, 65, ${Math.random() * 0.6 + 0.3})`;
+            maxLife = 32;
+            vyBoost = -0.5; // Micro-steam upward lift
+          } else {
+            return;
+          }
           
           // Spawn 1-2 particles per frame when moving
           for (let i = 0; i < (Math.random() > 0.5 ? 1 : 2); i++) {
@@ -127,10 +146,10 @@ export const CustomCursor = () => {
               x: x + (Math.random() - 0.5) * 10,
               y: y + (Math.random() - 0.5) * 10,
               vx: (Math.random() - 0.5) * (theme === 'imlek' ? 4 : 2),
-              vy: (Math.random() - 0.5) * 2 + (theme === 'natal' ? 1 : 0),
+              vy: (Math.random() - 0.5) * 2 + (theme === 'natal' ? 1 : vyBoost),
               life: 1,
-              maxLife: theme === 'imlek' ? 30 : 50,
-              size: Math.random() * 2 + 1,
+              maxLife,
+              size: theme === 'catppuccin' ? Math.random() * 1.5 + 1 : Math.random() * 2 + 1,
               color
             });
           }
@@ -161,6 +180,9 @@ export const CustomCursor = () => {
             } else if (theme === 'ramadan') {
               p.vy -= 0.02; // Float up for magic glow
               p.x += Math.sin(p.life * 0.1) * 0.5;
+            } else if (theme === 'catppuccin') {
+              p.vy -= 0.04; // Micro-steam upward lift
+              p.x += Math.cos(p.life * 0.08) * 0.3; // Gentle steam drift
             }
 
             const opacity = 1 - (p.life / p.maxLife);

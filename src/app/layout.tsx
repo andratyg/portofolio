@@ -7,6 +7,7 @@ import { AudioFXProvider } from '@/components/providers/AudioFXContext';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
 import { SecurityProvider } from '@/components/providers/SecurityProvider';
+import { AchievementProvider } from '@/components/providers/AchievementContext';
 import { ScrollProgressButton } from '@/components/layout/ScrollProgressButton';
 import { SplashScreen } from '@/components/layout/SplashScreen';
 import { RouteProgressBar } from '@/components/layout/RouteProgressBar';
@@ -14,6 +15,8 @@ import { PageTransition } from '@/components/layout/PageTransition';
 import { MotionProvider } from '@/components/providers/MotionProvider';
 import { ProjectStoreProvider } from '@/stores/ProjectStore';
 import { ClientShell } from '@/components/providers/ClientShell';
+import { AchievementModal } from '@/components/features/AchievementModal';
+import { AchievementFloatingTrigger } from '@/components/features/AchievementFloatingTrigger';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -269,16 +272,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <SecurityProvider>
                   <MotionProvider>
                     <ProjectStoreProvider>
+                      <AchievementProvider>
                       <RouteProgressBar />
                       <SplashScreen />
                       <ClientShell />
                       <div className="overflow-x-hidden w-full">
                         <PageTransition>{children}</PageTransition>
                       </div>
+                      <AchievementModal />
+                      <AchievementFloatingTrigger />
                       <Toaster />
                       <ScrollProgressButton />
                       <Analytics />
                       <SpeedInsights />
+                      </AchievementProvider>
                     </ProjectStoreProvider>
                   </MotionProvider>
                 </SecurityProvider>

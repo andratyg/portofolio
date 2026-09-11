@@ -341,6 +341,47 @@ export const Navbar = () => {
                   </div>
                 </div>
 
+                {/* Modern Aesthetic Themes */}
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 px-2 mb-1.5">
+                    {language === 'id' ? 'Koleksi Estetika Modern' : 'Modern Aesthetics'}
+                  </p>
+                  <div className="space-y-1.5">
+                    {(['catppuccin'] as Theme[]).map((tName) => {
+                      const cfg = THEME_CONFIGS[tName];
+                      const isCurrent = theme === tName;
+                      return (
+                        <DropdownMenuItem
+                          key={tName}
+                          onClick={() => { play('toggle'); setTheme(tName, true); }}
+                          className={cn(
+                            "rounded-2xl p-2.5 cursor-pointer transition-all outline-none border flex items-center justify-between gap-2.5",
+                            isCurrent
+                              ? "bg-primary/15 border-primary/40 text-primary font-bold shadow-sm"
+                              : "hover:bg-muted/60 border-transparent text-foreground"
+                          )}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="flex items-center -space-x-1 p-0.5 rounded-full bg-background/80 border border-border/60 shrink-0">
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.bg }} />
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.primary }} />
+                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.accent }} />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold leading-none flex items-center gap-1.5 truncate">
+                                <span>{cfg.name[language]}</span>
+                                {cfg.emoji && <span className="text-xs">{cfg.emoji}</span>}
+                              </p>
+                              <p className="text-[11px] text-muted-foreground truncate mt-0.5">{cfg.description[language]}</p>
+                            </div>
+                          </div>
+                          {isCurrent && <Check className="h-3.5 w-3.5 text-primary shrink-0" />}
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 {/* Seasonal Themes */}
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 px-2 mb-1.5">

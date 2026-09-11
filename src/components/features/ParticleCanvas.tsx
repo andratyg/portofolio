@@ -68,9 +68,10 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
         ramadan: '234, 179, 8',
         imlek: '255, 215, 0',
         natal: '255, 255, 255',
+        catppuccin: '140, 83, 43',
       };
 
-      const isLight = currentTheme === 'light';
+      const isLight = currentTheme === 'light' || currentTheme === 'catppuccin';
       const rgbArgs = themeParticleColorMap[currentTheme] || '255, 255, 255';
 
       particles.forEach((p, i) => {

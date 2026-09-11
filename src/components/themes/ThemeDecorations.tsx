@@ -5,6 +5,7 @@ import { useTheme } from '../providers/ThemeContext';
 import ImlekDecorations from './ImlekDecorations';
 import RamadanDecorations from './RamadanDecorations';
 import NatalDecorations from './NatalDecorations';
+import CoffeeDecorations from './CoffeeDecorations';
 
 export default function ThemeDecorations() {
   const { theme } = useTheme();
@@ -18,10 +19,11 @@ export default function ThemeDecorations() {
 
   return (
     <>
-      {/* Seasonal Ambient Canvases */}
+      {/* Seasonal & Modern Ambient Canvases */}
       {theme === 'imlek' && <ImlekDecorations />}
       {theme === 'ramadan' && <RamadanDecorations />}
       {theme === 'natal' && <NatalDecorations />}
+      {theme === 'catppuccin' && <CoffeeDecorations />}
     </>
   );
 }
