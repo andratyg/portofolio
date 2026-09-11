@@ -1,9 +1,8 @@
 // Service Worker for Nara Andra Tyaga Portfolio
 // Robust, lightweight PWA caching with strict origin checking
-const CACHE_NAME = 'nat-portfolio-v3';
+const CACHE_NAME = 'nat-portfolio-v4';
 const STATIC_ASSETS = [
   '/',
-  '/manifest.json',
   '/icon.svg',
   '/profile-fallback.jpg',
 ];

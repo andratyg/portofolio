@@ -34,12 +34,47 @@ export function ClientShell() {
   const [isIdle, setIsIdle] = useState(false);
 
   useEffect(() => {
+    // Auto-reload once if an outdated deployment chunk or stylesheet fails with 404
+    const handleChunkError = (event: ErrorEvent | PromiseRejectionEvent) => {
+      const error = 'reason' in event ? event.reason : event.error;
+      const message = error?.message || (event as ErrorEvent).message || '';
+      const isChunkOrCssError =
+        message.includes('Loading chunk') ||
+        message.includes('ChunkLoadError') ||
+        message.includes('Failed to fetch dynamically imported module') ||
+        message.includes('Refused to apply style');
+
+      if (isChunkOrCssError) {
+        try {
+          const lastReload = sessionStorage.getItem('chunk_error_reload');
+          const now = Date.now();
+          if (!lastReload || now - Number(lastReload) > 12000) {
+            sessionStorage.setItem('chunk_error_reload', String(now));
+            window.location.reload();
+          }
+        } catch (e) {
+          window.location.reload();
+        }
+      }
+    };
+
+    window.addEventListener('error', handleChunkError, true);
+    window.addEventListener('unhandledrejection', handleChunkError);
+
     if ('requestIdleCallback' in window) {
       const handle = (window as any).requestIdleCallback(() => setIsIdle(true), { timeout: 3000 });
-      return () => (window as any).cancelIdleCallback?.(handle);
+      return () => {
+        window.removeEventListener('error', handleChunkError, true);
+        window.removeEventListener('unhandledrejection', handleChunkError);
+        (window as any).cancelIdleCallback?.(handle);
+      };
     } else {
       const timer = setTimeout(() => setIsIdle(true), 1500);
-      return () => clearTimeout(timer);
+      return () => {
+        window.removeEventListener('error', handleChunkError, true);
+        window.removeEventListener('unhandledrejection', handleChunkError);
+        clearTimeout(timer);
+      };
     }
   }, []);
 
