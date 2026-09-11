@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface UseTypewriterOptions {
   words: string[];
@@ -9,6 +9,10 @@ interface UseTypewriterOptions {
   delayBetweenWords?: number;
 }
 
+/**
+ * SSR-safe typewriter: renders the first full word during SSR (LCP-friendly),
+ * starts the type/delete loop only after hydration.
+ */
 export function useTypewriter({
   words,
   typeSpeed = 80,
@@ -16,37 +20,44 @@ export function useTypewriter({
   delayBetweenWords = 2000,
 }: UseTypewriterOptions) {
   const [displayText, setDisplayText] = useState(words[0] || '');
-  const [wordIndex, setWordIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const tick = useCallback(() => {
-    const currentWord = words[wordIndex] || '';
-
-    if (isDeleting) {
-      setDisplayText(prev => currentWord.substring(0, prev.length - 1));
-    } else {
-      setDisplayText(prev => currentWord.substring(0, prev.length + 1));
-    }
-  }, [wordIndex, isDeleting, words]);
+  const [hydrated, setHydrated] = useState(false);
+  const stateRef = useRef({ wordIndex: 0, isDeleting: false });
 
   useEffect(() => {
-    const currentWord = words[wordIndex] || '';
+    setHydrated(true);
+  }, []);
 
-    let timeout: NodeJS.Timeout;
+  useEffect(() => {
+    if (!hydrated) return;
 
-    if (!isDeleting && displayText === currentWord) {
-      // Finished typing — pause then start deleting
-      timeout = setTimeout(() => setIsDeleting(true), delayBetweenWords);
-    } else if (isDeleting && displayText === '') {
-      // Finished deleting — move to next word
-      setIsDeleting(false);
-      setWordIndex(prev => (prev + 1) % words.length);
-    } else {
-      timeout = setTimeout(tick, isDeleting ? deleteSpeed : typeSpeed);
-    }
+    let timeout: ReturnType<typeof setTimeout>;
 
+    const step = () => {
+      const s = stateRef.current;
+      const currentWord = words[s.wordIndex] || '';
+
+      if (!s.isDeleting) {
+        if (displayText.length < currentWord.length) {
+          setDisplayText(currentWord.substring(0, displayText.length + 1));
+          timeout = setTimeout(step, typeSpeed);
+        } else {
+          timeout = setTimeout(() => { s.isDeleting = true; step(); }, delayBetweenWords);
+        }
+      } else {
+        if (displayText.length > 0) {
+          setDisplayText(currentWord.substring(0, displayText.length - 1));
+          timeout = setTimeout(step, deleteSpeed);
+        } else {
+          s.isDeleting = false;
+          s.wordIndex = (s.wordIndex + 1) % words.length;
+          timeout = setTimeout(step, typeSpeed);
+        }
+      }
+    };
+
+    timeout = setTimeout(step, 500); // small delay after hydration
     return () => clearTimeout(timeout);
-  }, [displayText, isDeleting, wordIndex, words, tick, typeSpeed, deleteSpeed, delayBetweenWords]);
+  }, [hydrated, displayText, words, typeSpeed, deleteSpeed, delayBetweenWords]);
 
-  return { displayText, isDeleting };
+  return { displayText };
 }

@@ -12,20 +12,13 @@
     {
       "src": "/favicon.ico",
       "sizes": "48x48",
-      "type": "image/x-icon",
-      "purpose": "any"
+      "type": "image/x-icon"
     },
     {
       "src": "/apple-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ],
   "categories": ["portfolio", "education", "technology"],

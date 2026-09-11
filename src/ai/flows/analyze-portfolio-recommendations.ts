@@ -105,13 +105,14 @@ export type AnalyzePortfolioRecommendationsOutput = z.infer<typeof AnalyzePortfo
  */
 function runHeuristicAudit(input: AnalyzePortfolioRecommendationsInput): AnalyzePortfolioRecommendationsOutput {
   const recommendations: RecommendationItem[] = [];
-  const profile = input.profile;
-  const stats = input.stats;
-  const projects = input.projects || [];
-  const certificates = input.certificates || [];
-  const experiences = input.experiences || [];
-  const techSkills = input.techSkills || [];
-  const blogs = input.blogs || [];
+  const safeInput = input || ({} as AnalyzePortfolioRecommendationsInput);
+  const profile = safeInput.profile;
+  const stats = safeInput.stats;
+  const projects = safeInput.projects || [];
+  const certificates = safeInput.certificates || [];
+  const experiences = safeInput.experiences || [];
+  const techSkills = safeInput.techSkills || [];
+  const blogs = safeInput.blogs || [];
 
   // 1. Profile Audit
   if (!profile?.aboutMeEn || profile.aboutMeEn.trim().length < 15) {
@@ -264,22 +265,27 @@ function runHeuristicAudit(input: AnalyzePortfolioRecommendationsInput): Analyze
 export async function analyzePortfolioRecommendations(
   input: AnalyzePortfolioRecommendationsInput
 ): Promise<AnalyzePortfolioRecommendationsOutput> {
-  const hasKey = !!(process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_API_KEY);
-  if (!hasKey) {
+  try {
+    const hasKey = !!(process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_API_KEY);
+    if (!hasKey) {
+      return runHeuristicAudit(input);
+    }
+
+    try {
+      const result = await analyzePortfolioRecommendationsFlow(input);
+      if (result && result.recommendations && result.recommendations.length > 0) {
+        return result;
+      }
+    } catch (error) {
+      console.warn('[AI Advisor] Gemini flow error, using intelligent heuristic audit fallback:', error);
+    }
+
+    // Fallback selalu berhasil dan tidak pernah memicu 500 error
+    return runHeuristicAudit(input);
+  } catch (fatalError) {
+    console.error('[AI Advisor] Fatal Server Action catch, returning heuristic audit:', fatalError);
     return runHeuristicAudit(input);
   }
-
-  try {
-    const result = await analyzePortfolioRecommendationsFlow(input);
-    if (result && result.recommendations && result.recommendations.length > 0) {
-      return result;
-    }
-  } catch (error) {
-    console.warn('[AI Advisor] Gemini flow error, using intelligent heuristic audit fallback:', error);
-  }
-
-  // Fallback selalu berhasil dan tidak pernah memicu 500 error
-  return runHeuristicAudit(input);
 }
 
 const prompt = ai.definePrompt({

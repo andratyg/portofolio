@@ -15,6 +15,7 @@ const AudioFXContext = createContext<AudioFXContextType | undefined>(undefined);
 export const AudioFXProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const hasInteractedRef = useRef<boolean>(false);
 
   // Initialize from localStorage and unlock Web Audio Context on first user interaction
   useEffect(() => {
@@ -29,6 +30,7 @@ export const AudioFXProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     // Modern browsers require physical user gesture before allowing audio playback
     const unlockAudio = () => {
+      hasInteractedRef.current = true;
       try {
         if (!audioCtxRef.current) {
           const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -55,6 +57,7 @@ export const AudioFXProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const getAudioContext = useCallback(() => {
     if (typeof window === 'undefined') return null;
+    if (!hasInteractedRef.current && !audioCtxRef.current) return null;
     try {
       if (!audioCtxRef.current) {
         const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;

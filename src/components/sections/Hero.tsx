@@ -105,7 +105,7 @@ export const Hero = ({
 
       {/* ── Background: particles + orbs ─────────────────────────── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-        <DynamicParticleCanvas density={15000} />
+        <DynamicParticleCanvas density={8000} />
         {/* Orbs — tilt via direct DOM, isolated from document layout */}
         <div
           id="hero-orb-1"
