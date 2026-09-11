@@ -284,13 +284,21 @@ function AdminContent() {
         developerProfileContext: profileSummary,
       });
 
-      if (res.descriptionSuggestion) {
+      if (res) {
         setProjectForm(prev => ({
           ...prev,
-          solutionId: prev.solutionId ? `${prev.solutionId}\n\n${res.descriptionSuggestion}` : res.descriptionSuggestion,
-          shortDescriptionId: prev.shortDescriptionId || res.descriptionSuggestion.split('.')[0] + '.'
+          shortDescriptionId: res.shortDescriptionId || prev.shortDescriptionId || (res.descriptionSuggestion ? res.descriptionSuggestion.split('.')[0] + '.' : ''),
+          shortDescriptionEn: res.shortDescriptionEn || prev.shortDescriptionEn || '',
+          problemId: res.problemId || prev.problemId || '',
+          problemEn: res.problemEn || prev.problemEn || '',
+          solutionId: res.solutionId || res.descriptionSuggestion || prev.solutionId || '',
+          solutionEn: res.solutionEn || prev.solutionEn || '',
+          impactStats: res.impactStats || prev.impactStats || '+45% Efisiensi Alur Kerja',
         }));
-        toast({ title: "Saran Deskripsi AI Berhasil", description: "Deskripsi telah disisipkan ke solusi strategis & ringkasan proyek." });
+        toast({ 
+          title: "Saran Deskripsi AI Lengkap Berhasil", 
+          description: "Ringkasan, Tantangan Masalah, Solusi Arsitektur, dan Metrik Dampak (ID & EN) telah terisi otomatis!" 
+        });
       }
     } catch (err: any) {
       console.error("Generate project desc error:", err);
@@ -322,12 +330,18 @@ function AdminContent() {
         developerProfileContext: profileSummary,
       });
 
-      if (res.descriptionSuggestion) {
+      if (res) {
         setCertForm(prev => ({
           ...prev,
-          fullDescriptionId: res.descriptionSuggestion
+          shortDescriptionId: res.shortDescriptionId || prev.shortDescriptionId || '',
+          shortDescriptionEn: res.shortDescriptionEn || prev.shortDescriptionEn || '',
+          fullDescriptionId: res.fullDescriptionId || res.descriptionSuggestion || prev.fullDescriptionId || '',
+          fullDescriptionEn: res.fullDescriptionEn || prev.fullDescriptionEn || '',
         }));
-        toast({ title: "Deskripsi Kredensial AI Berhasil", description: "Deskripsi mendalam dengan konteks portofolio telah digenerate." });
+        toast({ 
+          title: "Deskripsi Kredensial AI Lengkap Berhasil", 
+          description: "Ringkasan dan deskripsi kompetensi teknis mendalam (ID & EN) telah digenerate!" 
+        });
       }
     } catch (err: any) {
       console.error("Generate cert desc error:", err);
