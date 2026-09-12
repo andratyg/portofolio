@@ -199,6 +199,44 @@
     --glass-blur: 16px;
   }
 
+  /* --- Sunset Beach Theme (Clear Light Sky Blue to Radiant Sunset Orange & Golden Horizon) --- */
+  [data-theme='sunset'] {
+    --background: 204 80% 60%;
+    /* Bright Clear Light Sky Blue #4ca8e8 */
+    --foreground: 218 65% 12%;
+    /* Deep Twilight Ocean Navy #0b1a2d - Bold, rich, contrast > 10:1 on light blue & gold */
+    --card: 0 0% 100%;
+    /* Frosted Pearl White #ffffff */
+    --card-foreground: 218 65% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 218 65% 12%;
+    --primary: 24 95% 48%;
+    /* Radiant Warm Sunset Orange #ea580c / #f97316 */
+    --primary-foreground: 0 0% 100%;
+    /* Crisp White #ffffff - Sharp on orange buttons */
+    --secondary: 345 75% 46%;
+    /* Sunset Magenta Rose Coral #dc2660 */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 204 35% 88%;
+    /* Soft Airy Sky Mist #d9edf7 */
+    --muted-foreground: 218 50% 26%;
+    /* Deep Slate Ocean Blue #213d63 - Crisp, clear, contrast > 6.5:1 */
+    --accent: 42 98% 52%;
+    /* Golden Sun Yellow #f59e0b */
+    --accent-foreground: 218 65% 12%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 208 40% 74%;
+    /* Soft Azure Sea Foam Rim #a2c8e6 */
+    --input: 208 40% 74%;
+    --ring: 24 95% 48%;
+
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.72);
+    --glass-border: rgba(247, 147, 30, 0.32);
+    --glass-blur: 16px;
+  }
+
 
   * {
     border-color: hsl(var(--border));
@@ -248,6 +286,56 @@
     background-attachment: fixed;
   }
 
+  /* Real tropical beach sunset: Clear vibrant light sky blue at top smoothly transitioning into airy cyan, warm peach, fiery coral, radiant sunset orange, and golden beach horizon */
+  [data-theme='sunset'] body {
+    background-color: #4ca8e8;
+    background-image:
+      linear-gradient(180deg,
+        #4ca8e8 0%,
+        #68bdf8 14%,
+        #8fd0fa 28%,
+        #bce3fa 42%,
+        #fde4cb 55%,
+        #fba86b 68%,
+        #f77d26 80%,
+        #faad2a 90%,
+        #fed34d 97%,
+        #fee37b 100%
+      );
+    background-attachment: fixed;
+    background-size: cover;
+  }
+
+  /* Make page sections transparent / glassmorphic in sunset theme so the light blue sunset sky permeates all sections */
+  [data-theme='sunset'] .bg-background {
+    background-color: transparent !important;
+  }
+
+  [data-theme='sunset'] section#about {
+    background-color: rgba(255, 255, 255, 0.32) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(247, 147, 30, 0.22);
+    border-bottom: 1px solid rgba(247, 147, 30, 0.22);
+  }
+
+  [data-theme='sunset'] section#certificates {
+    background-color: rgba(255, 255, 255, 0.26) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  [data-theme='sunset'] section#contact {
+    background: linear-gradient(180deg, rgba(251, 168, 107, 0.68) 0%, rgba(250, 173, 42, 0.76) 100%) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(253, 200, 48, 0.4);
+  }
+
+  [data-theme='sunset'] footer {
+    background: transparent !important;
+  }
+
 }
 
 /* =============================================
@@ -273,6 +361,11 @@
 [data-theme='catppuccin'] ::selection {
   background-color: rgba(179, 77, 14, 0.24);
   color: hsl(24 45% 10%);
+}
+
+[data-theme='sunset'] ::selection {
+  background-color: rgba(247, 147, 30, 0.35);
+  color: #0b1a2d;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -569,6 +662,130 @@ body {
   100% {
     transform: translateY(-28px) scale(1.04);
     opacity: 0;
+  }
+}
+
+@keyframes waveMotion1 {
+  0% {
+    transform: translateX(0) translateZ(0);
+  }
+  50% {
+    transform: translateX(-30px) translateZ(0);
+  }
+  100% {
+    transform: translateX(0) translateZ(0);
+  }
+}
+
+@keyframes waveMotion2 {
+  0% {
+    transform: translateX(0) translateZ(0);
+  }
+  50% {
+    transform: translateX(30px) translateZ(0);
+  }
+  100% {
+    transform: translateX(0) translateZ(0);
+  }
+}
+
+@keyframes palmSway {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(2.2deg);
+  }
+}
+
+@keyframes oceanWaveSlow {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(-30px) translateY(4px);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes oceanWaveFast {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(25px) translateY(-5px);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes oceanGlintShimmer {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scaleX(1.1);
+  }
+}
+
+@keyframes seagullGlide {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(20px, -10px) scale(1.03);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes cloudDrift1 {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(35px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes cloudDrift2 {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-40px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes starTwinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes palmSwayGentle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(1.8deg) skewX(-0.5deg);
   }
 }
 

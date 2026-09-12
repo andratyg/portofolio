@@ -237,7 +237,6 @@ export function CommandPalette() {
           ['theme <name>', 'Switch theme (e.g., theme mocha, theme dark)'],
           ['cv', 'Download CV / Resume instantly'],
           ['wa / whatsapp', 'Open WhatsApp direct message'],
-          ['badges / trophy', 'Open achievement gallery'],
           ['about', 'About the developer'],
           ['projects', 'List all projects'],
           ['whoami', 'Who am I?'],
@@ -293,6 +292,8 @@ export function CommandPalette() {
         targetTheme = rawTarget as Theme;
       } else if (['cappuccino', 'mocha', 'coffee', 'kopi', 'capucino', 'catpuccino', 'kopi-mocha'].includes(rawTarget)) {
         targetTheme = 'catppuccin';
+      } else if (['sunset', 'senja', 'pantai', 'beach', 'sunset-beach', 'senja-pantai'].includes(rawTarget)) {
+        targetTheme = 'sunset';
       }
 
       if (targetTheme) {
@@ -319,13 +320,6 @@ export function CommandPalette() {
       return {
         type: 'action',
         content: '💬 Opening WhatsApp direct message...\n✅ Redirecting to wa.me...',
-      };
-    }
-
-    if (trimmed === 'badges' || trimmed === 'trophy') {
-      return {
-        type: 'action',
-        content: '🏆 Opening Achievement Gallery...\n✅ Check your progress and unlock more badges!',
       };
     }
 
@@ -406,11 +400,6 @@ export function CommandPalette() {
         window.open('https://wa.me/6285172254437', '_blank');
         setOpen(false);
       }, 800);
-    } else if (trimmed === 'badges' || trimmed === 'trophy') {
-      setTimeout(() => {
-        setOpen(false);
-        window.dispatchEvent(new CustomEvent('open-achievement-modal'));
-      }, 800);
     }
   }, [query, executeCommand, play, router, handleDownloadCv, setTheme]);
 
@@ -443,7 +432,7 @@ export function CommandPalette() {
   // Themes Search Filter
   const filteredThemes = useMemo(() => {
     const themeList = Object.values(THEME_CONFIGS);
-    const isThemeQuery = ['theme', 'tema', 'warna', 'color', 'mode', 'tampilan', 'gelap', 'terang', 'dark', 'light', 'ramadan', 'imlek', 'natal', 'catppuccin', 'mocha', 'cappuccino', 'coffee', 'kopi', 'amber', 'modern'].some(k => q.includes(k));
+    const isThemeQuery = ['theme', 'tema', 'warna', 'color', 'mode', 'tampilan', 'gelap', 'terang', 'dark', 'light', 'ramadan', 'imlek', 'natal', 'catppuccin', 'mocha', 'cappuccino', 'coffee', 'kopi', 'amber', 'modern', 'sunset', 'beach', 'senja', 'pantai'].some(k => q.includes(k));
     if (!q) return themeList.slice(0, 6);
     if (isThemeQuery) return themeList;
     return themeList.filter(tItem => {

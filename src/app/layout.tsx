@@ -15,8 +15,6 @@ import { PageTransition } from '@/components/layout/PageTransition';
 import { MotionProvider } from '@/components/providers/MotionProvider';
 import { ProjectStoreProvider } from '@/stores/ProjectStore';
 import { ClientShell } from '@/components/providers/ClientShell';
-import { AchievementModal } from '@/components/features/AchievementModal';
-import { AchievementFloatingTrigger } from '@/components/features/AchievementFloatingTrigger';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -279,8 +277,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       <div className="overflow-x-hidden w-full">
                         <PageTransition>{children}</PageTransition>
                       </div>
-                      <AchievementModal />
-                      <AchievementFloatingTrigger />
                       <Toaster />
                       <ScrollProgressButton />
                       <Analytics />

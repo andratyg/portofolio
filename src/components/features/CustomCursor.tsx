@@ -136,6 +136,16 @@ export const CustomCursor = () => {
               : `rgba(95, 63, 39, ${Math.random() * 0.65 + 0.25})`;
             maxLife = 32;
             vyBoost = -0.5; // Micro-steam upward lift
+          } else if (theme === 'sunset') {
+            // Warm radiant orange, golden sun & coral twilight sparks
+            const sunsetColors = [
+              `rgba(247, 147, 30, ${Math.random() * 0.75 + 0.25})`,
+              `rgba(253, 200, 48, ${Math.random() * 0.75 + 0.25})`,
+              `rgba(247, 82, 107, ${Math.random() * 0.65 + 0.25})`,
+            ];
+            color = sunsetColors[Math.floor(Math.random() * sunsetColors.length)];
+            maxLife = 38;
+            vyBoost = -0.4; // Gentle thermal sunset sea breeze lift
           } else {
             return;
           }
@@ -149,7 +159,7 @@ export const CustomCursor = () => {
               vy: (Math.random() - 0.5) * 2 + (theme === 'natal' ? 1 : vyBoost),
               life: 1,
               maxLife,
-              size: theme === 'catppuccin' ? Math.random() * 1.5 + 1 : Math.random() * 2 + 1,
+              size: (theme === 'catppuccin' || theme === 'sunset') ? Math.random() * 1.6 + 1 : Math.random() * 2 + 1,
               color
             });
           }
@@ -158,15 +168,31 @@ export const CustomCursor = () => {
         let lastSpawnX = -100;
         let lastSpawnY = -100;
 
-        const animateParticles = () => {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const onCanvasMouseMove = (e: MouseEvent) => {
+          const dx = e.clientX - lastSpawnX;
+          const dy = e.clientY - lastSpawnY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
           
-          // Spawn if mouse moved sufficiently to avoid clumping
-          const dist = Math.hypot(mouseX - lastSpawnX, mouseY - lastSpawnY);
-          if (dist > 5 && theme !== 'light' && theme !== 'dark') {
-            spawnParticles(mouseX, mouseY);
-            lastSpawnX = mouseX;
-            lastSpawnY = mouseY;
+          // Only spawn if mouse moved at least 5px to prevent clump
+          if (dist > 5) {
+            spawnParticles(e.clientX, e.clientY);
+            lastSpawnX = e.clientX;
+            lastSpawnY = e.clientY;
+          }
+        };
+
+        window.addEventListener('mousemove', onCanvasMouseMove, { passive: true });
+
+        // Animation Loop
+        const animateParticles = () => {
+          particlesRaf = requestAnimationFrame(animateParticles);
+          
+          if (document.hidden) return; // Pause when tab inactive
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          if (particles.length === 0) {
+            return;
           }
 
           for (let i = particles.length - 1; i >= 0; i--) {
@@ -183,6 +209,9 @@ export const CustomCursor = () => {
             } else if (theme === 'catppuccin') {
               p.vy -= 0.04; // Micro-steam upward lift
               p.x += Math.cos(p.life * 0.08) * 0.3; // Gentle steam drift
+            } else if (theme === 'sunset') {
+              p.vy -= 0.03; // Gentle thermal rise
+              p.x += Math.sin(p.life * 0.08) * 0.4; // Sea breeze sway
             }
 
             const opacity = 1 - (p.life / p.maxLife);
@@ -205,6 +234,7 @@ export const CustomCursor = () => {
         
         return () => {
           window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mousemove', onCanvasMouseMove);
           document.removeEventListener('mouseover', onMouseOver);
           document.removeEventListener('mouseout', onMouseOut);
           window.removeEventListener('resize', resizeCanvas);

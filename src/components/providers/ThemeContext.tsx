@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
-export type Theme = 'light' | 'dark' | 'catppuccin' | 'ramadan' | 'imlek' | 'natal';
+export type Theme = 'light' | 'dark' | 'catppuccin' | 'sunset' | 'ramadan' | 'imlek' | 'natal';
 export type ThemeCategory = 'standard' | 'modern' | 'seasonal';
 
 export interface ThemeConfig {
@@ -95,9 +95,21 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
     },
     emoji: '☕',
   },
+  sunset: {
+    id: 'sunset',
+    name: { id: 'Sunset Beach', en: 'Sunset Beach' },
+    category: 'modern',
+    description: { id: 'Langit biru muda, koral senja, matahari terbenam & deburan ombak pantai', en: 'Light sky blue, warm sunset coral, golden sun & sea breeze' },
+    colors: {
+      bg: '#4ca8e8',
+      primary: '#F77F00',
+      accent: '#FDC830',
+    },
+    emoji: '🌅',
+  },
 };
 
-export const themes: Theme[] = ['light', 'dark', 'catppuccin', 'ramadan', 'imlek', 'natal'];
+export const themes: Theme[] = ['light', 'dark', 'catppuccin', 'sunset', 'ramadan', 'imlek', 'natal'];
 
 interface ThemeContextType {
   theme: Theme;
