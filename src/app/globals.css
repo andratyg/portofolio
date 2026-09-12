@@ -306,9 +306,21 @@
     background-size: cover;
   }
 
-  /* Make page sections transparent / glassmorphic in sunset theme so the light blue sunset sky permeates all sections */
-  [data-theme='sunset'] .bg-background {
+  /* Make only main page sections transparent in sunset theme so the light blue sunset sky permeates the layout */
+  [data-theme='sunset'] section#hero,
+  [data-theme='sunset'] section#portfolio,
+  [data-theme='sunset'] section#stats {
     background-color: transparent !important;
+  }
+
+  /* Ensure all Dialogs, Modals, Popovers, and Dropdowns have solid, high-contrast, luxurious white cards */
+  [data-theme='sunset'] [role="dialog"],
+  [data-theme='sunset'] [data-radix-popper-content-wrapper] > div,
+  [data-theme='sunset'] .dialog-content {
+    background-color: #ffffff !important;
+    color: #0b1a2d !important;
+    border: 1px solid rgba(247, 147, 30, 0.25) !important;
+    box-shadow: 0 25px 60px -15px rgba(11, 26, 45, 0.4), 0 0 35px rgba(247, 147, 30, 0.15) !important;
   }
 
   [data-theme='sunset'] section#about {
@@ -347,7 +359,26 @@
 
   [data-theme='sunset'] footer {
     background: transparent !important;
-    padding-bottom: 7.5rem;
+    padding-bottom: 8.5rem;
+  }
+
+  [data-theme='sunset'] footer .container {
+    background: rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(247, 147, 30, 0.28);
+    border-radius: 2.5rem;
+    padding-top: 3rem;
+    padding-bottom: 2.5rem;
+    box-shadow: 0 20px 50px -10px rgba(11, 26, 45, 0.12);
+  }
+
+  [data-theme='sunset'] footer a.text-muted-foreground {
+    color: #0b1a2d !important;
+    font-weight: 600;
+  }
+  [data-theme='sunset'] footer a.text-muted-foreground:hover {
+    color: #ea580c !important;
   }
 
 }

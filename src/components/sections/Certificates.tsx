@@ -302,7 +302,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
           </Card>
           </button>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] sm:max-w-[700px] max-h-[95dvh] sm:h-[85vh] p-0 border-none shadow-2xl flex flex-col bg-background rounded-[2rem] overflow-hidden">
+      <DialogContent className="w-[95vw] sm:max-w-[700px] max-h-[95dvh] sm:h-[85vh] p-0 border border-border/30 shadow-2xl flex flex-col bg-card text-card-foreground rounded-[2rem] overflow-hidden">
         <div className="bg-card border-b p-5 sm:p-8 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
            <div className="space-y-1">
              <Badge className="bg-primary text-primary-foreground text-xs font-black px-3 capitalize">{cert.issuer.toLowerCase()}</Badge>

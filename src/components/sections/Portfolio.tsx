@@ -307,7 +307,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
             </Card>
           </button>
         </DialogTrigger>
-        <DialogContent className="w-[95vw] sm:max-w-[800px] max-h-[95dvh] sm:h-[85vh] p-0 border-none shadow-2xl bg-background flex flex-col rounded-[2rem] overflow-hidden">
+        <DialogContent className="w-[95vw] sm:max-w-[800px] max-h-[95dvh] sm:h-[85vh] p-0 border border-border/30 shadow-2xl bg-card text-card-foreground flex flex-col rounded-[2rem] overflow-hidden">
           <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
             <div className="relative h-64 sm:h-96 shrink-0 bg-muted overflow-hidden">
               <Image src={project.imageUrl || `https://placehold.co/800x500?text=${title}`} alt={title || 'Project Image'} fill className="object-cover" sizes="(max-width: 768px) 95vw, 750px" quality={75} />
@@ -316,7 +316,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
                 <div className="flex items-end justify-between gap-3 sm:gap-4">
                 <div className='space-y-1 sm:space-y-2'>
                   <Badge className="bg-primary text-primary-foreground px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs font-bold">{t.projectCategories[project.type as keyof typeof t.projectCategories]}</Badge>
-                  <DialogTitle className="text-xl sm:text-3xl md:text-4xl font-black  text-white tracking-normal leading-tight">{title}</DialogTitle>
+                  <DialogTitle className="text-xl sm:text-3xl md:text-4xl font-black text-white tracking-normal leading-tight">{title}</DialogTitle>
                 </div>
                 <div className="flex gap-2 shrink-0">
                   {project.githubUrl && (
@@ -349,20 +349,20 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
                 </div>
               </div>
             </div>
-            <div className="p-5 sm:p-10 space-y-6 sm:space-y-12 bg-muted/20 min-h-[50vh]">
+            <div className="p-5 sm:p-10 space-y-6 sm:space-y-12 bg-muted/40 min-h-[50vh]">
               <div className="grid md:grid-cols-2 gap-8">
-                  <div className="p-8 rounded-[2rem] bg-card border border-border/5 shadow-sm">
-                    <h3 className="text-lg font-black  uppercase flex items-center gap-3 mb-4"><AlertCircle className="h-5 w-5 text-destructive" /> {t.technicalChallenge}</h3>
+                  <div className="p-6 sm:p-8 rounded-[2rem] bg-card border border-border/20 shadow-md">
+                    <h3 className="text-lg font-black uppercase flex items-center gap-3 mb-4 text-foreground"><AlertCircle className="h-5 w-5 text-destructive" /> {t.technicalChallenge}</h3>
                     <DialogDescription className="text-muted-foreground text-base leading-relaxed font-medium">{problem}</DialogDescription>
                   </div>
-                  <div className="p-8 rounded-[2rem] bg-card border border-border/5 shadow-sm">
-                    <h3 className="text-lg font-black  uppercase flex items-center gap-3 mb-4"><CheckCircle2 className="h-5 w-5 text-primary" /> {t.strategicSolution}</h3>
+                  <div className="p-6 sm:p-8 rounded-[2rem] bg-card border border-border/20 shadow-md">
+                    <h3 className="text-lg font-black uppercase flex items-center gap-3 mb-4 text-foreground"><CheckCircle2 className="h-5 w-5 text-primary" /> {t.strategicSolution}</h3>
                     <p className="text-muted-foreground text-base leading-relaxed font-medium">{solution}</p>
                   </div>
               </div>
-              <div className="p-8 rounded-[2rem] bg-card border border-border/5 shadow-sm">
-                <h3 className="text-lg font-black  uppercase flex items-center gap-3 mb-6"><Terminal className="h-5 w-5 text-primary" /> {t.systemStack}</h3>
-                <div className="flex flex-wrap gap-3">{(project.technologies || []).map(t => <Badge key={t} variant="outline" className="px-4 py-2 rounded-xl border-primary/20 text-sm font-semibold bg-primary/5">{t}</Badge>)}</div>
+              <div className="p-6 sm:p-8 rounded-[2rem] bg-card border border-border/20 shadow-md">
+                <h3 className="text-lg font-black uppercase flex items-center gap-3 mb-6 text-foreground"><Terminal className="h-5 w-5 text-primary" /> {t.systemStack}</h3>
+                <div className="flex flex-wrap gap-3">{(project.technologies || []).map(t => <Badge key={t} variant="outline" className="px-4 py-2 rounded-xl border-primary/20 text-sm font-semibold bg-primary/5 text-foreground">{t}</Badge>)}</div>
               </div>
               <div className="flex justify-end pt-4">
                 <Link href={`/projects/${project.id}`} className="w-full sm:w-auto">
