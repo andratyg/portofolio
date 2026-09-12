@@ -23,7 +23,7 @@ import React from 'react';
 export default function TropicalPalmTree() {
   return (
     <div
-      className="fixed bottom-0 right-0 sm:right-1 w-72 sm:w-96 md:w-[460px] lg:w-[540px] xl:w-[620px] h-[480px] sm:h-[580px] md:h-[680px] lg:h-[760px] xl:h-[840px] pointer-events-none select-none z-[3]"
+      className="fixed bottom-0 right-0 sm:right-1 w-60 sm:w-72 md:w-[370px] lg:w-[440px] xl:w-[500px] h-[310px] sm:h-[375px] md:h-[480px] lg:h-[570px] xl:h-[650px] pointer-events-none select-none z-[3]"
       style={{
         transformOrigin: 'bottom right',
         animation: 'palmSway 9.5s ease-in-out infinite',
