@@ -3,356 +3,315 @@
 import React from 'react';
 
 /**
- * TropicalPalmTree - Ultra-Lush Organic Tropical Coconut Palms (Pohon Kelapa Tropis Alami & Luwes)
+ * TropicalPalmTree - Ultra-Lush Botanical Coconut Palms (Pohon Kelapa Tropis Rimbun & Eksotis)
  * 
- * Redesigned for absolute natural fluidity:
- * - Sweeping graceful curved trunk leaning over the ocean (eliminating stiff straight look)
- * - True 3D curved elliptical bark rings with cylindrical shading
- * - Long, flexible, cascading curved bezier frond ribbons (eliminating spiky saw-tooth triangles)
- * - Double-tree tropical grove with foreground & background depth
- * - Organic plump coconut clusters with 3D radial highlights
- * - Tender curving young shoots (pucuk kelapa muda)
- * - Beach dune grasses and broad coastal philodendron leaves
+ * Masterpiece Visual Features:
+ * - 18 full botanical feathery plumes creating an opulent, rich, 360-degree radial canopy.
+ * - Solid, lush green foliage flesh with dual-sided organic feathering:
+ *   1. Soft outward feather tips on the sunlit upper contour.
+ *   2. Deep, elegant, cascading weeping feather plumes on the underside drooping naturally under gravity.
+ * - Multi-tiered crown depth:
+ *   Tier 1: Deep forest green background fronds providing rich jungle depth.
+ *   Tier 2: Vibrant emerald and chartreuse midground fronds swaying gracefully with the sea breeze.
+ *   Tier 3: Sunlit golden-lime foreground fronds framing the crown and coconuts.
+ *   Tier 4: Tender zenith young shoots reaching toward the sunset sun.
+ * - Graceful sweeping trunk organically bowed towards the ocean with golden rim backlight.
+ * - Realistically grounded on coastal sand dunes with tropical beach grass tufts.
+ * - Plump 3D coconuts nestled under the crown with glossy sunlight crescents.
+ * - Pure SVG vector art: 0 KB external images, 60-120 FPS buttery smooth GPU composite sway.
  */
 export default function TropicalPalmTree() {
   return (
     <div
-      className="fixed bottom-0 right-0 sm:right-1 w-56 sm:w-80 md:w-[390px] lg:w-[430px] h-[320px] sm:h-[430px] md:h-[490px] pointer-events-none select-none z-0"
+      className="fixed bottom-0 right-0 sm:right-1 w-72 sm:w-96 md:w-[460px] lg:w-[540px] xl:w-[620px] h-[480px] sm:h-[580px] md:h-[680px] lg:h-[760px] xl:h-[840px] pointer-events-none select-none z-[3]"
       style={{
         transformOrigin: 'bottom right',
-        animation: 'palmSwayGentle 9s ease-in-out infinite',
+        animation: 'palmSway 9.5s ease-in-out infinite',
         willChange: 'transform',
         transform: 'translateZ(0)',
       }}
     >
       <svg
-        viewBox="0 0 400 480"
+        viewBox="0 0 540 700"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="w-full h-full"
       >
         <defs>
-          {/* Natural Coconut Palm Bark Gradient with Sunset Warmth */}
-          <linearGradient id="mainTrunkBarkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#b45309" />
+          {/* ─── 1. Palet Warna Batang Kelapa Alami ─── */}
+          <linearGradient id="trunkBark3D" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#92400e" />
             <stop offset="15%" stopColor="#78350f" />
-            <stop offset="55%" stopColor="#451a03" />
-            <stop offset="85%" stopColor="#290f02" />
+            <stop offset="40%" stopColor="#451a03" />
+            <stop offset="75%" stopColor="#290f02" />
             <stop offset="100%" stopColor="#140701" />
           </linearGradient>
 
-          <linearGradient id="compTrunkBarkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#854d0e" />
-            <stop offset="25%" stopColor="#5c2b09" />
-            <stop offset="70%" stopColor="#311303" />
-            <stop offset="100%" stopColor="#120601" />
-          </linearGradient>
-
-          {/* Sunset Golden Rim Backlight along sunward curve */}
+          {/* Sunset Golden Rim Highlight along the sunward curve */}
           <linearGradient id="trunkGoldenBacklight" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.3" />
-            <stop offset="35%" stopColor="#fbbf24" stopOpacity="0.75" />
-            <stop offset="70%" stopColor="#fde047" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#fef08a" stopOpacity="0.95" />
+            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.4" />
+            <stop offset="30%" stopColor="#fbbf24" stopOpacity="0.85" />
+            <stop offset="65%" stopColor="#fde047" stopOpacity="0.95" />
+            <stop offset="100%" stopColor="#fef08a" stopOpacity="1" />
           </linearGradient>
 
-          {/* Deep Canopy Shadow (Forest Jade) */}
-          <linearGradient id="frondDeepBackdrop" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#065f46" />
-            <stop offset="45%" stopColor="#064e3b" />
-            <stop offset="85%" stopColor="#022c22" />
-            <stop offset="100%" stopColor="#011812" />
-          </linearGradient>
-
-          {/* Sunlit Palm Blade Gradient (Warm Golden Lime to Emerald) */}
-          <linearGradient id="frondSunlitGrad" x1="0%" y1="0%" x2="100%" y2="50%">
+          {/* ─── 2. Gradasi Daun Kelapa Segar & Rimbun (3-Tier Depth) ─── */}
+          {/* Tier A: Daun Atas Menghadap Matahari (Sunlit Lime-Emerald) */}
+          <linearGradient id="frondSunlitLime" x1="0%" y1="0%" x2="100%" y2="80%">
             <stop offset="0%" stopColor="#bef264" />
-            <stop offset="18%" stopColor="#84cc16" />
-            <stop offset="45%" stopColor="#22c55e" />
+            <stop offset="20%" stopColor="#84cc16" />
+            <stop offset="50%" stopColor="#22c55e" />
             <stop offset="80%" stopColor="#16a34a" />
             <stop offset="100%" stopColor="#15803d" />
           </linearGradient>
 
-          {/* Vibrant Tropical Frond Body Gradient */}
-          <linearGradient id="frondVibrantGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#4ade80" />
+          {/* Tier B: Daun Tengah Tropis Subur (Lush Vibrant Rainforest) */}
+          <linearGradient id="frondLushEmerald" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#84cc16" />
             <stop offset="25%" stopColor="#22c55e" />
             <stop offset="60%" stopColor="#16a34a" />
-            <stop offset="90%" stopColor="#15803d" />
+            <stop offset="85%" stopColor="#15803d" />
             <stop offset="100%" stopColor="#14532d" />
           </linearGradient>
 
-          {/* Flowing Leaflet Cascade Gradient */}
-          <linearGradient id="frondCascadeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#22c55e" />
-            <stop offset="35%" stopColor="#16a34a" />
-            <stop offset="70%" stopColor="#15803d" />
-            <stop offset="100%" stopColor="#047857" />
-          </linearGradient>
-
-          {/* Glowing Golden Spine Rim */}
-          <linearGradient id="spineGoldenRim" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#fef08a" stopOpacity="0.95" />
-            <stop offset="30%" stopColor="#fde047" stopOpacity="0.85" />
-            <stop offset="75%" stopColor="#f59e0b" stopOpacity="0.6" />
-            <stop offset="100%" stopColor="#d97706" stopOpacity="0.2" />
-          </linearGradient>
-
-          {/* Tender Young Shoot Gradient (Pucuk Kelapa Muda) */}
-          <linearGradient id="youngShootGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor="#15803d" />
-            <stop offset="35%" stopColor="#22c55e" />
-            <stop offset="70%" stopColor="#86efac" />
-            <stop offset="100%" stopColor="#bef264" />
-          </linearGradient>
-
-          {/* 3D Fresh Green Coconut Shading */}
-          <radialGradient id="coconut3D" cx="28%" cy="24%" r="75%">
-            <stop offset="0%" stopColor="#bef264" />
-            <stop offset="18%" stopColor="#4ade80" />
-            <stop offset="48%" stopColor="#16a34a" />
-            <stop offset="80%" stopColor="#14532d" />
+          {/* Tier C: Daun Belakang Bayangan Tebal (Deep Forest Shadow) */}
+          <linearGradient id="frondDeepForest" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#16a34a" />
+            <stop offset="35%" stopColor="#15803d" />
+            <stop offset="70%" stopColor="#14532d" />
             <stop offset="100%" stopColor="#052e16" />
+          </linearGradient>
+
+          {/* Tulang Pelepah Emas Bercahaya */}
+          <linearGradient id="goldenSpineGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#fef08a" stopOpacity="0.95" />
+            <stop offset="60%" stopColor="#fde047" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#84cc16" stopOpacity="0.4" />
+          </linearGradient>
+
+          {/* ─── 3. Gradasi Buah Kelapa Bulat 3D ─── */}
+          <radialGradient id="coconutPlump3D" cx="35%" cy="30%" r="65%">
+            <stop offset="0%" stopColor="#ca8a04" />
+            <stop offset="25%" stopColor="#a16207" />
+            <stop offset="60%" stopColor="#713f12" />
+            <stop offset="85%" stopColor="#451a03" />
+            <stop offset="100%" stopColor="#1a0b02" />
           </radialGradient>
+
+          {/* ─── 4. Gradasi Pasir Pantai & Pucuk Muda ─── */}
+          <linearGradient id="sandDuneGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#fde047" stopOpacity="0.8" />
+            <stop offset="30%" stopColor="#f59e0b" stopOpacity="0.9" />
+            <stop offset="70%" stopColor="#d97706" stopOpacity="0.95" />
+            <stop offset="100%" stopColor="#92400e" stopOpacity="1" />
+          </linearGradient>
+
+          <linearGradient id="youngShootGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stopColor="#4ade80" />
+            <stop offset="40%" stopColor="#84cc16" />
+            <stop offset="80%" stopColor="#bef264" />
+            <stop offset="100%" stopColor="#fef08a" />
+          </linearGradient>
         </defs>
 
-        {/* ══════════ 1. BEACH DUNE BASE & LUSH COASTAL REEDS ══════════ */}
-        {/* Root bulb mound */}
-        <path d="M 330,480 C 342,448 368,438 395,438 C 405,438 410,448 415,480 Z" fill="#200d04" />
-        
-        {/* Sinking coastal roots */}
-        <path d="M 345,480 Q 338,455 330,440" stroke="#451a03" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-        <path d="M 360,480 Q 355,458 350,442" stroke="#451a03" strokeWidth="3.0" strokeLinecap="round" fill="none" />
-        
-        {/* Lush coastal grasses & philodendron leaves */}
-        <g>
-          <path d="
-            M 315,480 Q 305,445 290,415 Q 306,448 325,480
-            M 330,480 Q 324,435 312,398 Q 328,438 342,480
-            M 348,480 Q 355,438 368,405 Q 362,445 355,480
-            M 372,480 Q 384,438 400,408 Q 388,446 380,480
-            M 390,480 Q 402,442 414,412 Q 404,448 398,480
-          " fill="#14532d" />
-          <path d="M 312,480 C 302,458 295,438 300,422 C 308,442 320,465 328,480 Z" fill="#16a34a" />
-          <path d="M 375,480 C 386,455 398,438 406,425 C 402,448 390,468 382,480 Z" fill="#15803d" />
-          <path d="M 330,480 Q 324,435 312,398 M 372,480 Q 384,438 400,408" stroke="rgba(253, 224, 71, 0.75)" strokeWidth="1.6" strokeLinecap="round" fill="none" />
+        {/* ─── 0. Landasan Pasir Pantai & Rumpun Rumput Pesisir (Rooting Base) ─── */}
+        <g id="beachGroundedBase">
+          {/* Bukit Pasir Hangat Tempat Pohon Tumbuh */}
+          <ellipse cx="445" cy="695" rx="90" ry="22" fill="url(#sandDuneGrad)" />
+          <path d="M 345,700 C 380,670 430,665 485,675 C 520,680 545,690 550,700 Z" fill="url(#sandDuneGrad)" opacity="0.85" />
+          <path d="M 390,685 C 425,675 465,675 500,685" stroke="#fef08a" strokeWidth="1.8" strokeLinecap="round" fill="none" opacity="0.6" />
+
+          {/* Rumpun Rumput Pantai Tropis (Spinifex Littoreus) */}
+          <path d="M 360,685 Q 345,645 330,630 M 365,688 Q 355,640 348,615 M 372,690 Q 370,642 368,620 M 378,692 Q 385,645 392,625" stroke="#84cc16" strokeWidth="2.0" strokeLinecap="round" fill="none" />
+          <path d="M 485,690 Q 498,648 515,630 M 495,692 Q 512,652 530,635 M 478,688 Q 486,645 490,622" stroke="#84cc16" strokeWidth="2.0" strokeLinecap="round" fill="none" />
+          <path d="M 362,686 Q 350,650 338,635" stroke="#bef264" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+          <path d="M 490,691 Q 505,655 522,638" stroke="#bef264" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+
+          {/* Akar Gantung Serabut Kelapa Alami di Pangkal Batang */}
+          <path d="M 425,692 Q 420,672 422,652 M 435,696 Q 432,676 434,655 M 445,698 Q 443,680 444,657" stroke="#3e1a05" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+          <path d="M 485,694 Q 490,674 487,652 M 475,697 Q 478,676 476,654" stroke="#3e1a05" strokeWidth="2.2" strokeLinecap="round" fill="none" />
         </g>
 
-        {/* ══════════ 2. COMPANION PALM TREE (BACKGROUND TROPICAL GROVE) ══════════ */}
-        <g opacity="0.95">
-          {/* Companion Trunk */}
+        {/* ─── 1. Kelompok Pelepah Belakang (Background Fronds) ─── */}
+        <g id="crownBackgroundFronds">
+            <g id="bg_far_left">
+              <path d="M 256.0,188.0 Q 251.5,181.1 248.4,176.5 Q 245.3,174.9 240.6,172.6 Q 234.5,165.4 230.4,160.5 Q 227.5,160.7 223.1,161.0 Q 215.3,154.0 210.2,149.4 Q 207.7,150.7 204.0,152.7 Q 194.7,146.6 188.6,142.5 Q 186.6,144.5 183.7,147.6 Q 173.2,142.8 166.2,139.6 Q 164.7,142.1 162.5,145.8 Q 151.1,142.6 143.5,140.5 Q 142.4,143.2 140.7,147.2 Q 128.9,145.7 121.0,144.8 Q 120.0,147.5 118.6,151.5 Q 106.8,151.8 99.0,152.1 Q 97.9,154.7 96.3,158.6 Q 85.0,160.6 77.6,162.0 Q 76.1,164.5 73.9,168.3 Q 63.7,172.0 56.9,174.4 Q 54.9,176.8 51.7,180.3 Q 43.3,185.8 37.6,189.4 Q 34.6,189.6 30.0,190.0 L 30.0,190.0 Q 38.1,216.4 42.4,230.6 Q 48.2,213.9 55.3,193.4 Q 62.1,216.9 65.8,229.5 Q 71.7,210.0 79.0,186.2 Q 84.0,212.1 86.7,226.0 Q 93.3,205.5 101.5,180.4 Q 104.2,207.3 105.7,221.7 Q 113.3,201.1 122.7,175.9 Q 122.9,202.6 123.0,216.9 Q 131.9,197.0 142.9,172.7 Q 140.4,198.0 139.1,211.6 Q 149.4,193.3 162.1,170.9 Q 157.3,193.7 154.8,205.9 Q 166.4,190.0 180.6,170.5 Q 174.4,189.7 171.0,200.1 Q 183.5,187.3 198.8,171.6 Q 192.3,186.7 188.9,194.9 Q 201.6,185.8 217.2,174.7 Q 212.2,185.4 209.6,191.2 Q 221.5,186.2 236.0,180.1 Q 235.3,186.5 234.9,189.9 Q 244.4,189.0 256.0,188.0 Z" fill="url(#frondDeepForest)" />
+              <path d="M 256.0,188.0 C 195.0,135.0 115.0,145.0 30.0,190.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            </g>
+            <g id="bg_far_right">
+              <path d="M 260.0,188.0 Q 268.1,185.0 273.4,182.9 Q 276.1,180.6 280.0,177.2 Q 289.5,176.0 295.9,175.3 Q 297.4,173.1 299.7,169.8 Q 310.1,170.9 317.0,171.7 Q 318.0,169.3 319.5,165.7 Q 330.2,169.1 337.4,171.4 Q 338.3,168.7 339.7,164.7 Q 350.3,170.1 357.4,173.7 Q 358.6,170.8 360.5,166.4 Q 370.8,173.4 377.6,178.1 Q 379.3,175.1 381.9,170.6 Q 391.7,178.9 398.2,184.4 Q 400.6,181.5 404.1,177.2 Q 413.4,186.3 419.5,192.4 Q 422.5,189.9 427.1,186.2 Q 435.7,195.6 441.5,201.9 Q 445.2,200.1 450.7,197.3 Q 458.8,206.6 464.2,212.8 Q 468.5,211.9 474.9,210.6 Q 482.5,218.9 487.6,224.5 Q 492.6,222.7 500.0,220.0 L 500.0,220.0 Q 499.9,231.5 499.9,237.8 Q 490.8,224.7 479.7,208.8 Q 483.9,208.8 486.1,208.8 Q 473.4,200.2 457.8,189.7 Q 464.2,185.9 467.7,183.9 Q 452.9,179.2 434.9,173.5 Q 442.1,166.3 446.0,162.5 Q 430.4,161.6 411.3,160.5 Q 418.0,150.5 421.7,145.0 Q 406.1,147.8 387.2,151.2 Q 392.3,138.9 395.0,132.2 Q 380.5,138.4 362.8,146.0 Q 365.3,132.3 366.7,124.9 Q 354.1,134.0 338.8,145.1 Q 338.1,131.4 337.7,124.1 Q 327.8,135.2 315.8,148.9 Q 311.8,136.9 309.7,130.4 Q 302.8,142.5 294.4,157.3 Q 288.1,149.0 284.7,144.5 Q 280.6,156.1 275.5,170.2 Q 268.8,168.1 265.2,167.0 Q 262.9,176.4 260.0,188.0 Z" fill="url(#frondDeepForest)" />
+              <path d="M 260.0,188.0 C 325.0,130.0 415.0,155.0 500.0,220.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            </g>
+            <g id="bg_high_left">
+              <path d="M 257.0,184.0 Q 255.8,174.2 255.0,167.7 Q 252.6,164.0 249.1,158.5 Q 247.0,147.8 245.7,140.7 Q 242.7,138.8 238.2,136.0 Q 235.0,124.9 232.9,117.6 Q 229.8,117.1 225.0,116.4 Q 220.5,105.5 217.4,98.2 Q 214.3,98.8 209.7,99.8 Q 203.6,89.5 199.5,82.7 Q 196.7,84.2 192.5,86.3 Q 184.8,77.4 179.6,71.4 Q 177.2,73.3 173.5,76.3 Q 164.5,69.1 158.5,64.2 Q 156.4,66.5 153.1,69.8 Q 143.3,64.7 136.8,61.3 Q 134.8,63.5 131.8,66.8 Q 121.7,64.0 115.0,62.2 Q 112.9,64.3 109.8,67.4 Q 100.1,67.0 93.7,66.8 Q 91.2,68.6 87.4,71.3 Q 79.0,73.6 73.4,75.1 Q 70.0,75.1 65.0,75.0 L 65.0,75.0 Q 70.7,99.5 73.7,112.7 Q 80.4,100.0 88.5,84.4 Q 90.3,107.5 91.3,120.0 Q 99.6,104.6 109.8,85.9 Q 107.5,110.9 106.3,124.4 Q 116.6,108.6 129.2,89.2 Q 122.7,114.1 119.3,127.6 Q 131.7,112.4 147.0,94.0 Q 136.8,117.2 131.3,129.8 Q 145.8,116.5 163.6,100.3 Q 150.6,120.6 143.6,131.6 Q 159.8,121.0 179.5,108.1 Q 165.1,124.9 157.3,134.0 Q 174.3,126.7 195.0,117.9 Q 180.7,131.0 173.0,138.1 Q 189.9,134.5 210.4,130.0 Q 197.9,140.0 191.1,145.3 Q 206.7,145.1 225.8,144.8 Q 216.7,152.5 211.8,156.6 Q 225.0,159.4 241.1,162.8 Q 237.9,169.3 236.1,172.9 Q 245.5,177.9 257.0,184.0 Z" fill="url(#frondLushEmerald)" />
+              <path d="M 257.0,184.0 C 220.0,90.0 150.0,55.0 65.0,75.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+            </g>
+            <g id="bg_high_right">
+              <path d="M 259.0,184.0 Q 265.6,176.2 270.0,171.0 Q 271.6,166.8 274.0,160.6 Q 282.5,153.7 288.1,149.1 Q 288.6,145.8 289.4,140.9 Q 299.4,135.5 306.1,131.9 Q 305.9,129.0 305.5,124.7 Q 316.6,121.1 324.0,118.8 Q 323.4,115.9 322.4,111.6 Q 334.1,110.1 341.9,109.0 Q 341.1,106.0 339.9,101.4 Q 351.8,101.8 359.6,102.0 Q 359.1,98.7 358.3,93.6 Q 369.8,95.7 377.5,97.1 Q 377.5,93.5 377.5,88.2 Q 388.4,91.6 395.7,93.8 Q 396.5,90.2 397.8,84.8 Q 407.9,89.1 414.6,91.9 Q 416.4,88.5 419.1,83.5 Q 428.2,88.1 434.3,91.1 Q 437.1,88.3 441.4,84.2 Q 449.4,88.2 454.8,90.8 Q 458.9,87.3 465.0,82.0 L 465.0,82.0 Q 462.6,90.1 461.2,94.4 Q 453.0,87.8 442.8,79.6 Q 442.8,76.2 442.7,74.3 Q 432.4,73.5 419.8,72.4 Q 420.1,64.4 420.2,60.1 Q 409.5,64.0 396.4,68.8 Q 395.6,57.4 395.1,51.3 Q 385.2,59.3 373.0,69.1 Q 370.1,55.5 368.5,48.2 Q 360.3,59.6 350.2,73.5 Q 344.5,59.1 341.5,51.4 Q 335.7,65.3 328.7,82.3 Q 320.2,68.5 315.6,61.1 Q 312.7,76.5 309.0,95.2 Q 298.3,83.6 292.6,77.3 Q 292.3,93.0 291.8,112.1 Q 280.1,103.9 273.8,99.5 Q 275.5,114.4 277.5,132.7 Q 266.5,129.0 260.6,127.0 Q 263.1,140.3 266.3,156.5 Q 258.6,158.7 254.4,159.9 Q 256.5,170.7 259.0,184.0 Z" fill="url(#frondLushEmerald)" />
+              <path d="M 259.0,184.0 C 300.0,85.0 380.0,60.0 465.0,82.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+            </g>
+            <g id="bg_center_crest">
+              <path d="M 258.0,183.0 Q 259.7,171.7 260.8,164.1 Q 259.8,158.8 258.4,150.8 Q 260.3,139.2 261.6,131.4 Q 259.7,127.7 256.9,122.2 Q 258.9,110.6 260.3,102.9 Q 257.8,100.5 254.2,97.0 Q 256.1,85.7 257.3,78.2 Q 254.6,76.9 250.5,75.0 Q 251.9,64.4 252.8,57.2 Q 250.0,56.8 245.7,56.2 Q 246.5,46.4 247.0,39.9 Q 244.2,40.1 240.0,40.4 Q 240.0,31.8 240.0,26.0 Q 237.4,26.6 233.5,27.6 Q 232.5,20.5 231.9,15.8 Q 229.6,16.5 226.2,17.7 Q 224.4,12.6 223.2,9.3 Q 221.2,9.9 218.3,10.8 Q 215.9,8.6 214.3,7.1 Q 212.6,6.3 210.0,5.0 L 210.0,5.0 Q 204.7,21.6 201.9,30.5 Q 206.5,25.4 212.1,19.1 Q 200.9,30.9 194.9,37.2 Q 203.8,32.9 214.5,27.6 Q 199.7,37.3 191.7,42.5 Q 203.3,40.2 217.5,37.4 Q 200.6,44.9 191.5,48.9 Q 204.9,49.1 221.2,49.2 Q 203.5,54.8 194.0,57.9 Q 208.3,60.4 225.6,63.5 Q 208.4,67.8 199.1,70.1 Q 213.4,74.8 230.8,80.6 Q 214.9,84.3 206.4,86.2 Q 220.0,92.8 236.7,100.9 Q 223.2,104.6 215.9,106.7 Q 228.2,114.7 243.2,124.5 Q 233.1,129.3 227.7,131.8 Q 237.7,140.8 250.0,151.8 Q 245.3,158.7 242.8,162.3 Q 249.6,171.6 258.0,183.0 Z" fill="url(#frondLushEmerald)" />
+              <path d="M 258.0,183.0 C 250.0,70.0 230.0,20.0 210.0,5.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            </g>
+        </g>
+
+        {/* ─── 2. Batang Pohon Kelapa Melengkung Anggun & Lentur (Graceful Sweeping Trunk) ─── */}
+        <g id="coconutTrunk">
+          {/* Siluet Batang Utama: Melengkung Alami Condong ke Arah Laut */}
           <path
-            d="M 385,480 C 365,400 330,320 295,250 C 285,232 276,220 270,215 L 284,215 C 290,222 300,236 312,255 C 348,325 385,402 410,480 Z"
-            fill="url(#compTrunkBarkGrad)"
+            d="
+              M 425,700
+              C 418,595 365,475 298,375
+              C 255,305 238,245 245,185
+              L 269,185
+              C 262,245 282,305 325,375
+              C 392,475 450,595 465,700 Z
+            "
+            fill="url(#trunkBark3D)"
           />
+
+          {/* Pendaran Garis Tepi Emas Senja di Sisi Luar Batang (Sunset Golden Rim) */}
           <path
-            d="M 385,480 C 365,400 330,320 295,250 C 285,232 276,220 270,215"
+            d="M 425,700 C 418,595 365,475 298,375 C 255,305 238,245 245,185"
             stroke="url(#trunkGoldenBacklight)"
-            strokeWidth="1.8"
+            strokeWidth="4.2"
             strokeLinecap="round"
             fill="none"
           />
-          {/* Companion Bark Rings */}
-          <g>
-            <path d="M 368.2,430.8 Q 379.4,428.1 390.6,431.0" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-            <path d="M 356.6,400.3 Q 367.0,397.7 377.5,400.7" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-            <path d="M 342.6,366.4 Q 352.4,363.9 362.2,367.0" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-            <path d="M 327.3,331.7 Q 336.5,329.3 345.7,332.5" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-            <path d="M 309.5,293.5 Q 318.0,291.1 326.5,294.4" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-            <path d="M 290.4,254.6 Q 298.2,252.1 306.0,255.2" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+
+          {/* Cincin Ruas Bekas Daun Kelapa 3D Melengkung Silindris (Leaf Scars) */}
+          <g opacity="0.75">
+            <path d="M 432,655 Q 448,648 460,654" stroke="#220b02" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+            <path d="M 416,610 Q 432,603 448,609" stroke="#220b02" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            <path d="M 394,560 Q 410,553 430,559" stroke="#220b02" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+            <path d="M 368,510 Q 384,503 408,509" stroke="#220b02" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+            <path d="M 342,460 Q 358,453 382,459" stroke="#220b02" strokeWidth="2.3" strokeLinecap="round" fill="none" />
+            <path d="M 314,408 Q 330,401 354,408" stroke="#220b02" strokeWidth="2.3" strokeLinecap="round" fill="none" />
+            <path d="M 288,355 Q 304,349 326,356" stroke="#220b02" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            <path d="M 268,305 Q 282,299 302,306" stroke="#220b02" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            <path d="M 254,258 Q 266,252 284,258" stroke="#220b02" strokeWidth="2.1" strokeLinecap="round" fill="none" />
+            <path d="M 246,215 Q 256,210 272,216" stroke="#220b02" strokeWidth="2.0" strokeLinecap="round" fill="none" />
+
+            {/* Highlight Emas di Ruas Batang yang Terkena Sinar Matahari */}
+            <path d="M 420,611 Q 427,605 435,607" stroke="#fde047" strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.65" />
+            <path d="M 397,561 Q 404,555 413,557" stroke="#fde047" strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.7" />
+            <path d="M 371,511 Q 378,505 387,507" stroke="#fde047" strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.75" />
+            <path d="M 344,461 Q 351,455 360,457" stroke="#fde047" strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.8" />
+            <path d="M 316,409 Q 323,403 332,405" stroke="#fde047" strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.85" />
+            <path d="M 290,356 Q 297,351 305,353" stroke="#fde047" strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.85" />
           </g>
 
-          {/* Companion Coconuts */}
-          <circle cx="270" cy="220" r="6.5" fill="url(#coconut3D)" />
-          <circle cx="280" cy="218" r="6.0" fill="url(#coconut3D)" />
-          <circle cx="274" cy="227" r="5.5" fill="url(#coconut3D)" />
-
-          {/* Companion Canopy (Gentle Sway) */}
-          <g
-            style={{
-              transformOrigin: '275px 215px',
-              animation: 'palmFrondRustleLeft 6.8s ease-in-out infinite alternate 0.8s',
-            }}
-          >
-            {/* Companion Underbelly Volume */}
-            <path d="M 275,215 C 225,175 160,170 115,192 C 165,215 225,225 273,217 Z" fill="url(#frondDeepBackdrop)" />
-            <path d="M 275,215 C 320,175 365,168 398,195 C 360,218 310,228 277,217 Z" fill="url(#frondDeepBackdrop)" />
-
-            {/* Frond C1 (Left) */}
-            <path d="M 275.8,214.4 L 267.5,203.1 L 258.7,192.9 L 249.5,184.0 L 239.7,176.4 L 229.5,170.1 L 218.8,165.2 L 207.9,161.7 L 196.7,159.8 L 185.5,159.3 L 174.2,160.2 L 163.0,162.5 L 151.9,166.2 L 141.0,171.0 L 130.2,177.0 L 119.5,184.2 L 120.9,187.0 L 132.3,182.4 L 143.6,179.0 L 154.5,177.0 L 165.1,176.0 L 175.3,176.0 L 185.2,176.9 L 194.8,178.4 L 204.2,180.6 L 213.6,183.3 L 223.1,186.7 L 232.8,190.9 L 242.8,195.8 L 252.9,201.6 L 263.3,208.6 L 273.8,216.7 Z" fill="url(#frondVibrantGrad)" />
-            <path d="M 269.8,208.9 C 271.0,206.0 273.5,216.5 274.7,221.2 M 264.4,203.1 C 265.8,199.3 269.0,212.9 270.5,219.1 M 259.0,197.8 C 260.3,193.1 264.1,209.5 265.9,217.1 M 253.6,192.8 C 254.5,187.3 259.0,206.3 260.9,215.2 M 248.0,188.3 C 248.5,182.0 253.4,203.2 255.4,213.3 M 242.4,184.1 C 242.2,177.2 247.5,200.3 249.5,211.5 M 236.7,180.4 C 235.8,172.9 241.3,197.5 243.1,209.7 M 230.9,177.0 C 229.1,169.2 234.7,194.9 236.3,207.9 M 225.1,174.1 C 222.3,166.0 227.9,192.5 229.1,206.0 M 219.2,171.5 C 215.4,163.4 220.7,190.2 221.6,204.2 M 213.3,169.4 C 208.4,161.4 213.4,188.1 213.8,202.4 M 207.3,167.6 C 201.4,159.9 205.9,186.2 205.9,200.7 M 201.2,166.2 C 194.4,159.0 198.3,184.5 197.8,198.9 M 195.2,165.3 C 187.5,158.7 190.7,183.1 189.7,197.3 M 189.1,164.7 C 180.7,158.8 183.2,182.0 181.8,195.7 M 182.9,164.6 C 174.1,159.4 175.8,181.1 174.0,194.3 M 176.7,164.8 C 167.7,160.5 168.6,180.5 166.5,192.9 M 170.5,165.5 C 161.5,162.0 161.7,180.1 159.3,191.8 M 164.2,166.5 C 155.4,163.9 155.0,180.1 152.5,190.7 M 158.0,168.0 C 149.6,166.0 148.7,180.3 146.1,189.9 M 151.7,169.8 C 143.9,168.5 142.7,180.8 140.2,189.3 M 145.3,172.0 C 138.4,171.3 136.9,181.7 134.6,189.0 M 139.0,174.7 C 133.0,174.4 131.5,182.8 129.4,188.9 M 132.7,177.7 C 127.8,177.7 126.3,184.3 124.5,189.2 M 126.3,181.2 C 122.6,181.4 121.3,186.2 119.9,189.8" stroke="#14532d" strokeWidth="3.2" strokeLinecap="round" fill="none" />
-            <path d="M 269.8,208.9 C 266.0,209.2 264.1,213.1 262.8,214.8 M 264.4,203.1 C 259.6,203.8 257.2,208.9 255.6,211.1 M 259.0,197.8 C 253.2,198.7 250.5,205.1 248.6,207.7 M 253.6,192.8 C 246.9,194.2 244.0,201.7 241.8,204.6 M 248.0,188.3 C 240.7,190.0 237.7,198.6 235.3,201.9 M 242.4,184.1 C 234.5,186.3 231.6,195.9 229.0,199.4 M 236.7,180.4 C 228.5,183.0 225.7,193.5 223.1,197.2 M 230.9,177.0 C 222.5,180.1 220.0,191.4 217.4,195.1 M 225.1,174.1 C 216.7,177.6 214.6,189.5 212.0,193.3 M 219.2,171.5 C 211.1,175.4 209.3,187.8 206.9,191.6 M 213.3,169.4 C 205.5,173.5 204.2,186.3 202.0,190.0 M 207.3,167.6 C 200.0,172.0 199.3,184.9 197.2,188.6 M 201.2,166.2 C 194.6,170.8 194.4,183.6 192.6,187.3 M 195.2,165.3 C 189.3,169.8 189.6,182.5 188.0,186.0 M 189.1,164.7 C 184.0,169.2 184.7,181.6 183.4,184.9 M 182.9,164.6 C 178.7,168.9 179.8,180.7 178.7,184.0 M 176.7,164.8 C 173.3,168.9 174.7,180.1 173.9,183.1 M 170.5,165.5 C 167.9,169.2 169.5,179.6 169.0,182.5 M 164.2,166.5 C 162.3,169.9 164.2,179.4 163.8,182.1 M 158.0,168.0 C 156.7,170.9 158.6,179.4 158.4,181.9 M 151.7,169.8 C 150.9,172.3 152.8,179.8 152.7,182.0 M 145.3,172.0 C 145.1,174.1 146.8,180.5 146.8,182.5 M 139.0,174.7 C 139.0,176.3 140.6,181.6 140.7,183.3 M 132.7,177.7 C 132.9,178.9 134.2,183.1 134.4,184.5 M 126.3,181.2 C 126.6,182.0 127.7,185.1 127.8,186.2" stroke="#16a34a" strokeWidth="2.8" strokeLinecap="round" fill="none" />
-            <path d="M 275,215 C 230,160 175,150 120,185" stroke="url(#spineGoldenRim)" strokeWidth="1.4" strokeLinecap="round" fill="none" />
-
-            {/* Frond C2 (Center Zenith) */}
-            <path d="M 276.0,214.9 L 274.9,200.1 L 273.3,186.0 L 271.1,172.7 L 268.5,160.2 L 265.2,148.5 L 261.4,137.7 L 257.1,127.8 L 252.3,118.8 L 247.1,110.8 L 241.5,103.7 L 235.6,97.7 L 229.4,92.7 L 223.1,88.8 L 216.7,85.9 L 210.3,84.1 L 209.5,87.2 L 214.7,91.1 L 219.5,95.8 L 224.0,101.3 L 228.2,107.4 L 232.3,114.0 L 236.3,121.3 L 240.3,129.2 L 244.3,137.7 L 248.4,146.7 L 252.6,156.5 L 256.9,166.9 L 261.1,178.0 L 265.3,189.8 L 269.5,202.4 L 273.4,215.9 Z" fill="url(#frondSunlitGrad)" />
-            <path d="M 273.7,205.8 C 277.7,204.5 279.4,214.8 281.3,218.8 M 272.2,196.9 C 277.3,195.1 279.6,208.6 282.1,213.8 M 270.6,188.3 C 276.6,185.9 279.6,202.4 282.6,208.8 M 268.8,180.0 C 275.7,177.1 279.3,196.3 282.8,203.8 M 266.9,172.1 C 274.5,168.6 278.6,190.2 282.5,198.7 M 264.8,164.5 C 272.9,160.4 277.6,184.1 281.8,193.4 M 262.7,157.2 C 271.0,152.5 276.2,177.9 280.7,188.1 M 260.4,150.2 C 268.8,145.1 274.4,171.8 279.2,182.5 M 257.9,143.5 C 266.3,137.9 272.3,165.6 277.1,176.8 M 255.4,137.2 C 263.5,131.2 269.8,159.4 274.6,170.9 M 252.8,131.3 C 260.4,124.9 266.9,153.1 271.7,164.8 M 250.0,125.6 C 257.1,119.0 263.6,146.9 268.3,158.6 M 247.1,120.3 C 253.5,113.6 260.1,140.7 264.4,152.2 M 244.2,115.4 C 249.8,108.6 256.1,134.6 260.2,145.8 M 241.1,110.8 C 245.8,104.1 252.0,128.7 255.7,139.4 M 238.0,106.5 C 241.7,100.0 247.5,122.8 250.8,133.0 M 234.7,102.6 C 237.5,96.4 242.9,117.2 245.7,126.6 M 231.4,99.0 C 233.3,93.3 238.1,111.9 240.5,120.4 M 228.0,95.8 C 229.0,90.6 233.2,106.8 235.1,114.5 M 224.5,92.9 C 224.8,88.4 228.4,102.1 229.8,108.8 M 221.0,90.4 C 220.7,86.6 223.5,97.8 224.5,103.4 M 217.4,88.2 C 216.7,85.3 218.8,94.0 219.4,98.5 M 213.7,86.4 C 212.9,84.3 214.3,90.6 214.6,93.9" stroke="#15803d" strokeWidth="3.0" strokeLinecap="round" fill="none" />
-            <path d="M 273.7,205.8 C 269.9,204.3 266.5,207.4 264.9,210.0 M 272.2,196.9 C 267.2,195.1 262.9,199.1 260.8,202.4 M 270.6,188.3 C 264.4,186.2 259.2,191.2 256.7,195.2 M 268.8,180.0 C 261.6,177.8 255.6,183.7 252.7,188.3 M 266.9,172.1 C 258.7,169.7 252.1,176.5 248.8,181.5 M 264.8,164.5 C 255.8,162.1 248.7,169.6 245.1,175.1 M 262.7,157.2 C 252.9,154.9 245.4,163.0 241.5,168.8 M 260.4,150.2 C 250.0,148.0 242.3,156.8 238.2,162.8 M 257.9,143.5 C 247.2,141.6 239.4,150.8 235.2,156.9 M 255.4,137.2 C 244.4,135.6 236.6,145.1 232.4,151.2 M 252.8,131.3 C 241.7,129.9 234.1,139.7 229.9,145.7 M 250.0,125.6 C 239.0,124.6 231.7,134.5 227.6,140.3 M 247.1,120.3 C 236.4,119.7 229.5,129.6 225.6,135.1 M 244.2,115.4 C 233.8,115.1 227.5,124.8 223.8,130.0 M 241.1,110.8 C 231.3,110.9 225.7,120.3 222.2,125.1 M 238.0,106.5 C 228.9,107.0 223.9,116.0 220.7,120.3 M 234.7,102.6 C 226.5,103.4 222.2,111.8 219.4,115.6 M 231.4,99.0 C 224.1,100.0 220.6,107.8 218.1,111.1 M 228.0,95.8 C 221.7,97.0 218.9,104.0 216.8,106.8 M 224.5,92.9 C 219.3,94.2 217.2,100.4 215.5,102.7 M 221.0,90.4 C 216.8,91.7 215.3,96.9 214.0,98.7 M 217.4,88.2 C 214.2,89.4 213.3,93.6 212.3,95.0 M 213.7,86.4 C 211.5,87.4 211.0,90.6 210.4,91.6" stroke="#22c55e" strokeWidth="2.6" strokeLinecap="round" fill="none" />
-            <path d="M 275,215 C 265,140 240,95 210,85" stroke="url(#spineGoldenRim)" strokeWidth="1.4" strokeLinecap="round" fill="none" />
-
-            {/* Frond C3 (Right) */}
-            <path d="M 275.7,215.7 L 285.5,207.2 L 294.9,199.9 L 304.0,193.7 L 312.6,188.6 L 320.8,184.5 L 328.7,181.4 L 336.2,179.1 L 343.4,177.5 L 350.5,176.8 L 357.6,176.8 L 364.8,177.7 L 372.1,179.4 L 379.5,182.2 L 386.9,185.9 L 394.3,190.8 L 396.0,189.5 L 389.6,183.4 L 382.8,178.1 L 375.5,173.6 L 367.7,170.2 L 359.4,167.8 L 350.7,166.6 L 341.6,166.8 L 332.4,168.4 L 323.3,171.4 L 314.4,175.6 L 305.7,181.2 L 297.3,187.9 L 289.2,195.7 L 281.4,204.6 L 273.8,214.6 Z" fill="url(#frondVibrantGrad)" />
-            <path d="M 280.2,209.4 C 285.7,212.8 288.8,223.2 291.3,227.0 M 285.3,204.3 C 292.4,208.9 296.3,222.4 299.5,227.4 M 290.4,199.5 C 299.0,205.5 303.5,221.8 307.3,227.9 M 295.4,195.1 C 305.4,202.5 310.3,221.4 314.6,228.5 M 300.4,191.1 C 311.6,200.0 316.7,221.2 321.3,229.1 M 305.4,187.5 C 317.6,197.8 322.6,220.9 327.5,229.7 M 310.3,184.2 C 323.2,196.1 328.0,220.7 333.1,230.1 M 315.1,181.3 C 328.6,194.6 332.9,220.5 338.0,230.4 M 319.9,178.8 C 333.6,193.6 337.4,220.1 342.4,230.4 M 324.7,176.7 C 338.3,192.7 341.4,219.6 346.1,230.2 M 329.4,174.9 C 342.7,192.1 344.9,218.9 349.2,229.7 M 334.1,173.5 C 346.8,191.7 348.1,218.0 351.9,228.8 M 338.8,172.5 C 350.5,191.4 350.9,216.9 354.2,227.6 M 343.3,171.8 C 354.1,191.2 353.5,215.6 356.2,226.0 M 347.9,171.5 C 357.4,191.1 356.0,214.0 358.0,224.2 M 352.4,171.5 C 360.6,190.9 358.4,212.3 359.9,222.0 M 356.9,171.8 C 363.7,190.8 360.9,210.3 361.8,219.6 M 361.3,172.5 C 366.7,190.7 363.5,208.3 363.9,216.9 M 365.6,173.6 C 369.8,190.6 366.4,206.3 366.3,214.2 M 370.0,174.9 C 373.0,190.5 369.5,204.3 369.1,211.5 M 374.3,176.6 C 376.2,190.6 372.9,202.4 372.2,208.7 M 378.5,178.7 C 379.7,190.8 376.6,200.7 375.7,206.2 M 382.7,181.0 C 383.2,191.2 380.5,199.2 379.6,203.8 M 386.8,183.7 C 386.9,191.8 384.7,198.1 383.9,201.8 M 390.9,186.7 C 390.8,192.8 389.0,197.3 388.3,200.1" stroke="#14532d" strokeWidth="3.2" strokeLinecap="round" fill="none" />
-            <path d="M 280.2,209.4 C 278.7,204.9 277.0,206.6 276.6,210.5 M 285.3,204.3 C 283.5,198.3 281.4,200.4 280.8,205.6 M 290.4,199.5 C 288.4,192.0 285.9,194.6 285.2,201.0 M 295.4,195.1 C 293.4,186.2 290.5,189.1 289.8,196.7 M 300.4,191.1 C 298.5,180.8 295.2,184.0 294.5,192.6 M 305.4,187.5 C 303.6,175.9 300.1,179.4 299.5,189.0 M 310.3,184.2 C 308.9,171.5 305.3,175.1 304.7,185.6 M 315.1,181.3 C 314.2,167.5 310.5,171.3 310.0,182.5 M 319.9,178.8 C 319.6,164.1 316.0,167.9 315.6,179.8 M 324.7,176.7 C 325.0,161.3 321.6,165.1 321.4,177.5 M 329.4,174.9 C 330.5,159.0 327.3,162.8 327.4,175.5 M 334.1,173.5 C 336.0,157.3 333.2,161.0 333.4,173.9 M 338.8,172.5 C 341.4,156.2 339.0,159.8 339.6,172.7 M 343.3,171.8 C 346.8,155.7 344.9,159.2 345.7,171.9 M 347.9,171.5 C 352.0,155.8 350.7,159.1 351.7,171.5 M 352.4,171.5 C 357.1,156.4 356.3,159.7 357.5,171.5 M 356.9,171.8 C 362.0,157.7 361.7,160.7 363.1,171.9 M 361.3,172.5 C 366.7,159.4 366.9,162.3 368.4,172.7 M 365.6,173.6 C 371.1,161.6 371.8,164.4 373.3,173.9 M 370.0,174.9 C 375.3,164.3 376.3,166.9 377.9,175.4 M 374.3,176.6 C 379.3,167.4 380.5,169.8 382.1,177.2 M 378.5,178.7 C 383.1,170.9 384.4,173.0 385.9,179.3 M 382.7,181.0 C 386.7,174.7 388.1,176.5 389.3,181.7 M 386.8,183.7 C 390.2,178.7 391.4,180.2 392.5,184.3 M 390.9,186.7 C 393.5,183.1 394.6,184.2 395.4,187.3" stroke="#16a34a" strokeWidth="2.8" strokeLinecap="round" fill="none" />
-            <path d="M 275,215 C 320,165 360,160 395,190" stroke="url(#spineGoldenRim)" strokeWidth="1.4" strokeLinecap="round" fill="none" />
-
-            {/* Frond C4 (Drooper Left) */}
-            <path d="M 272.3,217.3 L 263.9,223.9 L 255.5,230.5 L 247.2,237.2 L 238.9,244.1 L 230.7,251.2 L 222.5,258.6 L 214.4,266.3 L 206.3,274.3 L 198.3,282.6 L 190.3,291.2 L 182.2,300.1 L 174.1,309.4 L 166.0,319.1 L 157.7,329.0 L 149.3,339.3 L 151.2,341.8 L 161.0,333.3 L 170.6,325.2 L 180.1,317.5 L 189.4,310.0 L 198.5,302.6 L 207.4,295.3 L 215.9,287.9 L 224.2,280.3 L 232.2,272.6 L 239.9,264.5 L 247.2,256.2 L 254.3,247.5 L 261.1,238.5 L 267.7,229.3 L 274.1,219.8 Z" fill="url(#frondDeepBackdrop)" />
-            <path d="M 268.2,222.6 C 262.8,224.2 259.8,231.0 257.3,236.1 M 263.5,227.2 C 256.3,229.3 252.4,238.2 249.2,244.9 M 258.7,231.8 C 249.9,234.3 245.2,245.2 241.3,253.4 M 253.8,236.4 C 243.6,239.3 238.2,252.0 233.6,261.6 M 249.0,241.0 C 237.5,244.2 231.3,258.6 226.2,269.4 M 244.1,245.6 C 231.4,249.2 224.7,265.0 219.1,276.8 M 239.2,250.3 C 225.6,254.1 218.3,271.1 212.3,283.8 M 234.2,255.0 C 219.9,259.0 212.2,276.9 205.9,290.4 M 229.2,259.7 C 214.4,263.8 206.4,282.5 199.8,296.4 M 224.2,264.4 C 209.0,268.7 200.9,287.7 194.1,302.0 M 219.2,269.3 C 203.8,273.6 195.6,292.8 188.8,307.2 M 214.1,274.1 C 198.9,278.5 190.6,297.5 183.8,311.8 M 209.0,279.1 C 194.0,283.4 185.9,302.0 179.2,316.0 M 203.9,284.1 C 189.4,288.3 181.5,306.3 175.0,319.8 M 198.7,289.2 C 184.9,293.3 177.3,310.4 171.1,323.3 M 193.4,294.4 C 180.5,298.3 173.3,314.3 167.4,326.4 M 188.2,299.7 C 176.2,303.4 169.5,318.1 164.1,329.3 M 182.9,305.0 C 172.0,308.5 165.9,321.8 161.0,331.9 M 177.5,310.5 C 167.9,313.6 162.4,325.4 158.0,334.4 M 172.1,316.2 C 163.8,318.9 159.0,329.0 155.2,336.8 M 166.6,321.9 C 159.7,324.2 155.7,332.7 152.5,339.1 M 161.1,327.8 C 155.6,329.7 152.3,336.4 149.8,341.5 M 155.6,333.8 C 151.5,335.3 149.0,340.3 147.1,344.1" stroke="#064e3b" strokeWidth="3.0" strokeLinecap="round" fill="none" />
-
-            {/* Frond C5 (Drooper Right) */}
-            <path d="M 276.3,218.7 L 283.0,227.7 L 289.7,236.6 L 296.5,245.3 L 303.3,253.7 L 310.1,262.1 L 317.0,270.3 L 323.9,278.5 L 330.8,286.7 L 337.8,294.9 L 344.8,303.3 L 351.8,312.0 L 358.8,321.0 L 365.6,330.3 L 372.5,340.1 L 379.1,350.5 L 381.4,349.9 L 376.3,339.1 L 371.1,328.6 L 365.7,318.6 L 360.1,308.9 L 354.2,299.5 L 348.0,290.5 L 341.5,281.7 L 334.7,273.2 L 327.6,264.9 L 320.1,256.8 L 312.2,248.9 L 304.1,241.1 L 295.7,233.3 L 287.1,225.5 L 278.2,217.6 Z" fill="url(#frondDeepBackdrop)" />
-            <path d="M 281.7,223.2 C 280.6,231.3 278.1,237.9 276.8,242.2 M 286.4,228.4 C 284.9,238.9 281.7,247.6 280.0,253.2 M 291.1,233.5 C 289.3,246.3 285.3,257.0 283.3,263.7 M 295.7,238.5 C 293.6,253.5 289.0,266.0 286.6,273.9 M 300.3,243.6 C 297.9,260.5 292.7,274.5 290.0,283.4 M 304.9,248.6 C 302.2,267.2 296.5,282.6 293.5,292.4 M 309.4,253.6 C 306.4,273.6 300.3,290.1 297.1,300.7 M 313.9,258.7 C 310.7,279.7 304.2,297.1 300.8,308.2 M 318.4,263.7 C 314.9,285.5 308.2,303.6 304.6,315.1 M 322.8,268.8 C 319.1,291.1 312.2,309.5 308.6,321.3 M 327.2,273.9 C 323.3,296.3 316.4,314.8 312.7,326.7 M 331.5,279.1 C 327.5,301.4 320.6,319.7 316.9,331.5 M 335.8,284.4 C 331.7,306.1 325.0,324.0 321.2,335.6 M 340.0,289.7 C 335.9,310.7 329.4,327.9 325.7,339.2 M 344.2,295.1 C 340.1,315.1 333.9,331.4 330.4,342.1 M 348.4,300.7 C 344.4,319.3 338.6,334.6 335.2,344.7 M 352.5,306.3 C 348.6,323.4 343.3,337.5 340.1,346.8 M 356.6,312.1 C 352.9,327.5 348.1,340.2 345.1,348.7 M 360.6,318.0 C 357.2,331.6 352.9,342.8 350.3,350.3 M 364.6,324.0 C 361.5,335.8 357.8,345.3 355.5,351.9 M 368.5,330.3 C 365.8,340.0 362.8,347.9 360.8,353.4 M 372.4,336.7 C 370.1,344.4 367.7,350.7 366.1,355.0 M 376.2,343.2 C 374.5,348.9 372.7,353.6 371.5,356.9" stroke="#064e3b" strokeWidth="3.0" strokeLinecap="round" fill="none" />
-          </g>
+          {/* Selubung Sabut Kelapa Mahkota (Crownshaft Fibrous Burlap Sheath) */}
+          <path d="M 241,188 C 246,202 271,204 276,188 C 271,176 246,176 241,188 Z" fill="#14532d" />
+          <path d="M 244,184 C 248,196 268,198 272,184 C 268,174 248,174 244,184 Z" fill="#451a03" />
         </g>
 
-        {/* ══════════ 3. DEEP UNDER-CANOPY MASSES (RICH 3D BACKDROP) ══════════ */}
-        <g opacity="0.95">
-          <path d="M 185,145 C 130,85 70,72 15,102 C 68,60 142,102 185,145 Z" fill="url(#frondDeepBackdrop)" />
-          <path d="M 182,148 C 105,115 45,125 0,165 C 45,120 120,135 182,148 Z" fill="url(#frondDeepBackdrop)" />
-          <path d="M 180,152 C 115,180 65,225 25,285 C 55,220 115,185 180,152 Z" fill="url(#frondDeepBackdrop)" />
-          <path d="M 188,145 C 245,85 305,75 365,102 C 320,62 250,98 188,145 Z" fill="url(#frondDeepBackdrop)" />
-          <path d="M 190,148 C 260,118 325,128 385,168 C 342,122 268,138 190,148 Z" fill="url(#frondDeepBackdrop)" />
-          <path d="M 190,152 C 255,185 305,235 345,295 C 315,225 260,190 190,152 Z" fill="url(#frondDeepBackdrop)" />
+        {/* ─── 3. Klaster Buah Kelapa Bulat Segar (3D Plump Coconuts with Sunlit Crescents) ─── */}
+        <g id="coconutsCluster">
+          {/* Tangkai Tandan Buah Kelapa */}
+          <path d="M 253,190 L 241,202 M 257,190 L 259,200 M 261,190 L 273,206" stroke="#361705" strokeWidth="2.4" strokeLinecap="round" />
+          
+          {/* Kelapa Lapis Belakang */}
+          <circle cx="241" cy="202" r="10.5" fill="url(#coconutPlump3D)" />
+          <circle cx="273" cy="206" r="10.0" fill="url(#coconutPlump3D)" />
+          <circle cx="233" cy="212" r="9.5" fill="url(#coconutPlump3D)" />
+          <circle cx="265" cy="219" r="9.5" fill="url(#coconutPlump3D)" />
+
+          {/* Kelapa Lapis Depan (Lebih Besar & Bercahaya) */}
+          <circle cx="257" cy="200" r="11.5" fill="url(#coconutPlump3D)" />
+          <circle cx="248" cy="215" r="11.0" fill="url(#coconutPlump3D)" />
+          <circle cx="280" cy="214" r="9.0" fill="url(#coconutPlump3D)" />
+
+          {/* Pantulan Lengkungan Cahaya Matahari Keemasan (Sunlit Crescents) */}
+          <path d="M 236,197 A 8.5 8.5 0 0 1 245,202" stroke="#fef08a" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+          <path d="M 251,194 A 9.5 9.5 0 0 1 261,200" stroke="#fef08a" strokeWidth="2.0" fill="none" strokeLinecap="round" />
+          <path d="M 267,200 A 8.0 8.0 0 0 1 275,206" stroke="#fef08a" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+          <path d="M 242,209 A 9.0 9.0 0 0 1 252,215" stroke="#fef08a" strokeWidth="1.8" fill="none" strokeLinecap="round" />
         </g>
 
-        {/* ══════════ 4. MAIN SWEEPING TROPICAL TRUNK (ORGANIC C-CURVE) ══════════ */}
-        {/* Mastercrafted curved trunk leaning gracefully over the sea */}
-        <path
-          d="M 355,480 C 330,410 270,325 220,235 C 198,195 182,165 178,145 L 196,145 C 200,165 218,198 244,238 C 298,328 360,410 395,480 Z"
-          fill="url(#mainTrunkBarkGrad)"
-        />
-
-        {/* Warm Sunset Golden Backlight along the sun-facing curved edge */}
-        <path
-          d="M 355,480 C 330,410 270,325 220,235 C 198,195 182,165 178,145"
-          stroke="url(#trunkGoldenBacklight)"
-          strokeWidth="3.2"
-          strokeLinecap="round"
-          fill="none"
-        />
-
-        {/* Cylindrical Perspective Bark Rings (Organic Elliptical Arcs) */}
-        <g>
-            <path d="M 324.3,413.2 Q 340.7,410.0 357.2,413.9" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            <path d="M 305.5,379.7 Q 320.8,376.9 336.1,381.0" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            <path d="M 285.0,345.0 Q 299.3,342.4 313.7,346.9" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            <path d="M 263.4,309.2 Q 276.9,306.9 290.5,311.6" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            <path d="M 238.4,267.2 Q 251.0,265.1 263.7,270.0" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            <path d="M 217.4,230.2 Q 229.2,228.2 240.9,233.2" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            <path d="M 207.6,212.2 Q 218.5,210.0 229.4,214.9" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            <path d="M 198.9,195.7 Q 209.1,193.2 219.3,197.8" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            <path d="M 191.4,180.7 Q 201.1,177.9 210.8,182.1" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            <path d="M 185.3,167.3 Q 194.6,164.1 203.9,168.0" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            <path d="M 180.8,155.4 Q 189.9,152.0 199.0,155.6" stroke="rgba(26, 11, 4, 0.55)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-        </g>
-
-        {/* Crown Collar Sheath (Tapis Kelapa fibrous envelope) */}
-        <path d="M 174,148 C 178,160 198,162 202,148 C 198,136 178,136 174,148 Z" fill="#14532d" />
-        <path d="M 177,144 C 182,154 195,156 199,144 C 195,134 181,134 177,144 Z" fill="#451a03" />
-
-        {/* ══════════ 5. FRESH PLUMP COCONUTS CLUSTER ══════════ */}
-        <g>
-          {/* Coconut stalks */}
-          <path d="M 185,146 L 176,154 M 187,146 L 188,152 M 189,146 L 198,158" stroke="#361705" strokeWidth="2.2" strokeLinecap="round" />
-          <path d="M 183,148 L 170,162 M 185,150 L 182,165 M 188,150 L 194,168" stroke="#361705" strokeWidth="2.0" strokeLinecap="round" />
-
-          {/* Round 3D coconuts with varied sizes */}
-          <circle cx="176" cy="154" r="8.5" fill="url(#coconut3D)" />
-          <circle cx="188" cy="152" r="9.0" fill="url(#coconut3D)" />
-          <circle cx="198" cy="158" r="7.5" fill="url(#coconut3D)" />
-          <circle cx="170" cy="162" r="8.0" fill="url(#coconut3D)" />
-          <circle cx="182" cy="165" r="8.5" fill="url(#coconut3D)" />
-          <circle cx="194" cy="168" r="7.0" fill="url(#coconut3D)" />
-          <circle cx="178" cy="175" r="6.5" fill="url(#coconut3D)" />
-          <circle cx="190" cy="176" r="6.0" fill="url(#coconut3D)" />
-
-          {/* Specular sunlight glints on coconuts */}
-          <path d="M 172,150 A 6 6 0 0 1 178,154" stroke="#fef08a" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-          <path d="M 183,148 A 6.5 6.5 0 0 1 189,152" stroke="#fef08a" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-          <path d="M 166,158 A 5.5 5.5 0 0 1 171,162" stroke="#86efac" strokeWidth="1.1" fill="none" strokeLinecap="round" />
-          <path d="M 178,161 A 6 6 0 0 1 183,165" stroke="#fef08a" strokeWidth="1.1" fill="none" strokeLinecap="round" />
-          <path d="M 190,164 A 5 5 0 0 1 194,168" stroke="#86efac" strokeWidth="1.0" fill="none" strokeLinecap="round" />
-        </g>
-
-        {/* ══════════ 6. TIER A: FLUID CASCADING PALM FRONDS (LEFT GROUP) ══════════ */}
+        {/* ─── 4. Tajuk Pelepah Tengah Kiri (Midground Left Rustle) ─── */}
         <g
+          id="crownMidLeftFronds"
           style={{
-            transformOrigin: '185px 145px',
-            animation: 'palmFrondRustleLeft 7.8s ease-in-out infinite alternate',
+            transformOrigin: '257px 185px',
+            animation: 'palmFrondRustleLeft 8.2s ease-in-out infinite alternate',
           }}
         >
-          {/* Tender Young Shoots (Pucuk Kelapa Muda - gently curved, NOT stiff) */}
-          <path d="M 185,145 Q 175,75 162,25 Q 180,75 187,145 Z" fill="url(#youngShootGrad)" />
-          <path d="M 185,145 Q 175,75 162,25" stroke="#fef08a" strokeWidth="1.6" strokeLinecap="round" fill="none" />
-          <path d="M 186,145 Q 192,70 198,20 Q 190,72 184,145 Z" fill="url(#youngShootGrad)" />
-          <path d="M 186,145 Q 192,70 198,20" stroke="#fef08a" strokeWidth="1.6" strokeLinecap="round" fill="none" />
-
-          {/* FROND 1: Sovereign Northwest High Arch (Cascading fluid leaflets) */}
-          <path d="M 185.9,144.5 L 178.9,130.2 L 171.1,117.1 L 162.5,105.4 L 153.0,95.1 L 142.6,86.2 L 131.5,79.1 L 119.6,73.7 L 107.1,70.1 L 94.3,68.4 L 81.2,68.5 L 68.0,70.5 L 54.7,74.0 L 41.4,79.2 L 28.0,85.9 L 14.5,94.1 L 15.8,97.1 L 30.2,92.2 L 44.1,89.1 L 57.3,87.6 L 69.8,87.5 L 81.5,88.6 L 92.4,90.7 L 102.8,93.6 L 112.8,97.1 L 122.6,101.3 L 132.4,106.2 L 142.4,112.0 L 152.5,118.7 L 162.9,126.6 L 173.3,135.8 L 183.6,146.5 Z" fill="url(#frondSunlitGrad)" />
-          <path d="M 181.4,139.0 C 183.6,136.4 186.0,147.3 187.6,151.9 M 177.7,133.2 C 180.4,129.7 183.6,143.9 185.5,150.0 M 174.0,127.6 C 176.9,123.3 180.9,140.7 183.2,148.2 M 170.1,122.4 C 173.2,117.2 177.9,137.5 180.5,146.4 M 166.1,117.4 C 169.2,111.3 174.6,134.4 177.5,144.6 M 162.0,112.7 C 165.0,105.7 170.9,131.3 174.1,142.8 M 157.8,108.2 C 160.5,100.5 167.0,128.3 170.2,140.9 M 153.6,104.0 C 155.7,95.6 162.7,125.3 166.0,139.0 M 149.2,100.1 C 150.7,91.0 158.1,122.4 161.3,137.1 M 144.8,96.5 C 145.5,86.8 153.2,119.5 156.2,135.0 M 140.2,93.1 C 140.1,83.0 147.9,116.7 150.8,133.0 M 135.6,90.0 C 134.5,79.6 142.3,114.0 144.9,130.9 M 130.9,87.2 C 128.8,76.6 136.4,111.4 138.7,128.7 M 126.1,84.7 C 122.9,74.0 130.3,108.8 132.1,126.5 M 121.2,82.4 C 116.9,71.9 123.9,106.4 125.3,124.3 M 116.3,80.4 C 110.8,70.2 117.4,104.1 118.3,122.2 M 111.2,78.8 C 104.7,68.9 110.7,102.0 111.1,120.0 M 106.1,77.3 C 98.6,68.0 104.0,100.1 103.9,117.8 M 100.9,76.2 C 92.6,67.5 97.2,98.3 96.6,115.8 M 95.7,75.4 C 86.6,67.4 90.4,96.8 89.4,113.7 M 90.3,74.9 C 80.7,67.7 83.8,95.4 82.2,111.8 M 84.9,74.6 C 74.9,68.3 77.2,94.3 75.2,109.9 M 79.5,74.7 C 69.2,69.2 70.7,93.3 68.5,108.2 M 73.9,75.0 C 63.6,70.3 64.4,92.6 61.9,106.6 M 68.3,75.7 C 58.1,71.8 58.3,92.1 55.7,105.1 M 62.6,76.6 C 52.8,73.5 52.5,91.8 49.7,103.8 M 56.9,77.8 C 47.6,75.5 46.8,91.7 44.0,102.6 M 51.1,79.4 C 42.4,77.7 41.3,91.9 38.6,101.6 M 45.2,81.2 C 37.3,80.0 36.0,92.3 33.4,100.9 M 39.3,83.4 C 32.3,82.6 30.9,93.0 28.5,100.3 M 33.3,85.8 C 27.4,85.5 25.9,93.9 23.8,100.0 M 27.2,88.6 C 22.4,88.5 21.1,95.1 19.3,99.9 M 21.2,91.6 C 17.5,91.7 16.3,96.6 15.0,100.2" stroke="#15803d" strokeWidth="3.6" strokeLinecap="round" fill="none" />
-          <path d="M 181.4,139.0 C 177.5,138.8 175.1,142.5 173.7,144.5 M 177.7,133.2 C 172.6,133.1 169.6,138.0 167.7,140.5 M 174.0,127.6 C 167.7,127.8 164.1,133.8 161.8,136.9 M 170.1,122.4 C 162.7,122.8 158.7,130.0 156.1,133.5 M 166.1,117.4 C 157.8,118.0 153.4,126.4 150.5,130.3 M 162.0,112.7 C 152.9,113.7 148.2,123.1 145.0,127.3 M 157.8,108.2 C 147.9,109.6 143.1,120.1 139.7,124.6 M 153.6,104.0 C 143.1,105.8 138.2,117.3 134.7,122.0 M 149.2,100.1 C 138.2,102.4 133.4,114.8 129.8,119.7 M 144.8,96.5 C 133.5,99.2 128.8,112.4 125.1,117.4 M 140.2,93.1 C 128.7,96.3 124.4,110.3 120.7,115.3 M 135.6,90.0 C 124.1,93.7 120.1,108.3 116.5,113.3 M 130.9,87.2 C 119.5,91.3 116.0,106.4 112.4,111.5 M 126.1,84.7 C 115.0,89.2 112.0,104.7 108.6,109.7 M 121.2,82.4 C 110.6,87.2 108.0,103.0 104.8,107.9 M 116.3,80.4 C 106.1,85.5 104.2,101.5 101.2,106.3 M 111.2,78.8 C 101.8,84.1 100.4,100.0 97.6,104.7 M 106.1,77.3 C 97.4,82.8 96.6,98.6 94.1,103.1 M 100.9,76.2 C 93.0,81.7 92.8,97.3 90.6,101.7 M 95.7,75.4 C 88.6,80.8 88.9,96.0 87.0,100.2 M 90.3,74.9 C 84.1,80.2 84.9,94.9 83.3,98.9 M 84.9,74.6 C 79.6,79.7 80.8,93.8 79.4,97.7 M 79.5,74.7 C 75.0,79.5 76.5,92.9 75.4,96.6 M 73.9,75.0 C 70.3,79.6 72.0,92.1 71.1,95.6 M 68.3,75.7 C 65.4,79.8 67.3,91.5 66.7,94.7 M 62.6,76.6 C 60.4,80.4 62.4,91.1 62.0,94.1 M 56.9,77.8 C 55.3,81.2 57.3,90.9 57.1,93.6 M 51.1,79.4 C 50.0,82.3 52.0,90.9 51.9,93.4 M 45.2,81.2 C 44.6,83.7 46.5,91.2 46.4,93.5 M 39.3,83.4 C 39.0,85.4 40.7,91.8 40.8,93.8 M 33.3,85.8 C 33.2,87.4 34.8,92.8 34.9,94.4 M 27.2,88.6 C 27.4,89.8 28.6,94.0 28.8,95.4 M 21.2,91.6 C 21.3,92.5 22.3,95.6 22.5,96.7" stroke="#22c55e" strokeWidth="3.0" strokeLinecap="round" fill="none" />
-          <path d="M 185,145 C 145,75 85,55 15,95" stroke="url(#spineGoldenRim)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-
-          {/* FROND 2: Grand Mid-West Sweeper (Pendulous draped ribbons) */}
-          <path d="M 182.5,147.1 L 170.7,139.4 L 158.5,133.1 L 145.8,128.2 L 132.9,124.8 L 119.7,123.0 L 106.5,122.8 L 93.2,124.2 L 80.2,127.2 L 67.4,131.6 L 55.1,137.5 L 43.1,144.7 L 31.6,153.0 L 20.4,162.5 L 9.7,172.9 L -0.7,184.3 L 1.1,186.8 L 13.4,178.7 L 25.8,171.8 L 38.2,166.2 L 50.3,161.7 L 62.3,158.1 L 74.0,155.3 L 85.4,153.0 L 96.7,151.2 L 107.9,149.7 L 119.1,148.5 L 130.6,147.6 L 142.5,147.2 L 154.9,147.3 L 167.8,148.2 L 181.2,150.1 Z" fill="url(#frondVibrantGrad)" />
-          <path d="M 176.8,145.4 C 175.9,142.5 177.9,152.9 178.4,158.2 M 171.6,142.9 C 170.2,139.2 172.7,152.8 173.3,159.6 M 166.4,140.7 C 164.3,136.2 167.3,152.7 167.8,161.2 M 161.2,138.8 C 158.4,133.5 161.7,152.8 162.2,162.8 M 156.0,137.0 C 152.3,131.1 155.9,152.9 156.2,164.4 M 150.8,135.5 C 146.1,129.0 149.9,153.2 150.0,166.0 M 145.6,134.1 C 139.9,127.3 143.8,153.5 143.6,167.6 M 140.4,133.0 C 133.6,125.9 137.5,153.9 137.0,169.2 M 135.1,132.1 C 127.3,124.8 131.0,154.3 130.2,170.7 M 129.9,131.4 C 121.0,124.0 124.5,154.9 123.3,172.2 M 124.7,131.0 C 114.7,123.6 117.8,155.4 116.2,173.6 M 119.5,130.7 C 108.4,123.4 111.2,156.1 109.1,175.0 M 114.3,130.7 C 102.2,123.6 104.5,156.8 102.0,176.2 M 109.1,130.8 C 96.1,124.2 97.8,157.5 94.9,177.4 M 103.9,131.2 C 90.1,125.0 91.2,158.3 87.8,178.5 M 98.7,131.7 C 84.2,126.0 84.6,159.2 80.8,179.5 M 93.5,132.5 C 78.4,127.4 78.2,160.1 74.0,180.4 M 88.4,133.5 C 72.7,129.0 71.9,161.0 67.4,181.2 M 83.2,134.7 C 67.2,130.8 65.8,162.0 60.9,182.0 M 78.1,136.1 C 61.9,132.9 59.8,163.1 54.8,182.6 M 73.0,137.7 C 56.8,135.2 54.1,164.2 48.8,183.2 M 67.9,139.5 C 51.8,137.6 48.6,165.3 43.2,183.7 M 62.9,141.4 C 47.0,140.2 43.4,166.5 37.9,184.2 M 57.9,143.6 C 42.4,143.0 38.4,167.8 32.9,184.6 M 52.8,146.0 C 37.9,145.9 33.6,169.1 28.2,184.9 M 47.9,148.6 C 33.6,149.0 29.1,170.4 23.8,185.3 M 42.9,151.4 C 29.5,152.2 24.9,171.8 19.7,185.6 M 38.0,154.3 C 25.5,155.5 20.9,173.3 16.0,186.0 M 33.1,157.5 C 21.6,158.9 17.1,174.9 12.5,186.3 M 28.3,160.9 C 17.9,162.4 13.5,176.6 9.3,186.8 M 23.5,164.4 C 14.3,166.0 10.2,178.3 6.3,187.3 M 18.7,168.2 C 10.7,169.8 7.0,180.2 3.6,187.9 M 14.0,172.1 C 7.3,173.6 4.0,182.2 1.1,188.6 M 9.3,176.2 C 3.9,177.6 1.1,184.4 -1.2,189.5 M 4.6,180.5 C 0.6,181.6 -1.6,186.7 -3.4,190.5" stroke="#166534" strokeWidth="3.8" strokeLinecap="round" fill="none" />
-          <path d="M 176.8,145.4 C 173.8,146.6 173.0,150.8 172.1,152.2 M 171.6,142.9 C 167.8,144.6 166.9,150.2 165.7,152.0 M 166.4,140.7 C 161.9,142.9 160.9,149.8 159.5,152.0 M 161.2,138.8 C 156.1,141.4 155.1,149.6 153.6,152.1 M 156.0,137.0 C 150.3,140.1 149.5,149.6 147.8,152.3 M 150.8,135.5 C 144.7,139.1 144.0,149.7 142.2,152.7 M 145.6,134.1 C 139.2,138.2 138.7,149.9 136.9,153.2 M 140.4,133.0 C 133.8,137.5 133.6,150.2 131.8,153.8 M 135.1,132.1 C 128.5,137.0 128.6,150.6 126.8,154.4 M 129.9,131.4 C 123.4,136.6 123.8,151.1 122.1,155.0 M 124.7,131.0 C 118.3,136.4 119.1,151.6 117.4,155.7 M 119.5,130.7 C 113.4,136.4 114.5,152.1 113.0,156.4 M 114.3,130.7 C 108.5,136.5 110.1,152.7 108.6,157.1 M 109.1,130.8 C 103.7,136.8 105.7,153.3 104.4,157.9 M 103.9,131.2 C 99.0,137.2 101.4,154.0 100.2,158.6 M 98.7,131.7 C 94.4,137.8 97.1,154.6 96.1,159.3 M 93.5,132.5 C 89.8,138.5 92.8,155.3 92.0,160.0 M 88.4,133.5 C 85.2,139.3 88.5,156.0 87.9,160.8 M 83.2,134.7 C 80.7,140.3 84.2,156.8 83.8,161.5 M 78.1,136.1 C 76.2,141.5 79.9,157.6 79.7,162.3 M 73.0,137.7 C 71.6,142.8 75.5,158.4 75.4,163.1 M 67.9,139.5 C 67.1,144.3 71.1,159.3 71.1,163.9 M 62.9,141.4 C 62.5,145.9 66.6,160.3 66.8,164.8 M 57.9,143.6 C 58.0,147.7 62.0,161.4 62.3,165.7 M 52.8,146.0 C 53.4,149.7 57.3,162.6 57.7,166.8 M 47.9,148.6 C 48.7,151.9 52.6,163.9 53.1,167.9 M 42.9,151.4 C 44.1,154.3 47.8,165.4 48.3,169.2 M 38.0,154.3 C 39.4,156.9 42.8,167.0 43.4,170.6 M 33.1,157.5 C 34.6,159.7 37.9,168.8 38.4,172.1 M 28.3,160.9 C 29.8,162.7 32.8,170.8 33.4,173.8 M 23.5,164.4 C 25.0,165.9 27.7,173.0 28.2,175.6 M 18.7,168.2 C 20.2,169.4 22.5,175.4 23.0,177.7 M 14.0,172.1 C 15.3,173.0 17.3,178.0 17.8,179.9 M 9.3,176.2 C 10.5,176.9 12.0,180.8 12.4,182.4 M 4.6,180.5 C 5.6,181.0 6.8,183.9 7.1,185.1" stroke="#15803d" strokeWidth="3.2" strokeLinecap="round" fill="none" />
-          <path d="M 182,148 C 120,115 55,130 0,185" stroke="url(#spineGoldenRim)" strokeWidth="2.4" strokeLinecap="round" fill="none" />
-
-          {/* FROND 3: Cascading Southwest Drooper */}
-          <path d="M 179.5,151.1 L 167.6,156.7 L 155.9,163.1 L 144.3,170.2 L 133.1,178.2 L 122.1,186.9 L 111.5,196.4 L 101.3,206.7 L 91.6,217.7 L 82.3,229.3 L 73.4,241.5 L 64.8,254.3 L 56.7,267.5 L 48.9,281.1 L 41.4,295.1 L 34.1,309.5 L 36.4,311.5 L 45.9,299.3 L 55.7,287.7 L 65.7,276.6 L 75.8,265.9 L 85.8,255.5 L 95.8,245.3 L 105.7,235.3 L 115.5,225.3 L 125.0,215.3 L 134.4,205.2 L 143.7,195.1 L 152.9,184.8 L 162.1,174.5 L 171.4,164.2 L 180.8,154.1 Z" fill="url(#frondCascadeGrad)" />
-          <path d="M 174.5,155.4 C 169.2,155.9 167.3,163.9 165.2,169.4 M 169.1,158.9 C 162.0,159.7 159.2,170.3 156.4,177.6 M 163.7,162.6 C 154.8,163.7 151.2,176.7 147.7,185.8 M 158.3,166.4 C 147.8,168.0 143.3,183.2 139.0,193.9 M 152.9,170.3 C 140.9,172.4 135.5,189.6 130.5,201.8 M 147.6,174.4 C 134.1,177.0 127.9,196.1 122.2,209.7 M 142.4,178.6 C 127.5,181.7 120.5,202.5 114.1,217.3 M 137.2,183.0 C 121.1,186.6 113.3,208.8 106.3,224.7 M 132.0,187.5 C 114.9,191.7 106.3,215.0 98.8,231.8 M 126.9,192.1 C 108.9,196.8 99.6,221.1 91.7,238.6 M 121.8,196.8 C 103.1,202.1 93.2,227.0 84.9,245.1 M 116.7,201.7 C 97.6,207.4 87.1,232.8 78.5,251.3 M 111.7,206.7 C 92.3,212.8 81.4,238.4 72.5,257.1 M 106.8,211.9 C 87.2,218.3 76.0,243.8 67.0,262.6 M 101.9,217.1 C 82.4,223.9 70.9,249.1 61.9,267.7 M 97.0,222.5 C 77.8,229.5 66.2,254.2 57.2,272.5 M 92.2,228.0 C 73.4,235.1 61.8,259.1 53.0,277.0 M 87.5,233.6 C 69.3,240.8 57.8,263.9 49.2,281.1 M 82.8,239.4 C 65.4,246.5 54.1,268.5 45.8,285.0 M 78.1,245.3 C 61.7,252.3 50.8,273.0 42.8,288.6 M 73.6,251.2 C 58.1,258.0 47.7,277.3 40.2,291.9 M 69.0,257.3 C 54.8,263.8 45.0,281.6 38.0,295.0 M 64.6,263.5 C 51.6,269.6 42.5,285.8 36.0,298.0 M 60.2,269.9 C 48.5,275.5 40.2,289.9 34.4,300.8 M 55.8,276.3 C 45.6,281.4 38.2,294.0 33.0,303.6 M 51.5,282.8 C 42.8,287.3 36.3,298.1 31.9,306.3 M 47.3,289.5 C 40.0,293.3 34.6,302.2 30.9,308.9 M 43.1,296.2 C 37.4,299.3 33.0,306.3 30.1,311.7 M 39.0,303.1 C 34.8,305.4 31.5,310.5 29.3,314.5" stroke="#14532d" strokeWidth="3.6" strokeLinecap="round" fill="none" />
-          <path d="M 174.5,155.4 C 175.1,156.4 176.6,160.7 176.8,162.2 M 169.1,158.9 C 170.0,160.3 171.9,165.9 172.3,167.9 M 163.7,162.6 C 164.9,164.2 167.4,171.1 167.9,173.6 M 158.3,166.4 C 159.9,168.2 162.9,176.4 163.5,179.4 M 152.9,170.3 C 155.0,172.3 158.4,181.6 159.2,185.1 M 147.6,174.4 C 150.1,176.5 154.0,186.8 154.9,190.7 M 142.4,178.6 C 145.3,180.8 149.6,192.0 150.6,196.3 M 137.2,183.0 C 140.5,185.2 145.2,197.2 146.3,201.9 M 132.0,187.5 C 135.7,189.7 140.7,202.3 142.0,207.3 M 126.9,192.1 C 131.0,194.2 136.3,207.4 137.6,212.7 M 121.8,196.8 C 126.3,198.9 131.8,212.4 133.3,218.0 M 116.7,201.7 C 121.6,203.7 127.3,217.5 128.8,223.3 M 111.7,206.7 C 116.9,208.6 122.7,222.5 124.3,228.4 M 106.8,211.9 C 112.2,213.6 118.0,227.4 119.7,233.5 M 101.9,217.1 C 107.4,218.6 113.3,232.4 115.0,238.4 M 97.0,222.5 C 102.7,223.9 108.5,237.3 110.2,243.4 M 92.2,228.0 C 98.0,229.2 103.6,242.2 105.4,248.2 M 87.5,233.6 C 93.2,234.6 98.7,247.2 100.4,253.0 M 82.8,239.4 C 88.5,240.2 93.7,252.1 95.4,257.8 M 78.1,245.3 C 83.7,245.9 88.7,257.1 90.3,262.5 M 73.6,251.2 C 78.9,251.7 83.6,262.2 85.1,267.3 M 69.0,257.3 C 74.1,257.7 78.4,267.3 79.9,272.1 M 64.6,263.5 C 69.3,263.7 73.2,272.5 74.6,276.9 M 60.2,269.9 C 64.5,269.9 68.0,277.7 69.3,281.7 M 55.8,276.3 C 59.7,276.3 62.8,283.1 63.9,286.6 M 51.5,282.8 C 54.9,282.7 57.6,288.5 58.5,291.6 M 47.3,289.5 C 50.2,289.3 52.4,294.1 53.2,296.7 M 43.1,296.2 C 45.5,296.1 47.2,299.8 47.9,301.9 M 39.0,303.1 C 40.8,302.9 42.1,305.7 42.6,307.2" stroke="#15803d" strokeWidth="3.0" strokeLinecap="round" fill="none" />
-          <path d="M 180,152 C 125,185 75,240 35,310" stroke="url(#spineGoldenRim)" strokeWidth="2.0" strokeLinecap="round" fill="none" />
-
-          {/* FROND 4: Far Low-West Cascade */}
-          <path d="M 179.2,155.4 L 169.1,167.4 L 159.2,179.3 L 149.7,191.4 L 140.4,203.7 L 131.6,216.2 L 123.1,228.9 L 115.1,242.0 L 107.4,255.4 L 100.2,269.2 L 93.3,283.3 L 86.8,297.7 L 80.7,312.6 L 74.9,327.9 L 69.4,343.5 L 64.1,359.6 L 66.5,361.3 L 74.0,346.7 L 81.7,332.8 L 89.7,319.4 L 97.8,306.4 L 105.9,293.6 L 114.0,281.0 L 122.0,268.3 L 129.9,255.6 L 137.7,242.6 L 145.3,229.3 L 152.7,215.7 L 160.0,201.7 L 167.2,187.4 L 174.2,172.7 L 181.3,157.6 Z" fill="url(#frondDeepBackdrop)" />
-          <path d="M 174.8,163.4 C 169.2,166.1 165.2,173.6 162.4,179.1 M 169.7,170.7 C 162.2,174.3 157.0,184.2 153.2,191.5 M 164.6,178.0 C 155.4,182.5 148.9,194.6 144.3,203.6 M 159.6,185.3 C 148.8,190.6 141.1,204.8 135.7,215.3 M 154.6,192.6 C 142.4,198.7 133.6,214.8 127.5,226.7 M 149.7,200.0 C 136.2,206.7 126.4,224.5 119.6,237.7 M 144.8,207.3 C 130.2,214.7 119.5,234.0 112.1,248.2 M 140.0,214.6 C 124.4,222.6 113.0,243.1 105.1,258.2 M 135.3,222.0 C 119.0,230.5 106.9,251.9 98.6,267.7 M 130.6,229.4 C 113.8,238.3 101.2,260.4 92.6,276.7 M 125.9,236.9 C 108.8,246.1 95.9,268.5 87.1,285.1 M 121.4,244.4 C 104.2,253.8 91.0,276.3 82.1,293.0 M 116.9,252.0 C 99.8,261.5 86.5,283.8 77.7,300.4 M 112.4,259.7 C 95.7,269.2 82.5,291.0 73.7,307.3 M 108.1,267.4 C 91.8,276.8 78.9,298.0 70.3,313.7 M 103.8,275.2 C 88.2,284.4 75.7,304.6 67.4,319.7 M 99.5,283.1 C 84.9,292.0 72.8,311.1 65.0,325.3 M 95.4,291.1 C 81.7,299.6 70.4,317.3 63.0,330.6 M 91.3,299.3 C 78.8,307.2 68.2,323.4 61.5,335.6 M 87.3,307.5 C 76.1,314.8 66.4,329.4 60.3,340.3 M 83.4,315.9 C 73.5,322.5 64.9,335.3 59.4,344.9 M 79.5,324.4 C 71.1,330.2 63.5,341.2 58.9,349.5 M 75.8,333.1 C 68.7,338.0 62.4,347.1 58.5,354.0 M 72.1,341.9 C 66.5,345.9 61.5,353.1 58.3,358.5 M 68.5,350.9 C 64.4,353.9 60.6,359.2 58.3,363.2" stroke="#064e3b" strokeWidth="3.4" strokeLinecap="round" fill="none" />
-          <path d="M 180,156 C 135,220 95,280 65,360" stroke="url(#spineGoldenRim)" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-
-          {/* FROND 9: Foreground West Overleaf (cradles coconuts with natural depth) */}
-          <path d="M 183.5,154.1 L 176.1,157.3 L 168.7,160.8 L 161.5,164.8 L 154.5,169.2 L 147.6,174.1 L 141.0,179.5 L 134.6,185.3 L 128.4,191.5 L 122.4,198.1 L 116.6,205.1 L 110.9,212.4 L 105.4,220.0 L 100.0,227.9 L 94.6,236.0 L 89.2,244.4 L 91.3,246.7 L 98.3,240.1 L 105.2,234.0 L 112.2,228.1 L 119.1,222.4 L 125.8,216.9 L 132.4,211.4 L 138.8,206.0 L 145.0,200.4 L 151.0,194.8 L 156.8,188.9 L 162.5,182.9 L 168.1,176.6 L 173.6,170.2 L 179.2,163.7 L 184.8,157.1 Z" fill="url(#frondSunlitGrad)" />
-          <path d="M 179.4,157.8 C 174.2,158.2 172.3,165.1 170.3,170.2 M 174.8,160.7 C 168.0,161.5 165.3,170.4 162.6,177.0 M 170.3,163.7 C 161.9,164.9 158.5,175.7 155.1,183.7 M 165.8,166.9 C 156.0,168.4 151.8,180.9 147.7,190.2 M 161.4,170.2 C 150.2,172.1 145.3,186.0 140.6,196.5 M 157.0,173.6 C 144.7,176.0 139.1,191.1 133.9,202.5 M 152.6,177.1 C 139.5,180.0 133.2,195.9 127.5,208.1 M 148.3,180.8 C 134.4,184.0 127.6,200.6 121.6,213.3 M 144.0,184.6 C 129.7,188.2 122.4,205.1 116.1,218.1 M 139.7,188.5 C 125.2,192.4 117.6,209.3 111.2,222.5 M 135.5,192.5 C 121.0,196.7 113.2,213.4 106.7,226.4 M 131.3,196.7 C 117.1,201.0 109.2,217.2 102.8,229.9 M 127.1,200.9 C 113.4,205.3 105.6,220.9 99.4,233.1 M 122.9,205.3 C 109.9,209.7 102.4,224.3 96.4,235.8 M 118.8,209.9 C 106.7,214.1 99.5,227.6 93.9,238.3 M 114.6,214.5 C 103.6,218.5 96.9,230.7 91.8,240.5 M 110.5,219.3 C 100.7,223.0 94.6,233.8 90.0,242.4 M 106.4,224.2 C 97.9,227.5 92.5,236.8 88.5,244.3 M 102.3,229.2 C 95.2,232.1 90.6,239.8 87.2,246.0 M 98.2,234.3 C 92.5,236.7 88.8,242.8 86.1,247.8 M 94.1,239.6 C 89.9,241.4 87.1,245.9 85.1,249.6" stroke="#15803d" strokeWidth="3.4" strokeLinecap="round" fill="none" />
-          <path d="M 179.4,157.8 C 179.9,158.9 181.4,163.1 181.6,164.5 M 174.8,160.7 C 175.7,162.0 177.6,167.5 177.9,169.4 M 170.3,163.7 C 171.5,165.3 173.9,171.9 174.3,174.3 M 165.8,166.9 C 167.4,168.6 170.2,176.3 170.7,179.1 M 161.4,170.2 C 163.3,172.0 166.5,180.6 167.2,183.8 M 157.0,173.6 C 159.3,175.5 162.8,184.8 163.6,188.4 M 152.6,177.1 C 155.2,179.0 159.1,188.9 160.0,192.8 M 148.3,180.8 C 151.2,182.7 155.3,193.0 156.3,197.0 M 144.0,184.6 C 147.2,186.4 151.4,196.9 152.5,201.1 M 139.7,188.5 C 143.2,190.2 147.5,200.7 148.6,205.1 M 135.5,192.5 C 139.1,194.1 143.4,204.5 144.5,208.9 M 131.3,196.7 C 135.0,198.1 139.2,208.2 140.4,212.6 M 127.1,200.9 C 130.8,202.2 134.9,211.9 136.0,216.1 M 122.9,205.3 C 126.6,206.4 130.4,215.6 131.6,219.6 M 118.8,209.9 C 122.3,210.8 125.9,219.2 127.0,223.0 M 114.6,214.5 C 117.9,215.2 121.2,222.9 122.2,226.4 M 110.5,219.3 C 113.5,219.9 116.5,226.7 117.4,229.8 M 106.4,224.2 C 109.1,224.6 111.6,230.5 112.4,233.2 M 102.3,229.2 C 104.6,229.5 106.7,234.4 107.4,236.7 M 98.2,234.3 C 100.1,234.6 101.8,238.4 102.3,240.3 M 94.1,239.6 C 95.5,239.8 96.8,242.6 97.2,244.0" stroke="#4ade80" strokeWidth="2.8" strokeLinecap="round" fill="none" />
-          <path d="M 184,155 C 150,175 120,205 90,245" stroke="url(#spineGoldenRim)" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+            <g id="mid_crest_left">
+              <path d="M 256.0,182.0 Q 253.6,171.0 252.0,163.6 Q 249.1,159.3 244.8,152.8 Q 242.1,140.9 240.2,133.0 Q 236.9,130.6 231.9,126.9 Q 228.6,114.7 226.5,106.5 Q 223.0,105.5 217.8,104.0 Q 213.8,91.7 211.1,83.5 Q 207.7,83.7 202.6,84.0 Q 197.6,72.1 194.2,64.1 Q 191.0,65.2 186.3,66.9 Q 180.0,55.7 175.9,48.3 Q 173.0,50.1 168.7,52.7 Q 161.3,42.8 156.3,36.2 Q 153.8,38.3 150.0,41.6 Q 141.6,33.3 135.9,27.7 Q 133.7,30.1 130.3,33.6 Q 121.2,27.2 115.1,22.9 Q 113.0,25.2 109.8,28.6 Q 100.5,24.3 94.2,21.5 Q 92.0,23.5 88.7,26.5 Q 79.6,24.6 73.6,23.3 Q 71.0,25.0 67.1,27.4 Q 59.0,28.1 53.6,28.5 Q 50.2,28.3 45.0,28.0 L 45.0,28.0 Q 49.0,51.2 51.2,63.7 Q 58.2,53.0 66.8,40.1 Q 66.4,62.5 66.1,74.5 Q 75.4,61.2 86.7,44.8 Q 81.9,69.0 79.3,82.1 Q 90.8,67.9 104.9,50.7 Q 96.0,74.9 91.1,87.9 Q 104.9,74.3 121.8,57.7 Q 109.3,80.5 102.5,92.8 Q 118.4,80.7 137.9,66.0 Q 122.7,86.4 114.5,97.5 Q 132.1,87.6 153.6,75.6 Q 137.0,93.3 128.0,102.8 Q 146.6,95.7 169.3,87.1 Q 152.6,101.8 143.6,109.7 Q 162.4,105.6 185.4,100.6 Q 169.9,112.8 161.6,119.3 Q 179.8,118.1 202.0,116.7 Q 189.0,126.8 182.1,132.2 Q 198.7,133.7 219.1,135.5 Q 210.2,144.2 205.4,148.9 Q 219.5,152.7 236.9,157.3 Q 234.3,165.3 232.9,169.5 Q 243.3,175.1 256.0,182.0 Z" fill="url(#frondSunlitLime)" />
+              <path d="M 256.0,182.0 C 200.0,65.0 135.0,22.0 45.0,28.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+            </g>
+            <g id="mid_sweep_left">
+              <path d="M 255.0,184.0 Q 250.0,174.8 246.7,168.6 Q 243.0,165.8 237.4,161.5 Q 231.7,151.2 228.0,144.3 Q 224.3,143.2 218.7,141.5 Q 212.3,130.6 208.1,123.4 Q 204.6,123.5 199.3,123.7 Q 192.1,112.7 187.3,105.4 Q 184.1,106.5 179.3,108.1 Q 171.1,97.6 165.7,90.5 Q 162.8,92.3 158.5,95.1 Q 149.4,85.3 143.3,78.9 Q 140.8,81.2 137.0,84.6 Q 127.0,76.3 120.3,70.7 Q 118.1,73.3 114.8,77.1 Q 104.1,70.5 97.0,66.1 Q 95.0,68.7 92.1,72.7 Q 81.1,68.2 73.7,65.2 Q 71.8,67.8 69.1,71.6 Q 58.1,69.4 50.8,68.0 Q 48.9,70.3 45.9,73.9 Q 35.6,74.2 28.8,74.4 Q 26.4,76.5 22.8,79.6 Q 14.0,82.6 8.2,84.6 Q 4.9,84.8 0.0,85.0 L 0.0,85.0 Q 6.4,110.9 9.9,124.8 Q 16.5,110.7 24.5,93.4 Q 27.3,118.3 28.8,131.6 Q 37.0,114.5 47.0,93.6 Q 45.7,121.0 45.0,135.8 Q 55.3,117.8 67.9,95.8 Q 62.5,123.8 59.6,138.9 Q 72.3,121.2 87.8,99.6 Q 78.7,126.8 73.8,141.4 Q 88.8,125.0 107.1,104.9 Q 95.3,130.2 88.9,143.8 Q 105.7,129.3 126.3,111.7 Q 112.9,134.4 105.6,146.6 Q 123.7,134.6 145.8,119.9 Q 132.0,139.7 124.6,150.4 Q 143.2,141.0 165.9,129.6 Q 153.0,146.5 146.1,155.5 Q 164.4,149.0 186.8,141.0 Q 176.1,154.9 170.3,162.4 Q 187.5,158.6 208.4,153.9 Q 201.5,165.0 197.7,171.0 Q 212.7,169.9 230.9,168.5 Q 230.1,176.5 229.6,180.8 Q 241.0,182.2 255.0,184.0 Z" fill="url(#frondSunlitLime)" />
+              <path d="M 255.0,184.0 C 175.0,100.0 95.0,55.0 0.0,85.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+            </g>
+            <g id="mid_lateral_left">
+              <path d="M 255.0,186.0 Q 247.7,179.5 242.8,175.2 Q 238.8,174.2 232.6,172.6 Q 223.9,165.7 218.1,161.0 Q 214.7,161.7 209.6,162.6 Q 199.7,155.6 193.0,151.0 Q 190.3,152.7 186.2,155.2 Q 175.2,148.8 167.8,144.5 Q 165.8,146.9 162.7,150.5 Q 150.8,145.0 142.8,141.3 Q 141.3,144.1 139.2,148.4 Q 126.5,144.1 118.1,141.2 Q 117.2,144.2 115.7,148.9 Q 102.8,145.9 94.1,144.0 Q 93.5,147.1 92.6,151.8 Q 79.6,150.4 71.0,149.5 Q 70.5,152.6 69.8,157.1 Q 57.3,157.4 49.0,157.6 Q 48.4,160.4 47.5,164.7 Q 35.9,166.6 28.2,167.9 Q 27.3,170.5 25.9,174.4 Q 15.6,177.9 8.8,180.2 Q 7.2,182.6 4.9,186.1 Q -3.3,191.3 -8.7,194.8 Q -11.2,194.9 -15.0,195.0 L -15.0,195.0 Q -7.3,223.3 -3.2,238.6 Q 2.2,221.3 8.8,200.2 Q 15.2,226.0 18.7,240.0 Q 24.4,219.3 31.4,194.0 Q 36.1,222.8 38.6,238.3 Q 45.3,216.0 53.4,188.7 Q 56.0,219.0 57.3,235.4 Q 65.2,212.4 75.0,184.4 Q 75.1,215.0 75.2,231.5 Q 84.6,208.8 96.1,181.0 Q 94.0,210.7 92.9,226.7 Q 103.8,205.0 117.2,178.5 Q 113.1,206.3 110.9,221.3 Q 123.3,201.3 138.3,176.8 Q 133.0,201.9 130.1,215.3 Q 143.5,197.7 159.8,176.1 Q 154.0,197.7 150.9,209.3 Q 164.9,194.5 182.0,176.5 Q 176.9,194.0 174.1,203.4 Q 188.1,192.1 205.1,178.3 Q 202.1,191.2 200.5,198.2 Q 213.4,190.7 229.2,181.6 Q 230.6,189.0 231.4,193.0 Q 242.0,189.9 255.0,186.0 Z" fill="url(#frondSunlitLime)" />
+              <path d="M 255.0,186.0 C 160.0,140.0 70.0,150.0 -15.0,195.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+            </g>
+            <g id="low_weep_left">
+              <path d="M 254.0,188.0 Q 245.4,184.7 239.7,182.5 Q 235.7,183.0 229.8,183.8 Q 219.4,180.8 212.5,178.8 Q 209.6,180.6 205.3,183.3 Q 193.4,181.0 185.6,179.5 Q 183.6,182.0 180.6,185.8 Q 167.7,184.6 159.2,183.8 Q 157.9,186.7 156.0,191.1 Q 142.5,191.2 133.4,191.2 Q 132.7,194.4 131.6,199.0 Q 117.8,200.6 108.6,201.6 Q 108.2,204.8 107.6,209.6 Q 93.9,212.6 84.8,214.6 Q 84.5,217.8 84.0,222.5 Q 70.8,227.0 62.1,229.9 Q 61.6,233.1 60.8,237.7 Q 48.6,243.5 40.5,247.4 Q 39.6,250.5 38.2,255.1 Q 27.4,262.1 20.2,266.8 Q 18.6,269.9 16.1,274.5 Q 7.5,282.8 1.7,288.3 Q -1.0,289.0 -5.0,290.0 L -5.0,290.0 Q 5.0,318.9 10.4,334.5 Q 15.5,313.7 21.7,288.2 Q 32.0,312.8 37.6,326.1 Q 41.8,302.4 46.9,273.4 Q 56.8,300.6 62.1,315.2 Q 66.3,290.2 71.3,259.7 Q 80.1,288.1 84.8,303.4 Q 89.3,278.1 94.9,247.1 Q 102.1,275.6 106.0,290.9 Q 111.4,266.0 117.9,235.6 Q 123.3,263.1 126.3,277.9 Q 132.6,254.1 140.3,225.1 Q 144.0,250.5 146.0,264.2 Q 153.4,242.3 162.3,215.5 Q 164.7,237.9 165.9,249.9 Q 174.2,230.6 184.4,207.0 Q 185.9,225.3 186.7,235.1 Q 195.8,219.1 206.8,199.6 Q 208.5,212.7 209.4,219.7 Q 218.6,207.9 229.9,193.5 Q 233.4,199.7 235.4,203.1 Q 243.8,196.3 254.0,188.0 Z" fill="url(#frondLushEmerald)" />
+              <path d="M 254.0,188.0 C 165.0,180.0 80.0,220.0 -5.0,290.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            </g>
+            <g id="low_cascade_left">
+              <path d="M 253.0,192.0 Q 243.1,193.8 236.4,195.1 Q 232.6,197.7 226.8,201.7 Q 215.3,204.7 207.7,206.6 Q 205.3,209.9 201.7,214.8 Q 189.2,218.9 180.8,221.6 Q 179.4,225.1 177.4,230.3 Q 164.3,235.8 155.6,239.4 Q 155.0,242.9 154.0,248.3 Q 140.8,255.0 132.0,259.5 Q 131.9,263.0 131.6,268.4 Q 118.7,276.3 110.1,281.7 Q 110.1,285.2 110.2,290.5 Q 98.0,299.6 89.9,305.7 Q 89.8,309.2 89.8,314.5 Q 78.7,324.6 71.3,331.4 Q 70.9,335.0 70.4,340.3 Q 60.8,351.2 54.4,358.5 Q 53.4,362.2 51.9,367.8 Q 44.6,379.3 39.6,387.0 Q 37.8,388.2 35.0,390.0 L 35.0,390.0 Q 45.9,418.8 51.8,434.3 Q 55.1,410.2 59.2,380.6 Q 72.1,402.6 79.1,414.5 Q 80.4,388.3 82.1,356.2 Q 95.8,379.9 103.2,392.6 Q 103.7,365.7 104.3,332.8 Q 118.1,356.9 125.4,369.8 Q 125.7,343.1 126.0,310.4 Q 139.1,333.8 146.1,346.4 Q 146.6,320.4 147.3,288.7 Q 159.2,310.5 165.7,322.3 Q 166.8,297.8 168.2,267.9 Q 178.8,287.1 184.5,297.4 Q 186.5,275.1 189.0,247.9 Q 198.1,263.3 203.1,271.6 Q 206.1,252.3 209.9,228.7 Q 217.8,239.0 222.0,244.5 Q 226.2,229.1 231.3,210.3 Q 238.2,213.4 241.9,215.1 Q 246.9,204.7 253.0,192.0 Z" fill="url(#frondDeepForest)" />
+              <path d="M 253.0,192.0 C 170.0,230.0 100.0,300.0 35.0,390.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+            </g>
         </g>
 
-        {/* ══════════ 7. TIER B: FLUID CASCADING PALM FRONDS (RIGHT GROUP) ══════════ */}
+        {/* ─── 5. Tajuk Pelepah Tengah Kanan (Midground Right Rustle) ─── */}
         <g
+          id="crownMidRightFronds"
           style={{
-            transformOrigin: '190px 145px',
-            animation: 'palmFrondRustleRight 8.6s ease-in-out infinite alternate',
+            transformOrigin: '257px 185px',
+            animation: 'palmFrondRustleRight 8.8s ease-in-out infinite alternate',
           }}
         >
-          {/* FROND 5: Sovereign Northeast High Arch */}
-          <path d="M 188.8,145.6 L 200.6,133.4 L 212.4,122.8 L 224.1,113.6 L 235.9,105.8 L 247.5,99.2 L 259.1,93.8 L 270.7,89.5 L 282.5,86.3 L 294.5,84.1 L 306.9,82.9 L 319.6,82.9 L 332.8,84.1 L 346.3,86.7 L 360.3,90.6 L 374.6,95.9 L 375.7,94.3 L 362.3,87.1 L 348.8,81.1 L 335.1,76.4 L 321.2,73.1 L 307.1,71.4 L 292.9,71.3 L 278.8,72.9 L 264.9,76.3 L 251.4,81.4 L 238.5,88.3 L 226.4,96.8 L 215.2,106.8 L 204.9,118.2 L 195.4,130.8 L 186.7,144.7 Z" fill="url(#frondSunlitGrad)" />
-          <path d="M 192.6,139.0 C 198.2,141.8 201.8,152.5 204.5,156.3 M 197.3,133.2 C 204.6,137.2 209.2,151.1 212.6,156.2 M 202.1,127.8 C 211.0,132.9 216.4,149.9 220.5,156.1 M 206.9,122.6 C 217.4,129.0 223.4,148.9 228.2,156.2 M 211.8,117.7 C 223.7,125.5 230.2,148.0 235.5,156.3 M 216.7,113.1 C 229.9,122.3 236.7,147.3 242.5,156.5 M 221.7,108.7 C 236.1,119.4 243.0,146.5 249.2,156.6 M 226.8,104.7 C 242.1,116.8 249.0,145.8 255.5,156.7 M 231.9,100.9 C 248.1,114.5 254.8,145.1 261.4,156.7 M 237.1,97.4 C 253.9,112.4 260.3,144.4 266.9,156.5 M 242.3,94.2 C 259.5,110.6 265.5,143.6 272.1,156.1 M 247.6,91.2 C 265.0,109.0 270.4,142.6 276.9,155.6 M 252.9,88.5 C 270.3,107.6 275.1,141.6 281.4,154.8 M 258.3,86.2 C 275.6,106.3 279.6,140.4 285.5,153.8 M 263.7,84.0 C 280.6,105.2 283.8,139.1 289.5,152.6 M 269.2,82.2 C 285.6,104.2 288.0,137.6 293.2,151.1 M 274.8,80.6 C 290.4,103.3 292.0,135.9 296.7,149.3 M 280.3,79.3 C 295.1,102.4 295.9,134.1 300.1,147.3 M 286.0,78.3 C 299.8,101.6 299.8,132.1 303.5,145.0 M 291.6,77.5 C 304.4,100.8 303.7,130.0 306.9,142.5 M 297.3,77.1 C 309.0,100.1 307.7,127.7 310.4,139.8 M 303.1,76.8 C 313.6,99.4 311.7,125.4 313.9,136.9 M 308.9,76.9 C 318.3,98.8 315.9,123.0 317.6,133.9 M 314.7,77.2 C 322.9,98.2 320.3,120.5 321.5,130.8 M 320.6,77.8 C 327.7,97.6 324.8,118.1 325.6,127.7 M 326.5,78.7 C 332.5,97.2 329.5,115.6 330.0,124.5 M 332.5,79.8 C 337.4,96.8 334.4,113.3 334.6,121.4 M 338.5,81.2 C 342.5,96.6 339.5,111.1 339.5,118.3 M 344.5,82.8 C 347.6,96.5 344.8,109.0 344.7,115.4 M 350.5,84.7 C 352.9,96.6 350.4,107.1 350.1,112.6 M 356.6,86.9 C 358.4,96.8 356.1,105.5 355.8,110.0 M 362.7,89.3 C 363.9,97.3 362.0,104.1 361.7,107.7 M 368.8,92.0 C 369.6,98.0 368.1,103.0 367.8,105.8" stroke="#15803d" strokeWidth="3.6" strokeLinecap="round" fill="none" />
-          <path d="M 192.6,139.0 C 190.8,134.7 189.1,136.5 188.6,140.3 M 197.3,133.2 C 195.0,127.5 192.8,129.9 192.2,134.9 M 202.1,127.8 C 199.5,120.6 196.8,123.4 196.0,129.7 M 206.9,122.6 C 204.0,114.0 200.9,117.2 200.0,124.7 M 211.8,117.7 C 208.8,107.6 205.3,111.3 204.3,119.9 M 216.7,113.1 C 213.7,101.6 209.8,105.6 208.8,115.3 M 221.7,108.7 C 218.8,95.9 214.6,100.2 213.6,111.0 M 226.8,104.7 C 224.1,90.6 219.6,95.0 218.7,106.8 M 231.9,100.9 C 229.5,85.6 224.9,90.2 224.0,102.9 M 237.1,97.4 C 235.1,81.0 230.4,85.8 229.5,99.3 M 242.3,94.2 C 240.8,76.8 236.0,81.6 235.3,95.8 M 247.6,91.2 C 246.6,73.0 241.9,77.9 241.4,92.7 M 252.9,88.5 C 252.6,69.6 248.0,74.5 247.6,89.8 M 258.3,86.2 C 258.6,66.7 254.2,71.5 254.0,87.2 M 263.7,84.0 C 264.8,64.1 260.6,68.9 260.6,84.8 M 269.2,82.2 C 270.9,62.1 267.1,66.8 267.3,82.8 M 274.8,80.6 C 277.1,60.4 273.7,65.0 274.0,81.0 M 280.3,79.3 C 283.4,59.2 280.3,63.7 280.8,79.6 M 286.0,78.3 C 289.6,58.5 286.9,62.9 287.7,78.5 M 291.6,77.5 C 295.8,58.2 293.5,62.4 294.5,77.6 M 297.3,77.1 C 302.0,58.4 300.1,62.4 301.2,77.1 M 303.1,76.8 C 308.1,58.9 306.7,62.8 307.9,76.8 M 308.9,76.9 C 314.1,59.9 313.1,63.5 314.5,76.9 M 314.7,77.2 C 320.1,61.2 319.5,64.7 320.9,77.3 M 320.6,77.8 C 326.0,63.0 325.7,66.2 327.2,77.9 M 326.5,78.7 C 331.8,65.1 331.9,68.1 333.3,78.8 M 332.5,79.8 C 337.6,67.5 337.9,70.2 339.3,80.0 M 338.5,81.2 C 343.3,70.2 343.8,72.7 345.2,81.4 M 344.5,82.8 C 348.9,73.3 349.5,75.5 350.8,83.1 M 350.5,84.7 C 354.5,76.6 355.2,78.5 356.4,85.0 M 356.6,86.9 C 360.1,80.2 360.7,81.8 361.8,87.2 M 362.7,89.3 C 365.6,84.0 366.2,85.4 367.1,89.6 M 368.8,92.0 C 371.0,88.1 371.6,89.1 372.3,92.3" stroke="#22c55e" strokeWidth="3.0" strokeLinecap="round" fill="none" />
-          <path d="M 188,145 C 240,75 305,60 375,95" stroke="url(#spineGoldenRim)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            <g id="mid_crest_right">
+              <path d="M 259.0,182.0 Q 266.8,173.7 272.0,168.1 Q 274.2,163.4 277.4,156.2 Q 286.8,148.5 293.1,143.3 Q 293.9,139.3 295.2,133.4 Q 305.9,126.7 313.0,122.2 Q 313.0,118.8 313.0,113.6 Q 324.6,108.3 332.4,104.7 Q 331.7,101.5 330.7,96.7 Q 343.0,92.9 351.2,90.4 Q 350.1,87.2 348.6,82.5 Q 361.1,80.4 369.5,79.0 Q 368.3,75.7 366.6,70.7 Q 379.1,70.3 387.4,70.0 Q 386.4,66.5 384.9,61.2 Q 397.0,62.3 405.0,63.0 Q 404.6,59.3 403.9,53.7 Q 415.2,56.0 422.8,57.6 Q 423.1,53.8 423.7,48.1 Q 434.1,51.3 441.1,53.4 Q 442.4,49.8 444.5,44.4 Q 453.9,47.8 460.1,50.1 Q 462.7,47.1 466.5,42.5 Q 474.7,45.3 480.2,47.2 Q 484.1,43.5 490.0,38.0 L 490.0,38.0 Q 486.6,43.8 484.8,47.0 Q 476.7,42.5 466.9,37.1 Q 465.6,32.0 464.8,29.3 Q 455.3,30.8 443.6,32.6 Q 442.3,23.0 441.6,17.8 Q 432.0,24.0 420.2,31.5 Q 417.7,18.6 416.4,11.6 Q 407.7,21.7 397.1,34.0 Q 392.5,18.9 390.1,10.8 Q 383.1,24.0 374.7,40.2 Q 367.5,24.3 363.7,15.7 Q 359.0,31.2 353.2,50.2 Q 343.6,34.6 338.5,26.2 Q 336.0,43.2 333.1,63.9 Q 321.5,49.8 315.3,42.2 Q 315.0,59.7 314.6,81.0 Q 301.9,69.5 295.0,63.3 Q 296.3,80.5 297.9,101.5 Q 285.0,93.5 278.1,89.1 Q 280.3,105.3 282.9,125.1 Q 271.3,121.5 265.0,119.6 Q 267.1,134.1 269.7,151.8 Q 261.4,154.2 256.8,155.5 Q 257.8,167.4 259.0,182.0 Z" fill="url(#frondSunlitLime)" />
+              <path d="M 259.0,182.0 C 320.0,65.0 395.0,25.0 490.0,38.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+            </g>
+            <g id="mid_sweep_right">
+              <path d="M 260.0,184.0 Q 269.5,178.6 275.8,175.1 Q 278.9,171.4 283.6,165.9 Q 294.7,161.4 302.1,158.4 Q 303.7,154.9 306.2,149.8 Q 318.4,146.6 326.5,144.5 Q 327.2,141.2 328.2,136.3 Q 341.1,134.6 349.8,133.5 Q 349.8,130.1 349.8,125.2 Q 363.1,125.1 372.0,125.1 Q 371.7,121.6 371.2,116.4 Q 384.5,118.0 393.4,119.1 Q 393.0,115.4 392.6,109.8 Q 405.5,113.0 414.1,115.1 Q 414.1,111.2 414.1,105.4 Q 426.4,109.9 434.6,112.9 Q 435.3,109.0 436.2,103.0 Q 447.7,108.6 455.3,112.3 Q 456.8,108.5 459.1,102.7 Q 469.7,108.9 476.7,113.0 Q 479.2,109.7 483.0,104.6 Q 492.7,110.9 499.1,115.0 Q 502.7,112.5 508.2,108.8 Q 516.9,114.2 522.8,117.8 Q 527.7,114.7 535.0,110.0 L 535.0,110.0 Q 532.9,118.3 531.7,122.8 Q 522.3,114.5 510.8,104.3 Q 512.1,100.8 512.9,98.9 Q 500.7,96.4 485.9,93.3 Q 488.5,85.1 489.9,80.7 Q 476.7,83.0 460.7,85.8 Q 463.0,73.8 464.2,67.3 Q 451.2,73.9 435.4,82.0 Q 436.2,67.1 436.6,59.1 Q 424.7,69.4 410.2,82.1 Q 408.7,65.3 407.9,56.3 Q 397.8,69.7 385.4,86.0 Q 381.3,68.7 379.2,59.4 Q 371.2,74.8 361.4,93.8 Q 354.9,77.1 351.4,68.2 Q 345.6,84.8 338.5,105.2 Q 330.0,90.5 325.4,82.5 Q 321.6,99.4 316.8,120.0 Q 307.1,108.4 301.9,102.2 Q 299.4,118.3 296.4,138.1 Q 286.5,130.9 281.2,127.1 Q 279.5,141.5 277.3,159.2 Q 268.9,158.6 264.4,158.3 Q 262.4,169.9 260.0,184.0 Z" fill="url(#frondSunlitLime)" />
+              <path d="M 260.0,184.0 C 345.0,95.0 430.0,70.0 535.0,110.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+            </g>
+            <g id="mid_lateral_right">
+              <path d="M 260.0,186.0 Q 270.0,185.0 276.6,184.3 Q 280.4,182.3 286.0,179.3 Q 297.3,179.7 304.8,180.0 Q 307.1,177.6 310.7,174.1 Q 322.7,176.2 330.7,177.6 Q 332.3,174.9 334.6,170.8 Q 346.9,174.6 355.2,177.1 Q 356.2,174.0 357.8,169.4 Q 370.1,174.6 378.3,178.1 Q 379.2,174.7 380.5,169.6 Q 392.5,176.2 400.5,180.6 Q 401.4,176.9 402.9,171.4 Q 414.3,179.0 422.0,184.1 Q 423.2,180.3 425.1,174.6 Q 435.9,183.0 443.1,188.6 Q 444.8,184.9 447.4,179.3 Q 457.4,188.1 464.1,194.0 Q 466.4,190.5 469.9,185.3 Q 479.1,194.1 485.2,200.0 Q 488.2,197.0 492.7,192.6 Q 501.1,200.9 506.7,206.5 Q 510.4,204.4 515.9,201.2 Q 523.6,208.2 528.7,212.9 Q 533.2,209.7 540.0,205.0 L 540.0,205.0 Q 540.0,217.2 540.0,223.8 Q 531.1,212.3 520.1,198.3 Q 524.5,197.7 526.9,197.4 Q 514.2,191.0 498.8,183.0 Q 505.6,178.0 509.2,175.3 Q 494.5,173.0 476.6,170.1 Q 484.3,161.2 488.5,156.4 Q 472.7,157.9 453.5,159.7 Q 461.0,147.5 465.1,141.0 Q 449.2,145.9 429.7,151.9 Q 436.1,137.3 439.5,129.4 Q 424.1,137.4 405.3,147.1 Q 409.8,130.9 412.2,122.1 Q 398.0,132.6 380.6,145.4 Q 382.6,128.6 383.7,119.5 Q 371.1,131.9 355.7,146.9 Q 355.1,130.8 354.7,122.0 Q 344.0,135.4 331.0,151.7 Q 327.8,137.5 326.0,129.9 Q 317.3,143.3 306.6,159.6 Q 301.2,149.2 298.3,143.6 Q 291.3,155.8 282.8,170.8 Q 276.0,166.8 272.4,164.7 Q 266.8,174.3 260.0,186.0 Z" fill="url(#frondSunlitLime)" />
+              <path d="M 260.0,186.0 C 360.0,140.0 450.0,155.0 540.0,205.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+            </g>
+            <g id="low_weep_right">
+              <path d="M 261.0,188.0 Q 270.1,190.9 276.2,192.8 Q 280.2,192.4 286.3,191.9 Q 296.3,196.5 303.0,199.6 Q 306.1,198.4 310.8,196.5 Q 321.2,202.9 328.2,207.2 Q 330.8,205.3 334.6,202.5 Q 345.1,210.5 352.1,215.8 Q 354.5,213.4 358.1,209.9 Q 368.3,219.2 375.2,225.5 Q 377.6,222.8 381.3,218.7 Q 391.1,229.2 397.7,236.1 Q 400.4,233.3 404.5,229.1 Q 413.8,240.3 420.0,247.7 Q 423.1,245.1 427.7,241.1 Q 436.5,252.7 442.3,260.4 Q 445.9,258.1 451.3,254.7 Q 459.4,266.4 464.9,274.1 Q 469.0,272.6 475.2,270.2 Q 482.9,281.4 488.0,289.0 Q 492.6,288.4 499.6,287.5 Q 507.0,297.7 512.0,304.4 Q 517.2,302.7 525.0,300.0 L 525.0,300.0 Q 526.0,315.1 526.6,323.2 Q 517.1,306.8 505.6,286.8 Q 511.7,288.9 515.0,290.1 Q 501.3,278.1 484.4,263.4 Q 493.5,261.7 498.4,260.8 Q 482.1,252.7 462.3,242.8 Q 472.8,237.5 478.4,234.7 Q 460.7,230.3 439.1,224.9 Q 449.8,216.6 455.5,212.1 Q 437.3,211.2 415.0,210.1 Q 424.8,199.1 430.1,193.3 Q 412.1,195.5 390.0,198.3 Q 398.1,185.6 402.5,178.7 Q 385.4,183.7 364.5,189.7 Q 370.1,176.2 373.1,168.9 Q 357.6,175.8 338.6,184.3 Q 341.2,171.3 342.6,164.3 Q 329.1,172.3 312.6,182.1 Q 311.9,171.2 311.5,165.3 Q 300.3,173.3 286.7,183.0 Q 282.3,177.0 279.9,173.8 Q 271.4,180.2 261.0,188.0 Z" fill="url(#frondLushEmerald)" />
+              <path d="M 261.0,188.0 C 355.0,185.0 440.0,220.0 525.0,300.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            </g>
+            <g id="low_cascade_right">
+              <path d="M 262.0,192.0 Q 269.8,199.3 274.9,204.2 Q 279.4,206.2 286.1,209.2 Q 294.1,218.6 299.4,224.9 Q 303.5,225.7 309.6,227.0 Q 317.4,238.2 322.6,245.7 Q 326.5,245.8 332.4,246.0 Q 339.8,258.6 344.8,267.1 Q 348.7,266.7 354.6,266.1 Q 361.6,279.8 366.3,288.9 Q 370.4,288.2 376.4,287.3 Q 383.1,301.6 387.5,311.1 Q 391.7,310.5 398.0,309.5 Q 404.3,324.0 408.5,333.7 Q 412.9,333.3 419.5,332.7 Q 425.6,347.1 429.6,356.7 Q 434.2,356.7 441.0,356.8 Q 447.0,370.6 450.9,379.8 Q 455.6,380.6 462.6,381.8 Q 468.8,394.2 472.9,402.5 Q 477.7,401.5 485.0,400.0 L 485.0,400.0 Q 487.7,418.7 489.1,428.8 Q 480.5,408.4 469.9,383.4 Q 477.9,388.8 482.3,391.6 Q 469.0,374.5 452.8,353.5 Q 464.0,355.5 470.1,356.6 Q 453.9,342.5 434.2,325.2 Q 447.2,324.1 454.2,323.5 Q 436.1,312.3 414.0,298.7 Q 427.5,294.7 434.7,292.6 Q 415.7,284.3 392.4,274.2 Q 405.0,267.7 411.8,264.2 Q 392.6,258.8 369.1,252.1 Q 379.8,243.5 385.6,238.9 Q 367.0,236.0 344.3,232.5 Q 352.0,222.7 356.2,217.4 Q 339.1,216.6 318.1,215.6 Q 321.7,205.7 323.7,200.4 Q 308.9,201.0 290.8,201.7 Q 288.6,194.1 287.4,189.9 Q 276.0,190.9 262.0,192.0 Z" fill="url(#frondDeepForest)" />
+              <path d="M 262.0,192.0 C 350.0,235.0 420.0,310.0 485.0,400.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+            </g>
+        </g>
 
-          {/* FROND 6: Grand Mid-East Sweeper */}
-          <path d="M 190.4,148.9 L 204.0,145.6 L 217.4,143.4 L 230.5,142.0 L 243.6,141.5 L 256.6,141.6 L 269.6,142.4 L 282.6,143.8 L 295.9,145.8 L 309.3,148.5 L 323.0,151.8 L 337.0,156.0 L 351.1,160.9 L 365.4,166.6 L 379.9,173.3 L 394.5,180.8 L 395.9,179.4 L 382.8,169.9 L 369.5,161.2 L 356.1,153.3 L 342.5,146.2 L 328.6,140.0 L 314.5,134.9 L 300.1,130.9 L 285.5,128.2 L 270.9,126.9 L 256.3,126.9 L 242.0,128.3 L 228.0,131.1 L 214.5,135.3 L 201.6,140.7 L 189.4,147.2 Z" fill="url(#frondVibrantGrad)" />
-          <path d="M 195.4,145.8 C 200.1,151.4 201.1,161.6 202.7,165.7 M 200.9,143.7 C 206.9,151.3 208.0,164.6 209.9,169.9 M 206.4,141.9 C 213.5,151.4 214.6,167.6 216.9,174.1 M 211.8,140.2 C 220.1,151.8 221.1,170.7 223.7,178.3 M 217.4,138.8 C 226.5,152.3 227.4,173.7 230.1,182.5 M 222.9,137.5 C 232.9,153.0 233.4,176.7 236.3,186.5 M 228.4,136.4 C 239.1,153.8 239.3,179.5 242.2,190.3 M 234.0,135.6 C 245.1,154.7 245.0,182.3 247.9,193.9 M 239.6,134.9 C 251.1,155.7 250.4,184.9 253.3,197.3 M 245.2,134.3 C 256.9,156.8 255.8,187.3 258.5,200.5 M 250.8,134.0 C 262.6,157.9 261.0,189.5 263.6,203.3 M 256.5,133.9 C 268.2,159.1 266.0,191.5 268.5,205.8 M 262.1,133.9 C 273.7,160.2 271.0,193.2 273.2,207.9 M 267.8,134.1 C 279.1,161.4 275.9,194.7 277.8,209.8 M 273.5,134.5 C 284.4,162.5 280.7,195.9 282.4,211.2 M 279.2,135.0 C 289.6,163.6 285.5,196.9 286.9,212.3 M 284.9,135.7 C 294.8,164.6 290.3,197.7 291.4,213.1 M 290.6,136.6 C 299.9,165.6 295.1,198.1 295.9,213.5 M 296.4,137.7 C 305.0,166.6 299.9,198.4 300.4,213.5 M 302.1,138.9 C 310.0,167.5 304.8,198.4 305.0,213.3 M 307.9,140.3 C 315.1,168.4 309.7,198.2 309.7,212.7 M 313.6,141.9 C 320.2,169.2 314.6,197.8 314.4,211.9 M 319.4,143.6 C 325.2,170.1 319.7,197.3 319.3,210.8 M 325.2,145.5 C 330.3,170.9 324.8,196.6 324.2,209.6 M 331.0,147.5 C 335.5,171.7 330.1,195.8 329.3,208.1 M 336.8,149.7 C 340.6,172.5 335.4,194.9 334.5,206.4 M 342.6,152.1 C 345.8,173.3 340.8,193.9 339.9,204.7 M 348.4,154.6 C 351.1,174.1 346.4,192.9 345.4,202.8 M 354.2,157.2 C 356.4,175.0 352.0,192.0 351.0,200.9 M 360.0,160.1 C 361.8,176.0 357.8,191.0 356.8,199.0 M 365.8,163.0 C 367.2,177.0 363.6,190.1 362.7,197.2 M 371.7,166.1 C 372.7,178.2 369.5,189.3 368.7,195.4 M 377.5,169.4 C 378.2,179.4 375.6,188.6 374.8,193.7 M 383.3,172.8 C 383.8,180.8 381.6,188.1 381.0,192.2 M 389.2,176.3 C 389.4,182.3 387.8,187.8 387.3,190.8" stroke="#166534" strokeWidth="3.8" strokeLinecap="round" fill="none" />
-          <path d="M 195.4,145.8 C 195.6,140.4 194.4,141.7 194.4,146.0 M 200.9,143.7 C 201.3,136.6 199.8,138.3 199.8,144.0 M 206.4,141.9 C 207.1,133.1 205.4,135.2 205.4,142.2 M 211.8,140.2 C 212.9,129.8 211.0,132.2 211.2,140.5 M 217.4,138.8 C 218.9,126.8 216.9,129.5 217.1,139.0 M 222.9,137.5 C 224.9,124.0 222.8,127.1 223.2,137.7 M 228.4,136.4 C 231.0,121.6 228.9,124.9 229.4,136.6 M 234.0,135.6 C 237.1,119.4 235.0,122.9 235.7,135.7 M 239.6,134.9 C 243.3,117.5 241.3,121.3 242.2,134.9 M 245.2,134.3 C 249.6,116.0 247.7,119.9 248.7,134.4 M 250.8,134.0 C 255.8,114.7 254.1,118.9 255.3,134.0 M 256.5,133.9 C 262.1,113.8 260.5,118.1 261.9,133.9 M 262.1,133.9 C 268.3,113.3 267.0,117.7 268.6,133.9 M 267.8,134.1 C 274.5,113.0 273.5,117.6 275.2,134.1 M 273.5,134.5 C 280.7,113.1 279.9,117.7 281.8,134.5 M 279.2,135.0 C 286.8,113.6 286.4,118.2 288.4,135.1 M 284.9,135.7 C 292.9,114.3 292.8,119.0 294.9,135.9 M 290.6,136.6 C 299.0,115.4 299.1,120.1 301.4,136.8 M 296.4,137.7 C 305.0,116.8 305.3,121.4 307.8,138.0 M 302.1,138.9 C 310.9,118.5 311.5,123.1 314.0,139.3 M 307.9,140.3 C 316.7,120.5 317.6,125.0 320.1,140.7 M 313.6,141.9 C 322.5,122.7 323.6,127.1 326.1,142.4 M 319.4,143.6 C 328.2,125.3 329.5,129.6 332.0,144.1 M 325.2,145.5 C 333.8,128.1 335.2,132.2 337.8,146.1 M 331.0,147.5 C 339.3,131.1 340.9,135.1 343.4,148.2 M 336.8,149.7 C 344.8,134.4 346.5,138.2 348.9,150.4 M 342.6,152.1 C 350.2,138.0 351.9,141.5 354.2,152.8 M 348.4,154.6 C 355.5,141.7 357.3,145.0 359.4,155.3 M 354.2,157.2 C 360.8,145.6 362.5,148.6 364.5,158.0 M 360.0,160.1 C 366.0,149.7 367.7,152.4 369.5,160.8 M 365.8,163.0 C 371.2,154.0 372.7,156.4 374.4,163.7 M 371.7,166.1 C 376.3,158.4 377.7,160.5 379.2,166.8 M 377.5,169.4 C 381.4,163.0 382.7,164.8 383.9,170.0 M 383.3,172.8 C 386.5,167.7 387.6,169.1 388.6,173.3 M 389.2,176.3 C 391.6,172.6 392.4,173.6 393.2,176.7" stroke="#15803d" strokeWidth="3.2" strokeLinecap="round" fill="none" />
-          <path d="M 190,148 C 255,120 325,135 395,180" stroke="url(#spineGoldenRim)" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+        {/* ─── 6. Pelepah Depan Utama (Foreground Sweeping Fronds) ─── */}
+        <g id="crownForegroundFronds">
+            <g id="front_high_arch">
+              <path d="M 258.0,182.0 Q 262.9,171.5 266.2,164.5 Q 267.0,159.2 268.2,151.2 Q 274.4,140.9 278.5,134.1 Q 278.2,130.1 277.7,124.0 Q 285.1,114.5 289.9,108.2 Q 288.9,105.0 287.3,100.3 Q 295.4,91.9 300.8,86.2 Q 299.2,83.7 296.7,79.9 Q 305.3,72.8 311.0,68.1 Q 309.0,65.9 306.0,62.6 Q 314.7,57.1 320.4,53.4 Q 318.3,51.3 315.0,48.1 Q 323.4,44.3 329.0,41.7 Q 326.9,39.5 323.8,36.2 Q 331.4,33.9 336.5,32.4 Q 334.9,30.0 332.5,26.3 Q 338.8,25.5 343.1,24.9 Q 342.3,22.2 341.1,18.2 Q 345.6,18.0 348.7,17.9 Q 349.2,13.9 350.0,8.0 L 350.0,8.0 Q 346.0,13.0 343.8,15.8 Q 340.7,14.8 336.8,13.6 Q 330.6,9.2 327.3,6.8 Q 325.5,11.7 323.3,17.7 Q 314.2,10.3 309.3,6.4 Q 309.6,15.1 310.1,25.8 Q 298.3,17.3 291.9,12.7 Q 294.6,24.0 297.8,37.7 Q 284.0,29.3 276.5,24.8 Q 281.2,37.6 286.9,53.2 Q 271.9,46.0 263.8,42.1 Q 270.0,55.6 277.5,72.2 Q 262.4,66.9 254.3,64.0 Q 261.3,77.8 269.8,94.6 Q 255.8,91.9 248.3,90.4 Q 255.3,103.9 263.8,120.2 Q 252.3,120.9 246.1,121.3 Q 252.2,133.9 259.6,149.3 Q 252.7,154.4 249.0,157.2 Q 253.0,168.4 258.0,182.0 Z" fill="url(#frondSunlitLime)" />
+              <path d="M 258.0,182.0 C 280.0,70.0 315.0,20.0 350.0,8.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+            </g>
+            <g id="front_sweep_left">
+              <path d="M 257.0,186.0 Q 248.8,179.1 243.3,174.5 Q 238.7,173.3 231.9,171.6 Q 222.3,164.5 215.9,159.7 Q 212.1,160.3 206.4,161.3 Q 195.6,154.4 188.4,149.8 Q 185.4,151.6 181.0,154.3 Q 169.1,148.1 161.2,144.0 Q 159.1,146.5 155.9,150.4 Q 143.1,145.3 134.5,141.8 Q 133.1,144.9 131.1,149.4 Q 117.7,145.6 108.7,143.1 Q 107.9,146.3 106.7,151.2 Q 93.1,148.8 84.0,147.3 Q 83.6,150.5 82.9,155.4 Q 69.5,154.6 60.5,154.1 Q 60.3,157.2 59.8,161.9 Q 47.0,162.6 38.4,163.1 Q 38.0,166.0 37.5,170.3 Q 25.6,172.4 17.7,173.9 Q 17.0,176.5 15.8,180.4 Q 5.4,184.0 -1.5,186.3 Q -2.9,188.6 -5.1,192.1 Q -13.3,197.1 -18.8,200.5 Q -21.3,200.3 -25.0,200.0 L -25.0,200.0 Q -17.6,230.2 -13.6,246.5 Q -8.1,228.7 -1.2,206.8 Q 5.2,234.1 8.6,248.8 Q 14.5,227.2 21.7,200.8 Q 26.6,230.9 29.3,247.2 Q 36.0,223.8 44.1,195.2 Q 47.3,226.7 49.0,243.7 Q 56.7,219.6 66.1,190.0 Q 67.2,221.9 67.8,239.0 Q 76.9,215.0 87.9,185.6 Q 86.9,216.6 86.3,233.3 Q 96.8,210.1 109.6,181.8 Q 106.6,210.9 105.0,226.6 Q 117.0,205.2 131.6,178.9 Q 127.1,205.2 124.7,219.4 Q 137.9,200.4 154.1,177.1 Q 149.0,199.7 146.2,211.9 Q 160.3,196.0 177.5,176.6 Q 172.9,195.0 170.4,204.9 Q 184.7,192.7 202.2,177.8 Q 199.7,191.3 198.3,198.6 Q 211.9,190.7 228.5,181.0 Q 230.5,188.9 231.5,193.1 Q 243.0,189.9 257.0,186.0 Z" fill="url(#frondSunlitLime)" />
+              <path d="M 257.0,186.0 C 150.0,135.0 60.0,160.0 -25.0,200.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.8" strokeLinecap="round" fill="none" />
+            </g>
+            <g id="front_sweep_right">
+              <path d="M 258.0,186.0 Q 269.1,185.2 276.6,184.7 Q 281.1,182.7 287.8,179.7 Q 300.0,180.6 308.2,181.1 Q 311.2,178.7 315.7,175.1 Q 328.5,177.8 337.1,179.6 Q 339.1,176.8 342.1,172.7 Q 355.1,177.1 363.8,180.1 Q 365.2,176.9 367.4,172.2 Q 380.2,178.2 388.8,182.2 Q 389.9,178.7 391.7,173.4 Q 404.1,180.8 412.4,185.7 Q 413.6,181.9 415.4,176.2 Q 427.1,184.5 435.0,190.1 Q 436.4,186.2 438.6,180.3 Q 449.6,189.3 456.9,195.3 Q 458.8,191.5 461.6,185.6 Q 471.8,194.9 478.6,201.1 Q 481.0,197.5 484.5,192.1 Q 493.9,201.2 500.1,207.3 Q 503.1,204.1 507.6,199.5 Q 516.2,207.9 521.9,213.5 Q 525.5,211.2 531.0,207.6 Q 538.7,214.5 543.9,219.1 Q 548.3,215.5 555.0,210.0 L 555.0,210.0 Q 555.0,223.3 555.1,230.4 Q 546.0,218.8 535.0,204.6 Q 539.7,204.3 542.2,204.2 Q 529.4,197.6 513.8,189.6 Q 521.0,184.6 524.9,182.0 Q 509.9,179.5 491.5,176.5 Q 499.9,167.6 504.5,162.8 Q 488.2,164.0 468.3,165.5 Q 476.7,153.3 481.2,146.7 Q 464.5,151.3 444.1,157.0 Q 451.4,142.2 455.3,134.2 Q 438.9,141.8 418.9,151.2 Q 424.3,134.6 427.2,125.7 Q 411.7,136.0 392.9,148.4 Q 395.7,131.2 397.3,121.9 Q 383.3,134.0 366.3,148.9 Q 366.3,132.2 366.3,123.2 Q 354.2,136.5 339.4,152.7 Q 336.5,138.0 334.9,130.1 Q 324.7,143.5 312.2,159.9 Q 306.7,149.0 303.7,143.1 Q 295.3,155.5 284.9,170.7 Q 277.5,166.4 273.5,164.1 Q 266.5,174.0 258.0,186.0 Z" fill="url(#frondSunlitLime)" />
+              <path d="M 258.0,186.0 C 375.0,140.0 465.0,165.0 555.0,210.0" stroke="url(#goldenSpineGlow)" strokeWidth="2.8" strokeLinecap="round" fill="none" />
+            </g>
+        </g>
 
-          {/* FROND 7: Cascading Southeast Drooper */}
-          <path d="M 189.5,152.8 L 200.5,162.0 L 211.3,171.4 L 222.1,181.0 L 232.9,190.9 L 243.7,200.9 L 254.6,211.1 L 265.5,221.5 L 276.6,232.1 L 287.6,243.0 L 298.8,254.1 L 310.0,265.6 L 321.1,277.5 L 332.3,289.7 L 343.3,302.4 L 354.2,315.6 L 356.3,314.8 L 347.6,300.7 L 338.7,286.9 L 329.6,273.5 L 320.3,260.5 L 310.6,247.9 L 300.5,235.7 L 290.0,223.9 L 279.0,212.7 L 267.6,202.1 L 255.7,192.0 L 243.3,182.6 L 230.6,173.8 L 217.6,165.7 L 204.3,158.2 L 190.9,151.3 Z" fill="url(#frondCascadeGrad)" />
-          <path d="M 196.0,155.9 C 196.2,164.2 193.9,172.2 193.1,176.6 M 201.9,159.8 C 202.1,170.9 199.0,181.5 197.9,187.3 M 207.9,163.9 C 207.9,177.6 204.1,190.6 202.7,197.9 M 213.7,168.1 C 213.7,184.3 209.1,199.5 207.3,208.1 M 219.6,172.4 C 219.3,190.9 214.0,208.2 212.0,218.1 M 225.4,176.8 C 224.9,197.5 218.9,216.6 216.6,227.6 M 231.2,181.4 C 230.4,203.9 223.9,224.7 221.2,236.8 M 236.9,186.0 C 235.8,210.2 228.8,232.5 225.8,245.4 M 242.6,190.7 C 241.3,216.4 233.7,239.9 230.5,253.6 M 248.3,195.6 C 246.6,222.4 238.7,246.8 235.3,261.2 M 254.0,200.6 C 251.9,228.2 243.7,253.4 240.1,268.3 M 259.6,205.6 C 257.3,233.9 248.8,259.6 245.0,274.8 M 265.2,210.8 C 262.5,239.4 254.0,265.3 250.0,280.8 M 270.7,216.1 C 267.8,244.8 259.2,270.7 255.1,286.2 M 276.2,221.5 C 273.1,250.0 264.5,275.6 260.4,291.1 M 281.7,227.0 C 278.4,255.0 269.9,280.1 265.7,295.4 M 287.2,232.6 C 283.7,259.9 275.4,284.3 271.3,299.2 M 292.6,238.3 C 289.0,264.7 281.0,288.2 276.9,302.6 M 298.0,244.1 C 294.3,269.3 286.6,291.7 282.7,305.6 M 303.3,250.1 C 299.7,273.9 292.4,295.0 288.6,308.1 M 308.6,256.1 C 305.1,278.3 298.2,298.0 294.6,310.3 M 313.9,262.2 C 310.5,282.7 304.1,300.9 300.7,312.3 M 319.2,268.5 C 315.9,287.1 310.1,303.6 307.0,314.0 M 324.4,274.8 C 321.3,291.5 316.2,306.2 313.3,315.5 M 329.6,281.3 C 326.8,295.9 322.2,308.8 319.7,316.9 M 334.7,287.8 C 332.2,300.3 328.4,311.3 326.2,318.3 M 339.9,294.5 C 337.7,304.8 334.5,313.9 332.6,319.7 M 344.9,301.2 C 343.2,309.4 340.6,316.5 339.2,321.2 M 350.0,308.1 C 348.6,314.1 346.8,319.3 345.7,322.7" stroke="#14532d" strokeWidth="3.6" strokeLinecap="round" fill="none" />
-          <path d="M 196.0,155.9 C 199.4,150.7 200.6,152.2 201.7,156.5 M 201.9,159.8 C 206.5,153.0 208.2,155.0 209.6,160.7 M 207.9,163.9 C 213.6,155.6 215.7,158.1 217.5,165.0 M 213.7,168.1 C 220.5,158.3 223.1,161.3 225.3,169.5 M 219.6,172.4 C 227.4,161.3 230.5,164.7 233.1,174.0 M 225.4,176.8 C 234.2,164.5 237.8,168.4 240.6,178.7 M 231.2,181.4 C 240.9,168.0 244.9,172.3 248.1,183.5 M 236.9,186.0 C 247.4,171.7 251.8,176.4 255.3,188.4 M 242.6,190.7 C 253.8,175.7 258.7,180.7 262.4,193.4 M 248.3,195.6 C 260.1,180.0 265.3,185.3 269.2,198.5 M 254.0,200.6 C 266.3,184.5 271.7,190.0 275.8,203.7 M 259.6,205.6 C 272.2,189.4 278.0,195.0 282.2,208.9 M 265.2,210.8 C 278.1,194.4 284.0,200.2 288.3,214.3 M 270.7,216.1 C 283.7,199.8 289.8,205.6 294.2,219.7 M 276.2,221.5 C 289.2,205.4 295.4,211.3 299.8,225.2 M 281.7,227.0 C 294.6,211.3 300.8,217.1 305.2,230.7 M 287.2,232.6 C 299.8,217.4 306.0,223.1 310.3,236.4 M 292.6,238.3 C 304.8,223.7 310.9,229.3 315.1,242.1 M 298.0,244.1 C 309.7,230.2 315.7,235.6 319.7,247.8 M 303.3,250.1 C 314.5,237.0 320.2,242.2 324.1,253.7 M 308.6,256.1 C 319.1,244.0 324.6,248.8 328.2,259.5 M 313.9,262.2 C 323.7,251.1 328.8,255.6 332.2,265.5 M 319.2,268.5 C 328.1,258.4 332.8,262.6 335.9,271.5 M 324.4,274.8 C 332.4,265.8 336.7,269.6 339.5,277.6 M 329.6,281.3 C 336.6,273.4 340.5,276.8 342.9,283.8 M 334.7,287.8 C 340.8,281.2 344.1,284.0 346.2,290.0 M 339.9,294.5 C 344.9,289.0 347.7,291.4 349.4,296.3 M 344.9,301.2 C 348.9,296.9 351.2,298.8 352.6,302.7 M 350.0,308.1 C 352.9,304.9 354.6,306.3 355.7,309.2" stroke="#15803d" strokeWidth="3.0" strokeLinecap="round" fill="none" />
-          <path d="M 190,152 C 250,190 305,245 355,315" stroke="url(#spineGoldenRim)" strokeWidth="2.0" strokeLinecap="round" fill="none" />
-
-          {/* FROND 8: Far Low-East Cascade */}
-          <path d="M 187.2,156.6 L 196.4,171.1 L 205.5,185.4 L 214.5,199.4 L 223.5,213.1 L 232.5,226.7 L 241.4,240.1 L 250.4,253.4 L 259.3,266.6 L 268.2,279.9 L 277.1,293.4 L 285.8,307.0 L 294.5,321.0 L 302.9,335.3 L 311.1,350.1 L 319.1,365.4 L 321.5,365.1 L 315.6,349.3 L 309.6,334.0 L 303.2,319.0 L 296.4,304.3 L 289.3,290.0 L 281.6,275.9 L 273.5,262.0 L 264.8,248.4 L 255.5,235.0 L 245.7,221.7 L 235.4,208.5 L 224.5,195.4 L 213.2,182.2 L 201.4,169.1 L 189.3,155.7 Z" fill="url(#frondDeepBackdrop)" />
-          <path d="M 194.0,163.9 C 192.3,172.0 189.8,179.5 188.3,184.3 M 199.9,171.8 C 197.6,182.4 194.3,192.4 192.4,198.6 M 205.7,179.6 C 202.9,192.6 198.9,204.9 196.5,212.6 M 211.5,187.3 C 208.2,202.6 203.4,217.0 200.7,226.0 M 217.2,195.0 C 213.4,212.4 208.0,228.7 204.9,239.0 M 222.8,202.7 C 218.6,221.8 212.6,239.9 209.1,251.2 M 228.4,210.3 C 223.8,231.1 217.3,250.6 213.5,262.9 M 233.9,218.0 C 228.9,240.0 222.0,260.7 217.9,273.8 M 239.4,225.6 C 234.0,248.6 226.8,270.3 222.5,284.0 M 244.7,233.3 C 239.1,257.0 231.7,279.3 227.2,293.5 M 250.0,240.9 C 244.1,265.0 236.6,287.7 232.0,302.2 M 255.2,248.6 C 249.2,272.8 241.6,295.6 236.9,310.2 M 260.4,256.4 C 254.2,280.4 246.7,303.0 242.0,317.4 M 265.4,264.2 C 259.2,287.7 251.9,309.8 247.2,324.0 M 270.4,272.0 C 264.2,294.7 257.1,316.2 252.6,330.0 M 275.3,279.9 C 269.2,301.6 262.4,322.1 258.1,335.3 M 280.2,287.9 C 274.2,308.4 267.8,327.7 263.7,340.2 M 284.9,296.0 C 279.2,315.0 273.3,332.9 269.4,344.6 M 289.6,304.2 C 284.2,321.5 278.8,338.0 275.2,348.7 M 294.2,312.5 C 289.2,328.0 284.4,342.8 281.0,352.5 M 298.7,320.9 C 294.2,334.6 289.9,347.5 287.0,356.1 M 303.1,329.4 C 299.2,341.1 295.5,352.2 292.9,359.6 M 307.5,338.1 C 304.1,347.8 301.1,357.0 298.9,363.1 M 311.7,346.9 C 309.0,354.5 306.6,361.8 304.9,366.7 M 315.9,355.9 C 313.8,361.5 312.1,366.9 310.8,370.5" stroke="#064e3b" strokeWidth="3.4" strokeLinecap="round" fill="none" />
-          <path d="M 188,156 C 240,225 285,285 320,365" stroke="url(#spineGoldenRim)" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-
-          {/* FROND 10: Foreground East Overleaf */}
-          <path d="M 187.5,155.8 L 193.1,161.0 L 198.8,166.2 L 204.4,171.6 L 210.1,177.0 L 215.8,182.5 L 221.7,188.1 L 227.6,193.8 L 233.8,199.5 L 240.0,205.5 L 246.4,211.6 L 252.8,217.9 L 259.4,224.4 L 266.0,231.2 L 272.6,238.2 L 279.2,245.6 L 281.3,244.7 L 276.3,236.6 L 271.2,228.7 L 266.2,221.1 L 261.0,213.7 L 255.6,206.5 L 250.1,199.7 L 244.3,193.1 L 238.2,186.9 L 231.8,181.0 L 225.2,175.5 L 218.2,170.4 L 211.1,165.8 L 203.8,161.6 L 196.4,157.7 L 188.8,154.3 Z" fill="url(#frondSunlitGrad)" />
-          <path d="M 192.4,157.8 C 192.6,166.0 190.3,172.8 189.5,176.8 M 196.7,160.7 C 196.8,171.4 193.8,180.3 192.7,185.5 M 201.0,163.7 C 200.9,176.8 197.2,187.6 195.8,193.9 M 205.3,166.9 C 205.0,182.1 200.6,194.5 198.9,201.9 M 209.5,170.2 C 209.0,187.3 204.0,201.1 202.0,209.4 M 213.8,173.6 C 212.9,192.3 207.5,207.2 205.2,216.3 M 218.0,177.1 C 216.8,197.1 211.0,212.9 208.4,222.6 M 222.2,180.8 C 220.7,201.6 214.6,218.1 211.8,228.3 M 226.4,184.6 C 224.6,205.9 218.2,222.7 215.3,233.2 M 230.6,188.5 C 228.5,210.0 222.1,226.9 219.0,237.5 M 234.8,192.5 C 232.5,213.9 226.0,230.5 222.9,241.1 M 238.9,196.7 C 236.4,217.5 230.1,233.7 227.0,244.1 M 243.0,200.9 C 240.4,221.0 234.3,236.4 231.3,246.4 M 247.2,205.3 C 244.5,224.2 238.7,238.8 235.8,248.3 M 251.3,209.9 C 248.7,227.4 243.3,240.8 240.5,249.6 M 255.4,214.5 C 252.9,230.4 248.0,242.6 245.4,250.6 M 259.5,219.3 C 257.1,233.4 252.8,244.2 250.4,251.3 M 263.6,224.2 C 261.4,236.3 257.7,245.6 255.6,251.8 M 267.7,229.2 C 265.8,239.3 262.7,247.1 260.9,252.2 M 271.8,234.3 C 270.2,242.4 267.7,248.5 266.3,252.6 M 275.9,239.6 C 274.7,245.6 272.8,250.1 271.8,253.2" stroke="#15803d" strokeWidth="3.4" strokeLinecap="round" fill="none" />
-          <path d="M 192.4,157.8 C 195.7,152.7 196.9,154.2 198.0,158.4 M 196.7,160.7 C 201.1,154.1 202.8,156.1 204.2,161.5 M 201.0,163.7 C 206.5,155.8 208.6,158.2 210.4,164.8 M 205.3,166.9 C 211.7,157.8 214.3,160.6 216.4,168.3 M 209.5,170.2 C 216.9,160.0 219.9,163.3 222.3,171.8 M 213.8,173.6 C 221.9,162.6 225.3,166.2 228.0,175.5 M 218.0,177.1 C 226.7,165.5 230.5,169.4 233.4,179.2 M 222.2,180.8 C 231.4,168.7 235.5,172.8 238.6,183.1 M 226.4,184.6 C 235.9,172.3 240.3,176.6 243.5,187.1 M 230.6,188.5 C 240.3,176.2 244.8,180.6 248.1,191.1 M 234.8,192.5 C 244.5,180.4 249.1,184.8 252.4,195.2 M 238.9,196.7 C 248.5,184.9 253.1,189.3 256.4,199.4 M 243.0,200.9 C 252.3,189.7 256.9,194.0 260.0,203.7 M 247.2,205.3 C 256.0,194.9 260.4,198.9 263.4,208.1 M 251.3,209.9 C 259.5,200.2 263.7,204.0 266.5,212.5 M 255.4,214.5 C 262.9,205.8 266.8,209.3 269.4,217.0 M 259.5,219.3 C 266.2,211.6 269.8,214.7 272.1,221.5 M 263.6,224.2 C 269.4,217.6 272.5,220.3 274.6,226.2 M 267.7,229.2 C 272.6,223.7 275.2,226.0 276.9,230.9 M 271.8,234.3 C 275.7,230.0 277.8,231.9 279.2,235.7 M 275.9,239.6 C 278.8,236.4 280.4,237.8 281.4,240.7" stroke="#4ade80" strokeWidth="2.8" strokeLinecap="round" fill="none" />
-          <path d="M 188,155 C 220,175 250,205 280,245" stroke="url(#spineGoldenRim)" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+        {/* ─── 7. Pucuk Daun Kelapa Muda Tegak di Puncak (Zenith Emerging Shoots) ─── */}
+        <g id="zenithShoots">
+          <path d="M 255,185 Q 240,95 220,25 Q 248,98 259,185 Z" fill="url(#youngShootGrad)" />
+          <path d="M 255,185 Q 240,95 220,25" stroke="#fef08a" strokeWidth="2.0" strokeLinecap="round" fill="none" />
+          <path d="M 257,185 Q 267,90 280,20 Q 267,95 257,185 Z" fill="url(#youngShootGrad)" />
+          <path d="M 257,185 Q 267,90 280,20" stroke="#fef08a" strokeWidth="2.0" strokeLinecap="round" fill="none" />
         </g>
       </svg>
     </div>
