@@ -1052,6 +1052,36 @@ body {
 }
 
 /* =============================================
+ * == MOBILE PERFORMANCE & BATTERY HARDENING
+ * ============================================= */
+@media (max-width: 768px), (pointer: coarse) {
+  /* Bypass heavy Gaussian drop-shadow filter calculations on mobile GPUs */
+  .sun-photosphere {
+    filter: drop-shadow(0 0 35px rgba(253, 200, 48, 0.8)) !important;
+    animation: sunAtmosphericPulseMobile 8.5s ease-in-out infinite alternate !important;
+  }
+
+  /* Ensure smooth composite layers on mobile fixed decorative containers */
+  [data-theme='sunset'] .fixed,
+  [data-theme='catppuccin'] .fixed,
+  [data-theme='ramadan'] .fixed,
+  [data-theme='imlek'] .fixed,
+  [data-theme='natal'] .fixed {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+}
+
+@keyframes sunAtmosphericPulseMobile {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
+  }
+}
+
+/* =============================================
  * == ACCESSIBILITY & PREFERS-REDUCED-MOTION
  * ============================================= */
 @media (prefers-reduced-motion: reduce) {

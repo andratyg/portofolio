@@ -32,7 +32,6 @@ export const Hero = ({
   const { t, language } = useLanguage();
   const { projects, profile } = useProjectStore();
   const cardRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Typewriter for roles
   const { displayText } = useTypewriter({

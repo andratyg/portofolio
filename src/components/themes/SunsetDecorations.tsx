@@ -239,11 +239,11 @@ export default function SunsetDecorations() {
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
       {/* ─── 1. Kilau Cahaya Senja di Langit Biru Muda (Daylight Shimmer Glints) ─── */}
-      <div className="fixed top-3 left-1/4 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]" style={{ animation: 'starTwinkle 3.5s ease-in-out infinite' }} />
-      <div className="fixed top-8 left-1/3 w-2 h-2 rounded-full bg-amber-100 shadow-[0_0_10px_#fff]" style={{ animation: 'starTwinkle 4.2s ease-in-out infinite 1.2s' }} />
-      <div className="fixed top-5 left-1/2 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]" style={{ animation: 'starTwinkle 3s ease-in-out infinite 0.7s' }} />
-      <div className="fixed top-10 right-1/3 w-2 h-2 rounded-full bg-white shadow-[0_0_10px_#ffd166]" style={{ animation: 'starTwinkle 4.8s ease-in-out infinite 2s' }} />
-      <div className="fixed top-6 right-1/4 w-1.5 h-1.5 rounded-full bg-amber-100 shadow-[0_0_8px_#fff]" style={{ animation: 'starTwinkle 3.8s ease-in-out infinite 1.6s' }} />
+      <div className="fixed top-3 left-1/4 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff] hidden sm:block" style={{ animation: 'starTwinkle 3.5s ease-in-out infinite' }} />
+      <div className="fixed top-8 left-1/3 w-2 h-2 rounded-full bg-amber-100 shadow-[0_0_10px_#fff] hidden sm:block" style={{ animation: 'starTwinkle 4.2s ease-in-out infinite 1.2s' }} />
+      <div className="fixed top-5 left-1/2 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff] hidden sm:block" style={{ animation: 'starTwinkle 3s ease-in-out infinite 0.7s' }} />
+      <div className="fixed top-10 right-1/3 w-2 h-2 rounded-full bg-white shadow-[0_0_10px_#ffd166] hidden sm:block" style={{ animation: 'starTwinkle 4.8s ease-in-out infinite 2s' }} />
+      <div className="fixed top-6 right-1/4 w-1.5 h-1.5 rounded-full bg-amber-100 shadow-[0_0_8px_#fff] hidden sm:block" style={{ animation: 'starTwinkle 3.8s ease-in-out infinite 1.6s' }} />
 
       {/* ─── 2. Awan Senja Volumetrik Mengapung Alami (Sculpted Volumetric Sunset Clouds with Golden Lining) ─── */}
       {/* Cloud 1 - The Majestic Sovereign Cumulus (Upper Left High Sky) */}
@@ -379,7 +379,7 @@ export default function SunsetDecorations() {
 
       {/* Cloud 3 - The Fluffy Sunset Puff (Center Mid-Sky) */}
       <div
-        className="fixed top-18 sm:top-24 left-[34%] sm:left-[40%] w-52 sm:w-76 md:w-92 h-20 sm:h-28 md:h-32 pointer-events-none select-none z-0"
+        className="fixed top-18 sm:top-24 left-[34%] sm:left-[40%] w-52 sm:w-76 md:w-92 h-20 sm:h-28 md:h-32 pointer-events-none select-none z-0 hidden sm:block"
         style={{ animation: 'cloudDriftFloating 32s ease-in-out infinite alternate' }}
       >
         <svg viewBox="0 0 340 110" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full opacity-80 filter drop-shadow-sm">
@@ -417,7 +417,7 @@ export default function SunsetDecorations() {
 
       {/* Cloud 4 - Horizon Wispy Cirrus Streamers (Lower Sky Over Ocean) */}
       <div
-        className="fixed top-40 sm:top-52 md:top-60 right-[1%] sm:right-[4%] w-60 sm:w-92 md:w-[420px] h-14 sm:h-18 pointer-events-none select-none z-0"
+        className="fixed top-40 sm:top-52 md:top-60 right-[1%] sm:right-[4%] w-60 sm:w-92 md:w-[420px] h-14 sm:h-18 pointer-events-none select-none z-0 hidden sm:block"
         style={{ animation: 'cloudDriftWispy 46s ease-in-out infinite alternate' }}
       >
         <svg viewBox="0 0 380 60" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full opacity-65">
@@ -477,7 +477,7 @@ export default function SunsetDecorations() {
 
         {/* 2. Outermost Huge Atmospheric Sunset Bloom (Diffused Ambient Light) */}
         <div
-          className="absolute -top-40 -left-40 w-[380px] sm:w-[540px] md:w-[660px] h-[380px] sm:h-[540px] md:h-[660px] rounded-full blur-[115px] opacity-65 pointer-events-none"
+          className="absolute -top-40 -left-40 w-[260px] sm:w-[540px] md:w-[660px] h-[260px] sm:h-[540px] md:h-[660px] rounded-full blur-[60px] sm:blur-[115px] opacity-65 pointer-events-none"
           style={{
             background: 'radial-gradient(circle, rgba(254, 240, 138, 0.65) 0%, rgba(251, 191, 36, 0.45) 35%, rgba(249, 115, 22, 0.28) 60%, rgba(225, 29, 72, 0.12) 80%, transparent 92%)',
           }}
@@ -510,7 +510,7 @@ export default function SunsetDecorations() {
 
         {/* 6. Brilliant Photosphere (The Setting Sun Disc) */}
         <div
-          className="relative w-30 h-30 sm:w-44 sm:h-44 md:w-52 md:h-52 rounded-full overflow-hidden"
+          className="relative w-30 h-30 sm:w-44 sm:h-44 md:w-52 md:h-52 rounded-full overflow-hidden sun-photosphere"
           style={{
             background: 'radial-gradient(circle at 45% 40%, #FFFFFF 0%, #FFFEE8 22%, #FEF08A 45%, #FDE047 65%, #FB923C 85%, #F43F5E 100%)',
             animation: 'sunAtmosphericPulse 8.5s ease-in-out infinite alternate',
@@ -586,7 +586,7 @@ export default function SunsetDecorations() {
 
       {/* Burung Camar 3 - Melayang Tinggi di Dekat Awan (High Thermal Soarer) */}
       <div
-        className="fixed top-10 sm:top-14 left-[35%] sm:left-[42%] w-6 sm:w-7 h-4 pointer-events-none select-none z-0 text-[#1a365d] opacity-60"
+        className="fixed top-10 sm:top-14 left-[35%] sm:left-[42%] w-6 sm:w-7 h-4 pointer-events-none select-none z-0 text-[#1a365d] opacity-60 hidden sm:block"
         style={{ animation: 'seagullFlightHigh 28s ease-in-out infinite 3s' }}
       >
         <svg viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
@@ -611,7 +611,7 @@ export default function SunsetDecorations() {
 
       {/* Burung Camar 4 - Melayang Rendah di Horizon Laut (Horizon Coastline Skimmer) */}
       <div
-        className="fixed top-24 sm:top-32 left-[55%] sm:left-[62%] w-5 sm:w-6 h-3.5 pointer-events-none select-none z-0 text-[#1e3a5f] opacity-50"
+        className="fixed top-24 sm:top-32 left-[55%] sm:left-[62%] w-5 sm:w-6 h-3.5 pointer-events-none select-none z-0 text-[#1e3a5f] opacity-50 hidden sm:block"
         style={{ animation: 'seagullFlightSkim 22s ease-in-out infinite 4.8s' }}
       >
         <svg viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
@@ -635,7 +635,10 @@ export default function SunsetDecorations() {
       </div>
 
       {/* ─── 5. Hamparan Air Laut Senja Mewah & Deburan Ombak Hidup (Artistic Volumetric Sunset Ocean & Surf) ─── */}
-      <div className="fixed bottom-0 inset-x-0 h-24 sm:h-28 md:h-32 lg:h-36 pointer-events-none select-none z-0 overflow-hidden">
+      <div
+        className="fixed bottom-0 inset-x-0 h-24 sm:h-28 md:h-32 lg:h-36 pointer-events-none select-none z-0 overflow-hidden"
+        style={{ transform: 'translateZ(0)', willChange: 'transform' }}
+      >
         {/* Layer A: Atmospheric Sea Horizon Swell with Radiant Sun Flare */}
         <div className="absolute inset-x-0 bottom-0 h-full" style={{ animation: 'oceanSwellDeep 14s ease-in-out infinite' }}>
           <svg
