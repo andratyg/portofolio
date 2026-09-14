@@ -34,7 +34,7 @@ export function ClientShell() {
   const [isIdle, setIsIdle] = useState(false);
 
   useEffect(() => {
-    // Auto-reload once if an outdated deployment chunk or stylesheet fails with 404
+    // Auto-reload once if an outdated deployment chunk, stylesheet, or hydration mismatch fails with 404
     const handleChunkError = (event: ErrorEvent | PromiseRejectionEvent) => {
       const error = 'reason' in event ? event.reason : event.error;
       const message = error?.message || (event as ErrorEvent).message || '';
@@ -42,10 +42,18 @@ export function ClientShell() {
         message.includes('Loading chunk') ||
         message.includes('ChunkLoadError') ||
         message.includes('Failed to fetch dynamically imported module') ||
-        message.includes('Refused to apply style');
+        message.includes('Refused to apply style') ||
+        message.includes('Minified React error #418') ||
+        message.includes('Minified React error #423') ||
+        message.includes('Hydration failed');
 
       if (isChunkOrCssError) {
         try {
+          if ('caches' in window) {
+            caches.keys().then((keys) => {
+              keys.forEach((k) => caches.delete(k));
+            });
+          }
           const lastReload = sessionStorage.getItem('chunk_error_reload');
           const now = Date.now();
           if (!lastReload || now - Number(lastReload) > 12000) {
