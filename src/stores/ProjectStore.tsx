@@ -31,25 +31,25 @@ interface ProjectStoreType {
   shortLinks: ShortLink[];
   isLoading: boolean;
   error: any;
-  addProject: (project: Project) => void;
-  deleteProject: (id: string) => void;
-  setFeaturedProject: (id: string) => void;
-  addCertificate: (cert: Certificate) => void;
-  deleteCertificate: (id: string) => void;
-  addTestimonial: (test: Testimonial) => void;
-  deleteTestimonial: (id: string) => void;
-  addExperience: (exp: Experience) => void;
-  deleteExperience: (id: string) => void;
-  deleteMessage: (id: string) => void;
-  updateProfileAndStats: (newProfile: ProfileData, newStats: PortfolioStats) => void;
+  addProject: (project: Project) => Promise<void>;
+  deleteProject: (id: string) => Promise<void>;
+  setFeaturedProject: (id: string) => Promise<void>;
+  addCertificate: (cert: Certificate) => Promise<void>;
+  deleteCertificate: (id: string) => Promise<void>;
+  addTestimonial: (test: Testimonial) => Promise<void>;
+  deleteTestimonial: (id: string) => Promise<void>;
+  addExperience: (exp: Experience) => Promise<void>;
+  deleteExperience: (id: string) => Promise<void>;
+  deleteMessage: (id: string) => Promise<void>;
+  updateProfileAndStats: (newProfile: ProfileData, newStats: PortfolioStats) => Promise<void>;
   techSkills: TechSkill[];
-  addTechSkill: (skill: TechSkill) => void;
-  deleteTechSkill: (id: string) => void;
+  addTechSkill: (skill: TechSkill) => Promise<void>;
+  deleteTechSkill: (id: string) => Promise<void>;
   seedDefaultTechSkills: () => Promise<void>;
-  addBlog: (blog: BlogPost) => void;
-  deleteBlog: (id: string) => void;
-  addShortLink: (link: ShortLink) => void;
-  deleteShortLink: (slug: string) => void;
+  addBlog: (blog: BlogPost) => Promise<void>;
+  deleteBlog: (id: string) => Promise<void>;
+  addShortLink: (link: ShortLink) => Promise<void>;
+  deleteShortLink: (slug: string) => Promise<void>;
   backupData: () => void;
   restoreData: (json: string) => Promise<void>;
 }
@@ -206,6 +206,24 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const error = isAdmin ? null : publicError;
 
+  // Reliable helper to ensure Firestore instance is available even if lazy context is resolving
+  const getSafeDb = async () => {
+    if (firestore) return firestore;
+    const { getFirestore } = await import('firebase/firestore');
+    const { initializeFirebase } = await import('@/firebase');
+    const services = initializeFirebase();
+    return getFirestore(services.firebaseApp);
+  };
+
+  const triggerRevalidate = async () => {
+    try {
+      const { revalidatePortfolio } = await import('@/app/actions/revalidate');
+      await revalidatePortfolio('/');
+    } catch (e) {
+      console.warn('[ProjectStore] Revalidate error:', e);
+    }
+  };
+
   const backupData = async () => {
     const data = {
       projects,
@@ -214,9 +232,10 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       experiences,
       blogs,
       techSkills,
+      shortLinks,
       profile,
       stats,
-      version: '2.5.0',
+      version: '2.6.0',
       exportedAt: new Date().toISOString()
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -229,44 +248,51 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const restoreData = async (json: string) => {
-    if (!firestore) return;
+    const db = await getSafeDb();
     try {
       const { doc, writeBatch } = await import('firebase/firestore');
       const data = JSON.parse(json);
-      const batch = writeBatch(firestore);
+      const batch = writeBatch(db);
       if (!data.projects || !data.certificates) throw new Error("Invalid format");
-      data.projects.forEach((p: any) => batch.set(doc(firestore, 'projects', p.id), p));
-      data.certificates.forEach((c: any) => batch.set(doc(firestore, 'certificates', c.id), c));
-      data.testimonials?.forEach((t: any) => batch.set(doc(firestore, 'testimonials', t.id), t));
-      data.experiences?.forEach((e: any) => batch.set(doc(firestore, 'careerTimelineEntries', e.id), e));
-      data.blogs?.forEach((b: any) => batch.set(doc(firestore, 'blogs', b.id), b));
-      data.techSkills?.forEach((s: any) => batch.set(doc(firestore, 'techSkills', s.id), s));
+      data.projects.forEach((p: any) => batch.set(doc(db, 'projects', p.id), p, { merge: true }));
+      data.certificates.forEach((c: any) => batch.set(doc(db, 'certificates', c.id), c, { merge: true }));
+      data.testimonials?.forEach((t: any) => batch.set(doc(db, 'testimonials', t.id), t, { merge: true }));
+      data.experiences?.forEach((e: any) => batch.set(doc(db, 'careerTimelineEntries', e.id), e, { merge: true }));
+      data.blogs?.forEach((b: any) => batch.set(doc(db, 'blogs', b.id), b, { merge: true }));
+      data.techSkills?.forEach((s: any) => batch.set(doc(db, 'techSkills', s.id), s, { merge: true }));
+      data.shortLinks?.forEach((l: any) => batch.set(doc(db, 'shortLinks', l.slug || l.id), l, { merge: true }));
       await batch.commit();
+      await triggerRevalidate();
       toast({ title: "Restore Successful" });
     } catch (e: any) {
       toast({ variant: "destructive", title: "Restore Failed", description: e.message });
+      throw e;
     }
   };
 
   const addProject = async (project: Project) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    const docRef = doc(firestore, 'projects', project.id);
-    setDocumentNonBlocking(docRef, { ...project, updatedAt: new Date().toISOString() }, { merge: true });
+    const db = await getSafeDb();
+    const { doc, setDoc } = await import('firebase/firestore');
+    const { sanitizeFirestoreData } = await import('@/firebase/non-blocking-updates');
+    const docRef = doc(db, 'projects', project.id);
+    const sanitized = sanitizeFirestoreData({ ...project, updatedAt: new Date().toISOString() });
+    await setDoc(docRef, sanitized, { merge: true });
+    await triggerRevalidate();
   };
 
   const setFeaturedProject = async (projectId: string) => {
-    if (!firestore || projects.length === 0) return;
+    const db = await getSafeDb();
+    if (projects.length === 0) return;
     const { doc, writeBatch } = await import('firebase/firestore');
-    const batch = writeBatch(firestore);
+    const batch = writeBatch(db);
     projects.forEach(p => {
-      const projectRef = doc(firestore, 'projects', p.id);
+      const projectRef = doc(db, 'projects', p.id);
       const isTarget = p.id === projectId;
       batch.update(projectRef, { featured: isTarget });
     });
     try {
       await batch.commit();
+      await triggerRevalidate();
       toast({
         title: "Proyek Unggulan Diperbarui",
         description: "Proyek pilihan Anda kini akan tampil di halaman utama.",
@@ -278,147 +304,158 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
         title: "Gagal Memperbarui",
         description: "Terjadi kesalahan saat memilih proyek unggulan.",
       });
+      throw e;
     }
   };
 
   const deleteProject = async (id: string) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    deleteDocumentNonBlocking(doc(firestore, 'projects', id));
+    const db = await getSafeDb();
+    const { doc, deleteDoc } = await import('firebase/firestore');
+    await deleteDoc(doc(db, 'projects', id));
+    await triggerRevalidate();
   };
+
   const addCertificate = async (cert: Certificate) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    setDocumentNonBlocking(doc(firestore, 'certificates', cert.id), { ...cert, updatedAt: new Date().toISOString() }, { merge: true });
+    const db = await getSafeDb();
+    const { doc, setDoc } = await import('firebase/firestore');
+    const { sanitizeFirestoreData } = await import('@/firebase/non-blocking-updates');
+    const docRef = doc(db, 'certificates', cert.id);
+    const sanitized = sanitizeFirestoreData({ ...cert, updatedAt: new Date().toISOString() });
+    await setDoc(docRef, sanitized, { merge: true });
+    await triggerRevalidate();
   };
+
   const deleteCertificate = async (id: string) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    deleteDocumentNonBlocking(doc(firestore, 'certificates', id));
+    const db = await getSafeDb();
+    const { doc, deleteDoc } = await import('firebase/firestore');
+    await deleteDoc(doc(db, 'certificates', id));
+    await triggerRevalidate();
   };
+
   const addTestimonial = async (test: Testimonial) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    setDocumentNonBlocking(doc(firestore, 'testimonials', test.id), test, { merge: true });
+    const db = await getSafeDb();
+    const { doc, setDoc } = await import('firebase/firestore');
+    const { sanitizeFirestoreData } = await import('@/firebase/non-blocking-updates');
+    const docRef = doc(db, 'testimonials', test.id);
+    const sanitized = sanitizeFirestoreData(test);
+    await setDoc(docRef, sanitized, { merge: true });
+    await triggerRevalidate();
   };
+
   const deleteTestimonial = async (id: string) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    deleteDocumentNonBlocking(doc(firestore, 'testimonials', id));
+    const db = await getSafeDb();
+    const { doc, deleteDoc } = await import('firebase/firestore');
+    await deleteDoc(doc(db, 'testimonials', id));
+    await triggerRevalidate();
   };
+
   const addExperience = async (exp: Experience) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    setDocumentNonBlocking(doc(firestore, 'careerTimelineEntries', exp.id), exp, { merge: true });
+    const db = await getSafeDb();
+    const { doc, setDoc } = await import('firebase/firestore');
+    const { sanitizeFirestoreData } = await import('@/firebase/non-blocking-updates');
+    const docRef = doc(db, 'careerTimelineEntries', exp.id);
+    const sanitized = sanitizeFirestoreData(exp);
+    await setDoc(docRef, sanitized, { merge: true });
+    await triggerRevalidate();
   };
+
   const deleteExperience = async (id: string) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    deleteDocumentNonBlocking(doc(firestore, 'careerTimelineEntries', id));
+    const db = await getSafeDb();
+    const { doc, deleteDoc } = await import('firebase/firestore');
+    await deleteDoc(doc(db, 'careerTimelineEntries', id));
+    await triggerRevalidate();
   };
+
   const deleteMessage = async (id: string) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    deleteDocumentNonBlocking(doc(firestore, 'messages', id));
+    const db = await getSafeDb();
+    const { doc, deleteDoc } = await import('firebase/firestore');
+    await deleteDoc(doc(db, 'messages', id));
   };
+
   const addTechSkill = async (skill: TechSkill) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    setDocumentNonBlocking(doc(firestore, 'techSkills', skill.id), { ...skill, updatedAt: new Date().toISOString() }, { merge: true });
-    try {
-      const { revalidatePortfolio } = await import('@/app/actions/revalidate');
-      await revalidatePortfolio('/');
-    } catch (e) {
-      console.warn('Revalidate error:', e);
-    }
+    const db = await getSafeDb();
+    const { doc, setDoc } = await import('firebase/firestore');
+    const { sanitizeFirestoreData } = await import('@/firebase/non-blocking-updates');
+    const docRef = doc(db, 'techSkills', skill.id);
+    const sanitized = sanitizeFirestoreData({ ...skill, updatedAt: new Date().toISOString() });
+    await setDoc(docRef, sanitized, { merge: true });
+    await triggerRevalidate();
   };
+
   const deleteTechSkill = async (id: string) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    deleteDocumentNonBlocking(doc(firestore, 'techSkills', id));
-    try {
-      const { revalidatePortfolio } = await import('@/app/actions/revalidate');
-      await revalidatePortfolio('/');
-    } catch (e) {
-      console.warn('Revalidate error:', e);
-    }
+    const db = await getSafeDb();
+    const { doc, deleteDoc } = await import('firebase/firestore');
+    await deleteDoc(doc(db, 'techSkills', id));
+    await triggerRevalidate();
   };
+
   const seedDefaultTechSkills = async () => {
-    if (!firestore) return;
+    const db = await getSafeDb();
     const { doc, writeBatch } = await import('firebase/firestore');
     const { defaultTechStack } = await import('@/components/sections/TechStack');
-    const batch = writeBatch(firestore);
+    const batch = writeBatch(db);
     defaultTechStack.forEach(skill => {
-      const ref = doc(firestore, 'techSkills', skill.id);
+      const ref = doc(db, 'techSkills', skill.id);
       batch.set(ref, { ...skill, updatedAt: new Date().toISOString() }, { merge: true });
     });
     await batch.commit();
-    try {
-      const { revalidatePortfolio } = await import('@/app/actions/revalidate');
-      await revalidatePortfolio('/');
-    } catch (e) {
-      console.warn('Revalidate error:', e);
-    }
+    await triggerRevalidate();
   };
+
   const addBlog = async (blog: BlogPost) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    setDocumentNonBlocking(doc(firestore, 'blogs', blog.id), { ...blog, updatedAt: new Date().toISOString() }, { merge: true });
+    const db = await getSafeDb();
+    const { doc, setDoc } = await import('firebase/firestore');
+    const { sanitizeFirestoreData } = await import('@/firebase/non-blocking-updates');
+    const docRef = doc(db, 'blogs', blog.id);
+    const sanitized = sanitizeFirestoreData({ ...blog, updatedAt: new Date().toISOString() });
+    await setDoc(docRef, sanitized, { merge: true });
+    await triggerRevalidate();
   };
+
   const deleteBlog = async (id: string) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    deleteDocumentNonBlocking(doc(firestore, 'blogs', id));
+    const db = await getSafeDb();
+    const { doc, deleteDoc } = await import('firebase/firestore');
+    await deleteDoc(doc(db, 'blogs', id));
+    await triggerRevalidate();
   };
 
   const addShortLink = async (link: ShortLink) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+    const db = await getSafeDb();
+    const { doc, setDoc } = await import('firebase/firestore');
+    const { sanitizeFirestoreData } = await import('@/firebase/non-blocking-updates');
     const cleanSlug = link.slug.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-    const docRef = doc(firestore, 'shortLinks', cleanSlug);
-    setDocumentNonBlocking(docRef, { ...link, slug: cleanSlug, updatedAt: new Date().toISOString() }, { merge: true });
+    const docRef = doc(db, 'shortLinks', cleanSlug);
+    const sanitized = sanitizeFirestoreData({ ...link, slug: cleanSlug, updatedAt: new Date().toISOString() });
+    await setDoc(docRef, sanitized, { merge: true });
   };
+
   const deleteShortLink = async (slug: string) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { deleteDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    deleteDocumentNonBlocking(doc(firestore, 'shortLinks', slug));
+    const db = await getSafeDb();
+    const { doc, deleteDoc } = await import('firebase/firestore');
+    await deleteDoc(doc(db, 'shortLinks', slug));
   };
 
   const updateProfileAndStats = async (newProfile: ProfileData, newStats: PortfolioStats) => {
-    if (!firestore) return;
-    const { doc } = await import('firebase/firestore');
-    const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-    const dataToUpdate = {
-      name: newProfile.name,
-      roleId: newProfile.roleId,
-      roleEn: newProfile.roleEn,
-      aboutMeId: newProfile.aboutMeId,
-      aboutMeEn: newProfile.aboutMeEn,
-      profilePictureUrl: newProfile.profilePictureUrl,
-      heroTitleId: newProfile.heroTitleId,
-      heroTitleEn: newProfile.heroTitleEn,
-      heroSubtitleId: newProfile.heroSubtitleId,
-      heroSubtitleEn: newProfile.heroSubtitleEn,
-      email: newProfile.email,
-      whatsAppNumber: newProfile.whatsapp,
-      linkedInProfileUrl: newProfile.linkedin,
-      instagram: newProfile.instagram,
-      githubProfileUrl: newProfile.github,
-      tiktok: newProfile.tiktok,
+    const db = await getSafeDb();
+    const { doc, setDoc } = await import('firebase/firestore');
+    const { sanitizeFirestoreData } = await import('@/firebase/non-blocking-updates');
+    const dataToUpdate = sanitizeFirestoreData({
+      name: newProfile.name || defaultProfile.name,
+      roleId: newProfile.roleId || defaultProfile.roleId,
+      roleEn: newProfile.roleEn || defaultProfile.roleEn,
+      aboutMeId: newProfile.aboutMeId || defaultProfile.aboutMeId,
+      aboutMeEn: newProfile.aboutMeEn || defaultProfile.aboutMeEn,
+      profilePictureUrl: newProfile.profilePictureUrl || defaultProfile.profilePictureUrl,
+      heroTitleId: newProfile.heroTitleId || defaultProfile.heroTitleId,
+      heroTitleEn: newProfile.heroTitleEn || defaultProfile.heroTitleEn,
+      heroSubtitleId: newProfile.heroSubtitleId || defaultProfile.heroSubtitleId,
+      heroSubtitleEn: newProfile.heroSubtitleEn || defaultProfile.heroSubtitleEn,
+      email: newProfile.email || defaultProfile.email,
+      whatsAppNumber: newProfile.whatsapp || defaultProfile.whatsapp,
+      linkedInProfileUrl: newProfile.linkedin || defaultProfile.linkedin,
+      instagram: newProfile.instagram || defaultProfile.instagram,
+      githubProfileUrl: newProfile.github || defaultProfile.github,
+      tiktok: newProfile.tiktok || defaultProfile.tiktok,
       cvUrl: newProfile.cvUrl || '',
       cvFileName: newProfile.cvFileName || '',
       cvUpdatedAt: newProfile.cvUpdatedAt || '',
@@ -426,11 +463,12 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
       totalProjectsCompleted: parseInt(newStats.completedProjects) || 0,
       codingExperienceYears: parseInt(newStats.yearsExperience) || 0,
       totalTechnologiesMastered: parseInt(newStats.techMastered) || 0,
-      clientSatisfaction: newStats.clientSatisfaction,
+      clientSatisfaction: newStats.clientSatisfaction || defaultStats.clientSatisfaction,
       updatedAt: new Date().toISOString()
-    };
-    const pRef = doc(firestore, 'portfolioOwner', 'profile');
-    setDocumentNonBlocking(pRef, dataToUpdate, { merge: true });
+    });
+    const pRef = doc(db, 'portfolioOwner', 'profile');
+    await setDoc(pRef, dataToUpdate, { merge: true });
+    await triggerRevalidate();
   };
 
   return (
@@ -461,25 +499,25 @@ export const useProjectStore = () => {
       shortLinks: [],
       isLoading: false,
       error: null,
-      addProject: () => { },
-      deleteProject: () => { },
-      setFeaturedProject: () => { },
-      addCertificate: () => { },
-      deleteCertificate: () => { },
-      addTestimonial: () => { },
-      deleteTestimonial: () => { },
-      addExperience: () => { },
-      deleteExperience: () => { },
-      deleteMessage: () => { },
-      updateProfileAndStats: () => { },
+      addProject: async () => { },
+      deleteProject: async () => { },
+      setFeaturedProject: async () => { },
+      addCertificate: async () => { },
+      deleteCertificate: async () => { },
+      addTestimonial: async () => { },
+      deleteTestimonial: async () => { },
+      addExperience: async () => { },
+      deleteExperience: async () => { },
+      deleteMessage: async () => { },
+      updateProfileAndStats: async () => { },
       techSkills: [],
-      addTechSkill: () => { },
-      deleteTechSkill: () => { },
+      addTechSkill: async () => { },
+      deleteTechSkill: async () => { },
       seedDefaultTechSkills: async () => { },
-      addBlog: () => { },
-      deleteBlog: () => { },
-      addShortLink: () => { },
-      deleteShortLink: () => { },
+      addBlog: async () => { },
+      deleteBlog: async () => { },
+      addShortLink: async () => { },
+      deleteShortLink: async () => { },
       backupData: () => { },
       restoreData: async () => { },
     };

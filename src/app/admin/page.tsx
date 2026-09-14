@@ -75,6 +75,14 @@ function AdminContent() {
   const [editingCertId, setEditingCertId] = useState<string | null>(null);
   const [editingJourneyId, setEditingJourneyId] = useState<string | null>(null);
 
+  const [isSavingProject, setIsSavingProject] = useState(false);
+  const [isSavingCert, setIsSavingCert] = useState(false);
+  const [isSavingJourney, setIsSavingJourney] = useState(false);
+  const [isSavingTechSkill, setIsSavingTechSkill] = useState(false);
+  const [isSavingBlog, setIsSavingBlog] = useState(false);
+  const [isSavingTestimonial, setIsSavingTestimonial] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -351,10 +359,25 @@ function AdminContent() {
     }
   };
 
-  const handleProfileSubmit = (e: React.FormEvent) => {
+  const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateProfileAndStats(profileFormData, statsFormData);
-    toast({ title: "Profil Berhasil Diperbarui" });
+    setIsSavingProfile(true);
+    try {
+      await updateProfileAndStats(profileFormData, statsFormData);
+      toast({ 
+        title: "Profil Berhasil Diperbarui", 
+        description: "Perubahan profil dan statistik telah disimpan ke Firestore & disinkronkan." 
+      });
+    } catch (err: any) {
+      console.error('[Admin] Profile update error:', err);
+      toast({ 
+        variant: "destructive", 
+        title: "Gagal Memperbarui Profil", 
+        description: err.message || "Terjadi kesalahan sistem." 
+      });
+    } finally {
+      setIsSavingProfile(false);
+    }
   };
   
   const handleContentSubmit = (e: React.FormEvent) => {
@@ -363,49 +386,77 @@ function AdminContent() {
     toast({ title: "Konten Berhasil Diperbarui" });
   };
 
-  const handleTechSkillSubmit = (e: React.FormEvent) => {
+  const handleTechSkillSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const skillData = { ...techSkillForm };
-    if (!editingTechSkillId) skillData.id = Date.now().toString();
-    else skillData.id = editingTechSkillId;
-    addTechSkill(skillData as any);
-    setTechSkillForm(initialTechSkillState);
-    setEditingTechSkillId(null);
-    toast({ title: editingTechSkillId ? "Skill Diperbarui" : "Skill Ditambahkan" });
+    setIsSavingTechSkill(true);
+    try {
+      const skillData = { ...techSkillForm };
+      if (!editingTechSkillId) skillData.id = Date.now().toString();
+      else skillData.id = editingTechSkillId;
+      await addTechSkill(skillData as any);
+      setTechSkillForm(initialTechSkillState);
+      setEditingTechSkillId(null);
+      toast({ title: editingTechSkillId ? "Skill Diperbarui" : "Skill Ditambahkan" });
+    } catch (err: any) {
+      console.error('[Admin] Tech skill submit error:', err);
+      toast({ 
+        variant: "destructive", 
+        title: "Gagal Menyimpan Skill", 
+        description: err.message || "Terjadi kesalahan sistem." 
+      });
+    } finally {
+      setIsSavingTechSkill(false);
+    }
   };
 
-  const handleBlogSubmit = (e: React.FormEvent) => {
+  const handleBlogSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const blogSlug = (blogForm.slug && blogForm.slug.trim())
-      ? blogForm.slug.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')
-      : (blogForm.titleId || 'post').toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') || `post-${Date.now()}`;
+    if (!blogForm.titleId.trim() || !blogForm.contentId.trim()) {
+      toast({ variant: "destructive", title: "Data Belum Lengkap", description: "Judul dan Konten (ID) wajib diisi." });
+      return;
+    }
+    setIsSavingBlog(true);
+    try {
+      const blogSlug = (blogForm.slug && blogForm.slug.trim())
+        ? blogForm.slug.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')
+        : (blogForm.titleId || 'post').toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') || `post-${Date.now()}`;
 
-    const tagsArray = typeof blogForm.tags === 'string'
-      ? blogForm.tags.split(',').map(s => s.trim()).filter(Boolean)
-      : (blogForm.tags || []);
+      const tagsArray = typeof blogForm.tags === 'string'
+        ? blogForm.tags.split(',').map(s => s.trim()).filter(Boolean)
+        : (blogForm.tags || []);
 
-    const blogData: BlogPost = {
-      id: editingBlogId || Date.now().toString(),
-      slug: blogSlug,
-      titleId: blogForm.titleId,
-      titleEn: blogForm.titleEn || blogForm.titleId,
-      summaryId: blogForm.summaryId,
-      summaryEn: blogForm.summaryEn || blogForm.summaryId,
-      contentId: blogForm.contentId,
-      contentEn: blogForm.contentEn || blogForm.contentId,
-      coverImage: blogForm.coverImage || '',
-      tags: tagsArray.length > 0 ? tagsArray : ['Tech'],
-      author: blogForm.author || 'Nara Andra Tyaga',
-      publishedAt: editingBlogId ? (blogs.find(b => b.id === editingBlogId)?.publishedAt || new Date().toISOString()) : new Date().toISOString(),
-      readingTime: blogForm.readingTime || '3 min read',
-      featured: blogForm.featured,
-      updatedAt: new Date().toISOString(),
-    };
+      const blogData: BlogPost = {
+        id: editingBlogId || Date.now().toString(),
+        slug: blogSlug,
+        titleId: blogForm.titleId,
+        titleEn: blogForm.titleEn || blogForm.titleId,
+        summaryId: blogForm.summaryId,
+        summaryEn: blogForm.summaryEn || blogForm.summaryId,
+        contentId: blogForm.contentId,
+        contentEn: blogForm.contentEn || blogForm.contentId,
+        coverImage: blogForm.coverImage || '',
+        tags: tagsArray.length > 0 ? tagsArray : ['Tech'],
+        author: blogForm.author || 'Nara Andra Tyaga',
+        publishedAt: editingBlogId ? (blogs.find(b => b.id === editingBlogId)?.publishedAt || new Date().toISOString()) : new Date().toISOString(),
+        readingTime: blogForm.readingTime || '3 min read',
+        featured: blogForm.featured,
+        updatedAt: new Date().toISOString(),
+      };
 
-    addBlog(blogData);
-    setBlogForm(initialBlogState);
-    setEditingBlogId(null);
-    toast({ title: editingBlogId ? "Artikel Berhasil Diperbarui" : "Artikel Berhasil Dipublikasikan" });
+      await addBlog(blogData);
+      setBlogForm(initialBlogState);
+      setEditingBlogId(null);
+      toast({ title: editingBlogId ? "Artikel Berhasil Diperbarui" : "Artikel Berhasil Dipublikasikan" });
+    } catch (err: any) {
+      console.error('[Admin] Blog submit error:', err);
+      toast({ 
+        variant: "destructive", 
+        title: "Gagal Menyimpan Artikel", 
+        description: err.message || "Terjadi kesalahan sistem." 
+      });
+    } finally {
+      setIsSavingBlog(false);
+    }
   };
 
   const startEditTechSkill = (s: TechSkill) => {
@@ -646,11 +697,13 @@ function AdminContent() {
   const startEditProject = (p: Project) => {
     setEditingProjectId(p.id);
     setProjectForm({
-      ...p,
       titleId: p.titleId || '',
       titleEn: p.titleEn || '',
+      type: p.type || 'web',
       shortDescriptionId: p.shortDescriptionId || '',
       shortDescriptionEn: p.shortDescriptionEn || '',
+      fullDescriptionId: p.fullDescriptionId || '',
+      fullDescriptionEn: p.fullDescriptionEn || '',
       problemId: p.problemId || '',
       problemEn: p.problemEn || '',
       solutionId: p.solutionId || '',
@@ -658,22 +711,171 @@ function AdminContent() {
       impactStats: p.impactStats || '',
       demoUrl: p.demoUrl || '',
       imageUrl: p.imageUrl || '',
-      githubUrl: p.githubUrl || undefined,
+      githubUrl: p.githubUrl || '',
+      featured: !!p.featured,
       technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : (p.technologies || '')
     } as any);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleProjectSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!projectForm.titleId.trim()) {
+      toast({ variant: "destructive", title: "Nama Proyek Wajib Diisi", description: "Harap masukkan nama proyek dalam bahasa Indonesia." });
+      return;
+    }
+    setIsSavingProject(true);
+    try {
+      const techList = typeof projectForm.technologies === 'string'
+        ? projectForm.technologies.split(',').map(s => s.trim()).filter(Boolean)
+        : (projectForm.technologies || []);
+
+      const projectPayload: Project = {
+        id: editingProjectId || Date.now().toString(),
+        titleId: projectForm.titleId.trim(),
+        titleEn: projectForm.titleEn?.trim() || projectForm.titleId.trim(),
+        type: projectForm.type || 'web',
+        shortDescriptionId: projectForm.shortDescriptionId?.trim() || '',
+        shortDescriptionEn: projectForm.shortDescriptionEn?.trim() || '',
+        fullDescriptionId: projectForm.fullDescriptionId?.trim() || '',
+        fullDescriptionEn: projectForm.fullDescriptionEn?.trim() || '',
+        problemId: projectForm.problemId?.trim() || '',
+        problemEn: projectForm.problemEn?.trim() || '',
+        solutionId: projectForm.solutionId?.trim() || '',
+        solutionEn: projectForm.solutionEn?.trim() || '',
+        impactStats: projectForm.impactStats?.trim() || '',
+        demoUrl: projectForm.demoUrl?.trim() || '',
+        imageUrl: projectForm.imageUrl?.trim() || '',
+        githubUrl: projectForm.githubUrl?.trim() || '',
+        featured: !!projectForm.featured,
+        technologies: techList,
+      };
+
+      await addProject(projectPayload);
+      toast({ 
+        title: editingProjectId ? "Proyek Berhasil Diperbarui" : "Unit Proyek Berhasil Disimpan",
+        description: `Proyek "${projectPayload.titleId}" telah tersimpan ke basis data & cache portofolio telah direvalidasi.` 
+      });
+      setProjectForm(initialProjectState);
+      setEditingProjectId(null);
+    } catch (err: any) {
+      console.error('[Admin] Submit project error:', err);
+      toast({ 
+        variant: "destructive", 
+        title: "Gagal Menyimpan Proyek", 
+        description: err.message || "Terjadi kesalahan saat menyimpan data ke Firestore." 
+      });
+    } finally {
+      setIsSavingProject(false);
+    }
+  };
+
   const startEditCert = (c: Certificate) => {
     setEditingCertId(c.id);
-    setCertForm({ ...c, credentialUrl: c.credentialUrl || '' });
+    setCertForm({
+      titleId: c.titleId || '',
+      titleEn: c.titleEn || '',
+      issuer: c.issuer || '',
+      year: c.year || '',
+      validUntil: c.validUntil || '',
+      imageUrl: c.imageUrl || '',
+      shortDescriptionId: c.shortDescriptionId || '',
+      shortDescriptionEn: c.shortDescriptionEn || '',
+      fullDescriptionId: c.fullDescriptionId || '',
+      fullDescriptionEn: c.fullDescriptionEn || '',
+      credentialUrl: c.credentialUrl || '',
+    });
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCertSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!certForm.titleId.trim()) {
+      toast({ variant: "destructive", title: "Judul Kredensial Wajib Diisi", description: "Harap masukkan judul sertifikat." });
+      return;
+    }
+    setIsSavingCert(true);
+    try {
+      const certPayload: Certificate = {
+        id: editingCertId || Date.now().toString(),
+        titleId: certForm.titleId.trim(),
+        titleEn: certForm.titleEn?.trim() || certForm.titleId.trim(),
+        issuer: certForm.issuer?.trim() || '',
+        year: certForm.year?.trim() || '',
+        validUntil: certForm.validUntil?.trim() || '',
+        imageUrl: certForm.imageUrl?.trim() || '',
+        shortDescriptionId: certForm.shortDescriptionId?.trim() || '',
+        shortDescriptionEn: certForm.shortDescriptionEn?.trim() || '',
+        fullDescriptionId: certForm.fullDescriptionId?.trim() || '',
+        fullDescriptionEn: certForm.fullDescriptionEn?.trim() || '',
+        credentialUrl: certForm.credentialUrl?.trim() || '',
+      };
+      await addCertificate(certPayload);
+      toast({ 
+        title: editingCertId ? "Kredensial Diperbarui" : "Kredensial Berhasil Disimpan",
+        description: `Sertifikat "${certPayload.titleId}" berhasil disimpan.` 
+      });
+      setCertForm(initialCertState);
+      setEditingCertId(null);
+    } catch (err: any) {
+      console.error('[Admin] Submit certificate error:', err);
+      toast({ 
+        variant: "destructive", 
+        title: "Gagal Menyimpan Kredensial", 
+        description: err.message || "Terjadi kesalahan sistem." 
+      });
+    } finally {
+      setIsSavingCert(false);
+    }
   };
 
   const startEditJourney = (e: Experience) => {
     setEditingJourneyId(e.id);
-    setJourneyForm({ ...e });
+    setJourneyForm({
+      year: e.year || '',
+      titleId: e.titleId || '',
+      titleEn: e.titleEn || '',
+      company: e.company || '',
+      descriptionId: e.descriptionId || '',
+      descriptionEn: e.descriptionEn || '',
+    });
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleJourneySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!journeyForm.titleId.trim() || !journeyForm.year.trim()) {
+      toast({ variant: "destructive", title: "Data Belum Lengkap", description: "Tahun dan Peran (ID) wajib diisi." });
+      return;
+    }
+    setIsSavingJourney(true);
+    try {
+      const expPayload: Experience = {
+        id: editingJourneyId || Date.now().toString(),
+        year: journeyForm.year.trim(),
+        titleId: journeyForm.titleId.trim(),
+        titleEn: journeyForm.titleEn?.trim() || journeyForm.titleId.trim(),
+        company: journeyForm.company?.trim() || '',
+        descriptionId: journeyForm.descriptionId?.trim() || '',
+        descriptionEn: journeyForm.descriptionEn?.trim() || '',
+      };
+      await addExperience(expPayload);
+      toast({ 
+        title: editingJourneyId ? "Perjalanan Karir Diperbarui" : "Perjalanan Karir Berhasil Disimpan",
+        description: `Catatan timeline "${expPayload.titleId}" berhasil disimpan.` 
+      });
+      setJourneyForm(initialJourneyState);
+      setEditingJourneyId(null);
+    } catch (err: any) {
+      console.error('[Admin] Submit journey error:', err);
+      toast({ 
+        variant: "destructive", 
+        title: "Gagal Menyimpan Karir", 
+        description: err.message || "Terjadi kesalahan sistem." 
+      });
+    } finally {
+      setIsSavingJourney(false);
+    }
   };
 
   const startEditBlog = (b: BlogPost) => {
@@ -708,27 +910,39 @@ function AdminContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleTestimonialSubmit = (e: React.FormEvent) => {
+  const handleTestimonialSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!testimonialForm.name.trim() || !testimonialForm.contentId.trim()) {
       toast({ variant: 'destructive', title: 'Data Belum Lengkap', description: 'Nama dan Isi Testimoni (ID) wajib diisi.' });
       return;
     }
-    addTestimonial({
-      id: editingTestimonialId || Date.now().toString(),
-      name: testimonialForm.name.trim(),
-      roleId: testimonialForm.roleId.trim() || 'Klien / Rekan',
-      roleEn: testimonialForm.roleEn.trim() || testimonialForm.roleId.trim() || 'Client / Colleague',
-      contentId: testimonialForm.contentId.trim(),
-      contentEn: testimonialForm.contentEn.trim() || testimonialForm.contentId.trim(),
-      avatarUrl: testimonialForm.avatarUrl.trim()
-    });
-    toast({
-      title: editingTestimonialId ? 'Testimoni Diperbarui' : 'Testimoni Ditambahkan',
-      description: `Testimoni dari "${testimonialForm.name}" berhasil disimpan.`,
-    });
-    setTestimonialForm(initialTestimonialState);
-    setEditingTestimonialId(null);
+    setIsSavingTestimonial(true);
+    try {
+      await addTestimonial({
+        id: editingTestimonialId || Date.now().toString(),
+        name: testimonialForm.name.trim(),
+        roleId: testimonialForm.roleId.trim() || 'Klien / Rekan',
+        roleEn: testimonialForm.roleEn.trim() || testimonialForm.roleId.trim() || 'Client / Colleague',
+        contentId: testimonialForm.contentId.trim(),
+        contentEn: testimonialForm.contentEn.trim() || testimonialForm.contentId.trim(),
+        avatarUrl: testimonialForm.avatarUrl.trim()
+      });
+      toast({
+        title: editingTestimonialId ? 'Testimoni Diperbarui' : 'Testimoni Ditambahkan',
+        description: `Testimoni dari "${testimonialForm.name}" berhasil disimpan.`,
+      });
+      setTestimonialForm(initialTestimonialState);
+      setEditingTestimonialId(null);
+    } catch (err: any) {
+      console.error('[Admin] Submit testimonial error:', err);
+      toast({ 
+        variant: "destructive", 
+        title: "Gagal Menyimpan Testimoni", 
+        description: err.message || "Terjadi kesalahan sistem." 
+      });
+    } finally {
+      setIsSavingTestimonial(false);
+    }
   };
 
   const cancelEdit = () => {
@@ -736,7 +950,7 @@ function AdminContent() {
     setProjectForm(initialProjectState); setCertForm(initialCertState); setJourneyForm(initialJourneyState); setTechSkillForm(initialTechSkillState); setBlogForm(initialBlogState); setShortLinkForm(initialShortLinkState); setTestimonialForm(initialTestimonialState);
   };
 
-  const handleShortLinkSubmit = (e: React.FormEvent) => {
+  const handleShortLinkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!shortLinkForm.slug || !shortLinkForm.originalUrl) {
       toast({ variant: 'destructive', title: 'Data Belum Lengkap', description: 'Slug dan URL Tujuan wajib diisi.' });
@@ -747,19 +961,36 @@ function AdminContent() {
     if (!/^https?:\/\//i.test(finalUrl)) {
       finalUrl = 'https://' + finalUrl;
     }
-    addShortLink({
-      id: cleanSlug,
-      slug: cleanSlug,
-      originalUrl: finalUrl,
-      title: shortLinkForm.title.trim(),
-      description: shortLinkForm.description.trim(),
-      isActive: shortLinkForm.isActive,
-      clickCount: editingShortLinkId ? (shortLinks.find(s => s.slug === editingShortLinkId)?.clickCount || 0) : 0,
-      safetyStatus: 'unverified'
-    });
-    toast({ title: editingShortLinkId ? 'Short Link Diperbarui' : 'Short Link Dibuat', description: `/l/${cleanSlug}` });
-    setShortLinkForm(initialShortLinkState);
-    setEditingShortLinkId(null);
+
+    // Preserve existing metrics if editing
+    const existing = shortLinks.find(s => s.slug === editingShortLinkId || s.slug === cleanSlug);
+    const clickCount = existing ? (Number(existing.clickCount) || 0) : 0;
+    const createdAt = existing?.createdAt || new Date().toISOString();
+
+    try {
+      await addShortLink({
+        id: cleanSlug,
+        slug: cleanSlug,
+        originalUrl: finalUrl,
+        title: shortLinkForm.title.trim() || cleanSlug,
+        description: shortLinkForm.description.trim(),
+        isActive: shortLinkForm.isActive,
+        clickCount: clickCount,
+        createdAt: createdAt,
+        updatedAt: new Date().toISOString(),
+        safetyStatus: existing?.safetyStatus || 'clean'
+      });
+      toast({ title: editingShortLinkId ? 'Short Link Diperbarui' : 'Short Link Dibuat', description: `/l/${cleanSlug}` });
+      setShortLinkForm(initialShortLinkState);
+      setEditingShortLinkId(null);
+    } catch (err: any) {
+      console.error('[Admin] Short link submit error:', err);
+      toast({ 
+        variant: "destructive", 
+        title: "Gagal Menyimpan Short Link", 
+        description: err.message || "Terjadi kesalahan sistem." 
+      });
+    }
   };
 
   const startEditShortLink = (link: ShortLink) => {
@@ -1398,12 +1629,22 @@ function AdminContent() {
                   </div>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <form onSubmit={(e) => {
-                    e.preventDefault();
-                    addProject({ ...projectForm, id: editingProjectId || Date.now().toString(), technologies: typeof projectForm.technologies === 'string' ? projectForm.technologies.split(',').map(s => s.trim()) : projectForm.technologies } as any);
-                    setProjectForm(initialProjectState); setEditingProjectId(null);
-                    toast({ title: "Unit Proyek Berhasil Disimpan" });
-                  }} className="space-y-12">
+                  {editingProjectId && (
+                    <div className="mb-6 flex items-center justify-between p-4 rounded-2xl bg-primary/10 border border-primary/20 animate-in fade-in">
+                      <div className="flex items-center gap-3">
+                        <Badge className="bg-primary text-primary-foreground font-black uppercase text-[10px]">
+                          Mode Ubah Proyek
+                        </Badge>
+                        <span className="text-xs font-bold text-foreground truncate max-w-md">
+                          Sedang menyunting: <span className="text-primary font-black">&quot;{projectForm.titleId || 'Tanpa Judul'}&quot;</span>
+                        </span>
+                      </div>
+                      <Button type="button" variant="ghost" size="sm" onClick={cancelEdit} className="text-xs font-black uppercase text-muted-foreground hover:text-foreground">
+                        <X className="h-3.5 w-3.5 mr-1" /> Batalkan
+                      </Button>
+                    </div>
+                  )}
+                  <form onSubmit={handleProjectSubmit} className="space-y-12">
                     <div className="grid md:grid-cols-2 gap-8">
                       <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
@@ -1459,7 +1700,16 @@ function AdminContent() {
                        <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Visual Utama (Cover)</label><Input value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                     </div>
                     <div className="flex gap-4">
-                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">PUBLIKASIKAN PROYEK</Button>
+                      <Button type="submit" disabled={isSavingProject} className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">
+                        {isSavingProject ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            {editingProjectId ? 'MENYIMPAN PERUBAHAN...' : 'MEMUBLIKASIKAN...'}
+                          </>
+                        ) : (
+                          editingProjectId ? 'SIMPAN PERUBAHAN PROYEK' : 'PUBLIKASIKAN PROYEK'
+                        )}
+                      </Button>
                       {editingProjectId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> BATALKAN</Button>}
                     </div>
                   </form>
@@ -1522,12 +1772,7 @@ function AdminContent() {
                   </div>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <form onSubmit={(e) => {
-                    e.preventDefault();
-                    addCertificate({ ...certForm, id: editingCertId || Date.now().toString() } as any);
-                    setCertForm(initialCertState); setEditingCertId(null);
-                    toast({ title: "Kredensial Berhasil Diverifikasi" });
-                  }} className="space-y-12">
+                  <form onSubmit={handleCertSubmit} className="space-y-12">
                     <div className="grid md:grid-cols-2 gap-8">
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Judul Sertifikat (ID)</label><Input required value={certForm.titleId} onChange={e => setCertForm({...certForm, titleId: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Judul Sertifikat (EN)</label><Input value={certForm.titleEn} onChange={e => setCertForm({...certForm, titleEn: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
@@ -1546,7 +1791,16 @@ function AdminContent() {
                     </div>
                     <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Gambar Sertifikat</label><Input value={certForm.imageUrl || ''} onChange={e => setCertForm({...certForm, imageUrl: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" placeholder="https://example.com/sertifikat.jpg" /></div>
                     <div className="flex gap-4">
-                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">SIMPAN KREDENSIAL</Button>
+                      <Button type="submit" disabled={isSavingCert} className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">
+                        {isSavingCert ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            {editingCertId ? 'MENYIMPAN PERUBAHAN...' : 'MENYIMPAN...'}
+                          </>
+                        ) : (
+                          editingCertId ? 'SIMPAN PERUBAHAN KREDENSIAL' : 'SIMPAN KREDENSIAL'
+                        )}
+                      </Button>
                       {editingCertId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> BATAL</Button>}
                     </div>
                   </form>
@@ -1589,12 +1843,7 @@ function AdminContent() {
                   </Button>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <form onSubmit={(e) => {
-                    e.preventDefault();
-                    addExperience({ ...journeyForm, id: editingJourneyId || Date.now().toString() } as any);
-                    setJourneyForm(initialJourneyState); setEditingJourneyId(null);
-                    toast({ title: "Milestone Berhasil Dicatat" });
-                  }} className="space-y-12">
+                  <form onSubmit={handleJourneySubmit} className="space-y-12">
                     <div className="grid md:grid-cols-3 gap-8">
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Periode Waktu</label><Input required placeholder="Cth: 2023 - Sekarang" value={journeyForm.year} onChange={e => setJourneyForm({...journeyForm, year: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Entitas Organisasi</label><Input required value={journeyForm.company} onChange={e => setJourneyForm({...journeyForm, company: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
@@ -1608,7 +1857,16 @@ function AdminContent() {
                       <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Role & Responsibilities (EN)</label><Textarea placeholder="Key responsibilities and achievements in English..." value={journeyForm.descriptionEn} onChange={e => setJourneyForm({...journeyForm, descriptionEn: e.target.value})} className="h-32 rounded-[2rem] bg-muted/30 border-none p-6" /></div>
                     </div>
                     <div className="flex gap-4">
-                      <Button type="submit" className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">CATAT MILESTONE</Button>
+                      <Button type="submit" disabled={isSavingJourney} className="flex-1 h-14 rounded-2xl font-black uppercase bg-primary text-primary-foreground shadow-xl">
+                        {isSavingJourney ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            {editingJourneyId ? 'MENYIMPAN PERUBAHAN...' : 'MENYIMPAN...'}
+                          </>
+                        ) : (
+                          editingJourneyId ? 'SIMPAN PERUBAHAN JALUR KARIR' : 'CATAT MILESTONE'
+                        )}
+                      </Button>
                       {editingJourneyId && <Button type="button" variant="outline" onClick={cancelEdit} className="h-14 rounded-2xl font-black uppercase"><X className="h-4 w-4 mr-2" /> BATAL</Button>}
                     </div>
                   </form>
@@ -1648,7 +1906,7 @@ function AdminContent() {
                </div>
              ) : (
                <div className="grid gap-6">
-                 {messages.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(msg => (
+                 {[...messages].sort((a,b) => (new Date(b.createdAt || 0).getTime()) - (new Date(a.createdAt || 0).getTime())).map(msg => (
                     <Card key={msg.id} className="rounded-[2rem] border-none bg-card/50 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all group overflow-hidden">
                        <CardContent className="p-8">
                           <div className="flex flex-col md:flex-row justify-between items-start gap-6">
