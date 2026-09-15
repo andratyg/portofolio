@@ -134,14 +134,42 @@ const StatCard = ({ stat, delay }: { stat: StatItem; delay: number }) => {
 };
 
 export const Stats = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { stats } = useProjectStore();
 
   const statsData: StatItem[] = [
-    { label: t.statsCompleted,    value: parseInt(String(stats.completedProjects), 10) || 0,  suffix: '+', icon: Briefcase,    description: 'Proyek selesai dan terpublikasi', size: 'large' },
-    { label: t.statsExperience,   value: parseInt(String(stats.yearsExperience), 10) || 0,    suffix: '+', icon: Activity,     description: 'Tahun pengalaman aktif',          size: 'small' },
-    { label: t.statsTechnologies, value: parseInt(String(stats.techMastered), 10) || 0,       suffix: '+', icon: Terminal,     description: 'Teknologi dikuasai',              size: 'small' },
-    { label: 'Kepuasan Klien',    value: parseInt(String(stats.clientSatisfaction), 10) || 100, suffix: '%', icon: ShieldCheck,  description: 'Tingkat kepuasan client',         size: 'wide'  },
+    { 
+      label: t.statsCompleted,    
+      value: parseInt(String(stats.completedProjects), 10) || 0,  
+      suffix: '+', 
+      icon: Briefcase,    
+      description: language === 'id' ? 'Proyek selesai dan terpublikasi' : 'Completed & deployed systems', 
+      size: 'large' 
+    },
+    { 
+      label: t.statsExperience,   
+      value: parseInt(String(stats.yearsExperience), 10) || 0,    
+      suffix: '+', 
+      icon: Activity,     
+      description: language === 'id' ? 'Tahun pengalaman aktif' : 'Years of active engineering',          
+      size: 'small' 
+    },
+    { 
+      label: t.statsTechnologies, 
+      value: parseInt(String(stats.techMastered), 10) || 0,       
+      suffix: '+', 
+      icon: Terminal,     
+      description: language === 'id' ? 'Teknologi dikuasai' : 'Core technologies mastered',              
+      size: 'small' 
+    },
+    { 
+      label: language === 'id' ? 'Kepuasan Klien' : 'Client Satisfaction',    
+      value: parseInt(String(stats.clientSatisfaction), 10) || 100, 
+      suffix: '%', 
+      icon: ShieldCheck,  
+      description: language === 'id' ? 'Tingkat kepuasan klien' : 'Client satisfaction rate',         
+      size: 'wide'  
+    },
   ];
 
   return (

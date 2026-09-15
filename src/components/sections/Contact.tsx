@@ -54,10 +54,15 @@ export const Contact = () => {
     setIsSubmitting(true);
     setIsSuccess(false);
     try {
-      const { collection, addDoc, getFirestore } = await import('firebase/firestore');
+      const { collection, addDoc, initializeFirestore, getFirestore } = await import('firebase/firestore');
       const { initializeFirebase } = await import('@/firebase');
       const services = initializeFirebase();
-      const db = getFirestore(services.firebaseApp);
+      let db;
+      try {
+        db = initializeFirestore(services.firebaseApp, { experimentalAutoDetectLongPolling: true });
+      } catch {
+        db = getFirestore(services.firebaseApp);
+      }
       await addDoc(collection(db, 'messages'), {
         name,
         email,

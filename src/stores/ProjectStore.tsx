@@ -209,10 +209,16 @@ export const ProjectStoreProvider: React.FC<{ children: React.ReactNode }> = ({ 
   // Reliable helper to ensure Firestore instance is available even if lazy context is resolving
   const getSafeDb = async () => {
     if (firestore) return firestore;
-    const { getFirestore } = await import('firebase/firestore');
+    const { initializeFirestore, getFirestore } = await import('firebase/firestore');
     const { initializeFirebase } = await import('@/firebase');
     const services = initializeFirebase();
-    return getFirestore(services.firebaseApp);
+    try {
+      return initializeFirestore(services.firebaseApp, {
+        experimentalAutoDetectLongPolling: true,
+      });
+    } catch {
+      return getFirestore(services.firebaseApp);
+    }
   };
 
   const triggerRevalidate = async () => {

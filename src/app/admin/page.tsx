@@ -1203,9 +1203,21 @@ function AdminContent() {
 
                    <div className="lg:col-span-8 space-y-10">
                       <div className="space-y-6">
-                        <h3 className="text-xl font-black  uppercase tracking-tight flex items-center gap-3">
-                           <UserCircle className="h-6 w-6 text-primary" /> Informasi Dasar
-                        </h3>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <h3 className="text-xl font-black  uppercase tracking-tight flex items-center gap-3">
+                             <UserCircle className="h-6 w-6 text-primary" /> Informasi Dasar
+                          </h3>
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={() => handleAITranslate('profile', profileFormData, setProfileFormData)}
+                            className="rounded-xl bg-primary/10 text-primary h-11 px-5 font-black uppercase gap-2 hover:bg-primary hover:text-primary-foreground transition-all shrink-0"
+                            disabled={isTranslating === 'profile'}
+                          >
+                            {isTranslating === 'profile' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                            <span>SINKRONISASI AI (OTOMATIS)</span>
+                          </Button>
+                        </div>
                         <div className="grid md:grid-cols-2 gap-6">
                            <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Nama Brand/Lengkap</label><Input value={profileFormData.name} onChange={e => setProfileFormData({...profileFormData, name: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>
                            <div className="space-y-3"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Email Kependudukan Admin</label><Input value={profileFormData.email} onChange={e => setProfileFormData({...profileFormData, email: e.target.value})} className="h-16 rounded-2xl bg-muted/30 border-none px-6" /></div>

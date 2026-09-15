@@ -64,13 +64,15 @@ export const Certificates = ({ initialCertificates }: CertificatesProps) => {
     }
 
     return filtered.sort((a, b) => {
+      const titleA = (language === 'id' ? (a.titleId || a.titleEn || '') : (a.titleEn || a.titleId || '')).toLowerCase();
+      const titleB = (language === 'id' ? (b.titleId || b.titleEn || '') : (b.titleEn || b.titleId || '')).toLowerCase();
       switch (sortBy) {
         case 'oldest':
           return parseInt(a.year) - parseInt(b.year);
         case 'asc':
-          return (language === 'id' ? a.titleId : a.titleEn).localeCompare(language === 'id' ? b.titleId : b.titleEn);
+          return titleA.localeCompare(titleB);
         case 'desc':
-          return (language === 'id' ? b.titleId : b.titleEn).localeCompare(language === 'id' ? a.titleId : a.titleEn);
+          return titleB.localeCompare(titleA);
         case 'newest':
         default:
           return parseInt(b.year) - parseInt(a.year);
@@ -250,8 +252,8 @@ export const Certificates = ({ initialCertificates }: CertificatesProps) => {
 
 const CertificateCard = ({ cert }: { cert: Certificate }) => {
   const { language } = useLanguage();
-  const title = language === 'id' ? cert.titleId : cert.titleEn;
-  const shortDesc = language === 'id' ? cert.shortDescriptionId : cert.shortDescriptionEn;
+  const title = (language === 'id' ? cert.titleId : (cert.titleEn || cert.titleId)) || cert.titleId || 'Sertifikat';
+  const shortDesc = (language === 'id' ? cert.shortDescriptionId : (cert.shortDescriptionEn || cert.shortDescriptionId)) || '';
 
   const hasImage = typeof cert.imageUrl === 'string' && cert.imageUrl.trim().startsWith('http');
   const hasCredentialUrl = typeof cert.credentialUrl === 'string' && cert.credentialUrl.trim().length > 5 && cert.credentialUrl.trim().startsWith('http');
@@ -313,7 +315,7 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
                onClick={() => window.open(cert.credentialUrl, '_blank', 'noopener,noreferrer')}
                className="rounded-2xl h-12 gap-2 font-bold uppercase text-xs tracking-wider shadow-xl hover:scale-105 active:scale-95 transition-all bg-primary text-primary-foreground"
              >
-               Buka Dokumen Asli <ExternalLink className="h-3 w-3" />
+               {language === 'id' ? 'Buka Dokumen Asli' : 'Open Credential Document'} <ExternalLink className="h-3 w-3" />
              </Button>
            )}
         </div>
@@ -332,26 +334,26 @@ const CertificateCard = ({ cert }: { cert: Certificate }) => {
            ) : (
              <div className="aspect-video rounded-[2rem] bg-muted/20 border-dashed border flex flex-col items-center justify-center text-muted-foreground">
                <Info className="h-12 w-12 opacity-20" />
-               <p className="text-xs font-bold italic mt-4">Visual dokumen tidak tersedia.</p>
+               <p className="text-xs font-bold italic mt-4">{language === 'id' ? 'Visual dokumen tidak tersedia.' : 'Credential document preview unavailable.'}</p>
              </div>
            )}
            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-card p-6 rounded-3xl border shadow-sm text-center">
-                <p className="text-xs font-bold text-muted-foreground uppercase mb-1">Tahun Terbit</p>
+                <p className="text-xs font-bold text-muted-foreground uppercase mb-1">{language === 'id' ? 'Tahun Terbit' : 'Year Issued'}</p>
                 <p className="text-sm font-black">{cert.year}</p>
               </div>
               <div className="bg-card p-6 rounded-3xl border shadow-sm text-center">
-                <p className="text-xs font-bold text-muted-foreground uppercase mb-1">Masa Berlaku</p>
-                <p className="text-sm font-black">{cert.validUntil || 'Seumur Hidup'}</p>
+                <p className="text-xs font-bold text-muted-foreground uppercase mb-1">{language === 'id' ? 'Masa Berlaku' : 'Validity'}</p>
+                <p className="text-sm font-black">{cert.validUntil || (language === 'id' ? 'Seumur Hidup' : 'Lifetime')}</p>
               </div>
               <div className="bg-card p-6 rounded-3xl border shadow-sm text-center col-span-2">
-                <p className="text-xs font-black text-muted-foreground uppercase mb-1">Status Verifikasi</p>
-                <p className="text-sm font-black text-primary">Validasi Industri Terkonfirmasi</p>
+                <p className="text-xs font-black text-muted-foreground uppercase mb-1">{language === 'id' ? 'Status Verifikasi' : 'Verification Status'}</p>
+                <p className="text-sm font-black text-primary">{language === 'id' ? 'Validasi Industri Terkonfirmasi' : 'Industry Verified'}</p>
               </div>
            </div>
            <section className="bg-card p-8 rounded-[2.5rem] border shadow-sm space-y-6">
               <h4 className="text-lg font-black  uppercase tracking-tight flex items-center gap-3">
-                <Award className="h-5 w-5 text-primary" /> Narasi Validasi Kredensial
+                <Award className="h-5 w-5 text-primary" /> {language === 'id' ? 'Narasi Validasi Kredensial' : 'Credential Validation Narrative'}
               </h4>
               <DialogDescription className="text-muted-foreground leading-relaxed text-base font-medium whitespace-pre-wrap">
                 {language === 'id' ? cert.fullDescriptionId : (cert.fullDescriptionEn || cert.fullDescriptionId)}

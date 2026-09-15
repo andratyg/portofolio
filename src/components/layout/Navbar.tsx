@@ -275,8 +275,20 @@ export const Navbar = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="rounded-2xl border-none shadow-2xl bg-card/95 backdrop-blur-sm p-2">
-                <DropdownMenuItem onClick={() => { play('click'); setLanguage('en'); }} className="rounded-xl font-bold uppercase text-xs tracking-wider px-4 py-2.5">English {language === 'en' && '✓'}</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => { play('click'); setLanguage('id'); }} className="rounded-xl font-bold uppercase text-xs tracking-wider px-4 py-2.5">Indonesia {language === 'id' && '✓'}</DropdownMenuItem>
+                <DropdownMenuItem 
+                  onSelect={() => { play('click'); setLanguage('en'); }} 
+                  onClick={() => { play('click'); setLanguage('en'); }} 
+                  className="rounded-xl font-bold uppercase text-xs tracking-wider px-4 py-2.5 cursor-pointer"
+                >
+                  English {language === 'en' && '✓'}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onSelect={() => { play('click'); setLanguage('id'); }} 
+                  onClick={() => { play('click'); setLanguage('id'); }} 
+                  className="rounded-xl font-bold uppercase text-xs tracking-wider px-4 py-2.5 cursor-pointer"
+                >
+                  Indonesia {language === 'id' && '✓'}
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 

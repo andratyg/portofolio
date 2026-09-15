@@ -16,9 +16,16 @@ export function FirebaseClientProvider({ children }: FirebaseClientProviderProps
   }, []);
 
   React.useEffect(() => {
-    // Lazily load firestore to save JS payload size
-    import('firebase/firestore').then(({ getFirestore }) => {
-      setFirestoreInstance(getFirestore(firebaseServices.firebaseApp));
+    // Lazily load firestore to save JS payload size, with long polling auto-detection to prevent QUIC timeout errors
+    import('firebase/firestore').then(({ initializeFirestore, getFirestore }) => {
+      try {
+        const db = initializeFirestore(firebaseServices.firebaseApp, {
+          experimentalAutoDetectLongPolling: true,
+        });
+        setFirestoreInstance(db);
+      } catch {
+        setFirestoreInstance(getFirestore(firebaseServices.firebaseApp));
+      }
     });
   }, [firebaseServices.firebaseApp]);
 

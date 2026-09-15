@@ -16,27 +16,49 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [language, setLanguageState] = useState<Language>('id');
 
   useEffect(() => {
-    // Language detection priority: URL prefix (/en/...) → localStorage → browser
-    const pathSegments = window.location.pathname.split('/').filter(Boolean);
-    const urlLang = pathSegments[0]?.toLowerCase();
-    if (urlLang === 'en' || urlLang === 'id') {
-      setLanguageState(urlLang as Language);
-      localStorage.setItem('karyapro-lang', urlLang as Language);
-      return;
-    }
+    try {
+      const savedLang = localStorage.getItem('karyapro-lang') as Language;
+      if (savedLang === 'en' || savedLang === 'id') {
+        setLanguageState(savedLang);
+        if (typeof document !== 'undefined') {
+          document.documentElement.lang = savedLang;
+        }
+        return;
+      }
 
-    const savedLang = localStorage.getItem('karyapro-lang') as Language;
-    if (savedLang === 'en' || savedLang === 'id') {
-      setLanguageState(savedLang);
+      // Check browser preferred language if no explicit setting saved
+      if (typeof navigator !== 'undefined' && navigator.language) {
+        const browserLang = navigator.language.slice(0, 2).toLowerCase();
+        if (browserLang === 'en') {
+          setLanguageState('en');
+          if (typeof document !== 'undefined') {
+            document.documentElement.lang = 'en';
+          }
+          return;
+        }
+      }
+
+      if (typeof document !== 'undefined') {
+        document.documentElement.lang = 'id';
+      }
+    } catch {
+      // Safe fallback if localStorage is restricted (e.g., incognito)
     }
   }, []);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem('karyapro-lang', lang);
+    try {
+      localStorage.setItem('karyapro-lang', lang);
+    } catch {
+      // Ignore if localStorage unavailable
+    }
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = lang;
+    }
   };
 
-  const t = translations[language];
+  const t = translations[language] || translations.id;
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>
