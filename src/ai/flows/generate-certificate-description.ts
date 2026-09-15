@@ -11,11 +11,11 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GenerateCertificateDescriptionInputSchema = z.object({
-  title: z.string().describe('The title of the certificate.'),
-  issuer: z.string().describe('The organization that issued the certificate.'),
-  shortDescription: z.string().optional().describe('A brief overview or notes of the certificate.'),
-  existingCertificatesContext: z.string().optional().describe('Summary of other certificates in the portfolio to maintain consistent terminology, tone, and experience claims.'),
-  developerProfileContext: z.string().optional().describe('Context regarding the developer identity, key tech stack, and background.'),
+  title: z.string().min(1).max(200).describe('The title of the certificate.'),
+  issuer: z.string().min(1).max(200).describe('The organization that issued the certificate.'),
+  shortDescription: z.string().max(2000).optional().describe('A brief overview or notes of the certificate.'),
+  existingCertificatesContext: z.string().max(10000).optional().describe('Summary of other certificates in the portfolio to maintain consistent terminology, tone, and experience claims.'),
+  developerProfileContext: z.string().max(5000).optional().describe('Context regarding the developer identity, key tech stack, and background.'),
 });
 export type GenerateCertificateDescriptionInput = z.infer<
   typeof GenerateCertificateDescriptionInputSchema

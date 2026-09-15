@@ -28,10 +28,14 @@ service cloud.firestore {
       allow get, list, create, update, delete: if isAdmin();
     }
 
-    // Messages can be created by anyone, but only managed by admins
+    // Messages can be created by anyone, but only managed by admins.
+    // Strict SSDLC schema, data type, and character length bounds to prevent DoS/payload bloat.
     match /messages/{messageId} {
       allow create: if request.resource.data.keys().hasAll(['name', 'email', 'message', 'createdAt']) 
-                    && request.resource.data.keys().hasOnly(['name', 'email', 'message', 'createdAt']);
+                    && request.resource.data.keys().hasOnly(['name', 'email', 'message', 'createdAt'])
+                    && request.resource.data.name is string && request.resource.data.name.size() >= 2 && request.resource.data.name.size() <= 100
+                    && request.resource.data.email is string && request.resource.data.email.size() <= 150 && request.resource.data.email.matches('^[^@]+@[^@]+\\.[a-zA-Z]{2,}$')
+                    && request.resource.data.message is string && request.resource.data.message.size() >= 5 && request.resource.data.message.size() <= 5000;
       allow read, list, update, delete: if isAdmin();
     }
 
@@ -42,7 +46,8 @@ service cloud.firestore {
       allow update: if isAdmin() || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['clickCount', 'lastClickedAt']));
 
       match /clicks/{clickId} {
-        allow create: if true;
+        allow create: if request.resource.data.keys().hasAll(['timestamp', 'deviceType', 'browser', 'os', 'country', 'city', 'referer', 'userAgent', 'isBot'])
+                      && request.resource.data.userAgent is string && request.resource.data.userAgent.size() <= 500;
         allow read, list, update, delete: if isAdmin();
       }
     }

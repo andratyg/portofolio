@@ -11,31 +11,38 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GeneratePortfolioDescriptionSuggestionInputSchema = z.object({
-  title: z.string().describe('The title of the portfolio item.'),
+  title: z.string().min(1).max(200).describe('The title of the portfolio item.'),
   projectType: z
     .string()
+    .max(50)
     .describe('The type or category of the project (e.g., web, UI, backend).'),
   technologiesUsed: z
-    .array(z.string())
+    .array(z.string().max(50))
+    .max(30)
     .describe('A list of technologies or skills used in the project.'),
   keyFeatures: z
     .string()
+    .max(2000)
     .optional()
     .describe('A brief description of the key features or functionalities.'),
   targetAudience: z
     .string()
+    .max(1000)
     .optional()
     .describe('The intended audience or users of the project.'),
   problemSolved: z
     .string()
+    .max(3000)
     .optional()
     .describe('The problem or challenge that the project addresses.'),
   existingProjectsContext: z
     .string()
+    .max(10000)
     .optional()
     .describe('Summary of existing projects in portfolio to ensure consistency in tone, narrative structure, and claimed technical mastery.'),
   developerProfileContext: z
     .string()
+    .max(5000)
     .optional()
     .describe('Summary of developer profile, background, and claimed expertise.'),
 });

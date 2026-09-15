@@ -8,7 +8,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const TranslateContentInputSchema = z.object({
-  text: z.string().describe('The text to translate.'),
+  text: z.string().min(1, 'Text cannot be empty').max(15000, 'Text exceeds 15,000 characters limit.').describe('The text to translate.'),
   targetLang: z.enum(['id', 'en']).describe('The target language (id for Indonesian, en for English).'),
 });
 export type TranslateContentInput = z.infer<typeof TranslateContentInputSchema>;
@@ -19,11 +19,17 @@ const TranslateContentOutputSchema = z.object({
 export type TranslateContentOutput = z.infer<typeof TranslateContentOutputSchema>;
 
 export async function translateContent(input: TranslateContentInput): Promise<TranslateContentOutput> {
+  const parsed = TranslateContentInputSchema.safeParse(input);
+  if (!parsed.success) {
+    console.warn('[translateContent] Invalid input received:', parsed.error.issues);
+    return { translatedText: typeof input?.text === 'string' ? input.text : '' };
+  }
+
   const hasKey = !!(process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_API_KEY);
   if (!hasKey) {
     return { translatedText: input.text };
   }
-  return translateContentFlow(input);
+  return translateContentFlow(parsed.data);
 }
 
 const prompt = ai.definePrompt({
