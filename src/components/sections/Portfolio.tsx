@@ -367,7 +367,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
               <div className="flex justify-end pt-4">
                 <Link href={`/projects/${project.id}`} className="w-full sm:w-auto">
                   <Button className="w-full sm:w-auto rounded-2xl font-black uppercase text-xs tracking-wider gap-2 px-8 h-12 shadow-lg shadow-primary/20">
-                    Buka Halaman Studi Kasus Lengkap <ArrowRight className="h-4 w-4" />
+                    {t.viewFullCaseStudy} <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
               </div>
