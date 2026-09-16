@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: https: blob:",
       "font-src 'self' data: https://fonts.gstatic.com",
-      "frame-src 'self' https://*.firebaseapp.com https://*.google.com https://apis.google.com",
+      `frame-src 'self' https: ${isDev ? "http:" : ""} https://*.firebaseapp.com https://*.google.com https://apis.google.com`,
       "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com",
       ...(!isDev ? [
         "require-trusted-types-for 'script'",

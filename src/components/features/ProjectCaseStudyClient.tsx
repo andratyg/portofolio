@@ -128,9 +128,17 @@ export function ProjectCaseStudyClient({ imageUrl, title, demoUrl, githubUrl }: 
           /* Embedded iframe mode */
           <div className="w-full h-full relative">
             {!iframeLoaded && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-muted z-10">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-muted z-10 p-6 text-center">
                 <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                 <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Memuat demo…</p>
+                <a
+                  href={demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"
+                >
+                  Buka di tab baru <ExternalLink className="h-3.5 w-3.5" />
+                </a>
               </div>
             )}
             <iframe
@@ -140,16 +148,21 @@ export function ProjectCaseStudyClient({ imageUrl, title, demoUrl, githubUrl }: 
               onLoad={() => setIframeLoaded(true)}
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
             />
-            {/* Open in new tab button */}
-            <a
-              href={demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="absolute top-16 right-4 z-20 p-2.5 rounded-full bg-black/50 text-white hover:bg-primary transition-all"
-              title="Buka di tab baru"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </a>
+            {/* Bottom status bar with demo URL and external link button */}
+            <div className="absolute bottom-3 left-4 right-4 z-20 flex items-center justify-between p-2 px-4 rounded-xl bg-black/75 backdrop-blur-md border border-white/10 text-xs text-white/80 pointer-events-auto">
+              <span className="truncate max-w-[200px] sm:max-w-md font-mono text-[11px] text-white/70">
+                {demoUrl}
+              </span>
+              <a
+                href={demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-primary hover:text-primary-foreground font-bold transition-colors ml-2 shrink-0 bg-primary/20 hover:bg-primary px-3 py-1 rounded-lg"
+              >
+                <span>Buka di tab baru</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
           </div>
         )}
       </div>
