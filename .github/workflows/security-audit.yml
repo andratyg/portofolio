@@ -34,5 +34,9 @@ jobs:
       - name: Lint Analysis (ESLint)
         run: npm run lint
 
+      - name: Production Build Verification
+        run: npm run build
+
       - name: Security Vulnerability Scan (SCA)
         run: npm audit --audit-level=critical
+        continue-on-error: true

@@ -49,6 +49,51 @@ export function ShortLinkPreviewClient({ shortLink }: { shortLink: ShortLink }) 
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Fungsi untuk redirect langsung ke URL tujuan
+  const handleProceed = () => {
+    if (isRedirecting) return;
+    setIsRedirecting(true);
+    if (timerRef.current) clearInterval(timerRef.current);
+    window.location.href = shortLink.originalUrl;
+  };
+
+  // Copy original URL ke clipboard
+  const handleCopyUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(shortLink.originalUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      console.error('Failed to copy URL:', e);
+    }
+  };
+
+  // Logika Countdown Timer
+  useEffect(() => {
+    if (!shortLink.isActive) return;
+
+    if (isPaused || isHovered || isRedirecting) {
+      if (timerRef.current) clearInterval(timerRef.current);
+      return;
+    }
+
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          if (timerRef.current) clearInterval(timerRef.current);
+          setIsRedirecting(true);
+          window.location.href = shortLink.originalUrl;
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isPaused, isHovered, isRedirecting, shortLink.originalUrl, shortLink.isActive]);
+
   // Jika link dinonaktifkan (isActive: false), tampilkan status deactivated
   if (!shortLink.isActive) {
     return (
@@ -106,49 +151,6 @@ export function ShortLinkPreviewClient({ shortLink }: { shortLink: ShortLink }) 
       </div>
     );
   }
-
-  // Fungsi untuk redirect langsung ke URL tujuan
-  const handleProceed = () => {
-    if (isRedirecting) return;
-    setIsRedirecting(true);
-    if (timerRef.current) clearInterval(timerRef.current);
-    window.location.href = shortLink.originalUrl;
-  };
-
-  // Copy original URL ke clipboard
-  const handleCopyUrl = async () => {
-    try {
-      await navigator.clipboard.writeText(shortLink.originalUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (e) {
-      console.error('Failed to copy URL:', e);
-    }
-  };
-
-  // Logika Countdown Timer
-  useEffect(() => {
-    if (isPaused || isHovered || isRedirecting) {
-      if (timerRef.current) clearInterval(timerRef.current);
-      return;
-    }
-
-    timerRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          if (timerRef.current) clearInterval(timerRef.current);
-          setIsRedirecting(true);
-          window.location.href = shortLink.originalUrl;
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isPaused, isHovered, isRedirecting, shortLink.originalUrl]);
 
   // Parsing hostname untuk display yang mudah dibaca
   let targetHostname = '';

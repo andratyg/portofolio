@@ -2589,7 +2589,7 @@ function AdminContent() {
                         </div>
                       </div>
                       <p className="text-xs text-muted-foreground italic leading-relaxed line-clamp-3">
-                        "{test.contentId}"
+                        &ldquo;{test.contentId}&rdquo;
                       </p>
                     </Card>
                   ))}

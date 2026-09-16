@@ -390,7 +390,7 @@ export function AIAdvisorPanel({
                   )}
                 </div>
                 <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed italic bg-background/40 p-3 rounded-xl border border-border/30">
-                  "{summary || 'Portofolio siap diaudit untuk memastikan kredibilitas maksimal di mata recruiter dan klien.'}"
+                  &ldquo;{summary || 'Portofolio siap diaudit untuk memastikan kredibilitas maksimal di mata recruiter dan klien.'}&rdquo;
                 </p>
               </div>
             </div>
@@ -460,7 +460,7 @@ export function AIAdvisorPanel({
           <Sparkles className="h-12 w-12 text-primary/40 mx-auto" />
           <h3 className="font-black text-lg uppercase tracking-wider">Belum Ada Rekomendasi Aktif</h3>
           <p className="text-xs text-muted-foreground max-w-md mx-auto">
-            Klik tombol <strong>"Mulai Pindai Portofolio"</strong> di atas untuk memindai seluruh data proyek, sertifikat, dan profil Anda menggunakan AI Advisor.
+            Klik tombol <strong>&ldquo;Mulai Pindai Portofolio&rdquo;</strong> di atas untuk memindai seluruh data proyek, sertifikat, dan profil Anda menggunakan AI Advisor.
           </p>
         </Card>
       ) : listToRender.length === 0 ? (

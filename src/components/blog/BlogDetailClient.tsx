@@ -236,7 +236,7 @@ export function BlogDetailClient({ initialBlog, slug, initialProfile }: BlogDeta
           {summary && (
             <div className="p-6 sm:p-8 rounded-[2rem] bg-primary/5 border border-primary/15 mb-10">
               <p className="text-base sm:text-lg font-semibold text-foreground/90 leading-relaxed italic">
-                "{summary}"
+                &ldquo;{summary}&rdquo;
               </p>
             </div>
           )}
