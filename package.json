@@ -80,5 +80,8 @@
   ],
   "overrides": {
     "websocket-driver": "^0.7.5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }
