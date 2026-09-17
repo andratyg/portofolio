@@ -45,11 +45,12 @@ export default function CoffeeDecorations() {
     window.addEventListener('resize', resize);
     resize();
 
-    // ~25 warm micro-particles (cinnamon & roasted coffee bean specks)
+    // ~25 warm micro-particles (cinnamon, caramel & roasted coffee bean specks)
     const dustColors = [
-      'rgba(179, 77, 14, ',  // Golden caramel
-      'rgba(95, 63, 39, ',   // Deep cocoa espresso
-      'rgba(205, 97, 30, ',  // Spiced cinnamon
+      'rgba(179, 77, 14, ',   // Golden caramel crema
+      'rgba(95, 63, 39, ',    // Deep cocoa espresso
+      'rgba(205, 97, 30, ',   // Spiced cinnamon
+      'rgba(160, 95, 40, ',   // Warm hazelnut mocha
     ];
 
     interface DustParticle {

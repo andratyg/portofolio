@@ -164,39 +164,39 @@
 
   /* --- Cappuccino Mocha Theme (Warm Light Brown Cafe Latte & Roasted Espresso) --- */
   [data-theme='catppuccin'] {
-    --background: 33 43% 88%;
-    /* Warm Light Brown / Creamy Latte #eee2d3 */
-    --foreground: 24 45% 10%;
-    /* Deep Velvet Cocoa Espresso #25150c - Bold, rich, high contrast */
-    --card: 33 50% 95%;
-    /* Creamy Milk Froth Surface #f8f2eb */
-    --card-foreground: 24 45% 10%;
-    --popover: 33 50% 95%;
-    --popover-foreground: 24 45% 10%;
+    --background: 38 65% 97%;
+    /* Warm Ivory Parchment #fdf8f0 — premium artisan coffee stationary */
+    --foreground: 24 50% 8%;
+    /* Deep Velvet Espresso #1e0e06 - Bold, rich, high contrast on ivory */
+    --card: 36 80% 99%;
+    /* Milk Foam White #fffcf7 — frosted steamed milk surface */
+    --card-foreground: 24 50% 8%;
+    --popover: 36 80% 99%;
+    --popover-foreground: 24 50% 8%;
     --primary: 24 85% 38%;
     /* Radiant Golden Caramel Crema #b34d0e - Pops with warm vibrant energy */
-    --primary-foreground: 30 100% 98%;
-    /* Crisp Vanilla Milk White #fffaf5 */
-    --secondary: 31 38% 82%;
-    /* Biscuit Latte Foam #e4d2bf */
-    --secondary-foreground: 24 45% 10%;
-    --muted: 31 38% 82%;
-    --muted-foreground: 24 38% 27%;
-    /* Rich Roasted Hazelnut Mocha #5f3f27 - Crisp, warm, easy to read */
+    --primary-foreground: 36 100% 98%;
+    /* Warm Vanilla Cream #fffaf4 */
+    --secondary: 34 45% 90%;
+    /* Soft Steamed Milk #f0e6d6 */
+    --secondary-foreground: 24 45% 12%;
+    --muted: 34 45% 90%;
+    --muted-foreground: 25 35% 32%;
+    /* Roasted Hazelnut Mocha #6b4527 - Warm, easy to read on ivory */
     --accent: 24 75% 46%;
     /* Spiced Cinnamon Crema #cd611e */
-    --accent-foreground: 30 100% 98%;
+    --accent-foreground: 36 100% 98%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 32 30% 72%;
-    /* Warm Cafe Latte Rim #cbbaa7 */
-    --input: 32 30% 72%;
+    --border: 32 28% 82%;
+    /* Soft Parchment Rim #e0cdb8 */
+    --input: 32 28% 82%;
     --ring: 24 85% 38%;
 
     /* Glassmorphism */
-    --glass-bg: rgba(255, 255, 255, 0.65);
-    --glass-border: rgba(179, 77, 14, 0.16);
-    --glass-blur: 16px;
+    --glass-bg: rgba(255, 252, 247, 0.78);
+    --glass-border: rgba(179, 77, 14, 0.13);
+    --glass-blur: 18px;
   }
 
   /* --- Sunset Beach Theme (Clear Light Sky Blue to Radiant Sunset Orange & Golden Horizon) --- */
@@ -280,9 +280,12 @@
   }
 
   [data-theme='catppuccin'] body {
-    background-image: radial-gradient(ellipse 85% 55% at 50% -10%, rgba(200, 155, 110, 0.22), transparent 70%),
-      radial-gradient(ellipse 65% 45% at 85% 90%, rgba(160, 110, 70, 0.16), transparent 65%),
-      radial-gradient(ellipse 50% 40% at 15% 70%, rgba(140, 85, 48, 0.10), transparent 70%);
+    /* Warm ivory parchment: subtle cream-to-gold swirl, like a perfect latte pour */
+    background-image:
+      radial-gradient(ellipse 90% 60% at 50% -5%, rgba(215, 170, 115, 0.18), transparent 65%),
+      radial-gradient(ellipse 55% 40% at 90% 15%, rgba(200, 150, 90, 0.10), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 10% 80%, rgba(180, 120, 65, 0.09), transparent 65%),
+      radial-gradient(ellipse 45% 35% at 75% 95%, rgba(160, 105, 55, 0.07), transparent 60%);
     background-attachment: fixed;
   }
 
@@ -404,8 +407,8 @@
 }
 
 [data-theme='catppuccin'] ::selection {
-  background-color: rgba(179, 77, 14, 0.24);
-  color: hsl(24 45% 10%);
+  background-color: rgba(179, 77, 14, 0.20);
+  color: hsl(24 50% 8%);
 }
 
 [data-theme='sunset'] ::selection {

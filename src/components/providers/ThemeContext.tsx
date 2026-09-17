@@ -87,9 +87,9 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
     id: 'catppuccin',
     name: { id: 'Cappuccino Mocha', en: 'Cappuccino Mocha' },
     category: 'modern',
-    description: { id: 'Coklat muda hangat, perpaduan susu krim, latte & roasted espresso', en: 'Warm light brown coffee vibes, creamy latte & roasted espresso' },
+    description: { id: 'Ivory parchment hangat, susu krim lembut & espresso roasted', en: 'Warm ivory parchment, creamy steamed milk & roasted espresso' },
     colors: {
-      bg: '#ebdccb',
+      bg: '#fdf8f0',
       primary: '#b34d0e',
       accent: '#cd611e',
     },
