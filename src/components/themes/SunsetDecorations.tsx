@@ -6,12 +6,13 @@ import TropicalPalmTree from './TropicalPalmTree';
 /**
  * SunsetDecorations - Tema Senja Tropis Super Ringan (Ultra-Lightweight Sunset Beach)
  * 
- * Fitur Optimasi Performa:
- * - Ukuran berkas dipangkas dari 44 KB menjadi ~6 KB (~86% lebih kecil).
- * - Bebas dari animasi SVG SMIL (<animate>) yang membebani CPU main thread.
- * - Bebas dari filter ganda drop-shadow berat yang menyebabkan GPU lag dan fan spinning.
- * - Canvas partikel debu senja hanya 20 partikel mikro, capped 30 FPS, mati otomatis di mobile & saat tab diminimize.
- * - Gerakan awan, ombak, burung, dan matahari menggunakan CSS transform hardware-accelerated (60-120 FPS).
+ * Fitur Optimasi Performa Maksimal:
+ * - contain: 'strict' untuk isolasi total dari layout document.
+ * - Bebas 100% dari filter Gaussian blur dinamis pada elemen beranimasi (GPU shader load = 0).
+ * - Canvas partikel otomatis berhenti saat pengguna sedang aktif men-scroll (120 FPS native scrolling).
+ * - Algoritma AABB bounding-box cepat untuk interaksi kursor mouse.
+ * - 14 partikel mikro hangat capped 30 FPS, otomatis nonaktif di mobile / layar sentuh.
+ * - Semua elemen gerak terisolasi di hardware composite layer (translateZ).
  */
 export default function SunsetDecorations() {
   const [isEligible, setIsEligible] = useState(false);
@@ -42,12 +43,24 @@ export default function SunsetDecorations() {
     const fpsInterval = 1000 / 30; // 30 FPS cap
     let mouseX = -1000;
     let mouseY = -1000;
+    let isScrolling = false;
+    let scrollTimer: NodeJS.Timeout;
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
     };
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+    // Jeda canvas saat pengguna men-scroll agar 100% daya GPU/CPU dialokasikan untuk scrolling mulus 120 FPS
+    const handleScroll = () => {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 100);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -77,17 +90,16 @@ export default function SunsetDecorations() {
     }
 
     const particles: Particle[] = [];
-    // Batasi ke maksimal 20 partikel mikro
-    const count = Math.min(20, Math.max(12, Math.floor((window.innerWidth * window.innerHeight) / 45000)));
+    const count = Math.min(14, Math.max(8, Math.floor((window.innerWidth * window.innerHeight) / 55000)));
 
     for (let i = 0; i < count; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        r: Math.random() * 1.4 + 0.8, // 0.8 - 2.2px micro-embers
+        r: Math.random() * 1.3 + 0.8, // 0.8 - 2.1px micro-embers
         vx: (Math.random() - 0.5) * 0.25,
-        vy: -(Math.random() * 0.4 + 0.2), // Hembusan termal ke atas
-        alpha: Math.random() * 0.4 + 0.25,
+        vy: -(Math.random() * 0.35 + 0.2), // Hembusan termal ke atas
+        alpha: Math.random() * 0.35 + 0.25,
         color: dustColors[Math.floor(Math.random() * dustColors.length)],
         wobble: Math.random() * Math.PI * 2,
         wobbleSpeed: Math.random() * 0.02 + 0.01,
@@ -97,29 +109,34 @@ export default function SunsetDecorations() {
     const animate = (timestamp: number) => {
       rafId = requestAnimationFrame(animate);
 
+      // Jeda jika tab tidak aktif atau sedang scrolling aktif
+      if (document.hidden || isScrolling) return;
+
       const elapsed = timestamp - lastTime;
       if (elapsed < fpsInterval) return;
       lastTime = timestamp - (elapsed % fpsInterval);
-
-      if (document.hidden) return; // Pause saat tab tidak aktif
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
         p.wobble += p.wobbleSpeed;
-        p.x += p.vx + Math.sin(p.wobble) * 0.3;
+        p.x += p.vx + Math.sin(p.wobble) * 0.25;
         p.y += p.vy;
 
-        // Tolakan interaktif mouse lembut dalam radius 80px
+        // Fast AABB bounding box check sebelum kalkulasi jarak matematika mouse
         const dx = p.x - mouseX;
-        const dy = p.y - mouseY;
-        const distSq = dx * dx + dy * dy;
-        if (distSq < 6400 && distSq > 0) {
-          const dist = Math.sqrt(distSq);
-          const force = (80 - dist) / 80;
-          p.x += (dx / dist) * force * 1.5;
-          p.y += (dy / dist) * force * 1.5;
+        if (dx > -80 && dx < 80) {
+          const dy = p.y - mouseY;
+          if (dy > -80 && dy < 80) {
+            const distSq = dx * dx + dy * dy;
+            if (distSq < 6400 && distSq > 0) {
+              const dist = Math.sqrt(distSq);
+              const force = (80 - dist) / 80;
+              p.x += (dx / dist) * force * 1.4;
+              p.y += (dy / dist) * force * 1.4;
+            }
+          }
         }
 
         // Wrap around viewport
@@ -141,46 +158,59 @@ export default function SunsetDecorations() {
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', resize);
+      clearTimeout(scrollTimer);
       cancelAnimationFrame(rafId);
     };
   }, [isEligible]);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-      {/* ─── 1. Matahari Senja Hangat & Pendaran Korona (Minimalist Radiant Sun) ─── */}
-      <div className="fixed top-12 sm:top-18 right-[8%] sm:right-[15%] md:right-[18%] pointer-events-none select-none z-0">
-        {/* Pendaran Ambient Luar (Soft Warm Halo) */}
+    <div
+      className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
+      style={{ contain: 'strict' }}
+      aria-hidden="true"
+    >
+      {/* ─── 1. Matahari Senja Hangat & Pendaran Korona (Ultra-Fast Math Gradient Glow) ─── */}
+      <div
+        className="fixed top-12 sm:top-18 right-[8%] sm:right-[15%] md:right-[18%] pointer-events-none select-none z-0"
+        style={{ transform: 'translateZ(0)' }}
+      >
+        {/* Pendaran Ambient Luar (Soft Warm Halo via Pure Radial Gradient Tanpa Filter GPU) */}
         <div
-          className="absolute -top-24 -left-24 w-72 sm:w-96 h-72 sm:h-96 rounded-full blur-[50px] sm:blur-[75px] opacity-60 pointer-events-none"
+          className="absolute -top-24 -left-24 w-72 sm:w-96 h-72 sm:h-96 rounded-full pointer-events-none"
           style={{
-            background: 'radial-gradient(circle, rgba(254, 240, 138, 0.7) 0%, rgba(251, 146, 60, 0.35) 45%, rgba(244, 63, 94, 0.12) 75%, transparent 95%)',
+            background: 'radial-gradient(circle, rgba(254, 240, 138, 0.5) 0%, rgba(251, 146, 60, 0.25) 35%, rgba(244, 63, 94, 0.08) 60%, transparent 80%)',
             animation: 'sunsetSunBreathe 8s ease-in-out infinite alternate',
             willChange: 'transform, opacity',
+            transform: 'translateZ(0)',
           }}
         />
 
         {/* Pendaran Korona Tengah */}
         <div
-          className="absolute -top-8 -left-8 w-44 sm:w-56 h-44 sm:h-56 rounded-full blur-[20px] opacity-75 pointer-events-none"
+          className="absolute -top-8 -left-8 w-44 sm:w-56 h-44 sm:h-56 rounded-full opacity-80 pointer-events-none"
           style={{
-            background: 'radial-gradient(circle, #FFFBE8 10%, #FEE070 40%, #FB923C 75%, transparent 100%)',
+            background: 'radial-gradient(circle, #FFFBE8 0%, rgba(254, 224, 112, 0.6) 35%, rgba(251, 146, 60, 0.25) 65%, transparent 85%)',
+            transform: 'translateZ(0)',
           }}
         />
 
         {/* Garis Suar Horizontal Anamorfik Halus (Anamorphic Sun Streak) */}
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 sm:w-96 md:w-[480px] h-1.5 rounded-full opacity-65 pointer-events-none blur-[1px]"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 sm:w-96 md:w-[480px] h-1.5 rounded-full opacity-65 pointer-events-none"
           style={{
-            background: 'linear-gradient(90deg, transparent 0%, rgba(254, 240, 138, 0.3) 25%, rgba(255, 255, 255, 0.9) 50%, rgba(254, 240, 138, 0.3) 75%, transparent 100%)',
+            background: 'linear-gradient(90deg, transparent 0%, rgba(254, 240, 138, 0.25) 25%, rgba(255, 255, 255, 0.9) 50%, rgba(254, 240, 138, 0.25) 75%, transparent 100%)',
+            transform: 'translateZ(0)',
           }}
         />
 
         {/* Piringan Matahari Senja (Crisp Sun Disc) */}
         <div
-          className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden shadow-[0_0_40px_rgba(253,200,48,0.75)]"
+          className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden shadow-[0_0_35px_rgba(253,200,48,0.7)]"
           style={{
             background: 'radial-gradient(circle at 45% 42%, #FFFFFF 0%, #FFFDE6 25%, #FDE047 55%, #FB923C 85%, #E11D48 100%)',
+            transform: 'translateZ(0)',
           }}
         />
       </div>
@@ -192,6 +222,7 @@ export default function SunsetDecorations() {
         style={{
           animation: 'sunsetCloudFloat1 36s ease-in-out infinite alternate',
           willChange: 'transform',
+          transform: 'translateZ(0)',
         }}
       >
         <svg viewBox="0 0 320 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
@@ -215,6 +246,7 @@ export default function SunsetDecorations() {
         style={{
           animation: 'sunsetCloudFloat2 44s ease-in-out infinite alternate',
           willChange: 'transform',
+          transform: 'translateZ(0)',
         }}
       >
         <svg viewBox="0 0 280 60" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
@@ -240,6 +272,7 @@ export default function SunsetDecorations() {
         style={{
           animation: 'sunsetGullGlide1 22s ease-in-out infinite',
           willChange: 'transform',
+          transform: 'translateZ(0)',
         }}
       >
         <svg viewBox="0 0 40 16" fill="currentColor" className="w-full h-full">
@@ -254,6 +287,7 @@ export default function SunsetDecorations() {
         style={{
           animation: 'sunsetGullGlide2 18s ease-in-out infinite 1.5s',
           willChange: 'transform',
+          transform: 'translateZ(0)',
         }}
       >
         <svg viewBox="0 0 40 16" fill="currentColor" className="w-full h-full">
@@ -262,13 +296,17 @@ export default function SunsetDecorations() {
       </div>
 
       {/* ─── 4. Hamparan Ombak Laut Tenang & Pantulan Air (Calm Minimalist Sunset Waves) ─── */}
-      <div className="fixed bottom-0 inset-x-0 h-16 sm:h-20 md:h-24 pointer-events-none select-none z-0 overflow-hidden">
+      <div
+        className="fixed bottom-0 inset-x-0 h-16 sm:h-20 md:h-24 pointer-events-none select-none z-0 overflow-hidden"
+        style={{ transform: 'translateZ(0)' }}
+      >
         {/* Layer Ombak Belakang */}
         <div
           className="absolute inset-x-0 bottom-0 h-full opacity-60"
           style={{
             animation: 'sunsetWaveDrift 9s ease-in-out infinite alternate',
             willChange: 'transform',
+            transform: 'translateZ(0)',
           }}
         >
           <svg
@@ -296,6 +334,7 @@ export default function SunsetDecorations() {
           className="absolute bottom-0 right-[12%] sm:right-[16%] md:right-[20%] w-48 sm:w-64 h-12 pointer-events-none opacity-70"
           style={{
             background: 'radial-gradient(ellipse at 50% 10%, rgba(254, 240, 138, 0.85) 0%, rgba(251, 146, 60, 0.4) 50%, transparent 80%)',
+            transform: 'translateZ(0)',
           }}
         />
 
@@ -305,6 +344,7 @@ export default function SunsetDecorations() {
           style={{
             animation: 'sunsetWaveDrift 7s ease-in-out infinite alternate-reverse',
             willChange: 'transform',
+            transform: 'translateZ(0)',
           }}
         >
           <svg
@@ -339,11 +379,12 @@ export default function SunsetDecorations() {
       {/* ─── 5. Siluet Pohon Kelapa Tropis Ringan (Lightweight Coastal Palm) ─── */}
       <TropicalPalmTree />
 
-      {/* ─── 6. Partikel Debu Senja (Desktop Capped 30 FPS Canvas) ─── */}
+      {/* ─── 6. Partikel Debu Senja (Desktop Capped 30 FPS Canvas dengan Auto-Pause on Scroll) ─── */}
       {isEligible && (
         <canvas
           ref={canvasRef}
           className="absolute inset-0 pointer-events-none"
+          style={{ transform: 'translateZ(0)' }}
         />
       )}
     </div>

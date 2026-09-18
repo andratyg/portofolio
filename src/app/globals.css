@@ -292,6 +292,14 @@
   /* Real tropical beach sunset: Clear vibrant light sky blue at top smoothly transitioning into airy cyan, warm peach, fiery coral, radiant sunset orange, and golden beach horizon */
   [data-theme='sunset'] body {
     background-color: #4ca8e8;
+  }
+
+  /* GPU-Accelerated fixed background layer: eliminates expensive scroll repaints caused by background-attachment: fixed */
+  [data-theme='sunset'] body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
     background-image:
       linear-gradient(180deg,
         #4ca8e8 0%,
@@ -305,8 +313,10 @@
         #fed34d 97%,
         #fee37b 100%
       );
-    background-attachment: fixed;
     background-size: cover;
+    pointer-events: none;
+    transform: translateZ(0);
+    will-change: transform;
   }
 
   /* Make only main page sections transparent in sunset theme so the light blue sunset sky permeates the layout */
@@ -740,20 +750,20 @@ body {
 /* --- Lightweight Sunset Beach Theme Animations (GPU-composited transforms only) --- */
 @keyframes palmSwayLight {
   0%, 100% {
-    transform: rotate(0deg);
+    transform: rotate(0deg) translateZ(0);
   }
   50% {
-    transform: rotate(1.4deg);
+    transform: rotate(1.4deg) translateZ(0);
   }
 }
 
 @keyframes sunsetSunBreathe {
   0%, 100% {
-    transform: scale(1);
+    transform: scale(1) translateZ(0);
     opacity: 0.55;
   }
   50% {
-    transform: scale(1.06);
+    transform: scale(1.06) translateZ(0);
     opacity: 0.72;
   }
 }

@@ -22,7 +22,7 @@ export default function TropicalPalmTree() {
         viewBox="0 0 320 420"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-auto drop-shadow-sm"
+        className="w-full h-auto"
       >
         <defs>
           {/* Siluet batang kelapa dengan nuansa twilight navy-bronze */}
