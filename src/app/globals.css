@@ -292,14 +292,6 @@
   /* Real tropical beach sunset: Clear vibrant light sky blue at top smoothly transitioning into airy cyan, warm peach, fiery coral, radiant sunset orange, and golden beach horizon */
   [data-theme='sunset'] body {
     background-color: #4ca8e8;
-  }
-
-  /* GPU-Accelerated fixed background layer: eliminates expensive scroll repaints caused by background-attachment: fixed */
-  [data-theme='sunset'] body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -2;
     background-image:
       linear-gradient(180deg,
         #4ca8e8 0%,
@@ -313,10 +305,8 @@
         #fed34d 97%,
         #fee37b 100%
       );
+    background-attachment: fixed;
     background-size: cover;
-    pointer-events: none;
-    transform: translateZ(0);
-    will-change: transform;
   }
 
   /* Make only main page sections transparent in sunset theme so the light blue sunset sky permeates the layout */
@@ -372,7 +362,7 @@
 
   [data-theme='sunset'] footer {
     background: transparent !important;
-    padding-bottom: 5.5rem;
+    padding-bottom: 8.5rem;
   }
 
   [data-theme='sunset'] footer .container {
@@ -747,81 +737,347 @@ body {
   }
 }
 
-/* --- Lightweight Sunset Beach Theme Animations (GPU-composited transforms only) --- */
-@keyframes palmSwayLight {
+@keyframes palmSway {
   0%, 100% {
-    transform: rotate(0deg) translateZ(0);
+    transform: rotate(0deg);
   }
   50% {
-    transform: rotate(1.4deg) translateZ(0);
+    transform: rotate(2.2deg);
   }
 }
 
-@keyframes sunsetSunBreathe {
+@keyframes palmFrondRustleLeft {
   0%, 100% {
-    transform: scale(1) translateZ(0);
-    opacity: 0.55;
+    transform: rotate(0deg) scaleY(1);
   }
   50% {
-    transform: scale(1.06) translateZ(0);
-    opacity: 0.72;
+    transform: rotate(-1.6deg) scaleY(0.985);
   }
 }
 
-@keyframes sunsetCloudFloat1 {
-  0% {
+@keyframes palmFrondRustleRight {
+  0%, 100% {
+    transform: rotate(0deg) scaleY(1);
+  }
+  50% {
+    transform: rotate(1.4deg) scaleY(1.015);
+  }
+}
+
+@keyframes oceanWaveSlow {
+  0%, 100% {
     transform: translate3d(0, 0, 0);
   }
-  100% {
-    transform: translate3d(40px, -4px, 0);
+  25% {
+    transform: translate3d(-14px, -3px, 0);
   }
-}
-
-@keyframes sunsetCloudFloat2 {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  100% {
-    transform: translate3d(-35px, 3px, 0);
-  }
-}
-
-@keyframes sunsetGullGlide1 {
-  0% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-  30% {
-    transform: translate3d(65px, -15px, 0) rotate(3deg);
-  }
-  70% {
-    transform: translate3d(140px, 4px, 0) rotate(-2deg);
-  }
-  100% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-}
-
-@keyframes sunsetGullGlide2 {
-  0% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-  35% {
-    transform: translate3d(50px, -12px, 0) rotate(4deg);
+  50% {
+    transform: translate3d(-26px, 1px, 0);
   }
   75% {
-    transform: translate3d(110px, 3px, 0) rotate(-3deg);
-  }
-  100% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
+    transform: translate3d(-12px, 3px, 0);
   }
 }
 
-@keyframes sunsetWaveDrift {
-  0% {
+@keyframes oceanWaveRolling {
+  0%, 100% {
     transform: translate3d(0, 0, 0);
   }
+  25% {
+    transform: translate3d(14px, -4px, 0);
+  }
+  50% {
+    transform: translate3d(26px, 1px, 0);
+  }
+  75% {
+    transform: translate3d(12px, 3px, 0);
+  }
+}
+
+@keyframes oceanSwellDeep {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  25% {
+    transform: translate3d(-12px, -3px, 0);
+  }
+  50% {
+    transform: translate3d(-24px, 1px, 0);
+  }
+  75% {
+    transform: translate3d(-10px, 3px, 0);
+  }
+}
+
+@keyframes oceanSurfSurge {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  30% {
+    transform: translate3d(-16px, -5px, 0);
+  }
+  60% {
+    transform: translate3d(-8px, -1px, 0);
+  }
+  80% {
+    transform: translate3d(8px, 2px, 0);
+  }
+}
+
+@keyframes oceanShoreWash {
+  0%, 100% {
+    transform: translate3d(0, 2px, 0);
+    opacity: 0.74;
+  }
+  35% {
+    transform: translate3d(14px, -5px, 0);
+    opacity: 0.96;
+  }
+  55% {
+    transform: translate3d(20px, -3px, 0);
+    opacity: 0.92;
+  }
+  80% {
+    transform: translate3d(8px, 1px, 0);
+    opacity: 0.8;
+  }
+}
+
+@keyframes oceanGlintShimmer {
+  0%, 100% {
+    opacity: 0.7;
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate3d(3px, -2px, 0);
+  }
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(0.75);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+
+@keyframes seagullFlightLeader {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translate3d(70px, -18px, 0) rotate(4deg) scale(1.04);
+  }
+  50% {
+    transform: translate3d(150px, -6px, 0) rotate(-2deg) scale(1.02);
+  }
+  75% {
+    transform: translate3d(85px, 12px, 0) rotate(-5deg) scale(0.97);
+  }
   100% {
-    transform: translate3d(-18px, -3px, 0);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes seagullFlightFollower {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.8);
+  }
+  30% {
+    transform: translate3d(55px, -14px, 0) rotate(5deg) scale(0.84);
+  }
+  65% {
+    transform: translate3d(120px, 4px, 0) rotate(-3deg) scale(0.81);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.8);
+  }
+}
+
+@keyframes seagullFlightHigh {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.6);
+  }
+  35% {
+    transform: translate3d(-60px, -14px, 0) rotate(-4deg) scale(0.63);
+  }
+  70% {
+    transform: translate3d(-25px, 10px, 0) rotate(4deg) scale(0.58);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.6);
+  }
+}
+
+@keyframes seagullFlightSkim {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.48);
+  }
+  40% {
+    transform: translate3d(80px, -8px, 0) rotate(3deg) scale(0.51);
+  }
+  80% {
+    transform: translate3d(140px, 5px, 0) rotate(-2deg) scale(0.46);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.48);
+  }
+}
+
+@keyframes cloudDrift1 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1, 1);
+  }
+  50% {
+    transform: translate3d(45px, -4px, 0) scale(1.02, 0.99);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1, 1);
+  }
+}
+
+@keyframes cloudDrift2 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1, 1);
+  }
+  50% {
+    transform: translate3d(-50px, 4px, 0) scale(1.02, 0.99);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1, 1);
+  }
+}
+
+@keyframes cloudDriftMajestic {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  25% {
+    transform: translate3d(40px, -6px, 0);
+  }
+  50% {
+    transform: translate3d(85px, 3px, 0);
+  }
+  75% {
+    transform: translate3d(45px, 7px, 0);
+  }
+}
+
+@keyframes cloudDriftSunPass {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  30% {
+    transform: translate3d(-35px, -4px, 0);
+  }
+  60% {
+    transform: translate3d(-70px, 2px, 0);
+  }
+  85% {
+    transform: translate3d(-30px, 4px, 0);
+  }
+}
+
+@keyframes cloudDriftFloating {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(55px, -6px, 0);
+  }
+}
+
+@keyframes cloudDriftWispy {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-50px, 5px, 0);
+  }
+}
+
+/* GPU-composited Seagull Wing Flap (0% CPU, Butter-Smooth 60-120 FPS) */
+@keyframes seagullWingFlapLeft {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(24deg);
+  }
+  65% {
+    transform: rotate(-22deg);
+  }
+}
+
+@keyframes seagullWingFlapRight {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(-24deg);
+  }
+  65% {
+    transform: rotate(22deg);
+  }
+}
+
+@keyframes sunCoronaBreathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.72;
+  }
+  50% {
+    transform: scale(1.09);
+    opacity: 0.94;
+  }
+}
+
+.sun-photosphere {
+  filter: drop-shadow(0 0 50px rgba(253, 200, 48, 0.85)) drop-shadow(0 0 95px rgba(247, 147, 30, 0.55));
+  will-change: transform;
+}
+
+@keyframes sunAtmosphericPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes sunRaysCrepuscular {
+  0%, 100% {
+    opacity: 0.45;
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: rotate(2deg) scale(1.05);
+  }
+}
+
+@keyframes starTwinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes palmSwayGentle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(1.8deg) skewX(-0.5deg);
   }
 }
 
@@ -829,6 +1085,23 @@ body {
  * == MOBILE PERFORMANCE & BATTERY HARDENING
  * ============================================= */
 @media (max-width: 768px), (pointer: coarse) {
+  /* Bypass heavy Gaussian drop-shadow filter calculations on mobile GPUs */
+  .sun-photosphere {
+    filter: drop-shadow(0 0 30px rgba(253, 200, 48, 0.8)) !important;
+    animation: sunAtmosphericPulseMobile 8.5s ease-in-out infinite alternate !important;
+  }
+
+  /* Disable nested frond rustle on mobile to eliminate sub-tree SVG recalculation */
+  #crownMidLeftFronds,
+  #crownMidRightFronds {
+    animation: none !important;
+  }
+
+  /* Optimize decorative seagulls on touch screens */
+  .sunset-seagull-mobile {
+    display: none !important;
+  }
+
   /* Ensure smooth composite layers on mobile fixed decorative containers */
   [data-theme='sunset'] .fixed,
   [data-theme='catppuccin'] .fixed,
@@ -837,6 +1110,15 @@ body {
   [data-theme='natal'] .fixed {
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
+  }
+}
+
+@keyframes sunAtmosphericPulseMobile {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
   }
 }
 
