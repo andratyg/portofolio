@@ -237,36 +237,6 @@
     --glass-blur: 16px;
   }
 
-  /* --- Liquid Glass Theme (Apple VisionOS Frosted Glass & Anti-Gravity) --- */
-  [data-theme='liquid'] {
-    --background: 222 47% 3%;
-    /* Deep Slate-950 #020617 */
-    --foreground: 210 20% 92%;
-    --card: 222 40% 6%;
-    --card-foreground: 210 20% 92%;
-    --popover: 222 47% 3%;
-    --popover-foreground: 210 20% 92%;
-    --primary: 187 72% 47%;
-    /* Cyan-500 #06b6d4 */
-    --primary-foreground: 222 47% 3%;
-    --secondary: 222 30% 10%;
-    --secondary-foreground: 210 20% 92%;
-    --muted: 222 30% 10%;
-    --muted-foreground: 215 15% 55%;
-    --accent: 258 90% 66%;
-    /* Violet-500 #8b5cf6 */
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 222 20% 16%;
-    --input: 222 20% 16%;
-    --ring: 187 72% 47%;
-
-    /* Glassmorphism — Apple VisionOS Multi-Layered Material */
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.10);
-    --glass-blur: 24px;
-  }
 
   * {
     border-color: hsl(var(--border));
@@ -337,44 +307,6 @@
       );
     background-attachment: fixed;
     background-size: cover;
-  }
-
-  /* Liquid Glass: Deep slate-950 base with 3 faint radial blobs for glass light refraction source */
-  [data-theme='liquid'] body {
-    background-color: #020617;
-    background-image:
-      radial-gradient(ellipse 80% 55% at 25% 30%, rgba(6, 182, 212, 0.10), transparent 70%),
-      radial-gradient(ellipse 70% 45% at 70% 20%, rgba(124, 58, 237, 0.08), transparent 65%),
-      radial-gradient(ellipse 65% 50% at 50% 75%, rgba(99, 102, 241, 0.07), transparent 70%);
-    background-attachment: fixed;
-  }
-
-  /* Liquid Glass section transparency — let the ambient canvas and body gradients bleed through */
-  [data-theme='liquid'] section#hero,
-  [data-theme='liquid'] section#portfolio,
-  [data-theme='liquid'] section#stats {
-    background-color: transparent !important;
-  }
-
-  [data-theme='liquid'] section#about {
-    background-color: rgba(255, 255, 255, 0.03) !important;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(6, 182, 212, 0.08);
-    border-bottom: 1px solid rgba(139, 92, 246, 0.08);
-  }
-
-  [data-theme='liquid'] section#certificates {
-    background-color: rgba(255, 255, 255, 0.02) !important;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-
-  [data-theme='liquid'] section#contact {
-    background: linear-gradient(180deg, rgba(6, 182, 212, 0.06) 0%, rgba(139, 92, 246, 0.08) 100%) !important;
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border-top: 1px solid rgba(6, 182, 212, 0.12);
   }
 
   /* Make only main page sections transparent in sunset theme so the light blue sunset sky permeates the layout */
@@ -482,11 +414,6 @@
 [data-theme='sunset'] ::selection {
   background-color: rgba(247, 147, 30, 0.35);
   color: #0b1a2d;
-}
-
-[data-theme='liquid'] ::selection {
-  background-color: rgba(6, 182, 212, 0.30);
-  color: #e2e8f0;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -821,19 +748,19 @@ body {
 
 @keyframes palmFrondRustleLeft {
   0%, 100% {
-    transform: rotate(0deg);
+    transform: rotate(0deg) scaleY(1);
   }
   50% {
-    transform: rotate(-1.6deg);
+    transform: rotate(-1.6deg) scaleY(0.985);
   }
 }
 
 @keyframes palmFrondRustleRight {
   0%, 100% {
-    transform: rotate(0deg);
+    transform: rotate(0deg) scaleY(1);
   }
   50% {
-    transform: rotate(1.4deg);
+    transform: rotate(1.4deg) scaleY(1.015);
   }
 }
 
@@ -929,10 +856,12 @@ body {
 
 @keyframes sparkleTwinkle {
   0%, 100% {
-    opacity: 0.3;
+    opacity: 0.25;
+    transform: scale(0.75);
   }
   50% {
     opacity: 1;
+    transform: scale(1.25);
   }
 }
 
@@ -1153,105 +1082,6 @@ body {
 }
 
 /* =============================================
- * == LIQUID GLASS ANTI-GRAVITY FLOATING SYSTEM
- * ============================================= */
-@keyframes liquidFloat1 {
-  0%, 100% {
-    transform: translateY(0px) translateZ(0);
-  }
-  50% {
-    transform: translateY(-8px) translateZ(0);
-  }
-}
-
-@keyframes liquidFloat2 {
-  0%, 100% {
-    transform: translateY(0px) translateZ(0);
-  }
-  50% {
-    transform: translateY(-6px) translateZ(0);
-  }
-}
-
-@keyframes liquidFloat3 {
-  0%, 100% {
-    transform: translateY(0px) translateZ(0);
-  }
-  50% {
-    transform: translateY(-10px) translateZ(0);
-  }
-}
-
-/* Liquid glass specular border shimmer */
-@keyframes liquidSpecularShimmer {
-  0%, 100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-/* Staggered floating classes */
-.liquid-float-1 {
-  animation: liquidFloat1 4s ease-in-out infinite;
-}
-.liquid-float-2 {
-  animation: liquidFloat2 5.5s ease-in-out infinite;
-}
-.liquid-float-3 {
-  animation: liquidFloat3 6.8s ease-in-out infinite;
-}
-
-/* Liquid Glass card material — Apple VisionOS-grade */
-[data-theme='liquid'] .glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(24px) saturate(1.4);
-  -webkit-backdrop-filter: blur(24px) saturate(1.4);
-  border: 1px solid transparent;
-  border-image: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.25) 0%,
-    rgba(6, 182, 212, 0.15) 30%,
-    rgba(139, 92, 246, 0.10) 70%,
-    rgba(255, 255, 255, 0.05) 100%
-  ) 1;
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.15),
-    inset 0 -1px 1px rgba(0, 0, 0, 0.10),
-    0 8px 32px rgba(0, 0, 0, 0.25),
-    0 0 0 0.5px rgba(255, 255, 255, 0.06);
-}
-
-/* Interactive cards get the liquid glass treatment too */
-[data-theme='liquid'] .interactive-card {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.12),
-    0 8px 40px rgba(0, 0, 0, 0.30);
-}
-
-[data-theme='liquid'] .interactive-card:hover {
-  border-color: rgba(6, 182, 212, 0.25);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.18),
-    0 0 0 1px rgba(6, 182, 212, 0.15),
-    0 24px 64px -12px rgba(6, 182, 212, 0.20),
-    0 12px 32px -8px rgba(0, 0, 0, 0.35);
-}
-
-/* Glow card hover in liquid theme */
-[data-theme='liquid'] .glow-card:hover {
-  box-shadow:
-    0 0 0 1px rgba(6, 182, 212, 0.20),
-    0 24px 48px -12px rgba(6, 182, 212, 0.15),
-    0 0 80px -20px rgba(139, 92, 246, 0.12);
-}
-
-/* =============================================
  * == MOBILE PERFORMANCE & BATTERY HARDENING
  * ============================================= */
 @media (max-width: 768px), (pointer: coarse) {
@@ -1275,7 +1105,6 @@ body {
   /* Ensure smooth composite layers on mobile fixed decorative containers */
   [data-theme='sunset'] .fixed,
   [data-theme='catppuccin'] .fixed,
-  [data-theme='liquid'] .fixed,
   [data-theme='ramadan'] .fixed,
   [data-theme='imlek'] .fixed,
   [data-theme='natal'] .fixed {
