@@ -176,7 +176,6 @@ export const CustomCursor = () => {
           // Only spawn if mouse moved at least 5px to prevent clump
           if (dist > 5) {
             spawnParticles(e.clientX, e.clientY);
-            startParticleAnimation();
             lastSpawnX = e.clientX;
             lastSpawnY = e.clientY;
           }
@@ -184,19 +183,15 @@ export const CustomCursor = () => {
 
         window.addEventListener('mousemove', onCanvasMouseMove, { passive: true });
 
-        let isAnimating = false;
-
-        // Animation Loop - only runs when active particles exist
+        // Animation Loop
         const animateParticles = () => {
-          if (document.hidden) {
-            isAnimating = false;
-            return;
-          }
+          particlesRaf = requestAnimationFrame(animateParticles);
+          
+          if (document.hidden) return; // Pause when tab inactive
 
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
           if (particles.length === 0) {
-            isAnimating = false;
             return;
           }
 
@@ -235,13 +230,7 @@ export const CustomCursor = () => {
           ctx.globalAlpha = 1;
           particlesRaf = requestAnimationFrame(animateParticles);
         };
-
-        const startParticleAnimation = () => {
-          if (!isAnimating && particles.length > 0) {
-            isAnimating = true;
-            particlesRaf = requestAnimationFrame(animateParticles);
-          }
-        };
+        animateParticles();
         
         return () => {
           window.removeEventListener('mousemove', onMouseMove);
