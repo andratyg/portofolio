@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
-export type Theme = 'light' | 'dark' | 'catppuccin' | 'sunset' | 'ramadan' | 'imlek' | 'natal';
+export type Theme = 'light' | 'dark' | 'catppuccin' | 'sunset' | 'liquid' | 'ramadan' | 'imlek' | 'natal';
 export type ThemeCategory = 'standard' | 'modern' | 'seasonal';
 
 export interface ThemeConfig {
@@ -107,9 +107,21 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
     },
     emoji: '🌅',
   },
+  liquid: {
+    id: 'liquid',
+    name: { id: 'Liquid Glass', en: 'Liquid Glass' },
+    category: 'modern',
+    description: { id: 'Kaca Apple VisionOS & fisika anti-gravitasi', en: 'Apple VisionOS frosted glass & zero-G physics' },
+    colors: {
+      bg: '#020617',
+      primary: '#06b6d4',
+      accent: '#8b5cf6',
+    },
+    emoji: '🫧',
+  },
 };
 
-export const themes: Theme[] = ['light', 'dark', 'catppuccin', 'sunset', 'ramadan', 'imlek', 'natal'];
+export const themes: Theme[] = ['light', 'dark', 'catppuccin', 'sunset', 'liquid', 'ramadan', 'imlek', 'natal'];
 
 interface ThemeContextType {
   theme: Theme;

@@ -7,6 +7,7 @@ import RamadanDecorations from './RamadanDecorations';
 import NatalDecorations from './NatalDecorations';
 import CoffeeDecorations from './CoffeeDecorations';
 import SunsetDecorations from './SunsetDecorations';
+import LiquidGlassDecorations from './LiquidGlassDecorations';
 
 export default function ThemeDecorations() {
   const { theme } = useTheme();
@@ -26,6 +27,7 @@ export default function ThemeDecorations() {
       {theme === 'natal' && <NatalDecorations />}
       {theme === 'catppuccin' && <CoffeeDecorations />}
       {theme === 'sunset' && <SunsetDecorations />}
+      {theme === 'liquid' && <LiquidGlassDecorations />}
     </>
   );
 }

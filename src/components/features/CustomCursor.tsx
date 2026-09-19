@@ -146,6 +146,16 @@ export const CustomCursor = () => {
             color = sunsetColors[Math.floor(Math.random() * sunsetColors.length)];
             maxLife = 38;
             vyBoost = -0.4; // Gentle thermal sunset sea breeze lift
+          } else if (theme === 'liquid') {
+            // Frosted glass cyan & violet anti-gravity specks
+            const liquidColors = [
+              `rgba(6, 182, 212, ${Math.random() * 0.70 + 0.30})`,
+              `rgba(139, 92, 246, ${Math.random() * 0.65 + 0.25})`,
+              `rgba(99, 102, 241, ${Math.random() * 0.55 + 0.25})`,
+            ];
+            color = liquidColors[Math.floor(Math.random() * liquidColors.length)];
+            maxLife = 35;
+            vyBoost = -0.3; // Slight upward float — anti-gravity feel
           } else {
             return;
           }
@@ -212,6 +222,9 @@ export const CustomCursor = () => {
             } else if (theme === 'sunset') {
               p.vy -= 0.03; // Gentle thermal rise
               p.x += Math.sin(p.life * 0.08) * 0.4; // Sea breeze sway
+            } else if (theme === 'liquid') {
+              p.vy -= 0.025; // Anti-gravity upward float
+              p.x += Math.sin(p.life * 0.06) * 0.35; // Zero-G horizontal drift
             }
 
             const opacity = 1 - (p.life / p.maxLife);

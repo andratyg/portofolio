@@ -294,6 +294,8 @@ export function CommandPalette() {
         targetTheme = 'catppuccin';
       } else if (['sunset', 'senja', 'pantai', 'beach', 'sunset-beach', 'senja-pantai'].includes(rawTarget)) {
         targetTheme = 'sunset';
+      } else if (['liquid', 'glass', 'kaca', 'visionos', 'apple', 'anti-gravity', 'antigravity', 'zero-g', 'frosted'].includes(rawTarget)) {
+        targetTheme = 'liquid';
       }
 
       if (targetTheme) {
@@ -432,7 +434,7 @@ export function CommandPalette() {
   // Themes Search Filter
   const filteredThemes = useMemo(() => {
     const themeList = Object.values(THEME_CONFIGS);
-    const isThemeQuery = ['theme', 'tema', 'warna', 'color', 'mode', 'tampilan', 'gelap', 'terang', 'dark', 'light', 'ramadan', 'imlek', 'natal', 'catppuccin', 'mocha', 'cappuccino', 'coffee', 'kopi', 'amber', 'modern', 'sunset', 'beach', 'senja', 'pantai'].some(k => q.includes(k));
+    const isThemeQuery = ['theme', 'tema', 'warna', 'color', 'mode', 'tampilan', 'gelap', 'terang', 'dark', 'light', 'ramadan', 'imlek', 'natal', 'catppuccin', 'mocha', 'cappuccino', 'coffee', 'kopi', 'amber', 'modern', 'sunset', 'beach', 'senja', 'pantai', 'liquid', 'glass', 'kaca', 'visionos', 'antigravity'].some(k => q.includes(k));
     if (!q) return themeList.slice(0, 6);
     if (isThemeQuery) return themeList;
     return themeList.filter(tItem => {

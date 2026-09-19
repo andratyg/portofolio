@@ -359,7 +359,7 @@ export const Navbar = () => {
                     {language === 'id' ? 'Koleksi Estetika Modern' : 'Modern Aesthetics'}
                   </p>
                   <div className="space-y-1.5">
-                    {(['catppuccin', 'sunset'] as Theme[]).map((tName) => {
+                    {(['catppuccin', 'sunset', 'liquid'] as Theme[]).map((tName) => {
                       const cfg = THEME_CONFIGS[tName];
                       const isCurrent = theme === tName;
                       return (

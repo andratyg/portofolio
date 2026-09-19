@@ -70,6 +70,7 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
         natal: '255, 255, 255',
         catppuccin: '179, 77, 14',
         sunset: '247, 147, 30',
+        liquid: '6, 182, 212',
       };
 
       const isLight = currentTheme === 'light' || currentTheme === 'catppuccin' || currentTheme === 'sunset';
