@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/components/providers/ThemeContext';
 
 interface ParticleCanvasProps {
   className?: string;
@@ -9,6 +10,7 @@ interface ParticleCanvasProps {
 
 export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -17,10 +19,23 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Skip on mobile or reduced motion to save 100% CPU on mobile
+    // Skip on mobile, reduced motion, or Sunset theme (which has dedicated ambient decorations)
     const isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches;
-    if (isMobile || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (isMobile || window.matchMedia('(prefers-reduced-motion: reduce)').matches || theme === 'sunset') {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       return;
+    }
+
+    let isVisible = true;
+    let observer: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== 'undefined') {
+      observer = new IntersectionObserver(
+        (entries) => {
+          isVisible = entries[0]?.isIntersecting ?? true;
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(canvas);
     }
 
     let particleRaf: number;
@@ -52,11 +67,11 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
     const drawParticles = (timestamp: number) => {
       particleRaf = requestAnimationFrame(drawParticles);
 
+      if (!isVisible || document.hidden) return;
+
       const elapsed = timestamp - lastFrameTime;
       if (elapsed < fpsInterval) return;
       lastFrameTime = timestamp - (elapsed % fpsInterval);
-
-      if (document.hidden) return;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
@@ -107,8 +122,9 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
     return () => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(particleRaf);
+      observer?.disconnect();
     };
-  }, [density]);
+  }, [density, theme]);
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
