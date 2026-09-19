@@ -748,19 +748,19 @@ body {
 
 @keyframes palmFrondRustleLeft {
   0%, 100% {
-    transform: rotate(0deg) scaleY(1);
+    transform: rotate(0deg);
   }
   50% {
-    transform: rotate(-1.6deg) scaleY(0.985);
+    transform: rotate(-1.6deg);
   }
 }
 
 @keyframes palmFrondRustleRight {
   0%, 100% {
-    transform: rotate(0deg) scaleY(1);
+    transform: rotate(0deg);
   }
   50% {
-    transform: rotate(1.4deg) scaleY(1.015);
+    transform: rotate(1.4deg);
   }
 }
 
@@ -856,12 +856,10 @@ body {
 
 @keyframes sparkleTwinkle {
   0%, 100% {
-    opacity: 0.25;
-    transform: scale(0.75);
+    opacity: 0.3;
   }
   50% {
     opacity: 1;
-    transform: scale(1.25);
   }
 }
 

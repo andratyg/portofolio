@@ -237,6 +237,7 @@ export default function TropicalPalmTree() {
           style={{
             transformOrigin: '257px 185px',
             animation: 'palmFrondRustleLeft 8.2s ease-in-out infinite alternate',
+            willChange: 'transform',
           }}
         >
             <g id="mid_crest_left">
@@ -267,6 +268,7 @@ export default function TropicalPalmTree() {
           style={{
             transformOrigin: '257px 185px',
             animation: 'palmFrondRustleRight 8.8s ease-in-out infinite alternate',
+            willChange: 'transform',
           }}
         >
             <g id="mid_crest_right">

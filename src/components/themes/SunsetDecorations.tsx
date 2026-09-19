@@ -17,16 +17,19 @@ function Seagull({
   style?: React.CSSProperties;
 }) {
   return (
-    <div className={`pointer-events-none select-none ${className}`} style={style}>
-      <svg viewBox="0 0 100 50" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-sm">
+    <div
+      className={`pointer-events-none select-none ${className}`}
+      style={{ ...style, willChange: 'transform', transform: 'translateZ(0)' }}
+    >
+      <svg viewBox="0 0 100 50" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
         {/* Central streamlined body & tail */}
         <path d="M 48,25 L 50,34 L 52,25 Z" />
         {/* Left wing flapping smoothly via GPU matrix transform */}
-        <g style={{ transformOrigin: '50px 24px', animation: `seagullWingFlapLeft ${flapDuration} ease-in-out infinite` }}>
+        <g style={{ transformOrigin: '50px 24px', animation: `seagullWingFlapLeft ${flapDuration} ease-in-out infinite`, willChange: 'transform' }}>
           <path d="M 50,22 C 42,16 28,10 5,14 C 20,20 38,24 48,27 L 50,24 Z" />
         </g>
         {/* Right wing flapping smoothly via GPU matrix transform */}
-        <g style={{ transformOrigin: '50px 24px', animation: `seagullWingFlapRight ${flapDuration} ease-in-out infinite` }}>
+        <g style={{ transformOrigin: '50px 24px', animation: `seagullWingFlapRight ${flapDuration} ease-in-out infinite`, willChange: 'transform' }}>
           <path d="M 50,22 C 58,16 72,10 95,14 C 80,20 62,24 52,27 L 50,24 Z" />
         </g>
       </svg>
@@ -88,9 +91,7 @@ export default function SunsetDecorations() {
       r: number;
       vx: number;
       vy: number;
-      opacity: number;
-      baseOpacity: number;
-      colorPrefix: string;
+      fillStyle: string;
       floatOffset: number;
     }[] = [];
 
@@ -99,15 +100,14 @@ export default function SunsetDecorations() {
 
     for (let i = 0; i < count; i++) {
       const baseOpacity = Math.random() * 0.45 + 0.25;
+      const colorPrefix = dustColors[Math.floor(Math.random() * dustColors.length)];
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         r: Math.random() * 2.0 + 0.8,
         vx: (Math.random() - 0.5) * 0.35,
         vy: -(Math.random() * 0.45 + 0.2), // Warm upward thermal drift
-        opacity: baseOpacity,
-        baseOpacity,
-        colorPrefix: dustColors[Math.floor(Math.random() * dustColors.length)],
+        fillStyle: `${colorPrefix}${baseOpacity.toFixed(2)})`,
         floatOffset: Math.random() * Math.PI * 2,
       });
     }
@@ -162,11 +162,12 @@ export default function SunsetDecorations() {
         if (p.x < -10) p.x = width + 10;
         if (p.x > width + 10) p.x = -10;
 
-        // Mouse repulsion
+        // Mouse repulsion with distance-squared check (skips Math.sqrt when mouse is away)
         const dx = p.x - mouseX;
         const dy = p.y - mouseY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 90 && dist > 0) {
+        const distSq = dx * dx + dy * dy;
+        if (distSq < 8100 && distSq > 0) {
+          const dist = Math.sqrt(distSq);
           const force = (90 - dist) / 90;
           p.x += (dx / dist) * force * 2.5;
           p.y += (dy / dist) * force * 2.5;
@@ -174,7 +175,7 @@ export default function SunsetDecorations() {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `${p.colorPrefix}${p.opacity})`;
+        ctx.fillStyle = p.fillStyle;
         ctx.fill();
       }
 
@@ -216,49 +217,57 @@ export default function SunsetDecorations() {
         s.phase += s.speed;
         const alpha = Math.max(0, Math.sin(s.phase)) * s.baseAlpha;
         if (alpha > 0.05) {
-          // Interactive glint brightening on mouse hover near bottom
-          const distToMouse = Math.hypot(s.x - mouseX, s.y - mouseY);
-          const boost = distToMouse < 140 ? (140 - distToMouse) / 140 : 0;
+          // Interactive glint brightening on mouse hover near bottom (distance-squared pre-check)
+          const dx = s.x - mouseX;
+          const dy = s.y - mouseY;
+          const distSq = dx * dx + dy * dy;
+          const boost = distSq < 19600 ? (140 - Math.sqrt(distSq)) / 140 : 0;
           const finalAlpha = Math.min(1, alpha + boost * 0.5);
           const sz = s.size * (1 + boost * 0.6);
 
-          ctx.save();
-          ctx.translate(s.x, s.y);
-
-          // 4-point diamond sparkle
+          // Fast direct coordinate plotting without expensive ctx.save() and ctx.restore()!
           ctx.fillStyle = `rgba(255, 255, 255, ${finalAlpha})`;
           ctx.beginPath();
-          ctx.moveTo(0, -sz * 1.8);
-          ctx.lineTo(sz * 0.5, 0);
-          ctx.lineTo(0, sz * 1.8);
-          ctx.lineTo(-sz * 0.5, 0);
+          // Vertical diamond lobe
+          ctx.moveTo(s.x, s.y - sz * 1.8);
+          ctx.lineTo(s.x + sz * 0.5, s.y);
+          ctx.lineTo(s.x, s.y + sz * 1.8);
+          ctx.lineTo(s.x - sz * 0.5, s.y);
           ctx.closePath();
-          ctx.fill();
-
-          ctx.beginPath();
-          ctx.moveTo(-sz * 1.8, 0);
-          ctx.lineTo(0, sz * 0.5);
-          ctx.lineTo(sz * 1.8, 0);
-          ctx.lineTo(0, -sz * 0.5);
+          // Horizontal diamond lobe
+          ctx.moveTo(s.x - sz * 1.8, s.y);
+          ctx.lineTo(s.x, s.y + sz * 0.5);
+          ctx.lineTo(s.x + sz * 1.8, s.y);
+          ctx.lineTo(s.x, s.y - sz * 0.5);
           ctx.closePath();
           ctx.fill();
 
           // Golden sparkle halo
           ctx.beginPath();
-          ctx.arc(0, 0, sz * 1.3, 0, Math.PI * 2);
+          ctx.arc(s.x, s.y, sz * 1.3, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(254, 240, 138, ${finalAlpha * 0.4})`;
           ctx.fill();
-
-          ctx.restore();
         }
       }
     };
 
     rafId = requestAnimationFrame(animate);
 
+    // Complete suspension when browser tab is hidden (0% CPU/GPU wakeup)
+    const handleVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(rafId);
+      } else {
+        lastTime = performance.now();
+        rafId = requestAnimationFrame(animate);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', resize);
+      document.removeEventListener('visibilitychange', handleVisibility);
       cancelAnimationFrame(rafId);
     };
   }, [isEligible]);
@@ -266,19 +275,24 @@ export default function SunsetDecorations() {
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
       {/* ─── 1. Kilau Cahaya Senja di Langit Biru Muda (Daylight Shimmer Glints) ─── */}
-      <div className="fixed top-3 left-1/4 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff] hidden sm:block" style={{ animation: 'starTwinkle 3.5s ease-in-out infinite' }} />
-      <div className="fixed top-8 left-1/3 w-2 h-2 rounded-full bg-amber-100 shadow-[0_0_10px_#fff] hidden sm:block" style={{ animation: 'starTwinkle 4.2s ease-in-out infinite 1.2s' }} />
-      <div className="fixed top-5 left-1/2 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff] hidden sm:block" style={{ animation: 'starTwinkle 3s ease-in-out infinite 0.7s' }} />
-      <div className="fixed top-10 right-1/3 w-2 h-2 rounded-full bg-white shadow-[0_0_10px_#ffd166] hidden sm:block" style={{ animation: 'starTwinkle 4.8s ease-in-out infinite 2s' }} />
-      <div className="fixed top-6 right-1/4 w-1.5 h-1.5 rounded-full bg-amber-100 shadow-[0_0_8px_#fff] hidden sm:block" style={{ animation: 'starTwinkle 3.8s ease-in-out infinite 1.6s' }} />
+      <div className="fixed top-3 left-1/4 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff] hidden sm:block" style={{ animation: 'starTwinkle 3.5s ease-in-out infinite', willChange: 'opacity, transform' }} />
+      <div className="fixed top-8 left-1/3 w-2 h-2 rounded-full bg-amber-100 shadow-[0_0_10px_#fff] hidden sm:block" style={{ animation: 'starTwinkle 4.2s ease-in-out infinite 1.2s', willChange: 'opacity, transform' }} />
+      <div className="fixed top-5 left-1/2 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff] hidden sm:block" style={{ animation: 'starTwinkle 3s ease-in-out infinite 0.7s', willChange: 'opacity, transform' }} />
+      <div className="fixed top-10 right-1/3 w-2 h-2 rounded-full bg-white shadow-[0_0_10px_#ffd166] hidden sm:block" style={{ animation: 'starTwinkle 4.8s ease-in-out infinite 2s', willChange: 'opacity, transform' }} />
+      <div className="fixed top-6 right-1/4 w-1.5 h-1.5 rounded-full bg-amber-100 shadow-[0_0_8px_#fff] hidden sm:block" style={{ animation: 'starTwinkle 3.8s ease-in-out infinite 1.6s', willChange: 'opacity, transform' }} />
 
       {/* ─── 2. Awan Senja Volumetrik Mengapung Alami (Sculpted Volumetric Sunset Clouds with Golden Lining) ─── */}
       {/* Cloud 1 - The Majestic Sovereign Cumulus (Upper Left High Sky) */}
       <div
         className="fixed top-4 sm:top-6 -left-6 sm:left-[3%] w-72 sm:w-[460px] md:w-[540px] h-28 sm:h-40 md:h-48 pointer-events-none select-none z-0"
-        style={{ animation: 'cloudDriftMajestic 38s ease-in-out infinite alternate' }}
+        style={{
+          animation: 'cloudDriftMajestic 38s ease-in-out infinite alternate',
+          willChange: 'transform',
+          transform: 'translateZ(0)',
+          contain: 'layout paint',
+        }}
       >
-        <svg viewBox="0 0 500 150" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full filter drop-shadow-md">
+        <svg viewBox="0 0 500 150" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
           <defs>
             {/* Base Underbelly: Warm sunset peach-rose shadow */}
             <linearGradient id="cumulusUnderbellyGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -349,6 +363,9 @@ export default function SunsetDecorations() {
         className="fixed top-24 sm:top-32 md:top-36 right-[2%] sm:right-[8%] md:right-[12%] w-64 sm:w-[380px] md:w-[460px] h-18 sm:h-24 md:h-28 pointer-events-none select-none z-0"
         style={{
           animation: 'cloudDriftSunPass 42s ease-in-out infinite alternate',
+          willChange: 'transform',
+          transform: 'translateZ(0)',
+          contain: 'layout paint',
         }}
       >
         <svg viewBox="0 0 440 90" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
@@ -406,9 +423,14 @@ export default function SunsetDecorations() {
       {/* Cloud 3 - The Fluffy Sunset Puff (Center Mid-Sky) */}
       <div
         className="fixed top-18 sm:top-24 left-[34%] sm:left-[40%] w-52 sm:w-76 md:w-92 h-20 sm:h-28 md:h-32 pointer-events-none select-none z-0 hidden sm:block"
-        style={{ animation: 'cloudDriftFloating 32s ease-in-out infinite alternate' }}
+        style={{
+          animation: 'cloudDriftFloating 32s ease-in-out infinite alternate',
+          willChange: 'transform',
+          transform: 'translateZ(0)',
+          contain: 'layout paint',
+        }}
       >
-        <svg viewBox="0 0 340 110" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full opacity-80 filter drop-shadow-sm">
+        <svg viewBox="0 0 340 110" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full opacity-80">
           <defs>
             <linearGradient id="fluffyPuffGrad" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#ffffff" stopOpacity="0.92" />
@@ -444,7 +466,12 @@ export default function SunsetDecorations() {
       {/* Cloud 4 - Horizon Wispy Cirrus Streamers (Lower Sky Over Ocean) */}
       <div
         className="fixed top-40 sm:top-52 md:top-60 right-[1%] sm:right-[4%] w-60 sm:w-92 md:w-[420px] h-14 sm:h-18 pointer-events-none select-none z-0 hidden sm:block"
-        style={{ animation: 'cloudDriftWispy 46s ease-in-out infinite alternate' }}
+        style={{
+          animation: 'cloudDriftWispy 46s ease-in-out infinite alternate',
+          willChange: 'transform',
+          transform: 'translateZ(0)',
+          contain: 'layout paint',
+        }}
       >
         <svg viewBox="0 0 380 60" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full opacity-65">
           <defs>
@@ -471,11 +498,18 @@ export default function SunsetDecorations() {
       </div>
 
       {/* ─── 3. Matahari Senja Utama & Sinar Crepuscular (Glorious Golden Sun with Godrays & Radiant Corona) ─── */}
-      <div className="fixed top-14 sm:top-20 md:top-24 right-[6%] sm:right-[14%] md:right-[18%] pointer-events-none select-none z-0">
+      <div
+        className="fixed top-14 sm:top-20 md:top-24 right-[6%] sm:right-[14%] md:right-[18%] pointer-events-none select-none z-0"
+        style={{ contain: 'layout style', transform: 'translateZ(0)' }}
+      >
         {/* 1. Atmospheric Crepuscular God Rays (Berkas Sinar Matahari Keemasan) */}
         <div
           className="absolute -top-48 -left-48 w-[420px] sm:w-[580px] md:w-[700px] h-[420px] sm:h-[580px] md:h-[700px] pointer-events-none"
-          style={{ animation: 'sunRaysCrepuscular 12s ease-in-out infinite alternate' }}
+          style={{
+            animation: 'sunRaysCrepuscular 12s ease-in-out infinite alternate',
+            willChange: 'transform, opacity',
+            transform: 'translateZ(0)',
+          }}
         >
           <svg viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full opacity-60">
             <defs>
@@ -515,6 +549,8 @@ export default function SunsetDecorations() {
           style={{
             background: 'radial-gradient(circle, #FFFBE8 0%, #FEE070 30%, #FDB827 58%, #F77F1E 82%, transparent 95%)',
             animation: 'sunCoronaBreathe 7.5s ease-in-out infinite alternate',
+            willChange: 'transform, opacity',
+            transform: 'translateZ(0)',
           }}
         />
 
@@ -540,6 +576,8 @@ export default function SunsetDecorations() {
           style={{
             background: 'radial-gradient(circle at 45% 40%, #FFFFFF 0%, #FFFEE8 22%, #FEF08A 45%, #FDE047 65%, #FB923C 85%, #F43F5E 100%)',
             animation: 'sunAtmosphericPulse 8.5s ease-in-out infinite alternate',
+            willChange: 'transform',
+            transform: 'translateZ(0)',
           }}
         >
           {/* Subtle Solar Limb-Darkening & Atmospheric Heat Wave Ripple */}
@@ -593,7 +631,14 @@ export default function SunsetDecorations() {
         style={{ transform: 'translateZ(0)', willChange: 'transform', contain: 'strict' }}
       >
         {/* Layer A: Atmospheric Sea Horizon Swell with Radiant Sun Flare */}
-        <div className="absolute inset-x-0 bottom-0 h-full" style={{ animation: 'oceanSwellDeep 14s ease-in-out infinite' }}>
+        <div
+          className="absolute inset-x-0 bottom-0 h-full"
+          style={{
+            animation: 'oceanSwellDeep 14s ease-in-out infinite',
+            willChange: 'transform',
+            transform: 'translateZ(0)',
+          }}
+        >
           <svg
             viewBox="0 0 1440 120"
             fill="none"
@@ -606,13 +651,19 @@ export default function SunsetDecorations() {
               d="M0,22 C260,34 560,16 880,24 C1140,12 1320,18 1440,14 L1440,120 L0,120 Z"
               fill="url(#deepOceanLuxuryGrad)"
             />
-            {/* Radiant golden horizon flare catching the setting sun directly */}
+            {/* Radiant golden horizon flare aura (zero-filter hardware-accelerated dual-stroke glow) */}
+            <path
+              d="M0,22 C260,34 560,16 880,24 C1140,12 1320,18 1440,14"
+              stroke="url(#horizonLuxuryGlowGrad)"
+              strokeWidth="5.5"
+              fill="none"
+              opacity="0.45"
+            />
             <path
               d="M0,22 C260,34 560,16 880,24 C1140,12 1320,18 1440,14"
               stroke="url(#horizonLuxuryGlowGrad)"
               strokeWidth="2.5"
               fill="none"
-              style={{ filter: 'drop-shadow(0 0 6px rgba(251, 191, 36, 0.75))' }}
             />
             <defs>
               <linearGradient id="deepOceanLuxuryGrad" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -637,7 +688,11 @@ export default function SunsetDecorations() {
         {/* Layer B: Magnificent Golden Sun Glade (Jalan Refleksi Emas Matahari di Permukaan Laut) */}
         <div
           className="absolute bottom-1 right-[7%] sm:right-[12%] md:right-[15%] w-72 sm:w-96 md:w-[460px] h-20 sm:h-24 md:h-28 pointer-events-none"
-          style={{ animation: 'oceanGlintShimmer 4s ease-in-out infinite alternate' }}
+          style={{
+            animation: 'oceanGlintShimmer 4s ease-in-out infinite alternate',
+            willChange: 'transform',
+            transform: 'translateZ(0)',
+          }}
         >
           {/* Luminous warm ambient golden bloom aura */}
           <div
@@ -680,7 +735,11 @@ export default function SunsetDecorations() {
         {/* Layer C: Rolling Middle Ocean Wave with Volumetric Shading & Sunlit Lip */}
         <div
           className="absolute inset-x-0 bottom-2 sm:bottom-3 h-[75%]"
-          style={{ animation: 'oceanWaveRolling 9.5s ease-in-out infinite' }}
+          style={{
+            animation: 'oceanWaveRolling 9.5s ease-in-out infinite',
+            willChange: 'transform',
+            transform: 'translateZ(0)',
+          }}
         >
           <svg
             viewBox="0 0 1440 90"
@@ -728,7 +787,11 @@ export default function SunsetDecorations() {
         {/* Layer D: Grand Breaking Surf with Sculpted Seafoam Lip (Deburan Ombak Menggulung Mewah & Busa Kristal) */}
         <div
           className="absolute inset-x-0 bottom-1 sm:bottom-2 h-[58%]"
-          style={{ animation: 'oceanSurfSurge 7.5s ease-in-out infinite alternate' }}
+          style={{
+            animation: 'oceanSurfSurge 7.5s ease-in-out infinite alternate',
+            willChange: 'transform',
+            transform: 'translateZ(0)',
+          }}
         >
           <svg
             viewBox="0 0 1440 70"
@@ -751,7 +814,6 @@ export default function SunsetDecorations() {
             <path
               d="M0,22 C280,10 540,34 820,16 C1100,34 1300,8 1440,18 L1440,24 C1300,14 1100,40 820,22 C540,40 280,16 0,28 Z"
               fill="#ffffff"
-              style={{ filter: 'drop-shadow(0 2px 6px rgba(2, 132, 199, 0.45))' }}
             />
             {/* Scalloped seafoam froth bubbles and droplets along the breaking crest */}
             <path
@@ -774,7 +836,11 @@ export default function SunsetDecorations() {
         {/* Layer E: Shoreline Surf with Frothy Seafoam Lace Wash (Buih Renda Ombak Menyapu Pasir) */}
         <div
           className="absolute inset-x-0 bottom-0.5 sm:bottom-1 h-[42%]"
-          style={{ animation: 'oceanShoreWash 6.2s ease-in-out infinite' }}
+          style={{
+            animation: 'oceanShoreWash 6.2s ease-in-out infinite',
+            willChange: 'transform',
+            transform: 'translateZ(0)',
+          }}
         >
           <svg
             viewBox="0 0 1440 50"
