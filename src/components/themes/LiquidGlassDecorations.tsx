@@ -204,39 +204,37 @@ export default function LiquidGlassDecorations() {
     let isScrolling = false;
     let scrollTimer: ReturnType<typeof setTimeout>;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      const now = performance.now();
-      if (now - lastRippleTime > 140 && ripples.length < 3) {
-        lastRippleTime = now;
+    const handleClick = (e: MouseEvent) => {
+      // Subtle liquid glass touch ripple
+      for (let k = 0; k < 2; k++) {
         ripples.push({
-          x: e.clientX, y: e.clientY,
-          radius: 12,
-          maxRadius: 100 + Math.random() * 80,
-          opacity: 0.30,
-          speed: 3 + Math.random() * 2,
+          x: e.clientX,
+          y: e.clientY,
+          radius: 8 + k * 14,
+          maxRadius: 110 + Math.random() * 30,
+          opacity: 0.38 - k * 0.14,
+          speed: 4 + k * 1.5,
         });
       }
-    };
-
-    const handleClick = (e: MouseEvent) => {
-      for (let k = 0; k < 3; k++) {
-        ripples.push({
-          x: e.clientX, y: e.clientY,
-          radius: 8 + k * 12,
-          maxRadius: 150 + Math.random() * 80,
-          opacity: 0.50 - k * 0.12,
-          speed: 5 + k * 1.5,
-        });
+      if (!rafId && !isScrolling) {
+        rafId = requestAnimationFrame(render);
       }
     };
 
     const onScroll = () => {
-      if (!isScrolling) { if (rafId) { cancelAnimationFrame(rafId); rafId = 0; } }
+      if (!isScrolling) {
+        if (rafId) {
+          cancelAnimationFrame(rafId);
+          rafId = 0;
+        }
+      }
       isScrolling = true;
       clearTimeout(scrollTimer);
       scrollTimer = setTimeout(() => {
         isScrolling = false;
-        if (!rafId) rafId = requestAnimationFrame(render);
+        if (ripples.length > 0 && !rafId) {
+          rafId = requestAnimationFrame(render);
+        }
       }, 150);
     };
 
@@ -245,125 +243,73 @@ export default function LiquidGlassDecorations() {
       canvas.height = window.innerHeight;
     };
 
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('click', handleClick, { passive: true });
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', resize, { passive: true });
     resize();
 
-    // Undulating viscous molten glass ribbon streams — 2 ribbons for performance
-    const ribbons = [
-      {
-        yBase: 0.28, amplitude: 68, frequency: 0.0013, speed: 0.00058,
-        thickness: 130,
-        color1: 'rgba(0, 122, 255, 0.14)',
-        color2: 'rgba(255, 255, 255, 0.42)',
-        sheen: 'rgba(255, 255, 255, 0.88)',
-        phase: 0,
-      },
-      {
-        yBase: 0.64, amplitude: 72, frequency: 0.0010, speed: -0.00045,
-        thickness: 138,
-        color1: 'rgba(88, 86, 214, 0.12)',
-        color2: 'rgba(0, 199, 190, 0.24)',
-        sheen: 'rgba(255, 255, 255, 0.72)',
-        phase: Math.PI * 0.75,
-      },
-    ];
-
     const render = (ts: number) => {
-      rafId = requestAnimationFrame(render);
-      if (document.hidden) return;
+      if (document.hidden || isScrolling) {
+        rafId = 0;
+        return;
+      }
+
       const elapsed = ts - lastTime;
-      if (elapsed < fpsInterval) return;
+      if (elapsed < fpsInterval) {
+        rafId = requestAnimationFrame(render);
+        return;
+      }
       lastTime = ts - (elapsed % fpsInterval);
 
       const w = canvas.width;
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
-      // ── Ribbon streams ──────────────────────────────────────────────────────
-      for (const rib of ribbons) {
-        rib.phase += rib.speed * elapsed;
-        const yC = rib.yBase * h;
-        const step = 36; // Larger step = fewer lineTo() calls = less CPU
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(0, yC + Math.sin(rib.phase) * rib.amplitude);
-        for (let x = 0; x <= w; x += step) {
-          ctx.lineTo(x, yC + Math.sin(x * rib.frequency + rib.phase) * rib.amplitude);
-        }
-        for (let x = w; x >= 0; x -= step) {
-          ctx.lineTo(x, yC + rib.thickness + Math.sin(x * rib.frequency + rib.phase + 0.55) * rib.amplitude);
-        }
-        ctx.closePath();
-
-        const g = ctx.createLinearGradient(0, yC - 30, 0, yC + rib.thickness + 30);
-        g.addColorStop(0,   'rgba(255,255,255,0)');
-        g.addColorStop(0.28, rib.color1);
-        g.addColorStop(0.50, rib.color2);
-        g.addColorStop(0.72, rib.color1);
-        g.addColorStop(1,   'rgba(255,255,255,0)');
-        ctx.fillStyle = g;
-        ctx.fill();
-
-        // Top specular crest — crisp white light reflection
-        ctx.beginPath();
-        for (let x = 0; x <= w; x += step) {
-          const y = yC + Math.sin(x * rib.frequency + rib.phase) * rib.amplitude;
-          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        }
-        ctx.strokeStyle = rib.sheen;
-        ctx.lineWidth = 1.6;
-        ctx.stroke();
-
-        // Internal caustic highlight
-        ctx.beginPath();
-        for (let x = 0; x <= w; x += step * 2) {
-          const y = yC + rib.thickness * 0.42 + Math.sin(x * rib.frequency + rib.phase + 0.22) * (rib.amplitude * 0.65);
-          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        }
-        ctx.strokeStyle = 'rgba(255,255,255,0.40)';
-        ctx.lineWidth = 0.9;
-        ctx.stroke();
-
-        ctx.restore();
+      if (ripples.length === 0) {
+        rafId = 0; // Stop RAF completely when no ripples exist — 0% idle CPU
+        return;
       }
 
       // ── Fluid ripples ───────────────────────────────────────────────────────
       for (let i = ripples.length - 1; i >= 0; i--) {
         const r = ripples[i];
         r.radius += r.speed;
-        r.opacity *= 0.948;
-        if (r.radius > r.maxRadius || r.opacity < 0.01) { ripples.splice(i, 1); continue; }
+        r.opacity *= 0.945;
+        if (r.radius > r.maxRadius || r.opacity < 0.01) {
+          ripples.splice(i, 1);
+          continue;
+        }
 
         ctx.save();
         // Blue refraction rim
         ctx.beginPath();
         ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(0,122,255,${r.opacity * 0.40})`;
-        ctx.lineWidth = 2.0;
+        ctx.strokeStyle = `rgba(0,122,255,${r.opacity * 0.35})`;
+        ctx.lineWidth = 1.8;
         ctx.stroke();
         // White specular ring
         ctx.beginPath();
         ctx.arc(r.x, r.y, Math.max(0, r.radius - 2), 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(255,255,255,${r.opacity * 0.75})`;
-        ctx.lineWidth = 1.1;
+        ctx.strokeStyle = `rgba(255,255,255,${r.opacity * 0.70})`;
+        ctx.lineWidth = 1.0;
         ctx.stroke();
         // Violet dispersion
         ctx.beginPath();
         ctx.arc(r.x, r.y, Math.max(0, r.radius - 4.5), 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(88,86,214,${r.opacity * 0.25})`;
+        ctx.strokeStyle = `rgba(88,86,214,${r.opacity * 0.20})`;
         ctx.lineWidth = 0.8;
         ctx.stroke();
         ctx.restore();
       }
+
+      if (ripples.length > 0) {
+        rafId = requestAnimationFrame(render);
+      } else {
+        rafId = 0;
+      }
     };
 
-    rafId = requestAnimationFrame(render);
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('click', handleClick);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', resize);
