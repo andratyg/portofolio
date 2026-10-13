@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { m as motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { ProfileData } from '@/lib/types';
+import { notifyDynamicIsland } from '@/components/features/DynamicIslandNotification';
 
 // Load ParticleCanvas only after page is idle — prevents it from competing with LCP
 const DynamicParticleCanvas = dynamic(() => import('@/components/features/ParticleCanvas').then(mod => mod.ParticleCanvas), {
@@ -179,6 +180,13 @@ export const Hero = ({
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <a
                   href={activeCvUrl}
+                  onClick={() => {
+                    notifyDynamicIsland({
+                      title: language === 'id' ? "Mengunduh Resume" : "Downloading Resume",
+                      subtitle: language === 'id' ? "Berkas CV Nara Andra Tyaga siap dibuka" : "CV file of Nara Andra Tyaga is ready",
+                      icon: "download",
+                    });
+                  }}
                   target={activeCvUrl.includes('firebasestorage.googleapis.com') ? undefined : "_blank"}
                   rel={activeCvUrl.includes('firebasestorage.googleapis.com') ? undefined : "noopener noreferrer"}
                   download={activeCvUrl.includes('firebasestorage.googleapis.com') || activeCvUrl.toLowerCase().endsWith('.pdf') ? activeCvFileName : undefined}

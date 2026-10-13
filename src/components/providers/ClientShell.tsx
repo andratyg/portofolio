@@ -29,6 +29,14 @@ const CommandPalette = dynamic(
   () => import('@/components/features/CommandPalette').then(m => ({ default: m.CommandPalette })),
   { ssr: false, loading: () => null }
 );
+const DynamicIslandNotification = dynamic(
+  () => import('@/components/features/DynamicIslandNotification').then(m => ({ default: m.DynamicIslandNotification })),
+  { ssr: false, loading: () => null }
+);
+const DeveloperTerminal = dynamic(
+  () => import('@/components/features/DeveloperTerminal').then(m => ({ default: m.DeveloperTerminal })),
+  { ssr: false, loading: () => null }
+);
 
 export function ClientShell() {
   const [isIdle, setIsIdle] = useState(false);
@@ -89,8 +97,10 @@ export function ClientShell() {
   return (
     <>
       <ThemeDecorations />
+      <DynamicIslandNotification />
       <CustomCursor />
       <CommandPalette />
+      <DeveloperTerminal />
       {isIdle && (
         <>
           <WebVitalsReporter />

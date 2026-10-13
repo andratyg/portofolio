@@ -7,11 +7,12 @@ import { m as motion } from 'framer-motion';
 import { useLanguage } from '@/components/providers/LanguageContext';
 import { useTheme, themes, THEME_CONFIGS, Theme } from '@/components/providers/ThemeContext';
 import { Button } from '@/components/ui/button';
-import { Globe, Palette, LogIn, Menu, X, ChevronDown, Search, Sparkles, Check, Volume2, VolumeX } from 'lucide-react';
+import { Globe, Palette, LogIn, Menu, X, ChevronDown, Search, Sparkles, Check, Volume2, VolumeX, Terminal } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { useAudioFX } from '@/components/providers/AudioFXContext';
 import { useProjectStore } from '@/stores/ProjectStore';
+import { notifyDynamicIsland } from '@/components/features/DynamicIslandNotification';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
@@ -161,6 +162,17 @@ export const Navbar = () => {
     }
   };
 
+  const handleThemeSelect = (tName: Theme) => {
+    play('toggle');
+    setTheme(tName, true);
+    notifyDynamicIsland({
+      title: `Tema: ${THEME_CONFIGS[tName]?.name[language] || tName}`,
+      subtitle: THEME_CONFIGS[tName]?.description[language] || "Tema tampilan diperbarui",
+      icon: "theme",
+      emoji: THEME_CONFIGS[tName]?.emoji,
+    });
+  };
+
   const navItems = [
     { label: t.navHome, href: '/' },
     { label: t.navPortfolio, href: '#portfolio' },
@@ -238,6 +250,33 @@ export const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          {/* Developer CLI Terminal Trigger */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              play('tab');
+              window.dispatchEvent(new CustomEvent('open-dev-terminal'));
+            }}
+            className={cn(
+              "hidden sm:inline-flex items-center gap-1.5 h-9 px-2.5 sm:px-3 text-xs transition-all shrink-0",
+              theme === 'liquid'
+                ? "rounded-full bg-white/70 hover:bg-white text-slate-700 border-white/80 shadow-[0_2px_8px_rgba(0,122,255,0.08),inset_0_1px_0.5px_white]"
+                : "rounded-xl text-muted-foreground hover:text-emerald-400 border-border/60 glass-card hover:border-emerald-500/40"
+            )}
+            title="Buka Developer Terminal (`)"
+            aria-label="Buka Developer Terminal"
+          >
+            <Terminal className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+            <span className="hidden xl:inline text-[11px] font-mono font-bold">CLI</span>
+            <kbd className={cn(
+              "hidden 2xl:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono border",
+              theme === 'liquid' ? "bg-slate-100 text-slate-600 border-slate-200" : "bg-muted text-muted-foreground border-border/60"
+            )}>
+              `
+            </kbd>
+          </Button>
+
           {/* Spotlight Search / Command Palette Trigger */}
           <Button
             variant="outline"
@@ -275,6 +314,24 @@ export const Navbar = () => {
             <Search className="h-4 w-4" />
           </Button>
 
+          {/* Mobile CLI trigger */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              play('tab');
+              window.dispatchEvent(new CustomEvent('open-dev-terminal'));
+            }}
+            className={cn(
+              "rounded-xl sm:hidden h-9 w-9 text-muted-foreground hover:text-emerald-400 shrink-0",
+              theme === 'liquid' && "rounded-full bg-white/70 text-slate-700"
+            )}
+            aria-label="Buka Developer Terminal"
+            title="Developer Terminal"
+          >
+            <Terminal className="h-4 w-4 text-emerald-500" />
+          </Button>
+
           <div className="hidden sm:flex items-center gap-1.5 shrink-0">
             {/* Sound FX Toggle */}
             <Button
@@ -291,6 +348,11 @@ export const Navbar = () => {
                 if (!soundEnabled) {
                   setTimeout(() => play('success'), 50);
                 }
+                notifyDynamicIsland({
+                  title: !soundEnabled ? "Audio FX: Aktif" : "Audio FX: Mode Hening",
+                  subtitle: !soundEnabled ? "Efek audio interaktif dinyalakan" : "Efek audio interaktif dimatikan",
+                  icon: !soundEnabled ? "sound-on" : "sound-off",
+                });
               }}
               title={soundEnabled ? (language === 'id' ? 'Matikan Suara UI (M)' : 'Mute UI Sound (M)') : (language === 'id' ? 'Nyalakan Suara UI (M)' : 'Unmute UI Sound (M)')}
               aria-label={soundEnabled ? 'Mute sound FX' : 'Unmute sound FX'}
@@ -329,8 +391,24 @@ export const Navbar = () => {
                 )}
               >
                 <DropdownMenuItem 
-                  onSelect={() => { play('click'); setLanguage('en'); }} 
-                  onClick={() => { play('click'); setLanguage('en'); }} 
+                  onSelect={() => {
+                    play('click');
+                    setLanguage('en');
+                    notifyDynamicIsland({
+                      title: "English Selected",
+                      subtitle: "Interface language updated",
+                      icon: "globe",
+                    });
+                  }} 
+                  onClick={() => {
+                    play('click');
+                    setLanguage('en');
+                    notifyDynamicIsland({
+                      title: "English Selected",
+                      subtitle: "Interface language updated",
+                      icon: "globe",
+                    });
+                  }} 
                   className={cn(
                     "rounded-xl font-bold uppercase text-xs tracking-wider px-4 py-2.5 cursor-pointer",
                     theme === 'liquid' ? "hover:bg-slate-100 text-slate-800" : ""
@@ -339,8 +417,24 @@ export const Navbar = () => {
                   English {language === 'en' && '✓'}
                 </DropdownMenuItem>
                 <DropdownMenuItem 
-                  onSelect={() => { play('click'); setLanguage('id'); }} 
-                  onClick={() => { play('click'); setLanguage('id'); }} 
+                  onSelect={() => {
+                    play('click');
+                    setLanguage('id');
+                    notifyDynamicIsland({
+                      title: "Bahasa Indonesia",
+                      subtitle: "Bahasa antarmuka diperbarui",
+                      icon: "globe",
+                    });
+                  }} 
+                  onClick={() => {
+                    play('click');
+                    setLanguage('id');
+                    notifyDynamicIsland({
+                      title: "Bahasa Indonesia",
+                      subtitle: "Bahasa antarmuka diperbarui",
+                      icon: "globe",
+                    });
+                  }} 
                   className={cn(
                     "rounded-xl font-bold uppercase text-xs tracking-wider px-4 py-2.5 cursor-pointer",
                     theme === 'liquid' ? "hover:bg-slate-100 text-slate-800" : ""
@@ -423,7 +517,7 @@ export const Navbar = () => {
                       return (
                         <DropdownMenuItem
                           key={tName}
-                          onClick={() => { play('toggle'); setTheme(tName, true); }}
+                          onClick={() => handleThemeSelect(tName)}
                           className={cn(
                             "rounded-2xl p-2.5 cursor-pointer transition-all outline-none border flex flex-col items-start gap-1.5",
                             isCurrent
@@ -474,7 +568,7 @@ export const Navbar = () => {
                       return (
                         <DropdownMenuItem
                           key={tName}
-                          onClick={() => { play('toggle'); setTheme(tName, true); }}
+                          onClick={() => handleThemeSelect(tName)}
                           className={cn(
                             "rounded-2xl p-2.5 cursor-pointer transition-all outline-none border flex items-center justify-between gap-2.5",
                             isCurrent
@@ -528,7 +622,7 @@ export const Navbar = () => {
                       return (
                         <DropdownMenuItem
                           key={tName}
-                          onClick={() => { play('toggle'); setTheme(tName, true); }}
+                          onClick={() => handleThemeSelect(tName)}
                           className={cn(
                             "rounded-2xl p-2.5 cursor-pointer transition-all outline-none border flex items-center justify-between gap-2.5",
                             isCurrent
@@ -638,7 +732,22 @@ export const Navbar = () => {
               </Link>
             ))}
             <div className="flex items-center gap-3 sm:gap-4 py-4 border-t border-border/10 flex-wrap">
-               <Button variant="ghost" size="icon" onClick={() => { play('click'); setLanguage(language === 'id' ? 'en' : 'id'); }} className="rounded-xl h-12 w-12 sm:h-14 sm:w-14 bg-muted/50" aria-label="Toggle language">
+               <Button 
+                 variant="ghost" 
+                 size="icon" 
+                 onClick={() => { 
+                   play('click'); 
+                   const nextLang = language === 'id' ? 'en' : 'id';
+                   setLanguage(nextLang); 
+                   notifyDynamicIsland({
+                     title: nextLang === 'id' ? "Bahasa Indonesia" : "English Selected",
+                     subtitle: nextLang === 'id' ? "Bahasa antarmuka diperbarui" : "Interface language updated",
+                     icon: "globe",
+                   });
+                 }} 
+                 className="rounded-xl h-12 w-12 sm:h-14 sm:w-14 bg-muted/50" 
+                 aria-label="Toggle language"
+               >
                   <Globe className="h-5 w-5 sm:h-6 sm:w-6" />
                </Button>
 
@@ -650,6 +759,11 @@ export const Navbar = () => {
                    if (!soundEnabled) {
                      setTimeout(() => play('success'), 50);
                    }
+                   notifyDynamicIsland({
+                     title: !soundEnabled ? "Audio FX: Aktif" : "Audio FX: Mode Hening",
+                     subtitle: !soundEnabled ? "Efek audio interaktif dinyalakan" : "Efek audio interaktif dimatikan",
+                     icon: !soundEnabled ? "sound-on" : "sound-off",
+                   });
                  }}
                  className="rounded-xl h-12 w-12 sm:h-14 sm:w-14 bg-muted/50"
                  aria-label={soundEnabled ? 'Mute sound FX' : 'Unmute sound FX'}
@@ -659,6 +773,21 @@ export const Navbar = () => {
                  ) : (
                    <VolumeX className="h-5 w-5 sm:h-6 sm:w-6 opacity-60" />
                  )}
+               </Button>
+
+               <Button
+                 variant="ghost"
+                 size="icon"
+                 onClick={() => {
+                   play('tab');
+                   setIsMobileMenuOpen(false);
+                   window.dispatchEvent(new CustomEvent('open-dev-terminal'));
+                 }}
+                 className="rounded-xl h-12 w-12 sm:h-14 sm:w-14 bg-muted/50 text-emerald-500"
+                 aria-label="Buka Developer Terminal"
+                 title="Developer Terminal"
+               >
+                 <Terminal className="h-5 w-5 sm:h-6 sm:w-6" />
                </Button>
 
                <DropdownMenu>
@@ -690,7 +819,7 @@ export const Navbar = () => {
                         <DropdownMenuItem 
                           key={tName} 
                           onClick={() => {
-                            setTheme(tName, true);
+                            handleThemeSelect(tName);
                             setIsMobileMenuOpen(false);
                           }}
                           className={cn(
