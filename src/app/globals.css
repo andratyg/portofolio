@@ -69,7 +69,7 @@
     /* Glassmorphism */
     --glass-bg: rgba(255, 255, 255, 0.03);
     --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-blur: 16px;
+    --glass-blur: 12px;
   }
 
   /* --- Ramadan Theme (Revamped) --- */
@@ -196,7 +196,7 @@
     /* Glassmorphism */
     --glass-bg: rgba(255, 252, 247, 0.78);
     --glass-border: rgba(179, 77, 14, 0.13);
-    --glass-blur: 18px;
+    --glass-blur: 12px;
   }
 
   /* --- Sunset Beach Theme (Clear Light Sky Blue to Radiant Sunset Orange & Golden Horizon) --- */
@@ -234,7 +234,41 @@
     /* Glassmorphism */
     --glass-bg: rgba(255, 255, 255, 0.72);
     --glass-border: rgba(247, 147, 30, 0.32);
-    --glass-blur: 16px;
+    --glass-blur: 12px;
+  }
+
+  /* --- Liquid Glass Theme (Apple iOS Luminous Frosted Glass & Fluid Physics) --- */
+  [data-theme='liquid'] {
+    --background: 210 40% 98%;
+    /* Luminous Ice White #f8fafc */
+    --foreground: 222 47% 11%;
+    /* Deep Crisp Slate #0f172a — High contrast ratio > 12:1 */
+    --card: 0 0% 100%;
+    /* Frosted Milky White Glass */
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 211 100% 50%;
+    /* Apple iOS Electric Blue #007AFF */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 32% 92%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 214 32% 93%;
+    --muted-foreground: 215 25% 40%;
+    /* Slate-600 #475569 — crisp legibility */
+    --accent: 260 70% 60%;
+    /* Apple iOS Luminous Purple #5856D6 */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 86%;
+    --input: 214 32% 86%;
+    --ring: 211 100% 50%;
+
+    /* Glassmorphism — Apple iOS Multi-Layered Material */
+    --glass-bg: rgba(255, 255, 255, 0.68);
+    --glass-border: rgba(255, 255, 255, 0.85);
+    --glass-blur: 14px;
   }
 
 
@@ -309,6 +343,287 @@
     background-size: cover;
   }
 
+  /* Liquid Glass: Authentic Apple iOS Dynamic Wallpaper Mesh & Frosted Glass Sections */
+  [data-theme='liquid'] body {
+    background-color: #f1f5fa;
+    background-image:
+      radial-gradient(ellipse 90% 60% at 15% -10%, rgba(0, 122, 255, 0.28), transparent 70%),
+      radial-gradient(ellipse 80% 50% at 85% 10%, rgba(88, 86, 214, 0.22), transparent 70%),
+      radial-gradient(circle 800px at 50% 50%, rgba(0, 199, 190, 0.16), transparent 70%),
+      radial-gradient(ellipse 90% 70% at 10% 90%, rgba(0, 122, 255, 0.20), transparent 70%),
+      radial-gradient(ellipse 80% 60% at 90% 95%, rgba(255, 45, 85, 0.14), transparent 70%);
+    background-attachment: fixed;
+    background-size: cover;
+  }
+
+  /* Liquid Glass section transparency — let the flowing iOS wallpaper mesh bleed through */
+  [data-theme='liquid'] section#hero,
+  [data-theme='liquid'] section#portfolio,
+  [data-theme='liquid'] section#stats {
+    background-color: transparent !important;
+  }
+
+  [data-theme='liquid'] section#about {
+    background-color: rgba(255, 255, 255, 0.65) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.90);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.90);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  [data-theme='liquid'] section#certificates {
+    background-color: rgba(255, 255, 255, 0.50) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Apple iOS 18 Control Center / Frosted Glass Widgets for All Cards */
+  [data-theme='liquid'] .glass-card,
+  [data-theme='liquid'] .interactive-card,
+  [data-theme='liquid'] article {
+    background: rgba(255, 255, 255, 0.72) !important;
+    backdrop-filter: blur(28px) saturate(190%) contrast(102%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(190%) contrast(102%) !important;
+    border: 1.2px solid rgba(255, 255, 255, 0.90) !important;
+    box-shadow: 0 16px 40px -10px rgba(0, 122, 255, 0.12),
+                0 4px 14px -2px rgba(15, 23, 42, 0.04),
+                inset 0 1.5px 1px 0 rgba(255, 255, 255, 1),
+                inset 0 -1px 2px 0 rgba(0, 122, 255, 0.06) !important;
+    border-radius: 1.75rem !important;
+  }
+
+  [data-theme='liquid'] .interactive-card:hover {
+    background: rgba(255, 255, 255, 0.88) !important;
+    border-color: rgba(255, 255, 255, 1) !important;
+    box-shadow: 0 24px 50px -12px rgba(0, 122, 255, 0.22),
+                0 8px 24px -4px rgba(15, 23, 42, 0.08),
+                inset 0 1.5px 1px 0 rgba(255, 255, 255, 1) !important;
+    transform: translateY(-6px) !important;
+  }
+
+  /* Hero Project Card (Apple Glossy Display Look) */
+  [data-theme='liquid'] #hero-card-tilt > div {
+    border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 25px 60px -12px rgba(0, 122, 255, 0.22), inset 0 2px 1px rgba(255, 255, 255, 0.95) !important;
+  }
+
+  /* Primary Button: Apple iOS Blue Capsule */
+  [data-theme='liquid'] button.bg-primary,
+  [data-theme='liquid'] a.bg-primary {
+    background: linear-gradient(135deg, #007aff 0%, #0056cc 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.40) !important;
+    box-shadow: 0 8px 22px -4px rgba(0, 122, 255, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.70) !important;
+  }
+
+  /* Provide ample space for bottom iPhone Glass Dock */
+  [data-theme='liquid'] footer {
+    padding-bottom: 7.5rem !important;
+  }
+
+  /* ========================================================
+     LIQUID GLASS (iOS 18) — CONTACT SECTION ENHANCEMENT
+     ======================================================== */
+  [data-theme='liquid'] section#contact {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(240, 246, 255, 0.92) 100%) !important;
+    color: #0f172a !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  /* High-contrast headings & text */
+  [data-theme='liquid'] section#contact h2 {
+    color: #0f172a !important;
+    letter-spacing: -0.025em;
+  }
+
+  [data-theme='liquid'] section#contact p {
+    color: #475569 !important;
+  }
+
+  /* Apple iOS Frosted Squircle Social Cards */
+  [data-theme='liquid'] section#contact a {
+    background: rgba(255, 255, 255, 0.88) !important;
+    border: 1px solid rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), inset 0 1px 1px rgba(255, 255, 255, 1) !important;
+    border-radius: 1.25rem !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  [data-theme='liquid'] section#contact a:hover {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border-color: rgba(0, 122, 255, 0.35) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 25px -4px rgba(0, 122, 255, 0.15), inset 0 1px 1px rgba(255, 255, 255, 1) !important;
+  }
+
+  [data-theme='liquid'] section#contact a p.font-bold {
+    color: #0f172a !important;
+  }
+
+  [data-theme='liquid'] section#contact a p.truncate {
+    color: #64748b !important;
+  }
+
+  [data-theme='liquid'] section#contact a svg {
+    color: #0f172a;
+  }
+
+  /* External link hover indicator */
+  [data-theme='liquid'] section#contact a .lucide-external-link {
+    color: #007aff !important;
+  }
+
+  /* Keep social icon badge icons white */
+  [data-theme='liquid'] section#contact a div[class*='rounded-xl'] svg {
+    color: #ffffff !important;
+  }
+
+  /* iOS Translucent Glass Form Container */
+  [data-theme='liquid'] section#contact .bg-background {
+    background: rgba(255, 255, 255, 0.92) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 24px 60px -12px rgba(15, 23, 42, 0.10), 0 0 0 1px rgba(0, 122, 255, 0.08), inset 0 1.5px 1px rgba(255, 255, 255, 1) !important;
+    border-radius: 2.25rem !important;
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+  }
+
+  /* Form Input & Textarea Elements */
+  [data-theme='liquid'] section#contact input:not([type='hidden']),
+  [data-theme='liquid'] section#contact textarea {
+    background: rgba(248, 250, 252, 0.85) !important;
+    border: 1.5px solid rgba(226, 232, 240, 0.95) !important;
+    border-radius: 1rem !important;
+    color: #0f172a !important;
+    font-weight: 500 !important;
+    transition: all 0.25s ease !important;
+  }
+
+  [data-theme='liquid'] section#contact input:focus,
+  [data-theme='liquid'] section#contact textarea:focus {
+    background: #ffffff !important;
+    border-color: #007aff !important;
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.12) !important;
+  }
+
+  [data-theme='liquid'] section#contact label {
+    color: #64748b !important;
+  }
+
+  [data-theme='liquid'] section#contact input:focus ~ label,
+  [data-theme='liquid'] section#contact textarea:focus ~ label,
+  [data-theme='liquid'] section#contact input:not(:placeholder-shown) ~ label,
+  [data-theme='liquid'] section#contact textarea:not(:placeholder-shown) ~ label {
+    color: #007aff !important;
+  }
+
+  /* iOS Send Button */
+  [data-theme='liquid'] section#contact button[type='submit'] {
+    background: linear-gradient(135deg, #007aff 0%, #0056b3 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 8px 20px -3px rgba(0, 122, 255, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
+  }
+
+  /* Ensure all Dialogs, Modals, Popovers, and Dropdowns in liquid theme have pristine Apple VisionOS / iOS frosted cards */
+  [data-theme='liquid'] [role="dialog"],
+  [data-theme='liquid'] [data-radix-popper-content-wrapper] > div,
+  [data-theme='liquid'] .dialog-content {
+    background: rgba(255, 255, 255, 0.95) !important;
+    color: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(0, 122, 255, 0.10), inset 0 1.5px 1px #ffffff !important;
+    backdrop-filter: blur(28px) !important;
+    -webkit-backdrop-filter: blur(28px) !important;
+  }
+
+  [data-theme='liquid'] [role="menuitem"],
+  [data-theme='liquid'] [role="option"] {
+    color: #0f172a !important;
+  }
+
+  [data-theme='liquid'] [role="menuitem"]:hover,
+  [data-theme='liquid'] [role="option"]:hover {
+    background-color: rgba(241, 245, 249, 0.85) !important;
+    color: #007aff !important;
+  }
+
+  [data-theme='liquid'] footer {
+    background: rgba(255, 255, 255, 0.82) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.90);
+    /* Enough bottom padding so content doesn't hide behind the glass dock */
+    padding-bottom: 7rem !important;
+  }
+
+  /* ── Liquid Glass: Enhanced Spring Animations & Micro-Interactions ── */
+
+  /* All interactive elements in liquid theme get spring easing */
+  [data-theme='liquid'] button,
+  [data-theme='liquid'] a,
+  [data-theme='liquid'] [role="button"] {
+    transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  }
+
+  /* Card hover: float up with spring + glow intensify */
+  [data-theme='liquid'] .interactive-card {
+    transition: transform 0.36s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.36s cubic-bezier(0.34, 1.56, 0.64, 1),
+                background 0.28s ease,
+                border-color 0.28s ease !important;
+  }
+
+  /* Navbar: Apple translucent frosted glass bar */
+  [data-theme='liquid'] header,
+  [data-theme='liquid'] nav[role="banner"] {
+    background: rgba(255, 255, 255, 0.78) !important;
+    backdrop-filter: blur(28px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.88) !important;
+    box-shadow: 0 2px 20px -4px rgba(0, 122, 255, 0.10) !important;
+  }
+
+  /* Liquid Glass buttons: crisp Apple capsule press feedback */
+  [data-theme='liquid'] button:active,
+  [data-theme='liquid'] a:active {
+    transform: scale(0.96) !important;
+    transition: transform 0.08s cubic-bezier(0.4, 0, 0.6, 1) !important;
+  }
+
+  /* Smooth section reveal animation when scrolled into view */
+  @keyframes liquidFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.99);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  [data-theme='liquid'] section {
+    animation: liquidFadeUp 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  /* Radix UI / shadcn select, popover in liquid theme */
+  [data-theme='liquid'] [data-radix-select-content],
+  [data-theme='liquid'] [data-radix-popover-content] {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 16px 40px -8px rgba(0, 82, 204, 0.14), inset 0 1px 0 rgba(255,255,255,1) !important;
+  }
+
+  /* Navbar items spring hover */
+  [data-theme='liquid'] nav a,
+  [data-theme='liquid'] nav button {
+    transition: color 0.22s ease, background 0.22s ease, transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  }
+
   /* Make only main page sections transparent in sunset theme so the light blue sunset sky permeates the layout */
   [data-theme='sunset'] section#hero,
   [data-theme='sunset'] section#portfolio,
@@ -345,6 +660,37 @@
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid rgba(253, 200, 48, 0.4);
+    color: #0b1a2d !important;
+  }
+
+  /* Sunset Beach Contact Enhancements */
+  [data-theme='sunset'] section#contact h2 {
+    color: #0b1a2d !important;
+  }
+  [data-theme='sunset'] section#contact p {
+    color: #1e293b !important;
+  }
+  [data-theme='sunset'] section#contact a {
+    background: rgba(255, 255, 255, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 4px 16px -2px rgba(11, 26, 45, 0.08) !important;
+    color: #0b1a2d !important;
+  }
+  [data-theme='sunset'] section#contact a:hover {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-color: rgba(247, 127, 0, 0.4) !important;
+  }
+  [data-theme='sunset'] section#contact a p.font-bold {
+    color: #0b1a2d !important;
+  }
+  [data-theme='sunset'] section#contact a p.truncate {
+    color: #334155 !important;
+  }
+  [data-theme='sunset'] section#contact a svg {
+    color: #0b1a2d;
+  }
+  [data-theme='sunset'] section#contact a div[class*='rounded-xl'] svg {
+    color: #ffffff !important;
   }
 
   [data-theme='sunset'] section#hero {
@@ -414,6 +760,11 @@
 [data-theme='sunset'] ::selection {
   background-color: rgba(247, 147, 30, 0.35);
   color: #0b1a2d;
+}
+
+[data-theme='liquid'] ::selection {
+  background-color: rgba(0, 122, 255, 0.25);
+  color: #0f172a;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -1082,6 +1433,343 @@ body {
 }
 
 /* =============================================
+ * == APPLE IPHONE SYSTEM OS (iOS) LIQUID GLASS
+ * ============================================= */
+
+/* Apple SF Pro Typography & Human Interface System */
+[data-theme='liquid'] {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", -apple-system, "Inter", sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme='liquid'] h1,
+[data-theme='liquid'] h2,
+[data-theme='liquid'] h3,
+[data-theme='liquid'] h4 {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif !important;
+  letter-spacing: -0.03em !important;
+  font-weight: 750 !important;
+}
+
+/* Apple iOS Control Center & Home Screen Frosted Glass Card Material */
+[data-theme='liquid'] .glass-card,
+[data-theme='liquid'] .interactive-card {
+  border-radius: 28px !important;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.88) 0%,
+    rgba(255, 255, 255, 0.64) 100%
+  ) !important;
+  backdrop-filter: blur(14px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.88) !important;
+  box-shadow:
+    /* Specular top rim hairline highlight */
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 1),
+    /* Subtle bottom inner reflection */
+    inset 0 -1px 1px 0 rgba(255, 255, 255, 0.45),
+    /* Soft diffuse iOS drop shadow */
+    0 16px 38px -10px rgba(15, 23, 42, 0.08),
+    0 4px 14px -2px rgba(0, 122, 255, 0.04) !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Apple Polished Glass Rim (Refractive Bezel Highlight) */
+[data-theme='liquid'] .glass-card::before,
+[data-theme='liquid'] .interactive-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(0, 122, 255, 0.35) 30%,
+    rgba(255, 255, 255, 0.85) 60%,
+    rgba(88, 86, 214, 0.30) 85%,
+    rgba(255, 255, 255, 0.95) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Interactive Card Hover — Silky Smooth Apple Glare Sweep */
+[data-theme='liquid'] .interactive-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -160%;
+  width: 75%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.40) 40%,
+    rgba(0, 122, 255, 0.20) 55%,
+    rgba(88, 86, 214, 0.18) 70%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  pointer-events: none;
+  transition: none;
+  opacity: 0;
+  z-index: 3;
+}
+
+[data-theme='liquid'] .interactive-card:hover::after {
+  left: 220%;
+  opacity: 1;
+  transition: left 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+
+/* Interactive Card Hover — Apple iOS Spring Lift & Aura */
+[data-theme='liquid'] .interactive-card:hover {
+  border-color: rgba(255, 255, 255, 1) !important;
+  transform: translateY(-5px) scale(1.015) !important;
+  box-shadow:
+    inset 0 2px 1.5px 0 rgba(255, 255, 255, 1),
+    0 26px 60px -12px rgba(0, 122, 255, 0.20),
+    0 0 24px rgba(88, 86, 214, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Glow cards hover */
+[data-theme='liquid'] .glow-card:hover {
+  box-shadow:
+    0 0 0 1px rgba(0, 122, 255, 0.35),
+    0 20px 48px -10px rgba(0, 122, 255, 0.18),
+    0 0 35px -5px rgba(88, 86, 214, 0.15) !important;
+}
+
+/* Apple iOS Control Center Squircles in Stats */
+[data-theme='liquid'] section#stats .glass-card .rounded-2xl {
+  background: linear-gradient(135deg, #007AFF 0%, #0056D2 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 8px 20px rgba(0, 122, 255, 0.32), inset 0 1.5px 1px rgba(255, 255, 255, 0.85) !important;
+  border-radius: 20px !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme='liquid'] section#stats .glass-card .rounded-2xl svg {
+  color: #ffffff !important;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
+
+[data-theme='liquid'] section#stats .glass-card:hover .rounded-2xl {
+  transform: scale(1.08) !important;
+}
+
+/* Apple iOS Dialog & Sheet Modals */
+[data-theme='liquid'] [role="dialog"],
+[data-theme='liquid'] .dialog-content {
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.98) !important;
+  border-radius: 36px !important;
+  color: #0f172a !important;
+  box-shadow:
+    inset 0 2px 1.5px 0 rgba(255, 255, 255, 1),
+    0 32px 80px -15px rgba(15, 23, 42, 0.20),
+    0 0 45px rgba(0, 122, 255, 0.12) !important;
+}
+
+/* Apple iOS Status Badges & Capsule Chips */
+[data-theme='liquid'] .badge,
+[data-theme='liquid'] [data-slot='badge'] {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(10px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.95) !important;
+  color: #0f172a !important;
+  border-radius: 9999px !important;
+  box-shadow:
+    0 2px 8px rgba(15, 23, 42, 0.04),
+    inset 0 1px 0.5px rgba(255, 255, 255, 1) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* Apple iOS Primary Action Button (App Store Capsule) */
+[data-theme='liquid'] section#hero button.bg-primary,
+[data-theme='liquid'] button.bg-primary {
+  background: linear-gradient(180deg, #007AFF 0%, #0062D2 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow:
+    0 10px 28px -4px rgba(0, 122, 255, 0.45),
+    inset 0 1.5px 0.5px rgba(255, 255, 255, 0.75) !important;
+  border-radius: 9999px !important;
+  font-weight: 650 !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme='liquid'] section#hero button.bg-primary:hover,
+[data-theme='liquid'] button.bg-primary:hover {
+  box-shadow:
+    0 14px 36px -4px rgba(0, 122, 255, 0.60),
+    0 0 25px rgba(88, 86, 214, 0.30),
+    inset 0 2px 1px rgba(255, 255, 255, 0.95) !important;
+  transform: translateY(-2px);
+}
+
+[data-theme='liquid'] button.bg-primary:active {
+  transform: scale(0.96) !important;
+}
+
+/* Apple iOS Secondary Frosted Capsule Button */
+[data-theme='liquid'] section#hero a > button,
+[data-theme='liquid'] button[variant="outline"] {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(255, 255, 255, 0.95) !important;
+  color: #0f172a !important;
+  backdrop-filter: blur(12px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(160%) !important;
+  box-shadow:
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.95),
+    0 8px 24px rgba(15, 23, 42, 0.06) !important;
+  border-radius: 9999px !important;
+  font-weight: 600 !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme='liquid'] section#hero a > button:hover,
+[data-theme='liquid'] button[variant="outline"]:hover {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(0, 122, 255, 0.40) !important;
+  box-shadow:
+    0 8px 25px rgba(0, 122, 255, 0.16),
+    inset 0 1.8px 1.5px rgba(255, 255, 255, 1) !important;
+  transform: translateY(-2px);
+}
+
+/* Hero featured card specular iOS glass bezel */
+[data-theme='liquid'] #hero-card-tilt > div {
+  border-radius: 36px !important;
+  border: 1px solid rgba(255, 255, 255, 0.95) !important;
+  box-shadow:
+    inset 0 2px 2px 0 rgba(255, 255, 255, 0.95),
+    0 32px 75px -15px rgba(15, 23, 42, 0.18),
+    0 0 35px rgba(0, 122, 255, 0.15) !important;
+}
+
+/* Apple iOS Settings & Search Inset Inputs */
+[data-theme='liquid'] input,
+[data-theme='liquid'] textarea {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(8px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(150%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.92) !important;
+  border-radius: 20px !important;
+  color: #0f172a !important;
+  box-shadow: inset 0 1.5px 2px rgba(15, 23, 42, 0.03) !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+[data-theme='liquid'] input:focus,
+[data-theme='liquid'] textarea:focus {
+  border-color: #007AFF !important;
+  box-shadow:
+    0 0 0 3.5px rgba(0, 122, 255, 0.20),
+    inset 0 1.5px 2px rgba(15, 23, 42, 0.03) !important;
+}
+
+/* Apple iOS Native Translucent Scrollbar */
+[data-theme='liquid'] ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+[data-theme='liquid'] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+[data-theme='liquid'] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 9999px;
+}
+[data-theme='liquid'] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.30);
+}
+
+/* =============================================
+ * == APPLE iOS LIQUID GLASS FLOATING ANIMATIONS
+ * ============================================= */
+@keyframes liquidFloat1 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate3d(8px, -18px, 0) rotate(1.5deg);
+  }
+  66% {
+    transform: translate3d(-8px, 12px, 0) rotate(-1.2deg);
+  }
+}
+
+@keyframes liquidFloat2 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  40% {
+    transform: translate3d(-12px, -14px, 0) rotate(-2deg);
+  }
+  75% {
+    transform: translate3d(10px, 8px, 0) rotate(1.8deg);
+  }
+}
+
+@keyframes liquidFloat3 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(12px, -12px, 0) rotate(2.2deg);
+  }
+}
+
+/* Linear light sheen sweep across polished liquid glass slabs */
+@keyframes glassSheenSweep {
+  0% {
+    transform: translateX(-160%) skewX(-20deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  45% {
+    transform: translateX(180%) skewX(-20deg);
+    opacity: 0.9;
+  }
+  46%, 100% {
+    opacity: 0;
+    transform: translateX(180%) skewX(-20deg);
+  }
+}
+
+.animate-glass-slab-1 {
+  animation: liquidFloat1 11s ease-in-out infinite;
+}
+
+.animate-glass-slab-2 {
+  animation: liquidFloat2 14s ease-in-out infinite;
+}
+
+.animate-glass-slab-3 {
+  animation: liquidFloat3 10s ease-in-out infinite;
+}
+
+.animate-glass-sheen {
+  animation: glassSheenSweep 6.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* =============================================
  * == MOBILE PERFORMANCE & BATTERY HARDENING
  * ============================================= */
 @media (max-width: 768px), (pointer: coarse) {
@@ -1105,6 +1793,7 @@ body {
   /* Ensure smooth composite layers on mobile fixed decorative containers */
   [data-theme='sunset'] .fixed,
   [data-theme='catppuccin'] .fixed,
+  [data-theme='liquid'] .fixed,
   [data-theme='ramadan'] .fixed,
   [data-theme='imlek'] .fixed,
   [data-theme='natal'] .fixed {

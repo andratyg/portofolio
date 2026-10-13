@@ -67,6 +67,18 @@ export default function SunsetDecorations() {
     };
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
+    let isScrolling = false;
+    let scrollTimer: ReturnType<typeof setTimeout>;
+
+    const onScroll = () => {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 90);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -137,11 +149,11 @@ export default function SunsetDecorations() {
     const animate = (timestamp: number) => {
       rafId = requestAnimationFrame(animate);
 
+      if (document.hidden || isScrolling) return;
+
       const elapsed = timestamp - lastTime;
       if (elapsed < fpsInterval) return;
       lastTime = timestamp - (elapsed % fpsInterval);
-
-      if (document.hidden) return;
 
       const width = canvas.width;
       const height = canvas.height;
@@ -258,8 +270,10 @@ export default function SunsetDecorations() {
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', resize);
-      cancelAnimationFrame(rafId);
+      if (rafId) cancelAnimationFrame(rafId);
+      clearTimeout(scrollTimer);
     };
   }, [isEligible]);
 
@@ -501,28 +515,28 @@ export default function SunsetDecorations() {
           </svg>
         </div>
 
-        {/* 2. Outermost Huge Atmospheric Sunset Bloom (Diffused Ambient Light) */}
+        {/* 2. Outermost Huge Atmospheric Sunset Bloom (Diffused Ambient Light — Hardware-Accelerated Pure Radial Gradient) */}
         <div
-          className="absolute -top-40 -left-40 w-[260px] sm:w-[540px] md:w-[660px] h-[260px] sm:h-[540px] md:h-[660px] rounded-full blur-[60px] sm:blur-[115px] opacity-65 pointer-events-none"
+          className="absolute -top-40 -left-40 w-[260px] sm:w-[540px] md:w-[660px] h-[260px] sm:h-[540px] md:h-[660px] rounded-full opacity-70 pointer-events-none"
           style={{
-            background: 'radial-gradient(circle, rgba(254, 240, 138, 0.65) 0%, rgba(251, 191, 36, 0.45) 35%, rgba(249, 115, 22, 0.28) 60%, rgba(225, 29, 72, 0.12) 80%, transparent 92%)',
+            background: 'radial-gradient(circle, rgba(254, 240, 138, 0.55) 0%, rgba(251, 191, 36, 0.35) 28%, rgba(249, 115, 22, 0.18) 50%, rgba(225, 29, 72, 0.08) 68%, transparent 85%)',
           }}
         />
 
         {/* 3. Middle Radiant Solar Corona with Living Breath Pulse */}
         <div
-          className="absolute -top-16 -left-16 w-56 sm:w-76 md:w-96 h-56 sm:h-76 md:h-96 rounded-full blur-[36px] pointer-events-none"
+          className="absolute -top-16 -left-16 w-56 sm:w-76 md:w-96 h-56 sm:h-76 md:h-96 rounded-full opacity-90 pointer-events-none"
           style={{
-            background: 'radial-gradient(circle, #FFFBE8 0%, #FEE070 30%, #FDB827 58%, #F77F1E 82%, transparent 95%)',
+            background: 'radial-gradient(circle, #FFFBE8 0%, #FEE070 25%, #FDB827 48%, rgba(247, 127, 30, 0.35) 72%, transparent 90%)',
             animation: 'sunCoronaBreathe 7.5s ease-in-out infinite alternate',
           }}
         />
 
         {/* 4. Inner Chromosphere Golden Ring */}
         <div
-          className="absolute -top-4 -left-4 w-36 h-36 sm:w-52 sm:h-52 md:w-64 md:h-64 rounded-full blur-[14px] opacity-85 pointer-events-none"
+          className="absolute -top-4 -left-4 w-36 h-36 sm:w-52 sm:h-52 md:w-64 md:h-64 rounded-full opacity-85 pointer-events-none"
           style={{
-            background: 'radial-gradient(circle, #FFFFFF 0%, #FFF3B0 45%, #F59E0B 80%, transparent 100%)',
+            background: 'radial-gradient(circle, #FFFFFF 0%, #FFF3B0 40%, rgba(245, 158, 11, 0.4) 75%, transparent 100%)',
           }}
         />
 
@@ -641,7 +655,7 @@ export default function SunsetDecorations() {
         >
           {/* Luminous warm ambient golden bloom aura */}
           <div
-            className="absolute inset-0 blur-xl opacity-80"
+            className="absolute inset-0 opacity-80"
             style={{
               background: 'radial-gradient(ellipse at 50% 12%, rgba(255, 248, 180, 0.9) 0%, rgba(251, 191, 36, 0.6) 40%, rgba(245, 158, 11, 0.2) 72%, transparent 100%)',
             }}

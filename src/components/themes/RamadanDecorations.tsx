@@ -36,6 +36,18 @@ export default function RamadanDecorations() {
     };
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
+    let isScrolling = false;
+    let scrollTimer: ReturnType<typeof setTimeout>;
+
+    const onScroll = () => {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 90);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -61,11 +73,11 @@ export default function RamadanDecorations() {
     const animate = (timestamp: number) => {
       rafId = requestAnimationFrame(animate);
 
+      if (document.hidden || isScrolling) return;
+
       const elapsed = timestamp - lastTime;
       if (elapsed < fpsInterval) return;
       lastTime = timestamp - (elapsed % fpsInterval);
-
-      if (document.hidden) return;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
@@ -96,13 +108,18 @@ export default function RamadanDecorations() {
           p.y -= (dy / dist) * force * 5;
         }
 
+        const alpha = 0.4 + Math.sin(p.angle * 2) * 0.3;
+        // Soft outer glow halo (hardware accelerated without CPU shadowBlur)
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(253, 224, 71, ${alpha * 0.25})`;
+        ctx.fill();
+
+        // Core bright ember
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(253, 224, 71, ${0.4 + Math.sin(p.angle * 2) * 0.3})`;
-        ctx.shadowBlur = 6;
-        ctx.shadowColor = 'rgba(253, 224, 71, 0.7)';
+        ctx.fillStyle = `rgba(253, 224, 71, ${alpha})`;
         ctx.fill();
-        ctx.shadowBlur = 0; // reset
       });
     };
     
@@ -110,8 +127,10 @@ export default function RamadanDecorations() {
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', resize);
-      cancelAnimationFrame(rafId);
+      if (rafId) cancelAnimationFrame(rafId);
+      clearTimeout(scrollTimer);
     };
   }, [isEligible]);
 

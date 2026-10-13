@@ -171,23 +171,33 @@ export const Navbar = () => {
 
   return (
     <nav className={cn(
-      "fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b transition-transform duration-700 ease-in-out",
+      "fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out",
+      theme === 'liquid'
+        ? "pt-2 sm:pt-3.5 px-3 sm:px-6 pointer-events-none"
+        : "bg-background/90 backdrop-blur-md border-b",
       isVisible ? "translate-y-0" : "-translate-y-full"
     )}>
-      <div className="container mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
-        <div className="flex items-center gap-12">
-          <motion.a 
-            href="/" 
-            onClick={handleLogoClick}
-            className="text-3xl font-black text-primary cursor-pointer tracking-normal"
-            whileHover={{ scale: 1.1, rotate: -5 }}
-            whileTap={{ scale: 0.95, rotate: 10, y: -5 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          >
-            NAT
-          </motion.a>
+      <div className={cn(
+        "container mx-auto flex items-center justify-between transition-all duration-500",
+        theme === 'liquid'
+          ? "max-w-6xl xl:max-w-7xl h-14 sm:h-16 px-4 sm:px-6 rounded-full bg-white/85 backdrop-blur-3xl border border-white/95 shadow-[0_16px_40px_-10px_rgba(15,23,42,0.10),0_0_0_1px_rgba(0,122,255,0.12),inset_0_1.5px_1px_rgba(255,255,255,1),inset_0_-1px_2px_rgba(0,0,0,0.03)] pointer-events-auto"
+          : "px-4 sm:px-6 h-16 sm:h-20"
+      )}>
+        <div className="flex items-center gap-3 sm:gap-6 lg:gap-8 min-w-0">
+          <div className="flex items-center gap-3 shrink-0">
+            <motion.a 
+              href="/" 
+              onClick={handleLogoClick}
+              className="text-2xl sm:text-3xl font-black text-primary cursor-pointer tracking-normal"
+              whileHover={{ scale: 1.1, rotate: -5 }}
+              whileTap={{ scale: 0.95, rotate: 10, y: -5 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            >
+              NAT
+            </motion.a>
+          </div>
           
-          <div className="hidden md:flex gap-8 relative">
+          <div className="hidden md:flex gap-1.5 lg:gap-3 items-center relative">
             {navItems.map((item) => {
               const isActive = activeSection === item.href;
               return (
@@ -200,36 +210,53 @@ export const Navbar = () => {
                   }}
                   onMouseEnter={() => play('hover')}
                   className={cn(
-                    "relative text-xs font-bold uppercase tracking-[0.16em] transition-colors duration-200 py-2",
-                    isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                    "relative text-xs font-bold uppercase transition-all duration-200",
+                    theme === 'liquid'
+                      ? isActive
+                        ? "px-3 py-1.5 rounded-full bg-white/95 text-primary shadow-[0_2px_8px_rgba(0,122,255,0.15),inset_0_1px_0.5px_white] tracking-[0.1em]"
+                        : "px-3 py-1.5 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white/40 tracking-[0.1em]"
+                      : cn(
+                          "tracking-[0.16em] py-2",
+                          isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                        )
                   )}
                 >
                   {item.label}
-                  <span
-                    className={cn(
-                      "absolute -bottom-1 left-0 right-0 h-0.5 bg-primary transition-all duration-300 pointer-events-none",
-                      isActive ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
-                    )}
-                    aria-hidden="true"
-                  />
+                  {theme !== 'liquid' && (
+                    <span
+                      className={cn(
+                        "absolute -bottom-1 left-0 right-0 h-0.5 bg-primary transition-all duration-300 pointer-events-none",
+                        isActive ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
+                      )}
+                      aria-hidden="true"
+                    />
+                  )}
                 </Link>
               );
             })}
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           {/* Spotlight Search / Command Palette Trigger */}
           <Button
             variant="outline"
             size="sm"
             onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
-            className="hidden sm:inline-flex items-center gap-2 rounded-xl h-9 px-3 text-xs text-muted-foreground hover:text-foreground border-border/60 glass-card hover:border-primary/40 transition-all"
+            className={cn(
+              "hidden sm:inline-flex items-center gap-2 h-9 px-2.5 sm:px-3 text-xs transition-all shrink-0",
+              theme === 'liquid'
+                ? "rounded-full bg-white/70 hover:bg-white text-slate-700 border-white/80 shadow-[0_2px_8px_rgba(0,122,255,0.08),inset_0_1px_0.5px_white]"
+                : "rounded-xl text-muted-foreground hover:text-foreground border-border/60 glass-card hover:border-primary/40"
+            )}
             aria-label="Buka Pencarian Cepat"
           >
             <Search className="h-3.5 w-3.5 text-primary" />
             <span className="hidden xl:inline text-[11px] font-medium">Cari...</span>
-            <kbd className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono text-muted-foreground border border-border/60">
+            <kbd className={cn(
+              "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono border",
+              theme === 'liquid' ? "bg-slate-100 text-slate-600 border-slate-200" : "bg-muted text-muted-foreground border-border/60"
+            )}>
               <span className="text-xs">⌘</span>K
             </kbd>
           </Button>
@@ -239,18 +266,26 @@ export const Navbar = () => {
             variant="ghost"
             size="icon"
             onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
-            className="rounded-xl sm:hidden h-9 w-9 text-muted-foreground hover:text-primary"
+            className={cn(
+              "rounded-xl sm:hidden h-9 w-9 text-muted-foreground hover:text-primary shrink-0",
+              theme === 'liquid' && "rounded-full bg-white/70 text-slate-700"
+            )}
             aria-label="Buka Pencarian Cepat"
           >
             <Search className="h-4 w-4" />
           </Button>
 
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-1.5 shrink-0">
             {/* Sound FX Toggle */}
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-xl relative"
+              className={cn(
+                "h-9 w-9 shrink-0 relative transition-all",
+                theme === 'liquid'
+                  ? "rounded-full bg-white/70 hover:bg-white text-slate-700 border border-white/80 shadow-[0_2px_8px_rgba(0,122,255,0.08),inset_0_1px_0.5px_white]"
+                  : "rounded-xl"
+              )}
               onClick={() => {
                 toggleSound();
                 if (!soundEnabled) {
@@ -270,22 +305,46 @@ export const Navbar = () => {
             {/* Language Toggle */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-xl" aria-label="Change language">
-                  <Globe className="h-5 w-5" />
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className={cn(
+                    "h-9 w-9 shrink-0 transition-all",
+                    theme === 'liquid'
+                      ? "rounded-full bg-white/70 hover:bg-white text-slate-700 border border-white/80 shadow-[0_2px_8px_rgba(0,122,255,0.08),inset_0_1px_0.5px_white]"
+                      : "rounded-xl"
+                  )} 
+                  aria-label="Change language"
+                >
+                  <Globe className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="rounded-2xl border-none shadow-2xl bg-card/95 backdrop-blur-sm p-2">
+              <DropdownMenuContent 
+                align="end" 
+                className={cn(
+                  "rounded-2xl p-2 z-50",
+                  theme === 'liquid'
+                    ? "bg-white/95 backdrop-blur-2xl border border-white/90 shadow-[0_16px_40px_-10px_rgba(15,23,42,0.15)] text-slate-900"
+                    : "border-none shadow-2xl bg-card/95 backdrop-blur-sm"
+                )}
+              >
                 <DropdownMenuItem 
                   onSelect={() => { play('click'); setLanguage('en'); }} 
                   onClick={() => { play('click'); setLanguage('en'); }} 
-                  className="rounded-xl font-bold uppercase text-xs tracking-wider px-4 py-2.5 cursor-pointer"
+                  className={cn(
+                    "rounded-xl font-bold uppercase text-xs tracking-wider px-4 py-2.5 cursor-pointer",
+                    theme === 'liquid' ? "hover:bg-slate-100 text-slate-800" : ""
+                  )}
                 >
                   English {language === 'en' && '✓'}
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onSelect={() => { play('click'); setLanguage('id'); }} 
                   onClick={() => { play('click'); setLanguage('id'); }} 
-                  className="rounded-xl font-bold uppercase text-xs tracking-wider px-4 py-2.5 cursor-pointer"
+                  className={cn(
+                    "rounded-xl font-bold uppercase text-xs tracking-wider px-4 py-2.5 cursor-pointer",
+                    theme === 'liquid' ? "hover:bg-slate-100 text-slate-800" : ""
+                  )}
                 >
                   Indonesia {language === 'id' && '✓'}
                 </DropdownMenuItem>
@@ -295,21 +354,55 @@ export const Navbar = () => {
             {/* Theme Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="rounded-xl gap-2 font-bold uppercase text-xs tracking-wider px-4 hover:bg-primary/10" aria-label="Change theme">
-                  <Palette className="h-4 w-4 text-primary" />
-                  <span className="hidden lg:inline">{THEME_CONFIGS[theme]?.name[language] || theme}</span>
-                  <ChevronDown className="h-3 w-3 opacity-50" />
+                <Button 
+                  variant="ghost" 
+                  className={cn(
+                    "shrink-0 gap-1.5 sm:gap-2 font-semibold text-xs tracking-tight transition-all",
+                    theme === 'liquid'
+                      ? "h-9 rounded-full px-2.5 sm:px-3 bg-white/75 hover:bg-white text-slate-800 border border-white/90 shadow-[0_2px_8px_rgba(0,122,255,0.10),inset_0_1px_0.5px_white]"
+                      : "h-9 rounded-xl px-2.5 sm:px-3 hover:bg-primary/10 text-foreground"
+                  )} 
+                  aria-label="Change theme"
+                >
+                  <Palette className="h-3.5 w-3.5 text-primary shrink-0" />
+                  <span className="flex items-center gap-1 shrink-0">
+                    <span className="w-2 h-2 rounded-full ring-1 ring-black/15 shadow-xs" style={{ backgroundColor: THEME_CONFIGS[theme]?.colors.primary }} />
+                    <span className="w-2 h-2 rounded-full ring-1 ring-black/15 shadow-xs" style={{ backgroundColor: THEME_CONFIGS[theme]?.colors.accent }} />
+                  </span>
+                  <span className="hidden xl:inline max-w-[100px] truncate font-bold">
+                    {THEME_CONFIGS[theme]?.name[language] || theme}
+                  </span>
+                  <ChevronDown className="h-3 w-3 opacity-60 shrink-0" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80 max-h-[85vh] overflow-y-auto p-3.5 rounded-3xl border border-border/80 shadow-2xl bg-card/95 backdrop-blur-xl space-y-3 no-scrollbar">
+              <DropdownMenuContent 
+                align="end" 
+                className={cn(
+                  "w-80 max-h-[85vh] overflow-y-auto p-3.5 rounded-3xl border shadow-2xl space-y-3 no-scrollbar z-50",
+                  theme === 'liquid'
+                    ? "bg-white/95 backdrop-blur-2xl border-white/90 shadow-[0_24px_60px_-15px_rgba(15,23,42,0.18),0_0_0_1px_rgba(0,122,255,0.08),inset_0_1.5px_1px_white] text-slate-900"
+                    : "border-border/80 bg-card/95 backdrop-blur-xl text-card-foreground"
+                )}
+              >
                 {/* Header */}
-                <div className="flex items-center justify-between px-2 pt-1 pb-0.5 border-b border-border/40">
-                  <span className="text-[11px] font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <div className={cn(
+                  "flex items-center justify-between px-2 pt-1 pb-1.5 border-b",
+                  theme === 'liquid' ? "border-slate-200/60" : "border-border/40"
+                )}>
+                  <span className={cn(
+                    "text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5",
+                    theme === 'liquid' ? "text-slate-600" : "text-muted-foreground"
+                  )}>
                     <Palette className="h-3.5 w-3.5 text-primary" />
                     {language === 'id' ? 'Tema Tampilan' : 'Appearance'}
                   </span>
                   {isAutoTheme && (
-                    <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                    <span className={cn(
+                      "text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border",
+                      theme === 'liquid' 
+                        ? "bg-blue-50 text-blue-600 border-blue-200" 
+                        : "bg-primary/10 text-primary border-primary/20"
+                    )}>
                       Auto Mode
                     </span>
                   )}
@@ -317,7 +410,10 @@ export const Navbar = () => {
 
                 {/* Standard Themes */}
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 px-2 mb-1.5">
+                  <p className={cn(
+                    "text-[11px] font-bold uppercase tracking-wider px-2 mb-1.5",
+                    theme === 'liquid' ? "text-slate-500" : "text-muted-foreground/80"
+                  )}>
                     {language === 'id' ? 'Koleksi Standar' : 'Standard Collection'}
                   </p>
                   <div className="grid grid-cols-2 gap-1.5">
@@ -331,21 +427,31 @@ export const Navbar = () => {
                           className={cn(
                             "rounded-2xl p-2.5 cursor-pointer transition-all outline-none border flex flex-col items-start gap-1.5",
                             isCurrent
-                              ? "bg-primary/15 border-primary/40 text-primary font-bold shadow-sm"
-                              : "hover:bg-muted/60 border-transparent text-foreground"
+                              ? theme === 'liquid'
+                                ? "bg-blue-50/90 border-blue-200/90 text-blue-600 font-bold shadow-xs"
+                                : "bg-primary/15 border-primary/40 text-primary font-bold shadow-sm"
+                              : theme === 'liquid'
+                                ? "hover:bg-slate-100/70 border-transparent text-slate-800"
+                                : "hover:bg-muted/60 border-transparent text-foreground"
                           )}
                         >
                           <div className="flex items-center justify-between w-full">
-                            <div className="flex items-center -space-x-1 p-0.5 rounded-full bg-background/80 border border-border/60">
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.bg }} />
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.primary }} />
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.accent }} />
+                            <div className={cn(
+                              "flex items-center gap-1 px-1.5 py-0.5 rounded-full border shrink-0",
+                              theme === 'liquid' ? "bg-slate-100/80 border-slate-200/80" : "bg-background/80 border-border/60"
+                            )}>
+                              <span className="w-2 h-2 rounded-full ring-1 ring-black/15 shadow-xs" style={{ backgroundColor: cfg.colors.bg }} />
+                              <span className="w-2 h-2 rounded-full ring-1 ring-black/15 shadow-xs" style={{ backgroundColor: cfg.colors.primary }} />
+                              <span className="w-2 h-2 rounded-full ring-1 ring-black/15 shadow-xs" style={{ backgroundColor: cfg.colors.accent }} />
                             </div>
                             {isCurrent && <Check className="h-3.5 w-3.5 text-primary" />}
                           </div>
                           <div className="text-left w-full">
                             <p className="text-xs font-bold leading-none">{cfg.name[language]}</p>
-                            <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">{cfg.description[language]}</p>
+                            <p className={cn(
+                              "text-[10px] line-clamp-1 mt-0.5",
+                              theme === 'liquid' ? "text-slate-500" : "text-muted-foreground"
+                            )}>{cfg.description[language]}</p>
                           </div>
                         </DropdownMenuItem>
                       );
@@ -355,7 +461,10 @@ export const Navbar = () => {
 
                 {/* Modern Aesthetic Themes */}
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 px-2 mb-1.5">
+                  <p className={cn(
+                    "text-[11px] font-bold uppercase tracking-wider px-2 mb-1.5",
+                    theme === 'liquid' ? "text-slate-500" : "text-muted-foreground/80"
+                  )}>
                     {language === 'id' ? 'Koleksi Estetika Modern' : 'Modern Aesthetics'}
                   </p>
                   <div className="space-y-1.5">
@@ -369,22 +478,32 @@ export const Navbar = () => {
                           className={cn(
                             "rounded-2xl p-2.5 cursor-pointer transition-all outline-none border flex items-center justify-between gap-2.5",
                             isCurrent
-                              ? "bg-primary/15 border-primary/40 text-primary font-bold shadow-sm"
-                              : "hover:bg-muted/60 border-transparent text-foreground"
+                              ? theme === 'liquid'
+                                ? "bg-blue-50/90 border-blue-200/90 text-blue-600 font-bold shadow-xs"
+                                : "bg-primary/15 border-primary/40 text-primary font-bold shadow-sm"
+                              : theme === 'liquid'
+                                ? "hover:bg-slate-100/70 border-transparent text-slate-800"
+                                : "hover:bg-muted/60 border-transparent text-foreground"
                           )}
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <div className="flex items-center -space-x-1 p-0.5 rounded-full bg-background/80 border border-border/60 shrink-0">
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.bg }} />
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.primary }} />
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.accent }} />
+                            <div className={cn(
+                              "flex items-center gap-1 px-1.5 py-0.5 rounded-full border shrink-0",
+                              theme === 'liquid' ? "bg-slate-100/80 border-slate-200/80" : "bg-background/80 border-border/60"
+                            )}>
+                              <span className="w-2 h-2 rounded-full ring-1 ring-black/15 shadow-xs" style={{ backgroundColor: cfg.colors.bg }} />
+                              <span className="w-2 h-2 rounded-full ring-1 ring-black/15 shadow-xs" style={{ backgroundColor: cfg.colors.primary }} />
+                              <span className="w-2 h-2 rounded-full ring-1 ring-black/15 shadow-xs" style={{ backgroundColor: cfg.colors.accent }} />
                             </div>
                             <div className="min-w-0">
                               <p className="text-xs font-bold leading-none flex items-center gap-1.5 truncate">
                                 <span>{cfg.name[language]}</span>
                                 {cfg.emoji && <span className="text-xs">{cfg.emoji}</span>}
                               </p>
-                              <p className="text-[11px] text-muted-foreground truncate mt-0.5">{cfg.description[language]}</p>
+                              <p className={cn(
+                                "text-[10px] truncate mt-0.5",
+                                theme === 'liquid' ? "text-slate-500" : "text-muted-foreground"
+                              )}>{cfg.description[language]}</p>
                             </div>
                           </div>
                           {isCurrent && <Check className="h-3.5 w-3.5 text-primary shrink-0" />}
@@ -396,7 +515,10 @@ export const Navbar = () => {
 
                 {/* Seasonal Themes */}
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 px-2 mb-1.5">
+                  <p className={cn(
+                    "text-[11px] font-bold uppercase tracking-wider px-2 mb-1.5",
+                    theme === 'liquid' ? "text-slate-500" : "text-muted-foreground/80"
+                  )}>
                     {language === 'id' ? 'Edisi Musiman & Hari Raya' : 'Seasonal & Holidays'}
                   </p>
                   <div className="space-y-1.5">
@@ -410,22 +532,32 @@ export const Navbar = () => {
                           className={cn(
                             "rounded-2xl p-2.5 cursor-pointer transition-all outline-none border flex items-center justify-between gap-2.5",
                             isCurrent
-                              ? "bg-primary/15 border-primary/40 text-primary font-bold shadow-sm"
-                              : "hover:bg-muted/60 border-transparent text-foreground"
+                              ? theme === 'liquid'
+                                ? "bg-blue-50/90 border-blue-200/90 text-blue-600 font-bold shadow-xs"
+                                : "bg-primary/15 border-primary/40 text-primary font-bold shadow-sm"
+                              : theme === 'liquid'
+                                ? "hover:bg-slate-100/70 border-transparent text-slate-800"
+                                : "hover:bg-muted/60 border-transparent text-foreground"
                           )}
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <div className="flex items-center -space-x-1 p-0.5 rounded-full bg-background/80 border border-border/60 shrink-0">
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.bg }} />
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.primary }} />
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: cfg.colors.accent }} />
+                            <div className={cn(
+                              "flex items-center gap-1 px-1.5 py-0.5 rounded-full border shrink-0",
+                              theme === 'liquid' ? "bg-slate-100/80 border-slate-200/80" : "bg-background/80 border-border/60"
+                            )}>
+                              <span className="w-2 h-2 rounded-full ring-1 ring-black/15 shadow-xs" style={{ backgroundColor: cfg.colors.bg }} />
+                              <span className="w-2 h-2 rounded-full ring-1 ring-black/15 shadow-xs" style={{ backgroundColor: cfg.colors.primary }} />
+                              <span className="w-2 h-2 rounded-full ring-1 ring-black/15 shadow-xs" style={{ backgroundColor: cfg.colors.accent }} />
                             </div>
                             <div className="min-w-0">
                               <p className="text-xs font-bold leading-none flex items-center gap-1.5 truncate">
                                 <span>{cfg.name[language]}</span>
                                 {cfg.emoji && <span className="text-xs">{cfg.emoji}</span>}
                               </p>
-                              <p className="text-[11px] text-muted-foreground truncate mt-0.5">{cfg.description[language]}</p>
+                              <p className={cn(
+                                "text-[10px] truncate mt-0.5",
+                                theme === 'liquid' ? "text-slate-500" : "text-muted-foreground"
+                              )}>{cfg.description[language]}</p>
                             </div>
                           </div>
                           {isCurrent && <Check className="h-3.5 w-3.5 text-primary shrink-0" />}
@@ -437,18 +569,26 @@ export const Navbar = () => {
 
                 {/* Auto-Detect Switch */}
                 <div 
-                  className="flex items-center justify-between p-2.5 rounded-2xl bg-muted/40 hover:bg-muted/70 transition-colors cursor-pointer border border-border/50" 
+                  className={cn(
+                    "flex items-center justify-between p-2.5 rounded-2xl transition-colors cursor-pointer border",
+                    theme === 'liquid'
+                      ? "bg-slate-100/60 hover:bg-slate-100/90 border-slate-200/70 text-slate-800"
+                      : "bg-muted/40 hover:bg-muted/70 border-border/50 text-foreground"
+                  )} 
                   onClick={(e) => {
                     e.preventDefault();
                     setAutoTheme(!isAutoTheme);
                   }}
                 >
                   <div className="flex flex-col pr-2">
-                    <span className="text-xs text-foreground font-bold flex items-center gap-1.5">
+                    <span className="text-xs font-bold flex items-center gap-1.5">
                       <Sparkles className="h-3.5 w-3.5 text-primary" />
                       {language === 'id' ? 'Auto-Detect Cerdas' : 'Smart Auto-Detect'}
                     </span>
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className={cn(
+                      "text-[10px]",
+                      theme === 'liquid' ? "text-slate-500" : "text-muted-foreground"
+                    )}>
                       {language === 'id' ? 'Sesuaikan musiman & mode gelap OS' : 'Match seasonal events & OS dark mode'}
                     </span>
                   </div>
@@ -480,7 +620,12 @@ export const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-background/95 backdrop-blur-sm border-b animate-in slide-in-from-top duration-500 overflow-hidden rounded-b-[2rem] sm:rounded-b-[3rem] shadow-2xl">
+        <div className={cn(
+          "md:hidden animate-in slide-in-from-top duration-500 overflow-hidden shadow-2xl pointer-events-auto",
+          theme === 'liquid'
+            ? "mx-auto max-w-md mt-2 rounded-[2rem] bg-white/95 backdrop-blur-2xl border border-white/90 ring-1 ring-blue-400/30 shadow-2xl"
+            : "bg-background/95 backdrop-blur-sm border-b rounded-b-[2rem] sm:rounded-b-[3rem]"
+        )}>
           <div className="flex flex-col p-6 sm:p-8 gap-4 sm:gap-6">
             {navItems.map((item) => (
               <Link 
@@ -522,8 +667,19 @@ export const Navbar = () => {
                     <Palette className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-72 sm:w-80 max-h-[75vh] overflow-y-auto p-3.5 rounded-3xl border border-border/80 shadow-2xl bg-card/95 backdrop-blur-xl space-y-2.5 no-scrollbar">
-                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground px-2">
+                <DropdownMenuContent 
+                  align="end" 
+                  className={cn(
+                    "w-72 sm:w-80 max-h-[75vh] overflow-y-auto p-3.5 rounded-3xl border shadow-2xl space-y-2.5 no-scrollbar z-50",
+                    theme === 'liquid'
+                      ? "bg-white/95 backdrop-blur-2xl border-white/90 shadow-[0_24px_60px_-15px_rgba(15,23,42,0.18),0_0_0_1px_rgba(0,122,255,0.08),inset_0_1.5px_1px_white] text-slate-900"
+                      : "border-border/80 bg-card/95 backdrop-blur-xl text-card-foreground"
+                  )}
+                >
+                  <p className={cn(
+                    "text-xs font-bold uppercase tracking-wider px-2",
+                    theme === 'liquid' ? "text-slate-500" : "text-muted-foreground"
+                  )}>
                     {language === 'id' ? 'Pilih Tema' : 'Select Theme'}
                   </p>
                   <div className="grid grid-cols-2 gap-1.5">
@@ -540,15 +696,22 @@ export const Navbar = () => {
                           className={cn(
                             "rounded-2xl p-2.5 cursor-pointer transition-all border flex flex-col items-start gap-1.5",
                             isCurrent 
-                              ? "bg-primary/15 border-primary/40 text-primary font-bold" 
-                              : "hover:bg-muted/60 border-transparent text-foreground"
+                              ? theme === 'liquid'
+                                ? "bg-blue-50/90 border-blue-200/90 text-blue-600 font-bold shadow-xs"
+                                : "bg-primary/15 border-primary/40 text-primary font-bold shadow-sm"
+                              : theme === 'liquid'
+                                ? "hover:bg-slate-100/70 border-transparent text-slate-800"
+                                : "hover:bg-muted/60 border-transparent text-foreground"
                           )}
                         >
                           <div className="flex items-center justify-between w-full">
-                            <div className="flex items-center -space-x-1 p-0.5 rounded-full bg-background/80 border border-border/60">
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: cfg.colors.bg }} />
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: cfg.colors.primary }} />
-                              <span className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: cfg.colors.accent }} />
+                            <div className={cn(
+                              "flex items-center gap-1 px-1.5 py-0.5 rounded-full border shrink-0",
+                              theme === 'liquid' ? "bg-slate-100/80 border-slate-200/80" : "bg-background/80 border-border/60"
+                            )}>
+                              <span className="w-2 h-2 rounded-full ring-1 ring-black/15 shadow-xs" style={{ backgroundColor: cfg.colors.bg }} />
+                              <span className="w-2 h-2 rounded-full ring-1 ring-black/15 shadow-xs" style={{ backgroundColor: cfg.colors.primary }} />
+                              <span className="w-2 h-2 rounded-full ring-1 ring-black/15 shadow-xs" style={{ backgroundColor: cfg.colors.accent }} />
                             </div>
                             {cfg.emoji ? <span className="text-xs">{cfg.emoji}</span> : (isCurrent && <Check className="h-3.5 w-3.5 text-primary" />)}
                           </div>

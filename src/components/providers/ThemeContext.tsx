@@ -109,15 +109,15 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
   },
   liquid: {
     id: 'liquid',
-    name: { id: 'Liquid Glass', en: 'Liquid Glass' },
+    name: { id: 'Liquid Glass (iOS)', en: 'Liquid Glass (iOS)' },
     category: 'modern',
-    description: { id: 'Kaca Apple VisionOS & fisika anti-gravitasi', en: 'Apple VisionOS frosted glass & zero-G physics' },
+    description: { id: 'Frosted glass kristal, Dynamic Island & estetika iOS iPhone', en: 'Apple iPhone iOS frosted glass, Dynamic Island & fluid aesthetics' },
     colors: {
-      bg: '#020617',
-      primary: '#06b6d4',
-      accent: '#8b5cf6',
+      bg: '#f6f8fc',
+      primary: '#007AFF',
+      accent: '#5856D6',
     },
-    emoji: '🫧',
+    emoji: '📱',
   },
 };
 

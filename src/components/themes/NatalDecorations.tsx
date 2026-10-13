@@ -36,6 +36,18 @@ export default function NatalDecorations() {
     };
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
+    let isScrolling = false;
+    let scrollTimer: ReturnType<typeof setTimeout>;
+
+    const onScroll = () => {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 90);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -44,7 +56,7 @@ export default function NatalDecorations() {
     resize();
 
     const particles: {x: number, y: number, r: number, vx: number, vy: number, opacity: number}[] = [];
-    const count = Math.min(60, Math.floor(window.innerWidth * window.innerHeight / 20000));
+    const count = Math.min(28, Math.floor(window.innerWidth * window.innerHeight / 35000));
     
     for(let i=0; i<count; i++) {
       particles.push({
@@ -60,11 +72,11 @@ export default function NatalDecorations() {
     const animate = (timestamp: number) => {
       rafId = requestAnimationFrame(animate);
 
+      if (document.hidden || isScrolling) return;
+
       const elapsed = timestamp - lastTime;
       if (elapsed < fpsInterval) return;
       lastTime = timestamp - (elapsed % fpsInterval);
-
-      if (document.hidden) return;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
@@ -100,8 +112,10 @@ export default function NatalDecorations() {
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', resize);
-      cancelAnimationFrame(rafId);
+      if (rafId) cancelAnimationFrame(rafId);
+      clearTimeout(scrollTimer);
     };
   }, [isEligible]);
 

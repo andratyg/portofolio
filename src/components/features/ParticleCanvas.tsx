@@ -23,9 +23,31 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
       return;
     }
 
-    let particleRaf: number;
+    let particleRaf: number = 0;
     let lastFrameTime = 0;
     const fpsInterval = 1000 / 30; // Cap to 30 FPS
+    let isVisible = false;
+    let isScrolling = false;
+    let scrollTimer: ReturnType<typeof setTimeout>;
+
+    const onScroll = () => {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 90);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Pause rendering entirely when the canvas is off-screen
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        isVisible = entry ? entry.isIntersecting : false;
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(canvas);
 
     const resize = () => {
       if (!canvas) return;
@@ -35,7 +57,7 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
     resize();
     window.addEventListener('resize', resize, { passive: true });
     const particles: { x: number; y: number; vx: number; vy: number; size: number; opacity: number }[] = [];
-    const maxParticles = isMobile ? 15 : 45;
+    const maxParticles = isMobile ? 10 : 20; // Silky lightweight particle count
     const count = Math.min(maxParticles, Math.floor((canvas.width * canvas.height) / density));
     
     for (let i = 0; i < count; i++) {
@@ -52,11 +74,12 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
     const drawParticles = (timestamp: number) => {
       particleRaf = requestAnimationFrame(drawParticles);
 
+      // Skip render if off-screen, tab hidden, or actively scrolling
+      if (!isVisible || document.hidden || isScrolling) return;
+
       const elapsed = timestamp - lastFrameTime;
       if (elapsed < fpsInterval) return;
       lastFrameTime = timestamp - (elapsed % fpsInterval);
-
-      if (document.hidden) return;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
@@ -70,10 +93,10 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
         natal: '255, 255, 255',
         catppuccin: '179, 77, 14',
         sunset: '247, 147, 30',
-        liquid: '6, 182, 212',
+        liquid: '0, 122, 255',
       };
 
-      const isLight = currentTheme === 'light' || currentTheme === 'catppuccin' || currentTheme === 'sunset';
+      const isLight = currentTheme === 'light' || currentTheme === 'catppuccin' || currentTheme === 'sunset' || currentTheme === 'liquid';
       const rgbArgs = themeParticleColorMap[currentTheme] || '255, 255, 255';
 
       particles.forEach((p, i) => {
@@ -87,17 +110,20 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
         ctx.fillStyle = `rgba(${rgbArgs}, ${p.opacity * (isLight ? 0.7 : 0.95)})`;
         ctx.fill();
 
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = p.x - particles[j].x;
-          const dy = p.y - particles[j].y;
-          const distSq = dx * dx + dy * dy;
-          if (distSq < 14400) { // 120 * 120
-            const dist = Math.sqrt(distSq);
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(${rgbArgs}, ${0.15 * (1 - dist / 120)})`;
-            ctx.stroke();
+        // Only draw connecting constellation lines for non-liquid themes (liquid uses Apple pure fluid optics)
+        if (currentTheme !== 'liquid') {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = p.x - particles[j].x;
+            const dy = p.y - particles[j].y;
+            const distSq = dx * dx + dy * dy;
+            if (distSq < 14400) { // 120 * 120
+              const dist = Math.sqrt(distSq);
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(${rgbArgs}, ${0.15 * (1 - dist / 120)})`;
+              ctx.stroke();
+            }
           }
         }
       });
@@ -107,7 +133,10 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
 
     return () => {
       window.removeEventListener('resize', resize);
-      cancelAnimationFrame(particleRaf);
+      window.removeEventListener('scroll', onScroll);
+      observer.disconnect();
+      if (particleRaf) cancelAnimationFrame(particleRaf);
+      clearTimeout(scrollTimer);
     };
   }, [density]);
 

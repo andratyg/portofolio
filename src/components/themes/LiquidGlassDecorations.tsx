@@ -1,168 +1,588 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { Home, Briefcase, Compass, BookOpen, Mail, Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useAudioFX } from '@/components/providers/AudioFXContext';
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface FluidRipple {
+  x: number;
+  y: number;
+  radius: number;
+  maxRadius: number;
+  opacity: number;
+  speed: number;
+}
+
+interface DockItem {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ size?: number; strokeWidth?: number; color?: string }>;
+  href: string;
+  gradient: string;
+  shadowColor: string;
+  isAction?: boolean;
+}
+
+// ─── Dock Configuration ────────────────────────────────────────────────────────
+
+const DOCK_ITEMS: DockItem[] = [
+  {
+    id: 'dock-home',
+    label: 'Beranda',
+    icon: Home,
+    href: '#hero',
+    gradient: 'linear-gradient(145deg, #1E90FF 0%, #007AFF 50%, #0051C3 100%)',
+    shadowColor: 'rgba(0, 122, 255, 0.45)',
+  },
+  {
+    id: 'dock-projects',
+    label: 'Proyek',
+    icon: Briefcase,
+    href: '#portfolio',
+    gradient: 'linear-gradient(145deg, #7B79F7 0%, #5856D6 50%, #3634A3 100%)',
+    shadowColor: 'rgba(88, 86, 214, 0.45)',
+  },
+  {
+    id: 'dock-journey',
+    label: 'Perjalanan',
+    icon: Compass,
+    href: '#journey',
+    gradient: 'linear-gradient(145deg, #FFAC33 0%, #FF9500 50%, #CC7700 100%)',
+    shadowColor: 'rgba(255, 149, 0, 0.45)',
+  },
+  {
+    id: 'dock-blog',
+    label: 'Blog',
+    icon: BookOpen,
+    href: '/blog',
+    gradient: 'linear-gradient(145deg, #4CD964 0%, #34C759 50%, #248A3D 100%)',
+    shadowColor: 'rgba(52, 199, 89, 0.45)',
+  },
+  {
+    id: 'dock-contact',
+    label: 'Kontak',
+    icon: Mail,
+    href: '#contact',
+    gradient: 'linear-gradient(145deg, #2DD4CF 0%, #00C7BE 50%, #008580 100%)',
+    shadowColor: 'rgba(0, 199, 190, 0.45)',
+  },
+  {
+    id: 'dock-spotlight',
+    label: 'Spotlight',
+    icon: Search,
+    href: 'spotlight',
+    gradient: 'linear-gradient(145deg, #8E9BAA 0%, #6B7280 50%, #4B5563 100%)',
+    shadowColor: 'rgba(107, 114, 128, 0.45)',
+    isAction: true,
+  },
+];
+
+// ─── Component ─────────────────────────────────────────────────────────────────
+
+/**
+ * LiquidGlassDecorations — Authentic Apple iPhone OS Liquid Glass System
+ *
+ * 1. Living Molten Glass Canvas: undulating translucent ribbon streams with
+ *    specular highlights, optical caustics, and interactive ripples.
+ * 2. iPhone Glass Dock: floating squircle frosted-glass dock with macOS-style
+ *    magnification hover, spring click physics, active indicators, Home Bar.
+ * 3. Performance: 30 FPS cap, scroll-yield, tab-visibility pause.
+ */
 export default function LiquidGlassDecorations() {
-  const [isEligible, setIsEligible] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [activeItem, setActiveItem] = useState('dock-home');
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [pressedId, setPressedId] = useState<string | null>(null);
+  const [dockVisible, setDockVisible] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const router = useRouter();
+  const { play } = useAudioFX();
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // ── Mount ────────────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const isMobile =
-      window.innerWidth < 768 ||
-      window.matchMedia('(pointer: coarse)').matches ||
-      window.matchMedia('(max-width: 768px)').matches;
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!isMobile && !prefersReducedMotion) {
-      setIsEligible(true);
-    }
+    setMounted(true);
   }, []);
 
+  // ── Active section tracker via scroll ─────────────────────────────────────
   useEffect(() => {
-    if (!isEligible) return;
+    if (!mounted) return;
+
+    const updateActive = () => {
+      // Auto-dim dock while scrolling
+      setDockVisible(false);
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+      scrollTimerRef.current = setTimeout(() => setDockVisible(true), 400);
+
+      const scrollPos = window.scrollY + window.innerHeight * 0.4;
+      const sectionMap = [
+        { id: 'dock-home', elemId: 'hero' },
+        { id: 'dock-projects', elemId: 'portfolio' },
+        { id: 'dock-journey', elemId: 'journey' },
+        { id: 'dock-contact', elemId: 'contact' },
+      ];
+
+      for (let i = sectionMap.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sectionMap[i].elemId);
+        if (el && el.offsetTop <= scrollPos) {
+          setActiveItem(sectionMap[i].id);
+          break;
+        }
+      }
+
+      if (window.location.pathname.startsWith('/blog')) {
+        setActiveItem('dock-blog');
+      }
+    };
+
+    window.addEventListener('scroll', updateActive, { passive: true });
+    updateActive();
+    return () => {
+      window.removeEventListener('scroll', updateActive);
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    };
+  }, [mounted]);
+
+  // ── Dock Click Handler ─────────────────────────────────────────────────────
+  const handleDockClick = useCallback((item: DockItem, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    play('tab');
+    setPressedId(item.id);
+    setTimeout(() => setPressedId(null), 350);
+
+    if (item.isAction) {
+      window.dispatchEvent(new CustomEvent('open-command-palette'));
+      return;
+    }
+
+    if (item.href.startsWith('#')) {
+      const targetId = item.href.substring(1);
+      if (window.location.pathname !== '/') {
+        router.push('/' + item.href);
+      } else {
+        const target = document.getElementById(targetId);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+      setActiveItem(item.id);
+    } else {
+      router.push(item.href);
+      setActiveItem(item.id);
+    }
+  }, [play, router]);
+
+  // ── Icon magnification scale (macOS dock magnification physics) ─────────────
+  const getScale = useCallback((idx: number): number => {
+    if (hoveredIndex === null) return 1;
+    const dist = Math.abs(idx - hoveredIndex);
+    if (dist === 0) return 1.45;
+    if (dist === 1) return 1.22;
+    if (dist === 2) return 1.08;
+    return 1;
+  }, [hoveredIndex]);
+
+  // ── Canvas: Molten Liquid Glass Streams ─────────────────────────────────────
+  useEffect(() => {
+    if (!mounted) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     let rafId: number;
     let lastTime = 0;
-    const fpsInterval = 1000 / 30; // 30 FPS cap
+    const fpsInterval = 1000 / 30;
+    const ripples: FluidRipple[] = [];
+    let lastRippleTime = 0;
+    let isScrolling = false;
+    let scrollTimer: ReturnType<typeof setTimeout>;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const now = performance.now();
+      if (now - lastRippleTime > 100 && ripples.length < 6) {
+        lastRippleTime = now;
+        ripples.push({
+          x: e.clientX, y: e.clientY,
+          radius: 12,
+          maxRadius: 100 + Math.random() * 80,
+          opacity: 0.30,
+          speed: 3 + Math.random() * 2,
+        });
+      }
+    };
+
+    const handleClick = (e: MouseEvent) => {
+      for (let k = 0; k < 3; k++) {
+        ripples.push({
+          x: e.clientX, y: e.clientY,
+          radius: 8 + k * 12,
+          maxRadius: 150 + Math.random() * 80,
+          opacity: 0.50 - k * 0.12,
+          speed: 5 + k * 1.5,
+        });
+      }
+    };
+
+    const onScroll = () => {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => { isScrolling = false; }, 100);
+    };
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('click', handleClick, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', resize, { passive: true });
     resize();
 
-    // ── Ambient Mesh Blobs ──────────────────────────────────────────────
-    // 3 large radial gradient blobs that orbit slowly around different centers
-    const blobs = [
+    // Undulating viscous molten glass ribbon streams
+    const ribbons = [
       {
-        cx: 0.25, cy: 0.3, // orbit center (relative to canvas)
-        radius: 320,
-        color: [6, 182, 212],   // cyan-500
-        opacity: 0.12,
-        orbitRadius: 80,
-        speed: 0.0003,
-        angle: 0,
+        yBase: 0.20, amplitude: 70, frequency: 0.0013, speed: 0.00060,
+        thickness: 130,
+        color1: 'rgba(0, 122, 255, 0.14)',
+        color2: 'rgba(255, 255, 255, 0.42)',
+        sheen: 'rgba(255, 255, 255, 0.88)',
+        phase: 0,
       },
       {
-        cx: 0.7, cy: 0.2,
-        radius: 380,
-        color: [124, 58, 237],  // violet-600
-        opacity: 0.10,
-        orbitRadius: 100,
-        speed: 0.00025,
-        angle: Math.PI * 0.7,
+        yBase: 0.50, amplitude: 80, frequency: 0.0010, speed: -0.00048,
+        thickness: 145,
+        color1: 'rgba(88, 86, 214, 0.12)',
+        color2: 'rgba(0, 199, 190, 0.26)',
+        sheen: 'rgba(255, 255, 255, 0.72)',
+        phase: Math.PI * 0.75,
       },
       {
-        cx: 0.5, cy: 0.75,
-        radius: 350,
-        color: [99, 102, 241],  // indigo-500
-        opacity: 0.09,
-        orbitRadius: 90,
-        speed: 0.00035,
-        angle: Math.PI * 1.4,
+        yBase: 0.76, amplitude: 65, frequency: 0.0012, speed: 0.00055,
+        thickness: 130,
+        color1: 'rgba(0, 199, 190, 0.11)',
+        color2: 'rgba(0, 122, 255, 0.18)',
+        sheen: 'rgba(255, 255, 255, 0.78)',
+        phase: Math.PI * 1.4,
       },
     ];
 
-    // ── Floating Dust Particles ─────────────────────────────────────────
-    interface DustParticle {
-      x: number; y: number;
-      vx: number; vy: number;
-      size: number;
-      opacity: number;
-      color: number[]; // RGB
-    }
-
-    const dustParticles: DustParticle[] = [];
-    const dustColors = [
-      [6, 182, 212],   // cyan
-      [139, 92, 246],  // violet
-      [99, 102, 241],  // indigo
-      [255, 255, 255], // white
-    ];
-
-    for (let i = 0; i < 22; i++) {
-      dustParticles.push({
-        x: Math.random() * (canvas.width || 1920),
-        y: Math.random() * (canvas.height || 1080),
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        size: Math.random() * 1.8 + 0.5,
-        opacity: Math.random() * 0.2 + 0.08,
-        color: dustColors[Math.floor(Math.random() * dustColors.length)],
-      });
-    }
-
-    // ── Render Loop ─────────────────────────────────────────────────────
-    const render = (timestamp: number) => {
+    const render = (ts: number) => {
       rafId = requestAnimationFrame(render);
-
-      // FPS throttle
-      const elapsed = timestamp - lastTime;
+      if (document.hidden || isScrolling) return;
+      const elapsed = ts - lastTime;
       if (elapsed < fpsInterval) return;
-      lastTime = timestamp - (elapsed % fpsInterval);
-
-      // Pause when tab inactive
-      if (document.hidden) return;
+      lastTime = ts - (elapsed % fpsInterval);
 
       const w = canvas.width;
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
-      // Draw ambient blobs
-      for (const blob of blobs) {
-        blob.angle += blob.speed;
-        const bx = blob.cx * w + Math.cos(blob.angle) * blob.orbitRadius;
-        const by = blob.cy * h + Math.sin(blob.angle) * blob.orbitRadius;
+      // ── Ribbon streams ──────────────────────────────────────────────────────
+      for (const rib of ribbons) {
+        rib.phase += rib.speed * elapsed;
+        const yC = rib.yBase * h;
+        const step = 24;
 
-        const gradient = ctx.createRadialGradient(bx, by, 0, bx, by, blob.radius);
-        gradient.addColorStop(0, `rgba(${blob.color[0]}, ${blob.color[1]}, ${blob.color[2]}, ${blob.opacity})`);
-        gradient.addColorStop(0.5, `rgba(${blob.color[0]}, ${blob.color[1]}, ${blob.color[2]}, ${blob.opacity * 0.4})`);
-        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(0, yC + Math.sin(rib.phase) * rib.amplitude);
+        for (let x = 0; x <= w; x += step) {
+          ctx.lineTo(x, yC + Math.sin(x * rib.frequency + rib.phase) * rib.amplitude);
+        }
+        for (let x = w; x >= 0; x -= step) {
+          ctx.lineTo(x, yC + rib.thickness + Math.sin(x * rib.frequency + rib.phase + 0.55) * rib.amplitude);
+        }
+        ctx.closePath();
 
-        ctx.fillStyle = gradient;
-        ctx.fillRect(bx - blob.radius, by - blob.radius, blob.radius * 2, blob.radius * 2);
+        const g = ctx.createLinearGradient(0, yC - 30, 0, yC + rib.thickness + 30);
+        g.addColorStop(0,   'rgba(255,255,255,0)');
+        g.addColorStop(0.28, rib.color1);
+        g.addColorStop(0.50, rib.color2);
+        g.addColorStop(0.72, rib.color1);
+        g.addColorStop(1,   'rgba(255,255,255,0)');
+        ctx.fillStyle = g;
+        ctx.fill();
+
+        // Top specular crest — crisp white light reflection
+        ctx.beginPath();
+        for (let x = 0; x <= w; x += step) {
+          const y = yC + Math.sin(x * rib.frequency + rib.phase) * rib.amplitude;
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = rib.sheen;
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+
+        // Internal caustic highlight
+        ctx.beginPath();
+        for (let x = 0; x <= w; x += step * 2) {
+          const y = yC + rib.thickness * 0.42 + Math.sin(x * rib.frequency + rib.phase + 0.22) * (rib.amplitude * 0.65);
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = 'rgba(255,255,255,0.40)';
+        ctx.lineWidth = 0.9;
+        ctx.stroke();
+
+        ctx.restore();
       }
 
-      // Draw floating dust
-      for (const p of dustParticles) {
-        p.x += p.vx;
-        p.y += p.vy;
+      // ── Fluid ripples ───────────────────────────────────────────────────────
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const r = ripples[i];
+        r.radius += r.speed;
+        r.opacity *= 0.948;
+        if (r.radius > r.maxRadius || r.opacity < 0.01) { ripples.splice(i, 1); continue; }
 
-        // Wrap around edges
-        if (p.x < -10) p.x = w + 10;
-        if (p.x > w + 10) p.x = -10;
-        if (p.y < -10) p.y = h + 10;
-        if (p.y > h + 10) p.y = -10;
-
+        ctx.save();
+        // Blue refraction rim
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${p.color[0]}, ${p.color[1]}, ${p.color[2]}, ${p.opacity})`;
-        ctx.fill();
+        ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(0,122,255,${r.opacity * 0.40})`;
+        ctx.lineWidth = 2.0;
+        ctx.stroke();
+        // White specular ring
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, Math.max(0, r.radius - 2), 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(255,255,255,${r.opacity * 0.75})`;
+        ctx.lineWidth = 1.1;
+        ctx.stroke();
+        // Violet dispersion
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, Math.max(0, r.radius - 4.5), 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(88,86,214,${r.opacity * 0.25})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+        ctx.restore();
       }
     };
 
     rafId = requestAnimationFrame(render);
-
     return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('click', handleClick);
+      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(rafId);
+      clearTimeout(scrollTimer);
     };
-  }, [isEligible]);
+  }, [mounted]);
 
-  if (!isEligible) return null;
+  if (!mounted) return null;
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 w-full h-full pointer-events-none z-0"
-      aria-hidden="true"
-      style={{ opacity: 0.85 }}
-    />
+    <>
+      {/* ── 1. Molten Liquid Glass Canvas ─────────────────────────────── */}
+      <canvas
+        ref={canvasRef}
+        className="fixed inset-0 w-full h-full pointer-events-none z-[1]"
+        aria-hidden="true"
+      />
+
+      {/* ── 2. iPhone Liquid Glass Dock ───────────────────────────────── */}
+      <nav
+        aria-label="Navigation Dock"
+        role="navigation"
+        style={{
+          position: 'fixed',
+          bottom: '18px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 9999,
+          pointerEvents: 'auto',
+          opacity: dockVisible ? 1 : 0.28,
+          transition: 'opacity 0.35s cubic-bezier(0.34,1.56,0.64,1)',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+
+          {/* ── Dock Glass Pill ─────────────────────────────────────────── */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'flex-end',
+              gap: '6px',
+              padding: '10px 14px 10px 14px',
+              borderRadius: '28px',
+              background: 'rgba(255, 255, 255, 0.72)',
+              backdropFilter: 'blur(36px) saturate(220%) brightness(108%)',
+              WebkitBackdropFilter: 'blur(36px) saturate(220%) brightness(108%)',
+              border: '1.4px solid rgba(255, 255, 255, 0.95)',
+              boxShadow: [
+                '0 24px 60px -12px rgba(0, 82, 204, 0.20)',
+                '0 8px 24px -4px rgba(15, 23, 42, 0.10)',
+                '0 2px 8px -2px rgba(0, 0, 0, 0.08)',
+                'inset 0 2px 1px 0 rgba(255, 255, 255, 1.0)',
+                'inset 0 -1px 2px 0 rgba(0, 122, 255, 0.08)',
+              ].join(', '),
+            }}
+          >
+            {DOCK_ITEMS.map((item, idx) => {
+              const Icon = item.icon;
+              const isActive = activeItem === item.id;
+              const isPressed = pressedId === item.id;
+              const scale = getScale(idx);
+
+              return (
+                <div
+                  key={item.id}
+                  style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                >
+                  {/* Tooltip */}
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      position: 'absolute',
+                      bottom: `calc(100% + ${8 + (scale - 1) * 44}px)`,
+                      left: '50%',
+                      transform: `translateX(-50%) scale(${hoveredIndex === idx ? 1 : 0.85})`,
+                      opacity: hoveredIndex === idx ? 1 : 0,
+                      transition: 'opacity 0.18s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1), bottom 0.22s cubic-bezier(0.34,1.56,0.64,1)',
+                      pointerEvents: 'none',
+                      whiteSpace: 'nowrap',
+                      padding: '4px 10px',
+                      borderRadius: '12px',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      letterSpacing: '0.01em',
+                      color: '#1C1C1E',
+                      background: 'rgba(255,255,255,0.92)',
+                      backdropFilter: 'blur(12px)',
+                      WebkitBackdropFilter: 'blur(12px)',
+                      border: '1px solid rgba(255,255,255,0.98)',
+                      boxShadow: '0 4px 16px -2px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,1)',
+                    }}
+                  >
+                    {item.label}
+                    {/* Tooltip arrow */}
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        position: 'absolute',
+                        bottom: '-5px',
+                        left: '50%',
+                        transform: 'translateX(-50%) rotate(45deg)',
+                        width: '10px',
+                        height: '10px',
+                        background: 'rgba(255,255,255,0.92)',
+                        borderRight: '1px solid rgba(255,255,255,0.98)',
+                        borderBottom: '1px solid rgba(255,255,255,0.98)',
+                      }}
+                    />
+                  </div>
+
+                  {/* App Tile Button */}
+                  <button
+                    type="button"
+                    id={item.id}
+                    aria-label={item.label}
+                    aria-current={isActive ? 'page' : undefined}
+                    onClick={(e) => handleDockClick(item, e)}
+                    onMouseEnter={() => {
+                      setHoveredIndex(idx);
+                      play('hover');
+                    }}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                    onTouchStart={() => setPressedId(item.id)}
+                    onTouchEnd={() => setTimeout(() => setPressedId(null), 300)}
+                    style={{
+                      position: 'relative',
+                      width: '48px',
+                      height: '48px',
+                      borderRadius: '14px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      background: item.gradient,
+                      boxShadow: isActive
+                        ? `0 0 0 2.5px rgba(255,255,255,0.9), 0 10px 28px -6px ${item.shadowColor}, inset 0 1.5px 1px rgba(255,255,255,0.70), inset 0 -1px 2px rgba(0,0,0,0.22)`
+                        : `0 8px 20px -6px ${item.shadowColor}, inset 0 1.5px 1px rgba(255,255,255,0.65), inset 0 -1px 2px rgba(0,0,0,0.18)`,
+                      transform: `scale(${isPressed ? 0.88 : scale}) translateY(${isPressed ? 2 : -(scale - 1) * 8}px)`,
+                      transition: isPressed
+                        ? 'transform 0.08s cubic-bezier(0.4,0,0.6,1), box-shadow 0.08s ease'
+                        : 'transform 0.32s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.28s cubic-bezier(0.34,1.56,0.64,1)',
+                      outline: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {/* Glass specular top gloss */}
+                    <div
+                      aria-hidden="true"
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        borderRadius: 'inherit',
+                        background: 'linear-gradient(180deg, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.08) 55%, transparent 100%)',
+                        pointerEvents: 'none',
+                      }}
+                    />
+
+                    {/* Bottom bevel shadow */}
+                    <div
+                      aria-hidden="true"
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        borderRadius: 'inherit',
+                        background: 'linear-gradient(0deg, rgba(0,0,0,0.18) 0%, transparent 40%)',
+                        pointerEvents: 'none',
+                      }}
+                    />
+
+                    {/* App Icon */}
+                    <Icon size={22} strokeWidth={2.0} color="white" />
+
+                    {/* Active dot indicator */}
+                    {isActive && (
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          position: 'absolute',
+                          bottom: '-9px',
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          width: '5px',
+                          height: '5px',
+                          borderRadius: '50%',
+                          background: 'rgba(30,30,30,0.75)',
+                          boxShadow: '0 0 6px rgba(255,255,255,0.6)',
+                          transition: 'opacity 0.2s ease',
+                        }}
+                      />
+                    )}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* iPhone Home Bar */}
+          <div
+            aria-hidden="true"
+            style={{
+              width: '134px',
+              height: '5px',
+              borderRadius: '100px',
+              background: 'rgba(30, 30, 30, 0.22)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              transition: 'opacity 0.3s ease',
+            }}
+          />
+        </div>
+      </nav>
+    </>
   );
 }

@@ -251,6 +251,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
   const solution = language === 'id' ? (project.solutionId || project.solutionEn) : (project.solutionEn || project.solutionId);
 
   const hasDemoUrl = typeof project.demoUrl === 'string' && project.demoUrl.trim().length > 5 && project.demoUrl.trim().startsWith('http');
+  const floatClass = index % 3 === 0 ? "liquid-float-1" : index % 3 === 1 ? "liquid-float-2" : "liquid-float-3";
 
   return (
     <div className={cn("group transition-[opacity,transform] duration-700 ease-out h-full", isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16")} style={{ transitionDelay: `${index * 100}ms` }}>
@@ -258,7 +259,7 @@ const ProjectCard = ({ project, index, isVisible }: { project: Project, index: n
         <DialogTrigger asChild>
           <button type="button" className="cursor-pointer group h-full w-full text-left">
             {/* interactive-card handles: border-radius, overflow-hidden, hover lift, glow — NO clipPath */}
-            <Card className="interactive-card h-full border-border/20 bg-card/70 backdrop-blur-sm flex flex-col justify-between">
+            <Card className={cn("interactive-card h-full border-border/20 bg-card/70 backdrop-blur-sm flex flex-col justify-between", floatClass)}>
               <div>
                 <div className="relative aspect-[16/10] bg-muted">
                   <div className="relative h-56 sm:h-64 w-full overflow-hidden bg-muted">

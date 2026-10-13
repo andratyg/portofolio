@@ -226,7 +226,7 @@ export const Certificates = ({ initialCertificates }: CertificatesProps) => {
                             exit={{ opacity: 0, scale: 0.8 }}
                             transition={{ duration: 0.4, type: "spring", delay: i * 0.1 }}
                           >
-                            <CertificateCard cert={cert} />
+                            <CertificateCard cert={cert} index={i} />
                           </motion.div>
                         ))}
                       </AnimatePresence>
@@ -250,20 +250,21 @@ export const Certificates = ({ initialCertificates }: CertificatesProps) => {
   );
 };
 
-const CertificateCard = ({ cert }: { cert: Certificate }) => {
+const CertificateCard = ({ cert, index = 0 }: { cert: Certificate, index?: number }) => {
   const { language } = useLanguage();
   const title = (language === 'id' ? cert.titleId : (cert.titleEn || cert.titleId)) || cert.titleId || 'Sertifikat';
   const shortDesc = (language === 'id' ? cert.shortDescriptionId : (cert.shortDescriptionEn || cert.shortDescriptionId)) || '';
 
   const hasImage = typeof cert.imageUrl === 'string' && cert.imageUrl.trim().startsWith('http');
   const hasCredentialUrl = typeof cert.credentialUrl === 'string' && cert.credentialUrl.trim().length > 5 && cert.credentialUrl.trim().startsWith('http');
+  const floatClass = index % 3 === 0 ? "liquid-float-1" : index % 3 === 1 ? "liquid-float-2" : "liquid-float-3";
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <button type="button" className="cursor-pointer group h-full py-4 w-full text-left">
           {/* interactive-card: proper border-radius + overflow-hidden hover, NO clipPath */}
-          <Card className="interactive-card h-full shadow-lg bg-card flex flex-col">
+          <Card className={cn("interactive-card h-full shadow-lg bg-card flex flex-col", floatClass)}>
             <div className="relative aspect-[4/3] bg-muted overflow-hidden">
               {hasImage ? (
                 <div className="absolute inset-0 group-hover:scale-110 transition-transform duration-700 ease-out">

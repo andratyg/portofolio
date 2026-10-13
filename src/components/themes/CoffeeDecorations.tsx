@@ -38,6 +38,18 @@ export default function CoffeeDecorations() {
     };
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
+    let isScrolling = false;
+    let scrollTimer: ReturnType<typeof setTimeout>;
+
+    const onScroll = () => {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 90);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -85,11 +97,11 @@ export default function CoffeeDecorations() {
     const animate = (timestamp: number) => {
       rafId = requestAnimationFrame(animate);
 
+      if (document.hidden || isScrolling) return;
+
       const elapsed = timestamp - lastTime;
       if (elapsed < fpsInterval) return;
       lastTime = timestamp - (elapsed % fpsInterval);
-
-      if (document.hidden) return;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -128,18 +140,20 @@ export default function CoffeeDecorations() {
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', resize);
-      cancelAnimationFrame(rafId);
+      if (rafId) cancelAnimationFrame(rafId);
+      clearTimeout(scrollTimer);
     };
   }, [isEligible]);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-      {/* 1. Warm Bokeh Ambient Light: Soft amber/caramel glow in top-left/center */}
+      {/* 1. Warm Bokeh Ambient Light: Soft amber/caramel glow (Hardware-Accelerated Pure Radial Gradient) */}
       <div
-        className="absolute top-0 left-1/4 -translate-y-1/2 w-[500px] h-[400px] rounded-full blur-[100px] opacity-25 pointer-events-none select-none transition-opacity duration-1000"
+        className="absolute top-0 left-1/4 -translate-y-1/2 w-[500px] h-[400px] rounded-full opacity-30 pointer-events-none select-none transition-opacity duration-1000"
         style={{
-          background: 'radial-gradient(circle, rgba(200, 155, 110, 0.28) 0%, rgba(160, 110, 70, 0.12) 50%, transparent 75%)',
+          background: 'radial-gradient(circle, rgba(200, 155, 110, 0.22) 0%, rgba(160, 110, 70, 0.08) 45%, transparent 70%)',
         }}
       />
 
