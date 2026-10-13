@@ -27,24 +27,19 @@ export default function RamadanDecorations() {
     let rafId: number;
     let lastTime = 0;
     const fpsInterval = 1000 / 30; // 30 FPS cap
-    let mouseX = -1000;
-    let mouseY = -1000;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     let isScrolling = false;
     let scrollTimer: ReturnType<typeof setTimeout>;
 
+    const pauseCanvas = () => { if (rafId) { cancelAnimationFrame(rafId); rafId = 0; } };
+    const resumeCanvas = () => { if (!rafId) rafId = requestAnimationFrame(animate); };
+
     const onScroll = () => {
+      if (!isScrolling) pauseCanvas();
       isScrolling = true;
       clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(() => {
-        isScrolling = false;
-      }, 90);
+      scrollTimer = setTimeout(() => { isScrolling = false; resumeCanvas(); }, 150);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -56,7 +51,7 @@ export default function RamadanDecorations() {
     resize();
 
     const particles: {x: number, y: number, size: number, baseX: number, baseY: number, speed: number, angle: number}[] = [];
-    const count = Math.min(25, Math.floor(window.innerWidth * window.innerHeight / 25000));
+    const count = Math.min(8, Math.floor(window.innerWidth * window.innerHeight / 80000));
     
     for(let i=0; i<count; i++) {
       particles.push({
@@ -65,7 +60,7 @@ export default function RamadanDecorations() {
         baseX: Math.random() * canvas.width,
         baseY: Math.random() * canvas.height,
         size: Math.random() * 2 + 1,
-        speed: Math.random() * 0.02 + 0.01,
+        speed: Math.random() * 0.015 + 0.005,
         angle: Math.random() * Math.PI * 2
       });
     }
@@ -73,7 +68,7 @@ export default function RamadanDecorations() {
     const animate = (timestamp: number) => {
       rafId = requestAnimationFrame(animate);
 
-      if (document.hidden || isScrolling) return;
+      if (document.hidden) return;
 
       const elapsed = timestamp - lastTime;
       if (elapsed < fpsInterval) return;
@@ -82,40 +77,24 @@ export default function RamadanDecorations() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       particles.forEach(p => {
-        // Natural floating movement
+        // Simple float drift — no Math.sqrt, no spring-back
         p.angle += p.speed;
-        p.baseX += Math.sin(p.angle) * 0.5;
-        p.baseY -= Math.cos(p.angle) * 0.5;
+        p.x += Math.sin(p.angle) * 0.4;
+        p.y -= Math.cos(p.angle) * 0.3;
 
-        // Wrap around screen
-        if (p.baseY < -50) p.baseY = canvas.height + 50;
-        if (p.baseY > canvas.height + 50) p.baseY = -50;
-        if (p.baseX < -50) p.baseX = canvas.width + 50;
-        if (p.baseX > canvas.width + 50) p.baseX = -50;
+        // Wrap
+        if (p.y < -20) p.y = canvas.height + 20;
+        if (p.y > canvas.height + 20) p.y = -20;
+        if (p.x < -20) p.x = canvas.width + 20;
+        if (p.x > canvas.width + 20) p.x = -20;
 
-        // Spring back to base position
-        p.x += (p.baseX - p.x) * 0.05;
-        p.y += (p.baseY - p.y) * 0.05;
-
-        // Repulsion logic (mouse repel)
-        const dx = mouseX - p.x;
-        const dy = mouseY - p.y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        
-        if (dist < 150) {
-          const force = (150 - dist) / 150;
-          p.x -= (dx / dist) * force * 5;
-          p.y -= (dy / dist) * force * 5;
-        }
-
-        const alpha = 0.4 + Math.sin(p.angle * 2) * 0.3;
-        // Soft outer glow halo (hardware accelerated without CPU shadowBlur)
+        const alpha = 0.4 + Math.sin(p.angle * 2) * 0.25;
+        // Soft outer halo
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(253, 224, 71, ${alpha * 0.25})`;
+        ctx.fillStyle = `rgba(253, 224, 71, ${alpha * 0.20})`;
         ctx.fill();
-
-        // Core bright ember
+        // Core ember
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(253, 224, 71, ${alpha})`;
@@ -126,7 +105,6 @@ export default function RamadanDecorations() {
     rafId = requestAnimationFrame(animate);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', resize);
       if (rafId) cancelAnimationFrame(rafId);
@@ -139,8 +117,8 @@ export default function RamadanDecorations() {
     <motion.div
       className={`absolute top-0 flex flex-col items-center z-0 origin-top pointer-events-none ${className}`}
       style={{ left, transform: `scale(${scale})` }}
-      animate={!isEligible ? {} : { opacity: [0.8, 1, 0.8] }}
-      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay }}
+      animate={!isEligible ? {} : { opacity: [0.75, 1, 0.75] }}
+      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay, repeatType: 'reverse' as const }}  
     >
       <div className="w-0.5 h-16 bg-yellow-600/60" />
       <div className="w-12 h-20 bg-emerald-900/40 backdrop-blur-sm rounded-t-full border-2 border-yellow-500/80 shadow-[0_0_15px_rgba(234,179,8,0.3)] flex items-center justify-center relative overflow-hidden">

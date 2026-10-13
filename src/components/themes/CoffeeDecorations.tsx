@@ -29,24 +29,24 @@ export default function CoffeeDecorations() {
     let rafId: number;
     let lastTime = 0;
     const fpsInterval = 1000 / 30; // 30 FPS cap
-    let mouseX = -1000;
-    let mouseY = -1000;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-
     let isScrolling = false;
     let scrollTimer: ReturnType<typeof setTimeout>;
 
+    const pauseCanvas = () => {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+    };
+    const resumeCanvas = () => {
+      if (!rafId) rafId = requestAnimationFrame(animate);
+    };
+
     const onScroll = () => {
+      if (!isScrolling) pauseCanvas();
       isScrolling = true;
       clearTimeout(scrollTimer);
       scrollTimer = setTimeout(() => {
         isScrolling = false;
-      }, 90);
+        resumeCanvas();
+      }, 150);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -78,7 +78,7 @@ export default function CoffeeDecorations() {
     }
 
     const particles: DustParticle[] = [];
-    const count = Math.min(26, Math.max(16, Math.floor(window.innerWidth * window.innerHeight / 42000)));
+    const count = Math.min(10, Math.max(6, Math.floor(window.innerWidth * window.innerHeight / 80000)));
 
     for (let i = 0; i < count; i++) {
       particles.push({
@@ -97,7 +97,7 @@ export default function CoffeeDecorations() {
     const animate = (timestamp: number) => {
       rafId = requestAnimationFrame(animate);
 
-      if (document.hidden || isScrolling) return;
+      if (document.hidden) return;
 
       const elapsed = timestamp - lastTime;
       if (elapsed < fpsInterval) return;
@@ -107,19 +107,8 @@ export default function CoffeeDecorations() {
 
       particles.forEach(p => {
         p.wobbleOffset += p.wobbleSpeed;
-        p.x += p.vx + Math.sin(p.wobbleOffset) * 0.25;
+        p.x += p.vx + Math.sin(p.wobbleOffset) * 0.18;
         p.y += p.vy;
-
-        // Subtle mouse interaction within 80px
-        const dx = mouseX - p.x;
-        const dy = mouseY - p.y;
-        const distSq = dx * dx + dy * dy;
-        if (distSq < 6400) { // 80px
-          const dist = Math.sqrt(distSq);
-          const force = (80 - dist) / 80;
-          p.x -= (dx / dist) * force * 1.2;
-          p.y -= (dy / dist) * force * 1.2;
-        }
 
         // Wrap around vertically
         if (p.y < -10) {
@@ -139,7 +128,6 @@ export default function CoffeeDecorations() {
     rafId = requestAnimationFrame(animate);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', resize);
       if (rafId) cancelAnimationFrame(rafId);

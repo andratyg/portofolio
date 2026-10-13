@@ -58,24 +58,19 @@ export default function SunsetDecorations() {
     let rafId: number;
     let lastTime = 0;
     const fpsInterval = 1000 / 30; // 30 FPS cap
-    let mouseX = -1000;
-    let mouseY = -1000;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     let isScrolling = false;
     let scrollTimer: ReturnType<typeof setTimeout>;
 
+    const pauseCanvas = () => { if (rafId) { cancelAnimationFrame(rafId); rafId = 0; } };
+    const resumeCanvas = () => { if (!rafId) rafId = requestAnimationFrame(animate); };
+
     const onScroll = () => {
+      if (!isScrolling) pauseCanvas();
       isScrolling = true;
       clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(() => {
-        isScrolling = false;
-      }, 90);
+      scrollTimer = setTimeout(() => { isScrolling = false; resumeCanvas(); }, 150);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -107,7 +102,7 @@ export default function SunsetDecorations() {
     }[] = [];
 
     // Lightweight particle count (22 max) for silky smooth performance
-    const count = Math.min(22, Math.max(12, Math.floor((window.innerWidth * window.innerHeight) / 45000)));
+    const count = Math.min(10, Math.max(6, Math.floor((window.innerWidth * window.innerHeight) / 90000)));
 
     for (let i = 0; i < count; i++) {
       const baseOpacity = Math.random() * 0.45 + 0.25;
@@ -134,7 +129,7 @@ export default function SunsetDecorations() {
       baseAlpha: number;
     }[] = [];
 
-    const sparkleCount = Math.min(16, Math.floor(window.innerWidth / 75));
+    const sparkleCount = Math.min(6, Math.floor(window.innerWidth / 200));
     for (let i = 0; i < sparkleCount; i++) {
       seaSparkles.push({
         x: Math.random() * canvas.width,
@@ -149,7 +144,7 @@ export default function SunsetDecorations() {
     const animate = (timestamp: number) => {
       rafId = requestAnimationFrame(animate);
 
-      if (document.hidden || isScrolling) return;
+      if (document.hidden) return;
 
       const elapsed = timestamp - lastTime;
       if (elapsed < fpsInterval) return;
@@ -174,15 +169,6 @@ export default function SunsetDecorations() {
         if (p.x < -10) p.x = width + 10;
         if (p.x > width + 10) p.x = -10;
 
-        // Mouse repulsion
-        const dx = p.x - mouseX;
-        const dy = p.y - mouseY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 90 && dist > 0) {
-          const force = (90 - dist) / 90;
-          p.x += (dx / dist) * force * 2.5;
-          p.y += (dy / dist) * force * 2.5;
-        }
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -228,11 +214,8 @@ export default function SunsetDecorations() {
         s.phase += s.speed;
         const alpha = Math.max(0, Math.sin(s.phase)) * s.baseAlpha;
         if (alpha > 0.05) {
-          // Interactive glint brightening on mouse hover near bottom
-          const distToMouse = Math.hypot(s.x - mouseX, s.y - mouseY);
-          const boost = distToMouse < 140 ? (140 - distToMouse) / 140 : 0;
-          const finalAlpha = Math.min(1, alpha + boost * 0.5);
-          const sz = s.size * (1 + boost * 0.6);
+          const finalAlpha = alpha;
+          const sz = s.size;
 
           ctx.save();
           ctx.translate(s.x, s.y);
@@ -269,7 +252,6 @@ export default function SunsetDecorations() {
     rafId = requestAnimationFrame(animate);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', resize);
       if (rafId) cancelAnimationFrame(rafId);

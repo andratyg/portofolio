@@ -206,7 +206,7 @@ export default function LiquidGlassDecorations() {
 
     const handleMouseMove = (e: MouseEvent) => {
       const now = performance.now();
-      if (now - lastRippleTime > 100 && ripples.length < 6) {
+      if (now - lastRippleTime > 140 && ripples.length < 3) {
         lastRippleTime = now;
         ripples.push({
           x: e.clientX, y: e.clientY,
@@ -231,9 +231,13 @@ export default function LiquidGlassDecorations() {
     };
 
     const onScroll = () => {
+      if (!isScrolling) { if (rafId) { cancelAnimationFrame(rafId); rafId = 0; } }
       isScrolling = true;
       clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(() => { isScrolling = false; }, 100);
+      scrollTimer = setTimeout(() => {
+        isScrolling = false;
+        if (!rafId) rafId = requestAnimationFrame(render);
+      }, 150);
     };
 
     const resize = () => {
@@ -247,10 +251,10 @@ export default function LiquidGlassDecorations() {
     window.addEventListener('resize', resize, { passive: true });
     resize();
 
-    // Undulating viscous molten glass ribbon streams
+    // Undulating viscous molten glass ribbon streams — 2 ribbons for performance
     const ribbons = [
       {
-        yBase: 0.20, amplitude: 70, frequency: 0.0013, speed: 0.00060,
+        yBase: 0.28, amplitude: 68, frequency: 0.0013, speed: 0.00058,
         thickness: 130,
         color1: 'rgba(0, 122, 255, 0.14)',
         color2: 'rgba(255, 255, 255, 0.42)',
@@ -258,26 +262,18 @@ export default function LiquidGlassDecorations() {
         phase: 0,
       },
       {
-        yBase: 0.50, amplitude: 80, frequency: 0.0010, speed: -0.00048,
-        thickness: 145,
+        yBase: 0.64, amplitude: 72, frequency: 0.0010, speed: -0.00045,
+        thickness: 138,
         color1: 'rgba(88, 86, 214, 0.12)',
-        color2: 'rgba(0, 199, 190, 0.26)',
+        color2: 'rgba(0, 199, 190, 0.24)',
         sheen: 'rgba(255, 255, 255, 0.72)',
         phase: Math.PI * 0.75,
-      },
-      {
-        yBase: 0.76, amplitude: 65, frequency: 0.0012, speed: 0.00055,
-        thickness: 130,
-        color1: 'rgba(0, 199, 190, 0.11)',
-        color2: 'rgba(0, 122, 255, 0.18)',
-        sheen: 'rgba(255, 255, 255, 0.78)',
-        phase: Math.PI * 1.4,
       },
     ];
 
     const render = (ts: number) => {
       rafId = requestAnimationFrame(render);
-      if (document.hidden || isScrolling) return;
+      if (document.hidden) return;
       const elapsed = ts - lastTime;
       if (elapsed < fpsInterval) return;
       lastTime = ts - (elapsed % fpsInterval);
@@ -290,7 +286,7 @@ export default function LiquidGlassDecorations() {
       for (const rib of ribbons) {
         rib.phase += rib.speed * elapsed;
         const yC = rib.yBase * h;
-        const step = 24;
+        const step = 36; // Larger step = fewer lineTo() calls = less CPU
 
         ctx.save();
         ctx.beginPath();
@@ -371,7 +367,7 @@ export default function LiquidGlassDecorations() {
       window.removeEventListener('click', handleClick);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', resize);
-      cancelAnimationFrame(rafId);
+      if (rafId) cancelAnimationFrame(rafId);
       clearTimeout(scrollTimer);
     };
   }, [mounted]);

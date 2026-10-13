@@ -213,10 +213,9 @@ export const CustomCursor = () => {
 
           const dx = e.clientX - lastSpawnX;
           const dy = e.clientY - lastSpawnY;
-          const dist = Math.sqrt(dx * dx + dy * dy);
           
-          // Only spawn if mouse moved at least 8px to prevent clumping
-          if (dist > 8) {
+          // Only spawn if mouse moved at least 8px (64px^2) to prevent clumping and avoid Math.sqrt
+          if (dx * dx + dy * dy > 64) {
             spawnParticles(e.clientX, e.clientY);
             lastSpawnX = e.clientX;
             lastSpawnY = e.clientY;
@@ -227,7 +226,8 @@ export const CustomCursor = () => {
 
         // Animation Loop — strictly runs only when active particles exist
         const animateParticles = () => {
-          if (document.hidden) {
+          if (document.hidden || isScrolling) {
+            if (isScrolling) ctx.clearRect(0, 0, canvas.width, canvas.height);
             particlesRaf = requestAnimationFrame(animateParticles);
             return;
           }

@@ -30,12 +30,27 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
     let isScrolling = false;
     let scrollTimer: ReturnType<typeof setTimeout>;
 
+    const pauseCanvas = () => {
+      if (particleRaf) {
+        cancelAnimationFrame(particleRaf);
+        particleRaf = 0;
+      }
+    };
+
+    const resumeCanvas = () => {
+      if (!particleRaf && isVisible && !document.hidden && !isScrolling) {
+        particleRaf = requestAnimationFrame(drawParticles);
+      }
+    };
+
     const onScroll = () => {
+      if (!isScrolling) pauseCanvas();
       isScrolling = true;
       clearTimeout(scrollTimer);
       scrollTimer = setTimeout(() => {
         isScrolling = false;
-      }, 90);
+        resumeCanvas();
+      }, 150);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -43,7 +58,12 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        isVisible = entry ? entry.isIntersecting : false;
+        const nextVisible = entry ? entry.isIntersecting : false;
+        if (nextVisible !== isVisible) {
+          isVisible = nextVisible;
+          if (isVisible) resumeCanvas();
+          else pauseCanvas();
+        }
       },
       { threshold: 0.05 }
     );
@@ -57,7 +77,7 @@ export const ParticleCanvas = ({ className, density = 20000 }: ParticleCanvasPro
     resize();
     window.addEventListener('resize', resize, { passive: true });
     const particles: { x: number; y: number; vx: number; vy: number; size: number; opacity: number }[] = [];
-    const maxParticles = isMobile ? 10 : 20; // Silky lightweight particle count
+    const maxParticles = isMobile ? 6 : 12; // Silky lightweight particle count
     const count = Math.min(maxParticles, Math.floor((canvas.width * canvas.height) / density));
     
     for (let i = 0; i < count; i++) {

@@ -27,24 +27,19 @@ export default function NatalDecorations() {
     let rafId: number;
     let lastTime = 0;
     const fpsInterval = 1000 / 30; // 30 FPS cap
-    let mouseX = -1000;
-    let mouseY = -1000;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     let isScrolling = false;
     let scrollTimer: ReturnType<typeof setTimeout>;
 
+    const pauseCanvas = () => { if (rafId) { cancelAnimationFrame(rafId); rafId = 0; } };
+    const resumeCanvas = () => { if (!rafId) rafId = requestAnimationFrame(animate); };
+
     const onScroll = () => {
+      if (!isScrolling) pauseCanvas();
       isScrolling = true;
       clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(() => {
-        isScrolling = false;
-      }, 90);
+      scrollTimer = setTimeout(() => { isScrolling = false; resumeCanvas(); }, 150);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -56,7 +51,7 @@ export default function NatalDecorations() {
     resize();
 
     const particles: {x: number, y: number, r: number, vx: number, vy: number, opacity: number}[] = [];
-    const count = Math.min(28, Math.floor(window.innerWidth * window.innerHeight / 35000));
+    const count = Math.min(8, Math.floor(window.innerWidth * window.innerHeight / 80000));
     
     for(let i=0; i<count; i++) {
       particles.push({
@@ -72,7 +67,7 @@ export default function NatalDecorations() {
     const animate = (timestamp: number) => {
       rafId = requestAnimationFrame(animate);
 
-      if (document.hidden || isScrolling) return;
+      if (document.hidden) return;
 
       const elapsed = timestamp - lastTime;
       if (elapsed < fpsInterval) return;
@@ -81,16 +76,6 @@ export default function NatalDecorations() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       particles.forEach(p => {
-        const dx = mouseX - p.x;
-        const dy = mouseY - p.y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        
-        if (dist < 100) {
-          const force = (100 - dist) / 100;
-          p.x -= (dx / dist) * force * 2;
-          p.y -= (dy / dist) * force * 2;
-        }
-
         p.x += p.vx;
         p.y += p.vy;
         
@@ -111,7 +96,6 @@ export default function NatalDecorations() {
     rafId = requestAnimationFrame(animate);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', resize);
       if (rafId) cancelAnimationFrame(rafId);
@@ -124,8 +108,8 @@ export default function NatalDecorations() {
     <motion.div
       className="absolute top-0 flex flex-col items-center pointer-events-none"
       style={{ left }}
-      animate={!isEligible ? {} : { opacity: [0.6, 1, 0.6] }}
-      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay }}
+      animate={!isEligible ? {} : { opacity: [0.5, 1, 0.5] }}
+      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay, repeatType: 'reverse' as const }}  
     >
       <div className="w-0.5 h-6 bg-green-900/50" />
       <div className="w-2 h-2 bg-green-800 rounded-sm" />

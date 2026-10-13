@@ -27,24 +27,18 @@ export default function ImlekDecorations() {
     let rafId: number;
     let lastTime = 0;
     const fpsInterval = 1000 / 30; // 30 FPS cap
-    let mouseX = -1000;
-    let mouseY = -1000;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     let isScrolling = false;
     let scrollTimer: ReturnType<typeof setTimeout>;
 
+    const pauseCanvas = () => { if (rafId) { cancelAnimationFrame(rafId); rafId = 0; } };
+    const resumeCanvas = () => { if (!rafId) rafId = requestAnimationFrame(animate); };
+
     const onScroll = () => {
+      if (!isScrolling) pauseCanvas();
       isScrolling = true;
       clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(() => {
-        isScrolling = false;
-      }, 90);
+      scrollTimer = setTimeout(() => { isScrolling = false; resumeCanvas(); }, 150);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -56,7 +50,7 @@ export default function ImlekDecorations() {
     resize();
 
     const particles: {x: number, y: number, size: number, vx: number, vy: number, angle: number, rotSpeed: number}[] = [];
-    const count = Math.min(25, Math.floor(window.innerWidth * window.innerHeight / 25000));
+    const count = Math.min(8, Math.floor(window.innerWidth * window.innerHeight / 80000));
     
     for(let i=0; i<count; i++) {
       particles.push({
@@ -73,7 +67,7 @@ export default function ImlekDecorations() {
     const animate = (timestamp: number) => {
       rafId = requestAnimationFrame(animate);
 
-      if (document.hidden || isScrolling) return;
+      if (document.hidden) return;
 
       const elapsed = timestamp - lastTime;
       if (elapsed < fpsInterval) return;
@@ -82,16 +76,6 @@ export default function ImlekDecorations() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       particles.forEach(p => {
-        const dx = mouseX - p.x;
-        const dy = mouseY - p.y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        
-        if (dist < 100) {
-          const force = (100 - dist) / 100;
-          p.x -= (dx / dist) * force * 2;
-          p.y -= (dy / dist) * force * 2;
-        }
-
         p.x += p.vx;
         p.y += p.vy;
         p.angle += p.rotSpeed;
@@ -115,7 +99,6 @@ export default function ImlekDecorations() {
     rafId = requestAnimationFrame(animate);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', resize);
       if (rafId) cancelAnimationFrame(rafId);
@@ -128,8 +111,8 @@ export default function ImlekDecorations() {
     <motion.div
       className="absolute top-0 flex flex-col items-center z-0 origin-top pointer-events-none"
       style={{ left, transform: `scale(${scale})` }}
-      animate={!isEligible ? {} : { rotate: [-3, 3, -3] }}
-      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay }}
+      animate={!isEligible ? {} : { rotate: [-2, 2, -2] }}
+      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay, repeatType: 'reverse' as const }}  
     >
       <div className="w-0.5 h-12 bg-yellow-600/80" />
       <div className="w-16 h-20 bg-red-600 rounded-2xl border-4 border-yellow-500 shadow-xl shadow-red-900/50 flex items-center justify-center relative overflow-hidden">
